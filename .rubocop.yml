@@ -33,3 +33,10 @@ inherit_from:
   - .rubocop/security.yml
   - .rubocop/style.yml
   - .rubocop/threadsafety.yml
+
+RSpec/ContextWording:
+  Prefixes:
+    - "on"
+    - when
+    - with
+    - without
