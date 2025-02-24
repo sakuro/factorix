@@ -1,8 +1,35 @@
+---
 AllCops:
-  TargetRubyVersion: 3.1
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  EnabledByDefault: true
+  Exclude:
+  - bin/**/*
+  - vendor/**/*
+  ExtraDetails: true
+  TargetRubyVersion: 3.4
+  UseCache: true
+inherit_mode:
+  merge:
+  - Exclude
+plugins:
+- rubocop-performance
+- rubocop-rake
+- rubocop-rspec
+- rubocop-thread_safety
+require: []
+inherit_from:
+  - .rubocop_todo.yml
+  - .rubocop/bundler.yml
+  - .rubocop/gemspec.yml
+  - .rubocop/layout.yml
+  - .rubocop/lint.yml
+  - .rubocop/metrics.yml
+  - .rubocop/migration.yml
+  - .rubocop/naming.yml
+  - .rubocop/performance.yml
+  - .rubocop/rspec.yml
+  - .rubocop/rake.yml
+  - .rubocop/security.yml
+  - .rubocop/style.yml
+  - .rubocop/threadsafety.yml
