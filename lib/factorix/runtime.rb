@@ -9,11 +9,7 @@ module Factorix
   # Factorio runtime environment
   class Runtime
     # Raised when run on unsupported platform
-    class UnsupportedPlatform < StandardError
-      def initialize
-        super("Platform is not supported: #{RUBY_PLATFORM}")
-      end
-    end
+    class UnsupportedPlatform < StandardError; end
 
     # Returns the platform the script is running on
     # @raise [UnsupportedPlatform] if the platform is not supported
@@ -26,7 +22,7 @@ module Factorix
       when /linux/
         /microsoft/i.match?(File.read("/proc/version")) ? WSL.new : Linux.new
       else
-        raise UnsupportedPlatform
+        raise UnsupportedPlatform, "Platform is not supported: #{RUBY_PLATFORM}"
       end
     end
 
