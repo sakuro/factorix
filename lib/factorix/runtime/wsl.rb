@@ -21,15 +21,15 @@ module Factorix
 
         # Return the path to the user's AppData directory
         # @return [Pathname] path to the user's AppData directory
-        def app_data = Pathname(cmd_echo("APPDATA"))
+        def app_data = Pathname(wslpath(cmd_echo("APPDATA")))
 
         # Return the path to the Program Files (x86) directory
-        def program_files_x86 = Pathname(cmd_echo("ProgramFiles(x86)"))
+        def program_files_x86 = Pathname(wslpath(cmd_echo("ProgramFiles(x86)")))
 
         private def cmd_echo(name)
-          windows_system_root = wslpath(wslvar("SystemDrive") + File::ALT_SEPARATOR)
+          windows_system_root = wslpath(wslvar("SystemDrive") + File::SEPARATOR)
           fetch_or_store("cmd_echo", name) do
-            IO.popen({chdir: windows_system_root}, %[cmd.exe /C "echo %#{name}%"]) do |io|
+            IO.popen(%[cmd.exe /C "echo %#{name}%"], {chdir: windows_system_root}) do |io|
               io.gets.chomp
             end
           end
