@@ -7,8 +7,6 @@ module Factorix
   class Runtime
     # WSL runtime environment
     class WSL < Windows
-      extend Dry::Core::Cache
-
       # Initialize WSL runtime environment
       def initialize(path: WSLPath.new)
         super()
@@ -19,6 +17,8 @@ module Factorix
 
       # WSL specific path handling
       class WSLPath
+        extend Dry::Core::Cache
+
         # Return the path to the user's AppData directory
         # @return [Pathname] path to the user's AppData directory
         def app_data = Pathname(cmd_echo("APPDATA"))
