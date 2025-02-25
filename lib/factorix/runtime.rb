@@ -11,6 +11,9 @@ module Factorix
     # Raised when run on unsupported platform
     class UnsupportedPlatform < StandardError; end
 
+    # Raised when the game is already running and an attempt to launch the game is made
+    class AlreadyRunning < StandardError; end
+
     # Returns the platform the script is running on
     # @raise [UnsupportedPlatform] if the platform is not supported
     def self.runtime
@@ -42,6 +45,26 @@ module Factorix
     # @return [Pathname] the path of the mod-list.json file
     def mod_list_path
       mods_dir + "mod-list.json"
+    end
+
+    # Launch the game
+    # @raise [RuntimeError] if the game is already running
+    def launch(*)
+      raise AlreadyRunning, "The game is already running" if running?
+
+      spawn([executable.to_s, "factorio"], *, out: IO::NULL)
+    end
+
+    # Check if the game is running
+    #
+    # Becasuse the game becomes daemonized on launch, we cannot use the process ID nor Process groups
+    # to check if the game is running.  Instead, we check if the game is running by external means.
+    # (e.g. polling the process list periodically)
+    #
+    # Note: Subclasses should implement this method
+    # @return [Boolean] true if the game is running, false otherwise
+    def running?
+      raise NotImplementedError
     end
   end
 end

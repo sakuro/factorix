@@ -11,3 +11,8 @@ RSpec/ExampleLength:
   Exclude:
     - 'spec/factorix/mod_list_spec.rb'
     - 'spec/factorix/mod_spec.rb'
+
+# Configuration parameters: Max, AllowedGroups.
+RSpec/NestedGroups:
+  Exclude:
+    - 'spec/factorix/runtime_spec.rb'

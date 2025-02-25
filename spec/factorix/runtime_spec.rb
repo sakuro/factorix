@@ -106,4 +106,46 @@ RSpec.describe Factorix::Runtime do
       expect(mod_list_path).to eq(Pathname.new("/user_dir/mods/mod-list.json"))
     end
   end
+
+  describe "#launch" do
+    let(:runtime) { Factorix::Runtime.runtime }
+
+    context "when the game is not running" do
+      before do
+        allow(runtime).to receive_messages(
+          running?: false,
+          executable: Pathname.new("/path/to/factorio")
+        )
+        allow(runtime).to receive(:spawn)
+      end
+
+      context "without arguments" do
+        subject(:launch) { runtime.launch }
+
+        it "launches the game" do
+          launch
+          expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], out: IO::NULL)
+        end
+      end
+
+      context "with arguments" do
+        subject(:launch) { runtime.launch("--start-server", "save.zip") }
+
+        it "launches the game with arguments" do
+          launch
+          expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+        end
+      end
+    end
+
+    context "when the game is already running" do
+      before do
+        allow(runtime).to receive(:running?).and_return(true)
+      end
+
+      it "raises AlreadyRunning" do
+        expect { runtime.launch }.to raise_error(Factorix::Runtime::AlreadyRunning)
+      end
+    end
+  end
 end
