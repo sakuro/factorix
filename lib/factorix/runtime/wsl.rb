@@ -15,6 +15,16 @@ module Factorix
 
       private attr_reader :path
 
+      GET_PROCESS_COMMAND = %[powershell.exe -Command "Get-Process factorio -ErrorAction SilentlyContinue"]
+      private_constant :GET_PROCESS_COMMAND
+
+      # Check if the game is running
+      # @return [Boolean] true if the game is running, false otherwise
+      def running?
+        system(GET_PROCESS_COMMAND, out: IO::NULL)
+        Process.last_status.exitstatus.zero?
+      end
+
       # WSL specific path handling
       class WSLPath
         extend Dry::Core::Cache

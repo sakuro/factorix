@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require "pathname"
+# Load the real sys/proctable if it's not already loaded
+# In test, we use a mock of Sys::ProcTable to avoid loading errors on non-MacOS platforms
+require "sys/proctable" unless defined?(Sys::ProcTable)
 
 module Factorix
   class Runtime
@@ -22,6 +24,15 @@ module Factorix
       # @return [Pathname] path to the Factorio data directory
       def data_dir
         home_dir + "Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/data"
+      end
+
+      # Check if the game is running
+      # @return [Boolean] true if the game is running, false otherwise
+      def running?
+        Warning[:deprecated] = false
+        Sys::ProcTable.ps.any? { it.name == "factorio" }
+      ensure
+        Warning[:deprecated] = true
       end
 
       private def home_dir = Pathname(Dir.home)
