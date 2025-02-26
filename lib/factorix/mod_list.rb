@@ -4,7 +4,7 @@ require "json"
 require_relative "errors"
 
 module Factorix
-  # Represents the list of mods and their enabled status.
+  # Represent a list of MODs and their enabled status.
   class ModList
     include Enumerable
 
@@ -17,6 +17,7 @@ module Factorix
 
     # Load the mod list from the given file.
     # @param from [Pathname] the path to the file to load the mod list from.
+    # @return [Factorix::ModList] the loaded mod list.
     def self.load(from: Factorix::Runtime.runtime.mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       new(raw_data[:mods].to_h {|e| [Mod[name: e[:name]], e[:enabled]] })
@@ -24,6 +25,7 @@ module Factorix
 
     # Initialize the mod list.
     # @param mods [Hash{Factorix::Mod => Boolean}] the mods and their enabled status.
+    # @return [void]
     def initialize(mods={})
       @mods = {Mod[name: "base"] => true}
       mods.each do |mod, enabled|
@@ -35,6 +37,7 @@ module Factorix
 
     # Save the mod list to the given file.
     # @param to [Pathname] the path to the file to save the mod list to.
+    # @return [void]
     def save(to: Factorix::Runtime.runtime.mod_list_path)
       to.write(JSON.pretty_generate({mods: @mods.map {|mod, enabled| {name: mod.name, enabled:} }}))
     end
@@ -42,6 +45,8 @@ module Factorix
     # Iterate through all mod-version pairs.
     # @yieldparam mod [Factorix::Mod] the mod.
     # @yieldparam enabled [Boolean] the enabled status.
+    # @return [Enumerator] if no block is given.
+    # @return [Factorix::ModList] if a block is given.
     def each
       return @mods.to_enum unless block_given?
 
@@ -53,6 +58,7 @@ module Factorix
     # Add the mod to the list.
     # @param mod [Factorix::Mod] the mod to add.
     # @param enabled [Boolean] the enabled status. Default to true.
+    # @return [void]
     # @raise [ArgumentError] if the mod is the base mod and the enabled status is false.
     def add(mod, enabled: true)
       raise ArgumentError, "can't disable the base mod" if mod.base? && enabled == false
@@ -62,6 +68,7 @@ module Factorix
 
     # Remove the mod from the list.
     # @param mod [Factorix::Mod] the mod to remove.
+    # @return [void]
     # @raise [ArgumentError] if the mod is the base mod.
     def remove(mod)
       raise ArgumentError, "can't remove the base mod" if mod.base?
@@ -86,6 +93,7 @@ module Factorix
 
     # Enable the mod.
     # @param mod [Factorix::Mod] the mod to enable.
+    # @return [void]
     # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
     def enable(mod)
       raise ModNotInListError, mod unless exist?(mod)
@@ -95,6 +103,7 @@ module Factorix
 
     # Disable the mod.
     # @param mod [Factorix::Mod] the mod to disable.
+    # @return [void]
     # @raise [ArgumentError] if the mod is the base mod.
     # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
     def disable(mod)

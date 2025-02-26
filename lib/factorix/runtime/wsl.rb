@@ -34,6 +34,7 @@ module Factorix
         def app_data = Pathname(wslpath(cmd_echo("APPDATA")))
 
         # Return the path to the Program Files (x86) directory
+        # @return [Pathname] path to the Program Files (x86) directory
         def program_files_x86 = Pathname(wslpath(cmd_echo("ProgramFiles(x86)")))
 
         private def cmd_echo(name)
