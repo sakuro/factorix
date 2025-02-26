@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-require "darwin/sys/proctable"
+# Load a mock of Sys::ProcTable before loading the Runtime::MacOS
+# This is necessary in test because the Runtime::MacOS loads Sys::ProcTable if it's not already loaded
+require "mocks/sys/proctable" unless RUBY_PLATFORM.include?("darwin")
+
 require "factorix/runtime/mac_os"
 
 RSpec.describe Factorix::Runtime::MacOS do

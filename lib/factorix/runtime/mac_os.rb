@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require "pathname"
-require "sys/proctable"
+# Load the real sys/proctable if it's not already loaded
+# In test, we use a mock of Sys::ProcTable to avoid loading errors on non-MacOS platforms
+require "sys/proctable" unless defined?(Sys::ProcTable)
 
 module Factorix
   class Runtime
