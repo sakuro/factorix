@@ -11,3 +11,13 @@ RSpec/ExampleLength:
   Exclude:
     - 'spec/factorix/mod_list_spec.rb'
     - 'spec/factorix/mod_spec.rb'
+
+# Configuration parameters: Max, AllowedGroups.
+RSpec/NestedGroups:
+  Exclude:
+    - 'spec/factorix/runtime_spec.rb'
+
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Style/StaticClass:
+  Exclude:
+    - 'spec/mocks/sys/proctable.rb'
