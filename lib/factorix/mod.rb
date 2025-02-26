@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Factorix
-  # Class representing a mod
+  # Represent MOD
   Mod = Data.define(:name) {
     include Comparable
 

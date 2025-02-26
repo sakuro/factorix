@@ -14,7 +14,8 @@ module Factorix
     # Raised when the game is already running and an attempt to launch the game is made
     class AlreadyRunning < StandardError; end
 
-    # Returns the platform the script is running on
+    # Return the platform the script is running on
+    # @return [Runtime] the runtime environment
     # @raise [UnsupportedPlatform] if the platform is not supported
     def self.runtime
       case RUBY_PLATFORM
@@ -29,25 +30,26 @@ module Factorix
       end
     end
 
-    # Returns the mods directory of Factorio
+    # Return the mods directory of Factorio
     # @return [Pathname] the mods directory of Factorio
     def mods_dir
       user_dir + "mods"
     end
 
-    # Returns the script-output directory of Factorio
+    # Return the script-output directory of Factorio
     # @return [Pathname] the script-output directory of Factorio
     def script_output_dir
       user_dir + "script-output"
     end
 
-    # Returns the path of the mod-list.json file
+    # Return the path of the mod-list.json file
     # @return [Pathname] the path of the mod-list.json file
     def mod_list_path
       mods_dir + "mod-list.json"
     end
 
     # Launch the game
+    # @return [void]
     # @raise [RuntimeError] if the game is already running
     def launch(*)
       raise AlreadyRunning, "The game is already running" if running?
