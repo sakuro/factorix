@@ -13,11 +13,11 @@ module Factorix
         class List < Dry::CLI::Command
           desc "List all MODs"
 
-          option :format, type: :string, desc: "Output format (csv, markdown)"
+          option :format, type: :string, values: %w[csv markdown], desc: "Output format"
 
           # List all MODs
           # @param options [Hash] The options for the command
-          # @option options [String] :format Output format (csv, markdown)
+          # @option options [String] :format Output format
           def call(**options)
             list = Factorix::ModList.load
 
