@@ -3,6 +3,7 @@
 require "dry/cli"
 require "factorix"
 require "csv"
+require "markdown-tables"
 
 module Factorix
   class CLI
@@ -53,11 +54,15 @@ module Factorix
           # Output the mod list in Markdown table format
           # @param list [Factorix::ModList] The mod list
           private def output_markdown(list)
-            puts "| Name | Enabled | Version |"
-            puts "| ---- | ------- | ------- |"
+            labels = %w[Name Enabled Version]
+            data = []
+
             list.each do |mod, state|
-              puts "| #{mod.name} | #{state.enabled} | #{state.version || ""} |"
+              data << [mod.name, state.enabled, state.version || ""]
             end
+
+            table = MarkdownTables.make_table(labels, data, is_rows: true)
+            puts table
           end
         end
       end
