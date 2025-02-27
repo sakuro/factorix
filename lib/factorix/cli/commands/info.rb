@@ -14,12 +14,28 @@ module Factorix
         # Display runtime information
         def call(**)
           runtime = Factorix::Runtime.runtime
-          puts "Platform: %p" % runtime.platform.to_s
-          puts "Executable: %p" % runtime.executable.to_s
-          puts "User directory: %p" % runtime.user_dir.to_s
-          puts "Data directory: %p" % runtime.data_dir.to_s
-          puts "Mod directory: %p" % runtime.mods_dir.to_s
-          puts "Script output directory: %p" % runtime.script_output_dir.to_s
+          display_runtime_info(runtime)
+        end
+
+        private def display_runtime_info(runtime)
+          info_items(runtime).each do |label, value|
+            display_item(label, value)
+          end
+        end
+
+        private def info_items(runtime)
+          {
+            "Platform" => runtime.platform.to_s,
+            "Executable" => runtime.executable.to_s,
+            "User directory" => runtime.user_dir.to_s,
+            "Data directory" => runtime.data_dir.to_s,
+            "Mod directory" => runtime.mods_dir.to_s,
+            "Script output directory" => runtime.script_output_dir.to_s
+          }
+        end
+
+        private def display_item(label, value)
+          puts "#{label}: %p" % value
         end
       end
     end
