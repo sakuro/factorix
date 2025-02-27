@@ -117,23 +117,66 @@ RSpec.describe Factorix::Runtime do
           executable: Pathname.new("/path/to/factorio")
         )
         allow(runtime).to receive(:spawn)
+        allow(runtime).to receive(:system)
       end
 
-      context "without arguments" do
-        subject(:launch) { runtime.launch }
+      context "with async: true" do
+        context "without arguments" do
+          subject(:launch) { runtime.launch(async: true) }
 
-        it "launches the game" do
-          launch
-          expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], out: IO::NULL)
+          it "launches the game asynchronously" do
+            launch
+            expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], out: IO::NULL)
+          end
+
+          it "does not use system for asynchronous launch" do
+            launch
+            expect(runtime).not_to have_received(:system)
+          end
+        end
+
+        context "with arguments" do
+          subject(:launch) { runtime.launch("--start-server", "save.zip", async: true) }
+
+          it "launches the game asynchronously with arguments" do
+            launch
+            expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+          end
+
+          it "does not use system for asynchronous launch with arguments" do
+            launch
+            expect(runtime).not_to have_received(:system)
+          end
         end
       end
 
-      context "with arguments" do
-        subject(:launch) { runtime.launch("--start-server", "save.zip") }
+      context "with async: false" do
+        context "without arguments" do
+          subject(:launch) { runtime.launch(async: false) }
 
-        it "launches the game with arguments" do
-          launch
-          expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+          it "launches the game synchronously" do
+            launch
+            expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], out: IO::NULL)
+          end
+
+          it "does not use spawn for synchronous launch" do
+            launch
+            expect(runtime).not_to have_received(:spawn)
+          end
+        end
+
+        context "with arguments" do
+          subject(:launch) { runtime.launch("--start-server", "save.zip", async: false) }
+
+          it "launches the game synchronously with arguments" do
+            launch
+            expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+          end
+
+          it "does not use spawn for synchronous launch with arguments" do
+            launch
+            expect(runtime).not_to have_received(:spawn)
+          end
         end
       end
     end
@@ -144,7 +187,7 @@ RSpec.describe Factorix::Runtime do
       end
 
       it "raises AlreadyRunning" do
-        expect { runtime.launch }.to raise_error(Factorix::Runtime::AlreadyRunning)
+        expect { runtime.launch(async: true) }.to raise_error(Factorix::Runtime::AlreadyRunning)
       end
     end
   end

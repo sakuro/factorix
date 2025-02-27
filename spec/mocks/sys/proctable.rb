@@ -18,4 +18,4 @@ end
 # Struct for mocking Sys::ProcTable.ps
 #
 # This is a mock of the Struct returned by Sys::ProcTable.ps
-Struct::ProcTableStruct = Struct.new(:pid, :name)
+Struct::ProcTableStruct = Struct.new(:pid, :cmdline)
