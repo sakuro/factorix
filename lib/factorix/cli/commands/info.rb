@@ -25,7 +25,6 @@ module Factorix
 
         private def info_items(runtime)
           {
-            "Platform" => runtime.platform,
             "Executable" => runtime.executable,
             "User directory" => runtime.user_dir,
             "Data directory" => runtime.data_dir,

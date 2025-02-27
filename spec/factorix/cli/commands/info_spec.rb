@@ -9,7 +9,6 @@ RSpec.describe Factorix::CLI::Commands::Info do
   before do
     allow(Factorix::Runtime).to receive(:runtime).and_return(runtime)
     allow(runtime).to receive_messages(
-      platform: "test_platform",
       executable: Pathname("/path/to/factorio"),
       user_dir: Pathname("/path/to/user_dir"),
       data_dir: Pathname("/path/to/data_dir"),
@@ -23,7 +22,6 @@ RSpec.describe Factorix::CLI::Commands::Info do
 
     it "outputs runtime information" do
       expect { call }.to output(<<~OUTPUT).to_stdout
-        Platform: test_platform
         Executable: /path/to/factorio
         User directory: /path/to/user_dir
         Data directory: /path/to/data_dir
