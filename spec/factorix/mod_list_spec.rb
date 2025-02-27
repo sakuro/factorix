@@ -10,6 +10,10 @@ RSpec.describe Factorix::ModList do
   let(:disabled_mod) { Factorix::Mod[name: "disabled-mod"] }
   let(:non_listed_mod) { Factorix::Mod[name: "non-listed-mod"] }
 
+  let(:base_state) { Factorix::ModState[enabled: true] }
+  let(:enabled_state) { Factorix::ModState[enabled: true, version: "1.0.0"] }
+  let(:disabled_state) { Factorix::ModState[enabled: false] }
+
   let(:list_path) { Pathname("spec/fixtures/mod-list/list.json") }
   let(:list) { Factorix::ModList.load(from: list_path) }
 
@@ -29,6 +33,15 @@ RSpec.describe Factorix::ModList do
     it "does not load non-listed mod" do
       expect(list).not_to exist(non_listed_mod)
     end
+
+    it "loads version information" do
+      expect(list.version(enabled_mod)).to eq("1.0.0")
+    end
+
+    it "returns nil for version when not specified" do
+      expect(list.version(base_mod)).to be_nil
+      expect(list.version(disabled_mod)).to be_nil
+    end
   end
 
   describe "#save" do
@@ -42,11 +55,11 @@ RSpec.describe Factorix::ModList do
 
   describe "#each" do
     context "with block" do
-      it "iterates through all (mod, enabled status) pair" do
+      it "iterates through all (mod, state) pairs" do
         expect {|block| list.each(&block) }.to yield_successive_args(
-          [base_mod, true],
-          [enabled_mod, true],
-          [disabled_mod, false]
+          [base_mod, base_state],
+          [enabled_mod, enabled_state],
+          [disabled_mod, disabled_state]
         )
       end
     end
@@ -54,11 +67,11 @@ RSpec.describe Factorix::ModList do
     context "without block" do
       let(:enumerator) { list.each }
 
-      it "returns an Enumerator which iterates through all (mod, enabled status) pair" do
+      it "returns an Enumerator which iterates through all (mod, state) pairs" do
         expect {|block| enumerator.each(&block) }.to yield_successive_args(
-          [base_mod, true],
-          [enabled_mod, true],
-          [disabled_mod, false]
+          [base_mod, base_state],
+          [enabled_mod, enabled_state],
+          [disabled_mod, disabled_state]
         )
       end
     end
@@ -83,6 +96,16 @@ RSpec.describe Factorix::ModList do
       it "adds MOD as disabled with explicit false flag" do
         list.add(non_listed_mod, enabled: false)
         expect(list).not_to be_enabled(non_listed_mod)
+      end
+
+      it "adds MOD with version" do
+        list.add(non_listed_mod, version: "2.0.0")
+        expect(list.version(non_listed_mod)).to eq("2.0.0")
+      end
+
+      it "adds MOD with nil version by default" do
+        list.add(non_listed_mod)
+        expect(list.version(non_listed_mod)).to be_nil
       end
     end
 
@@ -149,6 +172,17 @@ RSpec.describe Factorix::ModList do
     it "raises ModNotInListError on enabling non-listed MOD" do
       expect { list.enable(non_listed_mod) }.to raise_error(Factorix::ModList::ModNotInListError)
     end
+
+    it "preserves version information when enabling" do
+      # First add a mod with version
+      list.add(non_listed_mod, enabled: false, version: "3.0.0")
+      expect(list.version(non_listed_mod)).to eq("3.0.0")
+
+      # Then enable it and check that version is preserved
+      list.enable(non_listed_mod)
+      expect(list.enabled?(non_listed_mod)).to be true
+      expect(list.version(non_listed_mod)).to eq("3.0.0")
+    end
   end
 
   describe "#disable" do
@@ -167,6 +201,16 @@ RSpec.describe Factorix::ModList do
     it "raises ArgumentError on disabling base MOD" do
       expect { list.disable(base_mod) }.to raise_error(ArgumentError)
     end
+
+    it "preserves version information when disabling" do
+      # Check that enabled_mod has version before disabling
+      expect(list.version(enabled_mod)).to eq("1.0.0")
+
+      # Disable it and check that version is preserved
+      list.disable(enabled_mod)
+      expect(list.enabled?(enabled_mod)).to be false
+      expect(list.version(enabled_mod)).to eq("1.0.0")
+    end
   end
 
   describe "#enabled?" do
@@ -180,6 +224,21 @@ RSpec.describe Factorix::ModList do
 
     it "raises ModNotFoundError for non-listed MOD" do
       expect { list.enabled?(non_listed_mod) }.to raise_error(Factorix::ModNotFoundError)
+    end
+  end
+
+  describe "#version" do
+    it "returns the version for a mod with version" do
+      expect(list.version(enabled_mod)).to eq("1.0.0")
+    end
+
+    it "returns nil for a mod without version" do
+      expect(list.version(base_mod)).to be_nil
+      expect(list.version(disabled_mod)).to be_nil
+    end
+
+    it "raises ModNotInListError for non-listed MOD" do
+      expect { list.version(non_listed_mod) }.to raise_error(Factorix::ModList::ModNotInListError)
     end
   end
 end
