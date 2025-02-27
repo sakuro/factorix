@@ -2,6 +2,7 @@
 
 require "dry/cli"
 require "factorix"
+require "csv"
 
 module Factorix
   class CLI
@@ -40,9 +41,12 @@ module Factorix
           # Output the mod list in CSV format
           # @param list [Factorix::ModList] The mod list
           private def output_csv(list)
-            puts "Name,Enabled,Version"
-            list.each do |mod, state|
-              puts "#{mod.name},#{state.enabled},#{state.version || ""}"
+            CSV do |csv|
+              csv << %w[Name Enabled Version]
+              list.each do |mod, state|
+                version = state.version.nil? ? nil : state.version
+                csv << [mod.name, state.enabled, version]
+              end
             end
           end
 
