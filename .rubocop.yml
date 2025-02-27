@@ -11,6 +11,7 @@ AllCops:
   UseCache: true
 inherit_mode:
   merge:
+  - AllowedCops
   - Exclude
 plugins:
 - rubocop-performance

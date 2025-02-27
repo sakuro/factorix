@@ -15,6 +15,7 @@ RSpec/ExampleLength:
 # Configuration parameters: Max, AllowedGroups.
 RSpec/NestedGroups:
   Exclude:
+    - 'spec/factorix/cli/commands/launch_spec.rb'
     - 'spec/factorix/runtime_spec.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).

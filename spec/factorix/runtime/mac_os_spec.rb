@@ -49,8 +49,8 @@ RSpec.describe Factorix::Runtime::MacOS do
     before do
       allow(Sys::ProcTable).to receive(:ps).and_return(
         [
-          Struct::ProcTableStruct.new(pid: 1, name: "factorio"),
-          Struct::ProcTableStruct.new(pid: 2, name: "another_process")
+          Struct::ProcTableStruct.new(pid: 1, cmdline: runtime.executable.to_s),
+          Struct::ProcTableStruct.new(pid: 2, cmdline: "another_process")
         ]
       )
     end
@@ -63,8 +63,8 @@ RSpec.describe Factorix::Runtime::MacOS do
       before do
         allow(Sys::ProcTable).to receive(:ps).and_return(
           [
-            Struct::ProcTableStruct.new(pid: 1, name: "another_process"),
-            Struct::ProcTableStruct.new(pid: 2, name: "yet_another_process")
+            Struct::ProcTableStruct.new(pid: 1, cmdline: "another_process"),
+            Struct::ProcTableStruct.new(pid: 2, cmdline: "yet_another_process")
           ]
         )
       end

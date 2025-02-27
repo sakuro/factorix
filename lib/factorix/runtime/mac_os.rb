@@ -30,7 +30,7 @@ module Factorix
       # @return [Boolean] true if the game is running, false otherwise
       def running?
         Warning[:deprecated] = false
-        Sys::ProcTable.ps.any? { it.name == "factorio" }
+        Sys::ProcTable.ps.any? { it.cmdline.match?(/\A#{Regexp.quote(executable.to_s)}\b/) }
       ensure
         Warning[:deprecated] = true
       end
