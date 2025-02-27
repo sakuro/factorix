@@ -5,3 +5,8 @@
 # one by one as the offenses are removed from the code base.
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
+
+# Configuration parameters: AllowSubject, Max.
+RSpec/MultipleMemoizedHelpers:
+  Exclude:
+    - 'spec/factorix/cli/commands/mod/list_spec.rb'
