@@ -15,19 +15,17 @@ module Factorix
           # @option options [String] :format Output format
           def call: (**untyped options) -> void
 
-          private
-
           # Output the mod list in default format (names only)
           # @param list [Factorix::ModList] The mod list
-          def output_default: (Factorix::ModList list) -> void
+          private def output_default: (Factorix::ModList list) -> void
 
           # Output the mod list in CSV format
           # @param list [Factorix::ModList] The mod list
-          def output_csv: (Factorix::ModList list) -> void
+          private def output_csv: (Factorix::ModList list) -> void
 
           # Output the mod list in Markdown table format
           # @param list [Factorix::ModList] The mod list
-          def output_markdown: (Factorix::ModList list) -> void
+          private def output_markdown: (Factorix::ModList list) -> void
         end
       end
     end
