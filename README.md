@@ -27,6 +27,7 @@ factorix info
 ```
 
 This command shows:
+
 - Executable path
 - User directory
 - Data directory

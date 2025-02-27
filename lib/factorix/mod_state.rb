@@ -9,5 +9,11 @@ module Factorix
     def initialize(enabled:, version: nil)
       super
     end
+
+    # !attribute [r] enabled
+    #  @return [Boolean] whether the mod is enabled
+
+    # !attribute [r] version
+    #  @return [String, nil] the version of the mod, or nil if the version is not specified
   }
 end
