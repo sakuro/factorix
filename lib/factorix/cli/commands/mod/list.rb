@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/cli"
+require "factorix"
 
 module Factorix
   class CLI
