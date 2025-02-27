@@ -38,8 +38,11 @@ RSpec.describe Factorix::ModList do
       expect(list.version(enabled_mod)).to eq("1.0.0")
     end
 
-    it "returns nil for version when not specified" do
+    it "returns nil for version when not specified for base mod" do
       expect(list.version(base_mod)).to be_nil
+    end
+
+    it "returns nil for version when not specified for disabled mod" do
       expect(list.version(disabled_mod)).to be_nil
     end
   end
@@ -173,15 +176,26 @@ RSpec.describe Factorix::ModList do
       expect { list.enable(non_listed_mod) }.to raise_error(Factorix::ModList::ModNotInListError)
     end
 
-    it "preserves version information when enabling" do
-      # First add a mod with version
-      list.add(non_listed_mod, enabled: false, version: "3.0.0")
-      expect(list.version(non_listed_mod)).to eq("3.0.0")
+    context "when preserving version information" do
+      before do
+        # Add a mod with version
+        list.add(non_listed_mod, enabled: false, version: "3.0.0")
+      end
 
-      # Then enable it and check that version is preserved
-      list.enable(non_listed_mod)
-      expect(list.enabled?(non_listed_mod)).to be true
-      expect(list.version(non_listed_mod)).to eq("3.0.0")
+      it "has the correct version after adding" do
+        expect(list.version(non_listed_mod)).to eq("3.0.0")
+      end
+
+      it "preserves version information when enabling" do
+        # Enable it and check that version is preserved
+        list.enable(non_listed_mod)
+        expect(list.version(non_listed_mod)).to eq("3.0.0")
+      end
+
+      it "is enabled after enabling" do
+        list.enable(non_listed_mod)
+        expect(list.enabled?(non_listed_mod)).to be true
+      end
     end
   end
 
@@ -202,14 +216,20 @@ RSpec.describe Factorix::ModList do
       expect { list.disable(base_mod) }.to raise_error(ArgumentError)
     end
 
-    it "preserves version information when disabling" do
-      # Check that enabled_mod has version before disabling
-      expect(list.version(enabled_mod)).to eq("1.0.0")
+    context "when preserving version information for enabled mod" do
+      it "has the correct version before disabling" do
+        expect(list.version(enabled_mod)).to eq("1.0.0")
+      end
 
-      # Disable it and check that version is preserved
-      list.disable(enabled_mod)
-      expect(list.enabled?(enabled_mod)).to be false
-      expect(list.version(enabled_mod)).to eq("1.0.0")
+      it "preserves version information when disabling" do
+        list.disable(enabled_mod)
+        expect(list.version(enabled_mod)).to eq("1.0.0")
+      end
+
+      it "is disabled after disabling" do
+        list.disable(enabled_mod)
+        expect(list.enabled?(enabled_mod)).to be false
+      end
     end
   end
 
@@ -232,8 +252,11 @@ RSpec.describe Factorix::ModList do
       expect(list.version(enabled_mod)).to eq("1.0.0")
     end
 
-    it "returns nil for a mod without version" do
+    it "returns nil for base mod without version" do
       expect(list.version(base_mod)).to be_nil
+    end
+
+    it "returns nil for disabled mod without version" do
       expect(list.version(disabled_mod)).to be_nil
     end
 
@@ -242,4 +265,3 @@ RSpec.describe Factorix::ModList do
     end
   end
 end
-# End of file
