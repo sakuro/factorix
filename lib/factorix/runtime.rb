@@ -51,10 +51,14 @@ module Factorix
     # Launch the game
     # @return [void]
     # @raise [RuntimeError] if the game is already running
-    def launch(*)
+    def launch(*, async:)
       raise AlreadyRunning, "The game is already running" if running?
 
-      spawn([executable.to_s, "factorio"], *, out: IO::NULL)
+      if async
+        spawn([executable.to_s, "factorio"], *, out: IO::NULL)
+      else
+        system([executable.to_s, "factorio"], *, out: IO::NULL)
+      end
     end
 
     # Check if the game is running
