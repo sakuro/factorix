@@ -14,13 +14,20 @@ RSpec.describe Factorix::ModList do
   let(:list) { Factorix::ModList.load(from: list_path) }
 
   describe ".load" do
-    it "loads mod list from given file" do
-      aggregate_failures do
-        expect(list).to exist(base_mod)
-        expect(list).to exist(enabled_mod)
-        expect(list).to exist(disabled_mod)
-        expect(list).not_to exist(non_listed_mod)
-      end
+    it "loads base mod" do
+      expect(list).to exist(base_mod)
+    end
+
+    it "loads enabled mod" do
+      expect(list).to exist(enabled_mod)
+    end
+
+    it "loads disabled mod" do
+      expect(list).to exist(disabled_mod)
+    end
+
+    it "does not load non-listed mod" do
+      expect(list).not_to exist(non_listed_mod)
     end
   end
 
@@ -176,3 +183,4 @@ RSpec.describe Factorix::ModList do
     end
   end
 end
+# End of file

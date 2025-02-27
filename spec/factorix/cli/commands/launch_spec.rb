@@ -26,7 +26,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       allow(command).to receive(:wait_while)
     end
 
-    context "when the game is already running" do
+    describe "when the game is already running" do
       before do
         allow(runtime).to receive(:running?).and_return(true)
       end
@@ -36,61 +36,80 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
     end
 
-    context "when the game is not running" do
+    describe "when the game is not running with no special args" do
       before do
         allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
-      context "with no special args" do
-        it "launches the game asynchronously" do
-          call
-          expect(runtime).to have_received(:launch).with(async: true)
-        end
+      it "launches the game asynchronously" do
+        call
+        expect(runtime).to have_received(:launch).with(async: true)
+      end
+    end
 
-        context "with wait option" do
-          let(:options) { {wait: true} }
-
-          it "waits for the game to start and finish" do
-            call
-            expect(command).to have_received(:wait_while).twice
-          end
-        end
-
-        context "without wait option" do
-          let(:options) { {wait: false} }
-
-          it "does not wait for the game" do
-            call
-            expect(command).not_to have_received(:wait_while)
-          end
-        end
+    describe "when the game is not running with no special args and wait option" do
+      before do
+        allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
-      context "with synchronous args" do
-        let(:args) { %w[--data-dump] }
+      let(:options) { {wait: true} }
 
-        it "launches the game synchronously" do
-          call
-          expect(runtime).to have_received(:launch).with("--data-dump", async: false)
-        end
+      it "waits for the game to start and finish" do
+        call
+        expect(command).to have_received(:wait_while).twice
+      end
+    end
 
-        context "with wait option" do
-          let(:options) { {wait: true} }
-
-          it "does not wait for the game" do
-            call
-            expect(command).not_to have_received(:wait_while)
-          end
-        end
+    describe "when the game is not running with no special args and without wait option" do
+      before do
+        allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
-      context "with other args" do
-        let(:args) { %w[--start-server save.zip] }
+      let(:options) { {wait: false} }
 
-        it "passes the args to the runtime with async: true" do
-          call
-          expect(runtime).to have_received(:launch).with("--start-server", "save.zip", async: true)
-        end
+      it "does not wait for the game" do
+        call
+        expect(command).not_to have_received(:wait_while)
+      end
+    end
+
+    describe "when the game is not running with synchronous args" do
+      before do
+        allow(runtime).to receive(:running?).and_return(false, true, false)
+      end
+
+      let(:args) { %w[--data-dump] }
+
+      it "launches the game synchronously" do
+        call
+        expect(runtime).to have_received(:launch).with("--data-dump", async: false)
+      end
+    end
+
+    describe "when the game is not running with synchronous args and wait option" do
+      before do
+        allow(runtime).to receive(:running?).and_return(false, true, false)
+      end
+
+      let(:args) { %w[--data-dump] }
+      let(:options) { {wait: true} }
+
+      it "does not wait for the game" do
+        call
+        expect(command).not_to have_received(:wait_while)
+      end
+    end
+
+    describe "when the game is not running with other args" do
+      before do
+        allow(runtime).to receive(:running?).and_return(false, true, false)
+      end
+
+      let(:args) { %w[--start-server save.zip] }
+
+      it "passes the args to the runtime with async: true" do
+        call
+        expect(runtime).to have_received(:launch).with("--start-server", "save.zip", async: true)
       end
     end
   end

@@ -22,24 +22,31 @@ RSpec.describe Factorix::Mod do
   end
 
   describe "#<=>" do
-    it "can be compared by case insensitive name" do
-      aggregate_failures do
-        expect(Factorix::Mod[name: "BAR"] < Factorix::Mod[name: "foo"]).to be_truthy
-        expect(Factorix::Mod[name: "foo"] == Factorix::Mod[name: "Foo"]).to be_truthy
-        expect(Factorix::Mod[name: "foo"] != Factorix::Mod[name: "bar"]).to be_truthy
-        expect(Factorix::Mod[name: "foo"] > Factorix::Mod[name: "Bar"]).to be_truthy
-      end
+    it "compares BAR and foo" do
+      expect(Factorix::Mod[name: "BAR"]).to be < Factorix::Mod[name: "foo"]
+    end
+
+    it "compares foo and Foo" do
+      expect(Factorix::Mod[name: "foo"]).to eq Factorix::Mod[name: "Foo"]
+    end
+
+    it "compares foo and bar" do
+      expect(Factorix::Mod[name: "foo"]).not_to eq Factorix::Mod[name: "bar"]
+    end
+
+    it "compares foo and Bar" do
+      expect(Factorix::Mod[name: "foo"]).to be > Factorix::Mod[name: "Bar"]
     end
 
     context "when self is base" do
       it "comes always before non-base" do
-        expect(Factorix::Mod[name: "base"] < Factorix::Mod[name: "a"]).to be_truthy
+        expect(Factorix::Mod[name: "base"]).to be < Factorix::Mod[name: "a"]
       end
     end
 
     context "when self is non-base" do
       it "is always bigger than base" do
-        expect(Factorix::Mod[name: "a"] > Factorix::Mod[name: "base"]).to be_truthy
+        expect(Factorix::Mod[name: "a"]).to be > Factorix::Mod[name: "base"]
       end
     end
   end
