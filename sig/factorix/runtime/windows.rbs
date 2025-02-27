@@ -12,19 +12,13 @@ module Factorix
         # @return [Pathname] path to the Program Files (x86) directory
         def program_files_x86: () -> Pathname
 
-        private
-
-        def convert_env_path: (String name) -> Pathname
+        private def convert_env_path: (String name) -> Pathname
       end
 
       # Initialize Windows runtime environment
       def initialize: (?path: WindowsPath) -> void
 
-      private
-
-      attr_reader path: WindowsPath
-
-      public
+      private attr_reader path: WindowsPath
 
       # Return the path to the Factorio executable
       # @return [Pathname] path to the Factorio executable

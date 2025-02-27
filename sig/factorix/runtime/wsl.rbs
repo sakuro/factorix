@@ -14,21 +14,15 @@ module Factorix
         # @return [Pathname] path to the Program Files (x86) directory
         def program_files_x86: () -> Pathname
 
-        private
-
-        def cmd_echo: (String name) -> String
-        def wslvar: (String name) -> String
-        def wslpath: (String path) -> String
+        private def cmd_echo: (String name) -> String
+        private def wslvar: (String name) -> String
+        private def wslpath: (String path) -> String
       end
 
       # Initialize WSL runtime environment
       def initialize: (?path: WSLPath) -> void
 
-      private
-
-      attr_reader path: WSLPath
-
-      public
+      private attr_reader path: WSLPath
 
       # Check if the game is running
       # @return [Boolean] true if the game is running, false otherwise

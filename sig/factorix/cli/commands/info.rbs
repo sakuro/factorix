@@ -9,16 +9,14 @@ module Factorix
         # Display runtime information
         def call: (**untyped) -> void
 
-        private
-
         # Display runtime information
-        def display_runtime_info: (Factorix::Runtime runtime) -> void
+        private def display_runtime_info: (Factorix::Runtime runtime) -> void
 
         # Return a hash of information items
-        def info_items: (Factorix::Runtime runtime) -> Hash[String, Pathname]
+        private def info_items: (Factorix::Runtime runtime) -> Hash[String, Pathname]
 
         # Display a single information item
-        def display_item: (String label, untyped value) -> void
+        private def display_item: (String label, untyped value) -> void
       end
     end
   end

@@ -15,12 +15,10 @@ module Factorix
         # @option options [Boolean] :wait Whether to wait for the game to finish
         def call: (?args: Array[String], **untyped options) -> void
 
-        private
-
         # Wait while the given block returns true
         # @yield Block to evaluate
         # @return [void]
-        def wait_while: () { () -> bool } -> void
+        private def wait_while: () { () -> bool } -> void
       end
     end
   end
