@@ -59,7 +59,8 @@ module Factorix
               [mod.name, state.enabled, state.version || ""]
             }
 
-            table = MarkdownTables.make_table(labels, data, is_rows: true)
+            # Use left alignment for all columns
+            table = MarkdownTables.make_table(labels, data, is_rows: true, align: "l")
             puts table
           end
         end
