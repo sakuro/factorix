@@ -51,12 +51,13 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
     let(:options) { {format: "markdown"} }
 
     it "outputs markdown table with headers and mod data" do
+      # The markdown-tables gem formats tables with centered alignment by default
       expected_output = <<~OUTPUT
-        | Name | Enabled | Version |
-        | ---- | ------- | ------- |
-        | base | true |  |
-        | enabled-mod | true | 1.0.0 |
-        | disabled-mod | false |  |
+        |Name|Enabled|Version|
+        |:-:|:-:|:-:|
+        |base|true||
+        |enabled-mod|true|1.0.0|
+        |disabled-mod|false||
       OUTPUT
       expect { command.call(**options) }.to output(expected_output).to_stdout
     end
@@ -120,12 +121,13 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
       let(:options) { {format: "markdown"} }
 
       it "outputs markdown table with headers and mod data" do
+        # The markdown-tables gem formats tables with centered alignment by default
         expected_output = <<~OUTPUT
-          | Name | Enabled | Version |
-          | ---- | ------- | ------- |
-          | base | true |  |
-          | enabled-mod | true | 1.0.0 |
-          | disabled-mod | false |  |
+          |Name|Enabled|Version|
+          |:-:|:-:|:-:|
+          |base|true||
+          |enabled-mod|true|1.0.0|
+          |disabled-mod|false||
         OUTPUT
         expect { command.call(**options) }.to output(expected_output).to_stdout
       end
