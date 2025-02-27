@@ -1,16 +1,21 @@
 # frozen_string_literal: true
 
-# Load a mock of Sys::ProcTable before loading the Runtime::MacOS
-# This is necessary in test because the Runtime::MacOS loads Sys::ProcTable if it's not already loaded
-require "mocks/sys/proctable" unless RUBY_PLATFORM.include?("darwin")
-
 require "factorix/runtime/mac_os"
+
+# Define ProcTableStruct for use in tests
+ProcTableStruct = Struct.new(:pid, :cmdline) unless defined?(ProcTableStruct)
 
 RSpec.describe Factorix::Runtime::MacOS do
   let(:runtime) { Factorix::Runtime::MacOS.new }
 
   before do
     allow(Dir).to receive(:home).and_return("/Users/wube")
+
+    # Use a simple object with a ps method as a mock for Sys::ProcTable
+    mock_proctable = Object.new
+    def mock_proctable.ps = []
+
+    stub_const("Sys::ProcTable", mock_proctable)
   end
 
   describe "#executable" do
@@ -49,8 +54,8 @@ RSpec.describe Factorix::Runtime::MacOS do
     before do
       allow(Sys::ProcTable).to receive(:ps).and_return(
         [
-          Struct::ProcTableStruct.new(pid: 1, cmdline: runtime.executable.to_s),
-          Struct::ProcTableStruct.new(pid: 2, cmdline: "another_process")
+          ProcTableStruct.new(pid: 1, cmdline: runtime.executable.to_s),
+          ProcTableStruct.new(pid: 2, cmdline: "another_process")
         ]
       )
     end
@@ -63,8 +68,8 @@ RSpec.describe Factorix::Runtime::MacOS do
       before do
         allow(Sys::ProcTable).to receive(:ps).and_return(
           [
-            Struct::ProcTableStruct.new(pid: 1, cmdline: "another_process"),
-            Struct::ProcTableStruct.new(pid: 2, cmdline: "yet_another_process")
+            ProcTableStruct.new(pid: 1, cmdline: "another_process"),
+            ProcTableStruct.new(pid: 2, cmdline: "yet_another_process")
           ]
         )
       end
