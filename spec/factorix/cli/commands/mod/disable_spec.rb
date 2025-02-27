@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require "factorix/cli/commands/disable"
+require "factorix/cli/commands/mod/disable"
 require "tempfile"
 
-RSpec.describe Factorix::CLI::Commands::Disable do
-  let(:command) { Factorix::CLI::Commands::Disable.new }
+RSpec.describe Factorix::CLI::Commands::Mod::Disable do
+  let(:command) { Factorix::CLI::Commands::Mod::Disable.new }
   let(:mod_name) { "test-mod" }
 
   describe "#call with mocked ModList" do
