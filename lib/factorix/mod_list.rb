@@ -72,6 +72,12 @@ module Factorix
       end
     end
 
+    # Alias for each_key
+    # @yieldparam mod [Factorix::Mod] the mod.
+    # @return [Enumerator] if no block is given.
+    # @return [Factorix::ModList] if a block is given.
+    alias each_mod each_key
+
     # Add the mod to the list.
     # @param mod [Factorix::Mod] the mod to add.
     # @param enabled [Boolean] the enabled status. Default to true.
