@@ -34,7 +34,7 @@ module Factorix
           # Output the mod list in default format (names only)
           # @param list [Factorix::ModList] The mod list
           private def output_default(list)
-            list.each_key do |mod|
+            list.each_mod do |mod|
               puts mod.name
             end
           end
