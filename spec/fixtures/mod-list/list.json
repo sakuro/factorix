@@ -8,7 +8,8 @@
     },
     {
       "name": "enabled-mod",
-      "enabled": true
+      "enabled": true,
+      "version": "1.0.0"
     },
     {
       "name": "disabled-mod",

@@ -2,6 +2,7 @@
 
 require "json"
 require_relative "errors"
+require_relative "mod_state"
 
 module Factorix
   # Represent a list of MODs and their enabled status.
@@ -20,18 +21,16 @@ module Factorix
     # @return [Factorix::ModList] the loaded mod list.
     def self.load(from: Factorix::Runtime.runtime.mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
-      new(raw_data[:mods].to_h {|e| [Mod[name: e[:name]], e[:enabled]] })
+      new(raw_data[:mods].to_h {|e| [Mod[name: e[:name]], ModState[enabled: e[:enabled], version: e[:version]]] })
     end
 
     # Initialize the mod list.
-    # @param mods [Hash{Factorix::Mod => Boolean}] the mods and their enabled status.
+    # @param mods [Hash{Factorix::Mod => ModState}] the mods and their state.
     # @return [void]
     def initialize(mods={})
-      @mods = {Mod[name: "base"] => true}
-      mods.each do |mod, enabled|
-        next if mod.base?
-
-        @mods[mod] = enabled
+      @mods = {}
+      mods.each do |mod, state|
+        @mods[mod] = state
       end
     end
 
@@ -39,31 +38,39 @@ module Factorix
     # @param to [Pathname] the path to the file to save the mod list to.
     # @return [void]
     def save(to: Factorix::Runtime.runtime.mod_list_path)
-      to.write(JSON.pretty_generate({mods: @mods.map {|mod, enabled| {name: mod.name, enabled:} }}))
+      mods_data = @mods.map {|mod, state|
+        data = {name: mod.name, enabled: state.enabled}
+        # Only include version in the output if it exists
+        # This ensures backward compatibility with clients that don't expect a version field
+        data[:version] = state.version if state.version
+        data
+      }
+      to.write(JSON.pretty_generate({mods: mods_data}))
     end
 
-    # Iterate through all mod-version pairs.
+    # Iterate through all mod-state pairs.
     # @yieldparam mod [Factorix::Mod] the mod.
-    # @yieldparam enabled [Boolean] the enabled status.
+    # @yieldparam state [Factorix::ModState] the mod state.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
     def each
       return @mods.to_enum unless block_given?
 
-      @mods.each do |mod, enabled|
-        yield(mod, enabled)
+      @mods.each do |mod, state|
+        yield(mod, state)
       end
     end
 
     # Add the mod to the list.
     # @param mod [Factorix::Mod] the mod to add.
     # @param enabled [Boolean] the enabled status. Default to true.
+    # @param version [String, nil] the version of the mod. Default to nil.
     # @return [void]
     # @raise [ArgumentError] if the mod is the base mod and the enabled status is false.
-    def add(mod, enabled: true)
+    def add(mod, enabled: true, version: nil)
       raise ArgumentError, "can't disable the base mod" if mod.base? && enabled == false
 
-      @mods[mod] = enabled
+      @mods[mod] = ModState[enabled:, version:]
     end
 
     # Remove the mod from the list.
@@ -88,7 +95,17 @@ module Factorix
     def enabled?(mod)
       raise ModNotInListError, mod unless exist?(mod)
 
-      @mods[mod]
+      @mods[mod].enabled
+    end
+
+    # Get the version of the mod.
+    # @param mod [Factorix::Mod] the mod to check.
+    # @return [String, nil] the version of the mod, or nil if not specified.
+    # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
+    def version(mod)
+      raise ModNotInListError, mod unless exist?(mod)
+
+      @mods[mod].version
     end
 
     # Enable the mod.
@@ -98,7 +115,9 @@ module Factorix
     def enable(mod)
       raise ModNotInListError, mod unless exist?(mod)
 
-      @mods[mod] = true
+      # Create a new ModState with enabled=true and the same version
+      current_state = @mods[mod]
+      @mods[mod] = ModState[enabled: true, version: current_state.version]
     end
 
     # Disable the mod.
@@ -107,10 +126,12 @@ module Factorix
     # @raise [ArgumentError] if the mod is the base mod.
     # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
     def disable(mod)
-      raise ArgumentError, "can't disalbe the base mod" if mod.base?
+      raise ArgumentError, "can't disable the base mod" if mod.base?
       raise ModNotInListError, mod unless exist?(mod)
 
-      @mods[mod] = false
+      # Create a new ModState with enabled=false and the same version
+      current_state = @mods[mod]
+      @mods[mod] = ModState[enabled: false, version: current_state.version]
     end
   end
 end
