@@ -1,39 +1,102 @@
+:warning: Work in progress :warning:
+
 # Factorix
 
-TODO: Delete this and the text below, and describe your gem
+Factorix is a command-line tool for managing Factorio mods and launching the game.
+It provides a simple interface for enabling, disabling, and listing mods, as well as
+launching Factorio with various options.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/factorix`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Features
 
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
+- Display information about your Factorio installation
+- Launch Factorio with custom arguments
+- List all installed mods with different output formats
+- Enable and disable mods easily
 
 ## Usage
 
-TODO: Write usage instructions here
+Factorix provides several commands to help you manage your Factorio mods and launch
+the game.
 
-## Development
+### Info Command
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Display information about your Factorio installation:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```bash
+factorix info
+```
 
-## Contributing
+This command shows:
+- Executable path
+- User directory
+- Data directory
+- Mod directory
+- Script output directory
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/factorix.
+### Launch Command
+
+Launch Factorio:
+
+```bash
+factorix launch [options] [-- game_args]
+```
+
+Options:
+- `--wait`, `-w`: Wait for the game to finish before returning to the command line
+
+You can pass additional arguments to the Factorio executable by adding them after `--`:
+
+```bash
+factorix launch -- --help
+factorix launch -- --data-dump
+factorix launch --wait -- --mod-directory /path/to/mods
+```
+
+The `--wait` option is useful when you want to run commands after the game exits:
+
+```bash
+factorix launch --wait && echo "Game has exited"
+```
+
+### Mod Management
+
+#### List Mods
+
+List all mods under the management of the game:
+
+```bash
+factorix mod list [options]
+```
+
+Options:
+- `--format FORMAT`: Output format (csv, markdown)
+
+By default, this command outputs just the mod names. With the `--format` option, you
+can get more detailed information in CSV or Markdown table format.
+
+#### Enable a Mod
+
+Enable a specific mod:
+
+```bash
+factorix mod enable MOD_NAME [options]
+```
+
+Options:
+- `--verbose`: Print more information during the operation
+
+#### Disable a Mod
+
+Disable a specific mod:
+
+```bash
+factorix mod disable MOD_NAME [options]
+```
+
+Options:
+- `--verbose`: Print more information during the operation
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Factorix is available as open source under the terms of the
+[MIT License](https://opensource.org/licenses/MIT). Copyright (c) 2025 OZAWA Sakuro.
