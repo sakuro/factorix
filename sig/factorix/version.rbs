@@ -1,0 +1,4 @@
+module Factorix
+  # Version of the Factorix gem
+  VERSION: String
+end

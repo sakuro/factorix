@@ -1,4 +1,6 @@
 module Factorix
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  # Factorix is a Factorio mod management and development tool.
+  # This module serves as the namespace for all Factorix functionality.
 end

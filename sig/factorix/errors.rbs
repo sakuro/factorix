@@ -1,0 +1,10 @@
+module Factorix
+  # Base error class for Factorix.
+  class Error < StandardError
+  end
+
+  # Raised when a MOD is not found.
+  class ModNotFoundError < Error
+    def initialize: (untyped mod) -> void
+  end
+end

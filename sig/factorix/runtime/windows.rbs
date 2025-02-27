@@ -1,0 +1,42 @@
+module Factorix
+  class Runtime
+    # Windows runtime environment
+    class Windows < Runtime
+      # Windows specific path handling
+      class WindowsPath
+        # Return the path to the user's AppData directory
+        # @return [Pathname] path to the user's AppData directory
+        def app_data: () -> Pathname
+
+        # Return the path to the Program Files (x86) directory
+        # @return [Pathname] path to the Program Files (x86) directory
+        def program_files_x86: () -> Pathname
+
+        private
+
+        def convert_env_path: (String name) -> Pathname
+      end
+
+      # Initialize Windows runtime environment
+      def initialize: (?path: WindowsPath) -> void
+
+      private
+
+      attr_reader path: WindowsPath
+
+      public
+
+      # Return the path to the Factorio executable
+      # @return [Pathname] path to the Factorio executable
+      def executable: () -> Pathname
+
+      # Return the path to the user's Factorio directory
+      # @return [Pathname] path to the user's Factorio directory
+      def user_dir: () -> Pathname
+
+      # Return the path to the Factorio data directory
+      # @return [Pathname] path to the Factorio data directory
+      def data_dir: () -> Pathname
+    end
+  end
+end
