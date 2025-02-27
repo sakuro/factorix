@@ -59,10 +59,10 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
     let(:options) { {format: "markdown"} }
 
     it "outputs markdown table with headers and mod data" do
-      # The markdown-tables gem formats tables with centered alignment by default
+      # Use left alignment for all columns
       expected_output = <<~OUTPUT
         |Name|Enabled|Version|
-        |:-:|:-:|:-:|
+        |:-|:-|:-|
         |base|true||
         |enabled-mod|true|1.0.0|
         |disabled-mod|false||
@@ -129,10 +129,10 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
       let(:options) { {format: "markdown"} }
 
       it "outputs markdown table with headers and mod data" do
-        # The markdown-tables gem formats tables with centered alignment by default
+        # Use left alignment for all columns
         expected_output = <<~OUTPUT
           |Name|Enabled|Version|
-          |:-:|:-:|:-:|
+          |:-|:-|:-|
           |base|true||
           |enabled-mod|true|1.0.0|
           |disabled-mod|false||
