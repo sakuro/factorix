@@ -25,17 +25,17 @@ module Factorix
 
         private def info_items(runtime)
           {
-            "Platform" => runtime.platform.to_s,
-            "Executable" => runtime.executable.to_s,
-            "User directory" => runtime.user_dir.to_s,
-            "Data directory" => runtime.data_dir.to_s,
-            "Mod directory" => runtime.mods_dir.to_s,
-            "Script output directory" => runtime.script_output_dir.to_s
+            "Platform" => runtime.platform,
+            "Executable" => runtime.executable,
+            "User directory" => runtime.user_dir,
+            "Data directory" => runtime.data_dir,
+            "Mod directory" => runtime.mods_dir,
+            "Script output directory" => runtime.script_output_dir
           }
         end
 
         private def display_item(label, value)
-          puts "#{label}: %p" % value
+          puts "#{label}: %s" % value
         end
       end
     end

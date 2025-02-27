@@ -23,12 +23,12 @@ RSpec.describe Factorix::CLI::Commands::Info do
 
     it "outputs runtime information" do
       expect { call }.to output(<<~OUTPUT).to_stdout
-        Platform: "test_platform"
-        Executable: "/path/to/factorio"
-        User directory: "/path/to/user_dir"
-        Data directory: "/path/to/data_dir"
-        Mod directory: "/path/to/mods_dir"
-        Script output directory: "/path/to/script_output_dir"
+        Platform: test_platform
+        Executable: /path/to/factorio
+        User directory: /path/to/user_dir
+        Data directory: /path/to/data_dir
+        Mod directory: /path/to/mods_dir
+        Script output directory: /path/to/script_output_dir
       OUTPUT
     end
   end
