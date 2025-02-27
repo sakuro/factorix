@@ -41,7 +41,6 @@ module Factorix
       mods_data = @mods.map {|mod, state|
         data = {name: mod.name, enabled: state.enabled}
         # Only include version in the output if it exists
-        # This ensures backward compatibility with clients that don't expect a version field
         data[:version] = state.version if state.version
         data
       }
