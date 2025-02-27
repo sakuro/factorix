@@ -60,6 +60,18 @@ module Factorix
       end
     end
 
+    # Iterate through all mods.
+    # @yieldparam mod [Factorix::Mod] the mod.
+    # @return [Enumerator] if no block is given.
+    # @return [Factorix::ModList] if a block is given.
+    def each_key
+      return @mods.keys.to_enum unless block_given?
+
+      @mods.each_key do |mod|
+        yield(mod)
+      end
+    end
+
     # Add the mod to the list.
     # @param mod [Factorix::Mod] the mod to add.
     # @param enabled [Boolean] the enabled status. Default to true.

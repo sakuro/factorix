@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
+require "csv"
 require "dry/cli"
 require "factorix"
-require "csv"
 require "markdown-tables"
 
 module Factorix
@@ -34,7 +34,7 @@ module Factorix
           # Output the mod list in default format (names only)
           # @param list [Factorix::ModList] The mod list
           private def output_default(list)
-            list.each do |mod, _state|
+            list.each_key do |mod|
               puts mod.name
             end
           end
@@ -55,11 +55,9 @@ module Factorix
           # @param list [Factorix::ModList] The mod list
           private def output_markdown(list)
             labels = %w[Name Enabled Version]
-            data = []
-
-            list.each do |mod, state|
-              data << [mod.name, state.enabled, state.version || ""]
-            end
+            data = list.map {|mod, state|
+              [mod.name, state.enabled, state.version || ""]
+            }
 
             table = MarkdownTables.make_table(labels, data, is_rows: true)
             puts table
