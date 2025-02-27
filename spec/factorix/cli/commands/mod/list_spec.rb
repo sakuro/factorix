@@ -18,6 +18,14 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
     allow(mod_list).to receive(:each).and_yield(base_mod, base_state)
       .and_yield(enabled_mod, enabled_state)
       .and_yield(disabled_mod, disabled_state)
+    allow(mod_list).to receive(:each_key).and_yield(base_mod)
+      .and_yield(enabled_mod)
+      .and_yield(disabled_mod)
+    allow(mod_list).to receive(:map).and_return([
+                                                  [base_mod.name, base_state.enabled, base_state.version],
+                                                  [enabled_mod.name, enabled_state.enabled, enabled_state.version],
+                                                  [disabled_mod.name, disabled_state.enabled, disabled_state.version]
+                                                ])
   end
 
   describe "#call with default format" do
