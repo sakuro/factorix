@@ -6,6 +6,7 @@ require_relative "cli/commands/info"
 require_relative "cli/commands/launch"
 require_relative "cli/commands/mod/disable"
 require_relative "cli/commands/mod/enable"
+require_relative "cli/commands/mod/list"
 
 module Factorix
   # Command-line interface for Factorix
@@ -16,5 +17,6 @@ module Factorix
     register "launch", Factorix::CLI::Commands::Launch
     register "mod disable", Factorix::CLI::Commands::Mod::Disable
     register "mod enable", Factorix::CLI::Commands::Mod::Enable
+    register "mod list", Factorix::CLI::Commands::Mod::List
   end
 end
