@@ -110,7 +110,9 @@ RSpec.describe Factorix::Runtime do
   describe "#launch" do
     let(:runtime) { Factorix::Runtime.runtime }
 
-    context "when the game is not running" do
+    describe "when the game is not running, async: true, without arguments" do
+      subject(:launch) { runtime.launch(async: true) }
+
       before do
         allow(runtime).to receive_messages(
           running?: false,
@@ -120,68 +122,87 @@ RSpec.describe Factorix::Runtime do
         allow(runtime).to receive(:system)
       end
 
-      context "with async: true" do
-        context "without arguments" do
-          subject(:launch) { runtime.launch(async: true) }
-
-          it "launches the game asynchronously" do
-            launch
-            expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], out: IO::NULL)
-          end
-
-          it "does not use system for asynchronous launch" do
-            launch
-            expect(runtime).not_to have_received(:system)
-          end
-        end
-
-        context "with arguments" do
-          subject(:launch) { runtime.launch("--start-server", "save.zip", async: true) }
-
-          it "launches the game asynchronously with arguments" do
-            launch
-            expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
-          end
-
-          it "does not use system for asynchronous launch with arguments" do
-            launch
-            expect(runtime).not_to have_received(:system)
-          end
-        end
+      it "launches the game asynchronously" do
+        launch
+        expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], out: IO::NULL)
       end
 
-      context "with async: false" do
-        context "without arguments" do
-          subject(:launch) { runtime.launch(async: false) }
-
-          it "launches the game synchronously" do
-            launch
-            expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], out: IO::NULL)
-          end
-
-          it "does not use spawn for synchronous launch" do
-            launch
-            expect(runtime).not_to have_received(:spawn)
-          end
-        end
-
-        context "with arguments" do
-          subject(:launch) { runtime.launch("--start-server", "save.zip", async: false) }
-
-          it "launches the game synchronously with arguments" do
-            launch
-            expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
-          end
-
-          it "does not use spawn for synchronous launch with arguments" do
-            launch
-            expect(runtime).not_to have_received(:spawn)
-          end
-        end
+      it "does not use system for asynchronous launch" do
+        launch
+        expect(runtime).not_to have_received(:system)
       end
     end
 
-    context "when the game is already running" do
+    describe "when the game is not running, async: true, with arguments" do
+      subject(:launch) { runtime.launch("--start-server", "save.zip", async: true) }
+
+      before do
+        allow(runtime).to receive_messages(
+          running?: false,
+          executable: Pathname.new("/path/to/factorio")
+        )
+        allow(runtime).to receive(:spawn)
+        allow(runtime).to receive(:system)
+      end
+
+      it "launches the game asynchronously with arguments" do
+        launch
+        expect(runtime).to have_received(:spawn).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+      end
+
+      it "does not use system for asynchronous launch with arguments" do
+        launch
+        expect(runtime).not_to have_received(:system)
+      end
+    end
+
+    describe "when the game is not running, async: false, without arguments" do
+      subject(:launch) { runtime.launch(async: false) }
+
+      before do
+        allow(runtime).to receive_messages(
+          running?: false,
+          executable: Pathname.new("/path/to/factorio")
+        )
+        allow(runtime).to receive(:spawn)
+        allow(runtime).to receive(:system)
+      end
+
+      it "launches the game synchronously" do
+        launch
+        expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], out: IO::NULL)
+      end
+
+      it "does not use spawn for synchronous launch" do
+        launch
+        expect(runtime).not_to have_received(:spawn)
+      end
+    end
+
+    describe "when the game is not running, async: false, with arguments" do
+      subject(:launch) { runtime.launch("--start-server", "save.zip", async: false) }
+
+      before do
+        allow(runtime).to receive_messages(
+          running?: false,
+          executable: Pathname.new("/path/to/factorio")
+        )
+        allow(runtime).to receive(:spawn)
+        allow(runtime).to receive(:system)
+      end
+
+      it "launches the game synchronously with arguments" do
+        launch
+        expect(runtime).to have_received(:system).with(["/path/to/factorio", "factorio"], "--start-server", "save.zip", out: IO::NULL)
+      end
+
+      it "does not use spawn for synchronous launch with arguments" do
+        launch
+        expect(runtime).not_to have_received(:spawn)
+      end
+    end
+
+    describe "when the game is already running" do
       before do
         allow(runtime).to receive(:running?).and_return(true)
       end

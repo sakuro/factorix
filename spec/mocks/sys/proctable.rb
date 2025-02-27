@@ -7,11 +7,9 @@
 # We must mock the entire Sys::ProcTable.ps method to avoid this.
 
 module Sys
-  # mock ProcTable class
-  class ProcTable
-    def self.ps
-      []
-    end
+  # mock ProcTable class as a module
+  module ProcTable
+    module_function def ps = []
   end
 end
 
