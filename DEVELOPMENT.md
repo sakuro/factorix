@@ -64,6 +64,15 @@ Common prefixes:
 - `:hammer:` - Refactor
 - `:test_tube:` - Tests
 
+## RBS Type Definitions
+
+- Use per-method `private` keyword instead of section-based approach
+- Create directory structures that mirror the implementation code
+- Validate syntax using the `rbs validate` command after creation
+- Ensure consistency between YARD documentation and type definitions
+- Take special care when defining types for classes using Data.define
+- Consider type definitions for external libraries when necessary
+
 ---
 
 AI assistants should consult MEMORY_BANK.md for more comprehensive guidelines if interested.

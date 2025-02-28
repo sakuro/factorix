@@ -1,0 +1,26 @@
+module Factorix
+  class Runtime
+    # MacOS runtime environment
+    class MacOS < Runtime
+      # Return the path to the Factorio executable
+      # @return [Pathname] path to the Factorio executable
+      def executable: () -> Pathname
+
+      # Return the path to the user's Factorio directory
+      # @return [Pathname] path to the user's Factorio directory
+      def user_dir: () -> Pathname
+
+      # Return the path to the Factorio data directory
+      # @return [Pathname] path to the Factorio data directory
+      def data_dir: () -> Pathname
+
+      # Check if the game is running
+      # @return [Boolean] true if the game is running, false otherwise
+      def running?: () -> bool
+
+      # Return the path to the user's home directory
+      # @return [Pathname] path to the user's home directory
+      private def home_dir: () -> Pathname
+    end
+  end
+end
