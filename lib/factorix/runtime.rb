@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "errors"
 require_relative "runtime/linux"
 require_relative "runtime/mac_os"
 require_relative "runtime/windows"
@@ -9,10 +10,10 @@ module Factorix
   # Factorio runtime environment
   class Runtime
     # Raised when run on unsupported platform
-    class UnsupportedPlatform < StandardError; end
+    class UnsupportedPlatform < Error; end
 
     # Raised when the game is already running and an attempt to launch the game is made
-    class AlreadyRunning < StandardError; end
+    class AlreadyRunning < Error; end
 
     # Return the platform the script is running on
     # @return [Runtime] the runtime environment
