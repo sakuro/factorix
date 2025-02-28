@@ -4,15 +4,6 @@ module Factorix
       module Mod
         # Command for enabling a mod
         class Enable < Dry::CLI::Command
-          # Display description for the enable command
-          desc "Enable a MOD"
-
-          # Define arguments for the enable command
-          argument :mod, required: true, desc: "The MOD to enable"
-
-          # Define options for the enable command
-          option :verbose, type: :boolean, default: false, desc: "Print more information"
-
           # Enable a MOD
           # @param mod [String] The MOD to enable
           # @param options [Hash] The options for the command

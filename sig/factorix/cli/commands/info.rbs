@@ -3,9 +3,6 @@ module Factorix
     module Commands
       # Command for the info subcommand
       class Info < Dry::CLI::Command
-        # Display information about the Factorio runtime environment
-        desc "Display information about the Factorio runtime environment"
-
         # Display runtime information
         def call: (**untyped) -> void
 

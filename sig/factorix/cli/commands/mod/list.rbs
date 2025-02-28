@@ -4,12 +4,6 @@ module Factorix
       module Mod
         # Command for listing mods
         class List < Dry::CLI::Command
-          # Display description for the list command
-          desc "List all MODs"
-
-          # Define options for the list command
-          option :format, type: :string, values: %w[csv markdown], desc: "Output format"
-
           # List all MODs
           # @param options [Hash] The options for the command
           # @option options [String] :format Output format

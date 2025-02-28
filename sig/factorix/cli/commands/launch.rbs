@@ -3,12 +3,6 @@ module Factorix
     module Commands
       # Command for the launch subcommand
       class Launch < Dry::CLI::Command
-        # Display description for the launch command
-        desc "Launch the game"
-
-        # Define options for the launch command
-        option :wait, type: :boolean, default: false, alias: ["w"], desc: "Wait for the game to finish"
-
         # Launch the game
         # @param args [Array<String>] Additional arguments to pass to the game
         # @param options [Hash] Options for the command
