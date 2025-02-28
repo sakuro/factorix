@@ -6,7 +6,38 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
+# Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
+# SupportedStyles: snake_case, normalcase, non_integer
+# AllowedIdentifiers: capture3, iso8601, rfc1123_date, rfc822, rfc2822, rfc3339, x86_64
+Naming/VariableNumber:
+  Exclude:
+    - 'spec/factorix/version24_spec.rb'
+    - 'spec/factorix/version64_spec.rb'
+
+# Configuration parameters: Max, CountAsOne.
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/factorix/serializer_spec.rb'
+
+# Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
+RSpec/IndexedLet:
+  Exclude:
+    - 'spec/factorix/version24_spec.rb'
+    - 'spec/factorix/version64_spec.rb'
+
 # Configuration parameters: AllowSubject, Max.
 RSpec/MultipleMemoizedHelpers:
   Exclude:
     - 'spec/factorix/cli/commands/mod/list_spec.rb'
+
+# Configuration parameters: Max, AllowedGroups.
+RSpec/NestedGroups:
+  Exclude:
+    - 'spec/factorix/deserializer_spec.rb'
+
+# Configuration parameters: AllowedAddresses.
+# AllowedAddresses: ::
+Style/IpAddresses:
+  Exclude:
+    - 'spec/factorix/version24_spec.rb'
+    - 'spec/factorix/version64_spec.rb'
