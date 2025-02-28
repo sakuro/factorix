@@ -44,8 +44,8 @@ module Factorix
     def write_u32(uint32) = write_bytes([uint32].pack("V"))
 
     # Write a space-optimized 16-bit unsigned integer
-    # https://wiki.factorio.com/Data_types#Space_Optimized
     #
+    # @see https://wiki.factorio.com/Data_types#Space_Optimized
     # @param uint16 [Integer] 16-bit unsigned integer
     # @return [void]
     def write_optim_u16(uint16)
@@ -58,8 +58,8 @@ module Factorix
     end
 
     # Write a space-optimized 32-bit unsigned integer
-    # https://wiki.factorio.com/Data_types#Space_Optimized
     #
+    # @see https://wiki.factorio.com/Data_types#Space_Optimized
     # @param uint32 [Integer] 32-bit unsigned integer
     # @return [void]
     def write_optim_u32(uint32)
@@ -87,8 +87,8 @@ module Factorix
     end
 
     # Write a string property
-    # https://wiki.factorio.com/Property_tree#String
     #
+    # @see https://wiki.factorio.com/Property_tree#String
     # @param str [String] String to write
     # @return [void]
     def write_str_property(str)
@@ -101,8 +101,8 @@ module Factorix
     end
 
     # Write a double-precision floating point number
-    # https://wiki.factorio.com/Property_tree#Number
     #
+    # @see https://wiki.factorio.com/Property_tree#Number
     # @param dbl [Float] Double-precision floating point number
     # @return [void]
     def write_double(dbl) = write_bytes([dbl].pack("d"))
@@ -120,8 +120,8 @@ module Factorix
     def write_version24(v24) = v24.to_a.each {|u16| write_optim_u16(u16) }
 
     # Write a list
-    # https://wiki.factorio.com/Property_tree#List
     #
+    # @see https://wiki.factorio.com/Property_tree#List
     # @param list [Array] List of objects
     # @return [void]
     def write_list(list)
@@ -130,8 +130,8 @@ module Factorix
     end
 
     # Write a dictionary
-    # https://wiki.factorio.com/Property_tree#Dictionary
     #
+    # @see https://wiki.factorio.com/Property_tree#Dictionary
     # @param dict [Hash] Dictionary of key-value pairs
     # @return [void]
     def write_dictionary(dict)
