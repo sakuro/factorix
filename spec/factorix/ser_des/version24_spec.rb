@@ -1,31 +1,31 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Version24 do
+RSpec.describe Factorix::SerDes::Version24 do
   describe ".new" do
     context "with version string" do
       it "creates a version from a string" do
-        expect(Factorix::Version24.new("1.2.3")).to be_an_instance_of(Factorix::Version24)
+        expect(Factorix::SerDes::Version24.new("1.2.3")).to be_an_instance_of(Factorix::SerDes::Version24)
       end
 
       it "raises ArgumentError for invalid version string" do
         aggregate_failures "invalid version strings" do
-          expect { Factorix::Version24.new("1.2") }.to raise_error(ArgumentError)
-          expect { Factorix::Version24.new("1.2.3.4") }.to raise_error(ArgumentError)
-          expect { Factorix::Version24.new("a.b.c") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new("1.2") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new("1.2.3.4") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new("a.b.c") }.to raise_error(ArgumentError)
         end
       end
     end
 
     context "with integers" do
       it "creates a version from integers" do
-        expect(Factorix::Version24.new(1, 2, 3)).to be_an_instance_of(Factorix::Version24)
+        expect(Factorix::SerDes::Version24.new(1, 2, 3)).to be_an_instance_of(Factorix::SerDes::Version24)
       end
 
       it "raises ArgumentError for invalid integers" do
         aggregate_failures "invalid integers" do
-          expect { Factorix::Version24.new(1, 2) }.to raise_error(ArgumentError)
-          expect { Factorix::Version24.new(1, 2, 3, 4) }.to raise_error(ArgumentError)
-          expect { Factorix::Version24.new(256, 0, 0) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new(1, 2) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new(1, 2, 3, 4) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version24.new(256, 0, 0) }.to raise_error(ArgumentError)
         end
       end
     end
@@ -33,32 +33,32 @@ RSpec.describe Factorix::Version24 do
 
   describe ".[]" do
     it "is an alias for new" do
-      expect(Factorix::Version24[1, 2, 3]).to be_an_instance_of(Factorix::Version24)
+      expect(Factorix::SerDes::Version24[1, 2, 3]).to be_an_instance_of(Factorix::SerDes::Version24)
     end
   end
 
   describe "#to_s" do
     it "returns a string representation" do
-      expect(Factorix::Version24.new(1, 2, 3).to_s).to eq("1.2.3")
+      expect(Factorix::SerDes::Version24.new(1, 2, 3).to_s).to eq("1.2.3")
     end
   end
 
   describe "#to_a" do
     it "returns an array of integers" do
-      expect(Factorix::Version24.new(1, 2, 3).to_a).to eq([1, 2, 3])
+      expect(Factorix::SerDes::Version24.new(1, 2, 3).to_a).to eq([1, 2, 3])
     end
 
     it "returns a frozen array" do
-      expect(Factorix::Version24.new(1, 2, 3).to_a).to be_frozen
+      expect(Factorix::SerDes::Version24.new(1, 2, 3).to_a).to be_frozen
     end
   end
 
   describe "#<=>" do
-    let(:version_123) { Factorix::Version24.new(1, 2, 3) }
-    let(:version_124) { Factorix::Version24.new(1, 2, 4) }
-    let(:version_130) { Factorix::Version24.new(1, 3, 0) }
-    let(:version_200) { Factorix::Version24.new(2, 0, 0) }
-    let(:version_123_dup) { Factorix::Version24.new(1, 2, 3) }
+    let(:version_123) { Factorix::SerDes::Version24.new(1, 2, 3) }
+    let(:version_124) { Factorix::SerDes::Version24.new(1, 2, 4) }
+    let(:version_130) { Factorix::SerDes::Version24.new(1, 3, 0) }
+    let(:version_200) { Factorix::SerDes::Version24.new(2, 0, 0) }
+    let(:version_123_dup) { Factorix::SerDes::Version24.new(1, 2, 3) }
 
     it "considers equal versions as equal" do
       expect(version_123 <=> version_123_dup).to eq(0)

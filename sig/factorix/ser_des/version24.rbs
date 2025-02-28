@@ -1,0 +1,39 @@
+module Factorix
+  module SerDes
+    # Represent a 3-component version number (major.minor.patch)
+    class Version24
+      include Comparable
+
+      # Create a new Version24 instance
+      #
+      # @param args [Array] Either a version string "X.Y.Z" or 3 integers representing major, minor, patch
+      # @return [Version24] New Version24 instance
+      # @raise [ArgumentError] If the arguments are invalid
+      def initialize: (*untyped args) -> void
+
+      # Create a new Version24 instance (alias for new)
+      #
+      # @param args [Array] Either a version string "X.Y.Z" or 3 integers representing major, minor, patch
+      # @return [Version24] New Version24 instance
+      # @raise [ArgumentError] If the arguments are invalid
+      def self.[]: (*untyped args) -> Version24
+
+      # Convert to string representation
+      # @return [String] Version string in format "X.Y.Z"
+      def to_s: () -> String
+
+      # Convert to array of integers
+      # @return [Array<Integer>] Array containing [major, minor, patch]
+      def to_a: () -> Array[Integer]
+
+      # Compare with another Version24
+      # @param other [Version24] Version to compare with
+      # @return [Integer, nil] -1, 0, 1 for less than, equal to, greater than; nil if not comparable
+      def <=>: (Version24 other) -> Integer?
+
+      # Get the version components
+      # @return [Array<Integer>] Array containing [major, minor, patch]
+      protected def version: () -> Array[Integer]
+    end
+  end
+end
