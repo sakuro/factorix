@@ -1,7 +1,7 @@
 # Development Guidelines
 
 This document provides essential development guidelines for the Factorix project.
-For detailed information, refer to MEMORY_BANK.md.
+AI assistants may find additional guidance in MEMORY_BANK.md if interested.
 
 ## Project Overview
 
@@ -66,4 +66,4 @@ Common prefixes:
 
 ---
 
-For AI tools and more detailed guidelines, see MEMORY_BANK.md
+AI assistants should consult MEMORY_BANK.md for more comprehensive guidelines if interested.
