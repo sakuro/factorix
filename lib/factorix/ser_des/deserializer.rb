@@ -111,7 +111,7 @@ module Factorix
       # @return [Array] List of objects
       def read_list
         length = read_optim_u32
-        Array(length) { read_property_tree }
+        Array.new(length) { read_property_tree }
       end
 
       # Read a dictionary
