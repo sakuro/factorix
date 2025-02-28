@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe Factorix::ModSettings do
   let(:settings_path) { Pathname.new("/path/to/mod-settings.dat") }
-  let(:deserializer) { instance_double(Factorix::Deserializer) }
+  let(:deserializer) { instance_double(Factorix::SerDes::Deserializer) }
   let(:raw_settings) do
     {
       "startup" => {
@@ -25,7 +25,7 @@ RSpec.describe Factorix::ModSettings do
   end
 
   before do
-    allow(Factorix::Deserializer).to receive(:new).and_return(deserializer)
+    allow(Factorix::SerDes::Deserializer).to receive(:new).and_return(deserializer)
     allow(deserializer).to receive(:read_version64)
     allow(deserializer).to receive(:read_bool)
     allow(deserializer).to receive(:read_property_tree).and_return(raw_settings)

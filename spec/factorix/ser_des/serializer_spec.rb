@@ -2,19 +2,19 @@
 
 require "stringio"
 
-RSpec.describe Factorix::Serializer do
-  let(:serializer) { Factorix::Serializer.new(stream) }
+RSpec.describe Factorix::SerDes::Serializer do
+  let(:serializer) { Factorix::SerDes::Serializer.new(stream) }
   let(:stream) { StringIO.new("".b) }
 
   describe ".new" do
     context "with object without #write" do
       it "raises ArgumentError if the argument does not respond to #write" do
-        expect { Factorix::Serializer.new(%w(x y z)) }.to raise_error(ArgumentError)
+        expect { Factorix::SerDes::Serializer.new(%w(x y z)) }.to raise_error(ArgumentError)
       end
     end
 
     it "instantiates with an input stream" do
-      expect(Factorix::Serializer.new(StringIO.new("".b))).to be_an_instance_of(Factorix::Serializer)
+      expect(Factorix::SerDes::Serializer.new(StringIO.new("".b))).to be_an_instance_of(Factorix::SerDes::Serializer)
     end
   end
 

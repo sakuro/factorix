@@ -96,7 +96,7 @@ module Factorix
     # @return [void]
     private def load_settings(path)
       path.open("rb") do |file|
-        deserializer = Factorix::Deserializer.new(file)
+        deserializer = Factorix::SerDes::Deserializer.new(file)
 
         # 1. Read version64
         deserializer.read_version64

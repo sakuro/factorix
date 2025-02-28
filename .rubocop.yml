@@ -42,27 +42,33 @@ inherit_from:
 # compromising readability and maintainability.
 Metrics/AbcSize:
   Exclude:
-    - 'lib/factorix/deserializer.rb'
-    - 'lib/factorix/serializer.rb'
+    - 'lib/factorix/ser_des/deserializer.rb'
+    - 'lib/factorix/ser_des/serializer.rb'
 
 # The deserializer and serializer classes need to handle multiple data types
 # and format variations, requiring conditional logic that naturally increases
 # cyclomatic complexity.
 Metrics/CyclomaticComplexity:
   Exclude:
-    - 'lib/factorix/deserializer.rb'
-    - 'lib/factorix/serializer.rb'
+    - 'lib/factorix/ser_des/deserializer.rb'
+    - 'lib/factorix/ser_des/serializer.rb'
 
 # These methods implement core serialization/deserialization logic that
 # needs to handle multiple cases in a cohesive way. Breaking them up would
 # reduce readability and make the code harder to maintain.
 Metrics/MethodLength:
   Exclude:
-    - 'lib/factorix/deserializer.rb'
-    - 'lib/factorix/serializer.rb'
+    - 'lib/factorix/ser_des/deserializer.rb'
+    - 'lib/factorix/ser_des/serializer.rb'
 
 # The serializer class needs to handle many different data types and formats,
 # which naturally leads to a larger class with more methods.
 Metrics/ClassLength:
   Exclude:
-    - 'lib/factorix/serializer.rb'
+    - 'lib/factorix/ser_des/serializer.rb'
+
+# These examples need to test multiple aspects of complex operations in a single test
+# to ensure the correct behavior of serialization/deserialization operations.
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/factorix/ser_des/serializer_spec.rb'
