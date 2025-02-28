@@ -136,6 +136,10 @@ end
 
 ## Development Workflow
 
+- **Git Command Usage**:
+  - Always use the `--no-pager` option when executing git commands that produce large outputs
+  - This ensures consistent output handling, especially when commands are executed by AI assistants
+
 - **Working Branch Creation**:
   - Always create a working branch before starting development of new features or bug fixes
   - Use descriptive branch names that reflect the feature or task (e.g., `add-mod-settings-dump`)
@@ -150,24 +154,27 @@ end
 
 - Follow the branch-based development model
 - Create pull requests for code reviews
-- Use `:inbox_tray:` (📥) emoji prefix for merge commits
-- Format merge commit messages as `:inbox_tray: Merge pull request #N: [PR title]`
 
-### Pull Request Merging Process
+### Pull Request Management
 
-When merging PRs, AI assistants should follow this process:
+AI assistants should use GitHub CLI (`gh`) for PR management:
 
-1. **Pre-merge Checks**
+1. **Creating PRs**
+   - Use `gh pr create` to create pull requests
+   - Include a descriptive title and body explaining the changes
+
+2. **Pre-merge Checks**
    - Verify all CI checks have passed
    - Confirm required reviews are completed
    - Ensure there are no merge conflicts
 
-2. **Merge Method**
-   - Use standard merge (`--merge`) as the default approach
-   - Commit message will follow the format: `:inbox_tray: Merge pull request #N: [PR title]`
+3. **Merging PRs**
+   - Use `gh pr merge` with standard merge (`--merge`) as the default approach
+   - Use `:inbox_tray:` (📥) emoji prefix for merge commits
+   - Format merge commit messages as `:inbox_tray: Merge pull request #N: [PR title]`
 
-3. **Post-merge Cleanup**
-   - Delete the branch after merging (`gh pr merge --delete-branch`)
+4. **Post-merge Cleanup**
+   - Delete the branch after merging (use `--delete-branch` flag with `gh pr merge`)
    - Switch back to the main branch if needed (`git checkout main`)
 
 ## AI Guidelines
