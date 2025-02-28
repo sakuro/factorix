@@ -141,9 +141,11 @@ RSpec.describe Factorix::Serializer do
 
       serializer.write_list([0.5, 2.0])
 
-      expect(serializer).to have_received(:write_optim_u32).with(2).ordered
-      expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
-      expect(serializer).to have_received(:write_property_tree).with(2.0).ordered
+      aggregate_failures "writing list" do
+        expect(serializer).to have_received(:write_optim_u32).with(2).ordered
+        expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
+        expect(serializer).to have_received(:write_property_tree).with(2.0).ordered
+      end
     end
 
     context "with empty list" do
@@ -160,10 +162,12 @@ RSpec.describe Factorix::Serializer do
 
         serializer.write_list([true, 0.5, "test"])
 
-        expect(serializer).to have_received(:write_optim_u32).with(3).ordered
-        expect(serializer).to have_received(:write_property_tree).with(true).ordered
-        expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
-        expect(serializer).to have_received(:write_property_tree).with("test").ordered
+        aggregate_failures "writing mixed types" do
+          expect(serializer).to have_received(:write_optim_u32).with(3).ordered
+          expect(serializer).to have_received(:write_property_tree).with(true).ordered
+          expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
+          expect(serializer).to have_received(:write_property_tree).with("test").ordered
+        end
       end
     end
   end
