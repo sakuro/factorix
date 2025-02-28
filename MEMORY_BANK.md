@@ -142,6 +142,23 @@ end
 - Use `:inbox_tray:` (📥) emoji prefix for merge commits
 - Format merge commit messages as `:inbox_tray: Merge pull request #N: [PR title]`
 
+### Pull Request Merging Process
+
+When merging PRs, AI assistants should follow this process:
+
+1. **Pre-merge Checks**
+   - Verify all CI checks have passed
+   - Confirm required reviews are completed
+   - Ensure there are no merge conflicts
+
+2. **Merge Method**
+   - Use standard merge (`--merge`) as the default approach
+   - Commit message will follow the format: `:inbox_tray: Merge pull request #N: [PR title]`
+
+3. **Post-merge Cleanup**
+   - Delete the branch after merging (`gh pr merge --delete-branch`)
+   - Switch back to the main branch if needed (`git checkout main`)
+
 ## AI Guidelines
 
 When generating or modifying code for this project:

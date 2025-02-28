@@ -34,6 +34,7 @@ Factorix is a Ruby library and CLI for Factorio mod management.
 
 ## Documentation
 
+- Use English for all documentation and comments
 - YARD format for public APIs
 - Document class purpose, method inputs/outputs/side effects
 - Use infinitive form for verbs
