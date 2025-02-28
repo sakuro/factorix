@@ -9,6 +9,7 @@ module Factorix
 
     # Represents a section in mod settings
     class Section
+      include Enumerable
       # @param name [String] The section name
       # @raise [InvalidModSectionError] If the section name is invalid
       def initialize(name)

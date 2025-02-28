@@ -3,6 +3,7 @@ module Factorix
     VALID_SECTIONS: Array[String]
 
     class Section
+      include Enumerable[[String, untyped]]
       attr_reader name: String
 
       def initialize: (String name) -> void
