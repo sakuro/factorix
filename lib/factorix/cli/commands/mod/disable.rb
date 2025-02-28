@@ -6,7 +6,7 @@ module Factorix
   class CLI
     module Commands
       module Mod
-        # Command for disabling a mod
+        # Command for disabling a MOD
         class Disable < Dry::CLI::Command
           desc "Disable a MOD"
 

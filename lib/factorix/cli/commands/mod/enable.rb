@@ -6,7 +6,7 @@ module Factorix
   class CLI
     module Commands
       module Mod
-        # Command for enabling a mod
+        # Command for enabling a MOD
         class Enable < Dry::CLI::Command
           desc "Enable a MOD"
 

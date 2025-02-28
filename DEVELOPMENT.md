@@ -9,9 +9,9 @@ Factorix is a Ruby library and CLI for Factorio mod management.
 
 ## Code Architecture
 
-- **Mod**: Base class for modules
-- **ModList**: Manages module collections
-- **ModState**: Tracks module states
+- **Mod**: Base class for MODs
+- **ModList**: Manages MOD collections
+- **ModState**: Tracks MOD states
 - **Runtime**: OS-specific environments
 - **CLI**: Command-line interface
 

@@ -9,7 +9,7 @@ module Factorix
   class CLI
     module Commands
       module Mod
-        # Command for listing mods
+        # Command for listing MODs
         class List < Dry::CLI::Command
           desc "List all MODs"
 
@@ -31,16 +31,16 @@ module Factorix
             end
           end
 
-          # Output the mod list in default format (names only)
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in default format (names only)
+          # @param list [Factorix::ModList] The MOD list
           private def output_default(list)
             list.each_mod do |mod|
               puts mod.name
             end
           end
 
-          # Output the mod list in CSV format
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in CSV format
+          # @param list [Factorix::ModList] The MOD list
           private def output_csv(list)
             CSV do |csv|
               csv << %w[Name Enabled Version]
@@ -51,8 +51,8 @@ module Factorix
             end
           end
 
-          # Output the mod list in Markdown table format
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in Markdown table format
+          # @param list [Factorix::ModList] The MOD list
           private def output_markdown(list)
             labels = %w[Name Enabled Version]
             data = list.map {|mod, state|

@@ -8,84 +8,84 @@ module Factorix
       def initialize: (Mod mod) -> void
     end
 
-    # Load the mod list from the given file.
-    # @param from [Pathname] the path to the file to load the mod list from.
-    # @return [Factorix::ModList] the loaded mod list.
+    # Load the MOD list from the given file.
+    # @param from [Pathname] the path to the file to load the MOD list from.
+    # @return [Factorix::ModList] the loaded MOD list.
     def self.load: (?from: Pathname) -> ModList
 
-    # Initialize the mod list.
-    # @param mods [Hash{Factorix::Mod => ModState}] the mods and their state.
+    # Initialize the MOD list.
+    # @param mods [Hash{Factorix::Mod => ModState}] the MODs and their state.
     # @return [void]
     def initialize: (?mods: Hash[Mod, ModState]) -> void
 
-    # Save the mod list to the given file.
-    # @param to [Pathname] the path to the file to save the mod list to.
+    # Save the MOD list to the given file.
+    # @param to [Pathname] the path to the file to save the MOD list to.
     # @return [void]
     def save: (?to: Pathname) -> void
 
-    # Iterate through all mod-state pairs.
-    # @yieldparam mod [Factorix::Mod] the mod.
-    # @yieldparam state [Factorix::ModState] the mod state.
+    # Iterate through all MOD-state pairs.
+    # @yieldparam mod [Factorix::Mod] the MOD.
+    # @yieldparam state [Factorix::ModState] the MOD state.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
     def each: () { (Mod, ModState) -> void } -> ModList
             | () -> Enumerator[[Mod, ModState]]
 
-    # Iterate through all mods.
-    # @yieldparam mod [Factorix::Mod] the mod.
+    # Iterate through all MODs.
+    # @yieldparam mod [Factorix::Mod] the MOD.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
     def each_mod: () { (Mod) -> void } -> ModList
                 | () -> Enumerator[Mod]
 
     # Alias for each_mod
-    # @yieldparam mod [Factorix::Mod] the mod.
+    # @yieldparam mod [Factorix::Mod] the MOD.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
     alias each_key each_mod
 
-    # Add the mod to the list.
-    # @param mod [Factorix::Mod] the mod to add.
+    # Add the MOD to the list.
+    # @param mod [Factorix::Mod] the MOD to add.
     # @param enabled [Boolean] the enabled status. Default to true.
-    # @param version [String, nil] the version of the mod. Default to nil.
+    # @param version [String, nil] the version of the MOD. Default to nil.
     # @return [void]
-    # @raise [ArgumentError] if the mod is the base mod and the enabled status is false.
+    # @raise [ArgumentError] if the MOD is the base MOD and the enabled status is false.
     def add: (Mod mod, ?enabled: bool, ?version: String?) -> void
 
-    # Remove the mod from the list.
-    # @param mod [Factorix::Mod] the mod to remove.
+    # Remove the MOD from the list.
+    # @param mod [Factorix::Mod] the MOD to remove.
     # @return [void]
-    # @raise [ArgumentError] if the mod is the base mod.
+    # @raise [ArgumentError] if the MOD is the base MOD.
     def remove: (Mod mod) -> void
 
-    # Check if the mod is in the list.
-    # @param mod [Factorix::Mod] the mod to check.
-    # @return [Boolean] true if the mod is in the list, false otherwise.
+    # Check if the MOD is in the list.
+    # @param mod [Factorix::Mod] the MOD to check.
+    # @return [Boolean] true if the MOD is in the list, false otherwise.
     def exist?: (Mod mod) -> bool
 
-    # Check if the mod is enabled.
-    # @param mod [Factorix::Mod] the mod to check.
-    # @return [Boolean] true if the mod is enabled, false otherwise.
-    # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
+    # Check if the MOD is enabled.
+    # @param mod [Factorix::Mod] the MOD to check.
+    # @return [Boolean] true if the MOD is enabled, false otherwise.
+    # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def enabled?: (Mod mod) -> bool
 
-    # Get the version of the mod.
-    # @param mod [Factorix::Mod] the mod to check.
-    # @return [String, nil] the version of the mod, or nil if not specified.
-    # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
+    # Get the version of the MOD.
+    # @param mod [Factorix::Mod] the MOD to check.
+    # @return [String, nil] the version of the MOD, or nil if not specified.
+    # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def version: (Mod mod) -> String?
 
-    # Enable the mod.
-    # @param mod [Factorix::Mod] the mod to enable.
+    # Enable the MOD.
+    # @param mod [Factorix::Mod] the MOD to enable.
     # @return [void]
-    # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
+    # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def enable: (Mod mod) -> void
 
-    # Disable the mod.
-    # @param mod [Factorix::Mod] the mod to disable.
+    # Disable the MOD.
+    # @param mod [Factorix::Mod] the MOD to disable.
     # @return [void]
-    # @raise [ArgumentError] if the mod is the base mod.
-    # @raise [Factorix::ModList::ModNotInListError] if the mod is not in the list.
+    # @raise [ArgumentError] if the MOD is the base MOD.
+    # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def disable: (Mod mod) -> void
   end
 end
