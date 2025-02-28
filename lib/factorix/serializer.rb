@@ -211,7 +211,7 @@ module Factorix
           write_long(obj)
         end
       else
-        raise Factorix::UnknownPropertyType, obj.class
+        raise Factorix::UnknownPropertyType, "Unknown property type: #{obj.class}"
       end
     end
   end
