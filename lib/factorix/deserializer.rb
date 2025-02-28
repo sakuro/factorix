@@ -171,7 +171,7 @@ module Factorix
         # @see https://wiki.factorio.com/Property_tree
         read_unsigned_long
       else
-        raise Factorix::UnknownPropertyType, type
+        raise Factorix::UnknownPropertyType, "Unknown property type: #{type}"
       end
     end
 

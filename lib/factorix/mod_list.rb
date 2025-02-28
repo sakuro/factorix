@@ -10,11 +10,7 @@ module Factorix
     include Enumerable
 
     # Raised when a MOD is not found.
-    class ModNotInListError < Factorix::ModNotFoundError
-      def initialize(mod)
-        super("MOD not in the list: #{mod}")
-      end
-    end
+    class ModNotInListError < Factorix::ModNotFoundError; end
 
     # Load the MOD list from the given file.
     # @param from [Pathname] the path to the file to load the MOD list from.
@@ -110,7 +106,7 @@ module Factorix
     # @return [Boolean] true if the MOD is enabled, false otherwise.
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def enabled?(mod)
-      raise ModNotInListError, mod unless exist?(mod)
+      raise ModNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
       @mods[mod].enabled
     end
@@ -120,7 +116,7 @@ module Factorix
     # @return [String, nil] the version of the MOD, or nil if not specified.
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def version(mod)
-      raise ModNotInListError, mod unless exist?(mod)
+      raise ModNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
       @mods[mod].version
     end
@@ -130,7 +126,7 @@ module Factorix
     # @return [void]
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def enable(mod)
-      raise ModNotInListError, mod unless exist?(mod)
+      raise ModNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
       # Create a new ModState with enabled=true and the same version
       current_state = @mods[mod]
@@ -144,7 +140,7 @@ module Factorix
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
     def disable(mod)
       raise ArgumentError, "can't disable the base MOD" if mod.base?
-      raise ModNotInListError, mod unless exist?(mod)
+      raise ModNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
       # Create a new ModState with enabled=false and the same version
       current_state = @mods[mod]
