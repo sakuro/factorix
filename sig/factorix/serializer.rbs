@@ -98,6 +98,18 @@ module Factorix
     # @return [void]
     def write_dictionary: (Hash[String, untyped] dict) -> void
 
+    # Write a signed long integer (8 bytes)
+    #
+    # @param long [Integer] Signed long integer
+    # @return [void]
+    def write_long: (Integer long) -> void
+
+    # Write an unsigned long integer (8 bytes)
+    #
+    # @param ulong [Integer] Unsigned long integer
+    # @return [void]
+    def write_unsigned_long: (Integer ulong) -> void
+
     # Write a property tree
     #
     # @param obj [Object] Object to write

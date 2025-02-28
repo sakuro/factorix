@@ -142,6 +142,18 @@ module Factorix
       end
     end
 
+    # Write a signed long integer (8 bytes)
+    #
+    # @param long [Integer] Signed long integer
+    # @return [void]
+    def write_long(long) = write_bytes([long].pack("q<"))
+
+    # Write an unsigned long integer (8 bytes)
+    #
+    # @param ulong [Integer] Unsigned long integer
+    # @return [void]
+    def write_unsigned_long(ulong) = write_bytes([ulong].pack("Q<"))
+
     # Write a property tree
     #
     # @param obj [Object] Object to write
@@ -149,34 +161,55 @@ module Factorix
     # @return [void]
     def write_property_tree(obj)
       case obj
-      in true | false => bool
+      when nil
+        # Type 0 - None (null value)
+        write_u8(0)
+        write_bool(false)
+      when true, false
+        # Type 1 - Boolean
         write_u8(1)
         write_bool(false)
-        write_bool(bool)
-      in Float => dbl
+        write_bool(obj)
+      when Float
+        # Type 2 - Number (double)
         write_u8(2)
         write_bool(false)
-        write_double(dbl)
-      in String => str
-        case str
+        write_double(obj)
+      when String
+        case obj
         when /\Argba:(?<r>\h{2})(?<g>\h{2})(?<b>\h{2})(?<a>\h{2})\z/
           # convert "rgba:RRGGBBAA" to {"r": RR, "g": GG, "b": BB, "a": AA }"
           write_u8(5)
           write_bool(false)
           write_dictionary(%w[r g b a].each_with_object({}) {|k, dict| dict[k] = $~[k].to_i(16) / 255.0 })
         else
+          # Type 3 - String
           write_u8(3)
           write_bool(false)
-          write_str_property(str)
+          write_str_property(obj)
         end
-      in Array => list
+      when Array
+        # Type 4 - List
         write_u8(4)
         write_bool(false)
-        write_list(list)
-      in Hash => dict
+        write_list(obj)
+      when Hash
+        # Type 5 - Dictionary
         write_u8(5)
         write_bool(false)
-        write_dictionary(dict)
+        write_dictionary(obj)
+      when Integer
+        if obj >= 0
+          # Type 7 - Unsigned integer
+          write_u8(7)
+          write_bool(false)
+          write_unsigned_long(obj)
+        else
+          # Type 6 - Signed integer
+          write_u8(6)
+          write_bool(false)
+          write_long(obj)
+        end
       else
         raise Factorix::UnknownPropertyType, obj.class
       end

@@ -129,7 +129,43 @@ RSpec.describe Factorix::Serializer do
   end
 
   describe "#write_list" do
-    pending "Implementation of list serialization tests"
+    it "writes list of property trees" do
+      # Expected binary data:
+      # - List length: 2 (\x02)
+      # - First element: type 2 (double) with value 0.5
+      # - Second element: type 2 (double) with value 2.0
+
+      # Mock the write_property_tree method to avoid actual serialization
+      allow(serializer).to receive(:write_optim_u32)
+      allow(serializer).to receive(:write_property_tree)
+
+      serializer.write_list([0.5, 2.0])
+
+      expect(serializer).to have_received(:write_optim_u32).with(2).ordered
+      expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
+      expect(serializer).to have_received(:write_property_tree).with(2.0).ordered
+    end
+
+    context "with empty list" do
+      it "writes only the length (0)" do
+        expect { serializer.write_list([]) }.to change(stream, :string).from("".b).to("\x00")
+      end
+    end
+
+    context "with mixed types" do
+      it "writes each element with its appropriate type" do
+        # Mock the write_property_tree method to avoid actual serialization
+        allow(serializer).to receive(:write_optim_u32)
+        allow(serializer).to receive(:write_property_tree)
+
+        serializer.write_list([true, 0.5, "test"])
+
+        expect(serializer).to have_received(:write_optim_u32).with(3).ordered
+        expect(serializer).to have_received(:write_property_tree).with(true).ordered
+        expect(serializer).to have_received(:write_property_tree).with(0.5).ordered
+        expect(serializer).to have_received(:write_property_tree).with("test").ordered
+      end
+    end
   end
 
   describe "#write_dictionary" do
