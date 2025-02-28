@@ -187,6 +187,13 @@ identify the purpose of each change.
 - Minimize and explicitly manage dependencies
 - Follow existing error handling patterns
 - Consider performance and memory usage
+- When creating RBS type definitions:
+  - Use per-method `private` keyword instead of section-based approach
+  - Create directory structures that mirror the implementation code
+  - Validate syntax using the `rbs validate` command after creation
+  - Ensure consistency between YARD documentation and type definitions
+  - Take special care when defining types for classes using Data.define
+  - Consider type definitions for external libraries when necessary
 
 ---
 
