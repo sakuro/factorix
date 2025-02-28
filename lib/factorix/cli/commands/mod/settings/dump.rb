@@ -3,6 +3,7 @@
 require "dry/cli"
 require "factorix"
 require "perfect_toml"
+require "pathname"
 
 module Factorix
   class CLI
@@ -19,10 +20,9 @@ module Factorix
               runtime = Factorix::Runtime.runtime
               settings_path = runtime.mod_settings_path
 
-              if File.exist?(settings_path)
-                # バイナリ解析部分は後で実装
-                # 現時点ではダミーデータを出力
-                output_toml(create_dummy_settings)
+              if settings_path.exist?
+                settings = parse_settings_file(settings_path)
+                output_toml(settings)
               else
                 puts "Settings file not found: #{settings_path}"
               end
@@ -32,16 +32,23 @@ module Factorix
               puts PerfectTOML.generate(settings)
             end
 
-            # Create dummy settings for testing
-            # @return [Hash] Dummy settings
-            private def create_dummy_settings
-              {
-                "mod-setting" => {
-                  "startup" => {},
-                  "runtime-global" => {},
-                  "runtime-per-user" => {}
-                }
-              }
+            # Parse the mod settings file
+            # @param settings_path [Pathname] Path to the mod settings file
+            # @return [Hash] Parsed settings
+            # @raise [RuntimeError] If there's an error parsing the file
+            private def parse_settings_file(settings_path)
+              settings_path.open("rb") do |file|
+                deserializer = Factorix::Deserializer.new(file)
+
+                # 1. Read version64
+                deserializer.read_version64
+
+                # 2. Skip a boolean value
+                deserializer.read_bool
+
+                # 3. Read property tree
+                deserializer.read_property_tree
+              end
             end
           end
         end

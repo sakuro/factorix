@@ -13,9 +13,11 @@ module Factorix
             # @param settings [Hash] The settings to output
             private def output_toml: (Hash[String, untyped] settings) -> void
 
-            # Create dummy settings for testing
-            # @return [Hash] Dummy settings
-            private def create_dummy_settings: () -> Hash[String, untyped]
+            # Parse the mod settings file
+            # @param settings_path [Pathname] Path to the mod settings file
+            # @return [Hash] Parsed settings
+            # @raise [RuntimeError] If there's an error parsing the file
+            private def parse_settings_file: (Pathname settings_path) -> Hash[String, untyped]
           end
         end
       end
