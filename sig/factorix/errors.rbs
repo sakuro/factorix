@@ -7,4 +7,9 @@ module Factorix
   class ModNotFoundError < Error
     def initialize: (untyped mod) -> void
   end
+
+  # Raised when an unknown property type is encountered during serialization/deserialization.
+  class UnknownPropertyType < Error
+    def initialize: (untyped type) -> void
+  end
 end
