@@ -11,19 +11,14 @@
 # AllowedIdentifiers: capture3, iso8601, rfc1123_date, rfc822, rfc2822, rfc3339, x86_64
 Naming/VariableNumber:
   Exclude:
-    - 'spec/factorix/version24_spec.rb'
-    - 'spec/factorix/version64_spec.rb'
-
-# Configuration parameters: Max, CountAsOne.
-RSpec/ExampleLength:
-  Exclude:
-    - 'spec/factorix/serializer_spec.rb'
+    - 'spec/factorix/ser_des/version24_spec.rb'
+    - 'spec/factorix/ser_des/version64_spec.rb'
 
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Exclude:
-    - 'spec/factorix/version24_spec.rb'
-    - 'spec/factorix/version64_spec.rb'
+    - 'spec/factorix/ser_des/version24_spec.rb'
+    - 'spec/factorix/ser_des/version64_spec.rb'
 
 # Configuration parameters: Max.
 RSpec/MultipleExpectations:
@@ -38,11 +33,11 @@ RSpec/MultipleMemoizedHelpers:
 # Configuration parameters: Max, AllowedGroups.
 RSpec/NestedGroups:
   Exclude:
-    - 'spec/factorix/deserializer_spec.rb'
+    - 'spec/factorix/ser_des/deserializer_spec.rb'
 
 # Configuration parameters: AllowedAddresses.
 # AllowedAddresses: ::
 Style/IpAddresses:
   Exclude:
-    - 'spec/factorix/version24_spec.rb'
-    - 'spec/factorix/version64_spec.rb'
+    - 'spec/factorix/ser_des/version24_spec.rb'
+    - 'spec/factorix/ser_des/version64_spec.rb'

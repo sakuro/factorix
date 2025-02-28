@@ -1,35 +1,35 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Version64 do
+RSpec.describe Factorix::SerDes::Version64 do
   describe ".new" do
     context "with version string" do
       it "creates a version from a string" do
-        expect(Factorix::Version64.new("1.2.3-4")).to be_an_instance_of(Factorix::Version64)
+        expect(Factorix::SerDes::Version64.new("1.2.3-4")).to be_an_instance_of(Factorix::SerDes::Version64)
       end
 
       it "creates a version from a string without build number" do
-        expect(Factorix::Version64.new("1.2.3")).to be_an_instance_of(Factorix::Version64)
+        expect(Factorix::SerDes::Version64.new("1.2.3")).to be_an_instance_of(Factorix::SerDes::Version64)
       end
 
       it "raises ArgumentError for invalid version string" do
         aggregate_failures "invalid version strings" do
-          expect { Factorix::Version64.new("1.2") }.to raise_error(ArgumentError)
-          expect { Factorix::Version64.new("1.2.3.4") }.to raise_error(ArgumentError)
-          expect { Factorix::Version64.new("a.b.c-d") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new("1.2") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new("1.2.3.4") }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new("a.b.c-d") }.to raise_error(ArgumentError)
         end
       end
     end
 
     context "with integers" do
       it "creates a version from integers" do
-        expect(Factorix::Version64.new(1, 2, 3, 4)).to be_an_instance_of(Factorix::Version64)
+        expect(Factorix::SerDes::Version64.new(1, 2, 3, 4)).to be_an_instance_of(Factorix::SerDes::Version64)
       end
 
       it "raises ArgumentError for invalid integers" do
         aggregate_failures "invalid integers" do
-          expect { Factorix::Version64.new(1, 2, 3) }.to raise_error(ArgumentError)
-          expect { Factorix::Version64.new(1, 2, 3, 4, 5) }.to raise_error(ArgumentError)
-          expect { Factorix::Version64.new(65536, 0, 0, 0) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new(1, 2, 3) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new(1, 2, 3, 4, 5) }.to raise_error(ArgumentError)
+          expect { Factorix::SerDes::Version64.new(65536, 0, 0, 0) }.to raise_error(ArgumentError)
         end
       end
     end
@@ -37,37 +37,37 @@ RSpec.describe Factorix::Version64 do
 
   describe ".[]" do
     it "is an alias for new" do
-      expect(Factorix::Version64[1, 2, 3, 4]).to be_an_instance_of(Factorix::Version64)
+      expect(Factorix::SerDes::Version64[1, 2, 3, 4]).to be_an_instance_of(Factorix::SerDes::Version64)
     end
   end
 
   describe "#to_s" do
     it "returns a string representation" do
-      expect(Factorix::Version64.new(1, 2, 3, 4).to_s).to eq("1.2.3-4")
+      expect(Factorix::SerDes::Version64.new(1, 2, 3, 4).to_s).to eq("1.2.3-4")
     end
 
     it "includes build number 0 in string representation" do
-      expect(Factorix::Version64.new("1.2.3").to_s).to eq("1.2.3-0")
+      expect(Factorix::SerDes::Version64.new("1.2.3").to_s).to eq("1.2.3-0")
     end
   end
 
   describe "#to_a" do
     it "returns an array of integers" do
-      expect(Factorix::Version64.new(1, 2, 3, 4).to_a).to eq([1, 2, 3, 4])
+      expect(Factorix::SerDes::Version64.new(1, 2, 3, 4).to_a).to eq([1, 2, 3, 4])
     end
 
     it "returns a frozen array" do
-      expect(Factorix::Version64.new(1, 2, 3, 4).to_a).to be_frozen
+      expect(Factorix::SerDes::Version64.new(1, 2, 3, 4).to_a).to be_frozen
     end
   end
 
   describe "#<=>" do
-    let(:version_1234) { Factorix::Version64.new(1, 2, 3, 4) }
-    let(:version_1235) { Factorix::Version64.new(1, 2, 3, 5) }
-    let(:version_1240) { Factorix::Version64.new(1, 2, 4, 0) }
-    let(:version_1300) { Factorix::Version64.new(1, 3, 0, 0) }
-    let(:version_2000) { Factorix::Version64.new(2, 0, 0, 0) }
-    let(:version_1234_dup) { Factorix::Version64.new(1, 2, 3, 4) }
+    let(:version_1234) { Factorix::SerDes::Version64.new(1, 2, 3, 4) }
+    let(:version_1235) { Factorix::SerDes::Version64.new(1, 2, 3, 5) }
+    let(:version_1240) { Factorix::SerDes::Version64.new(1, 2, 4, 0) }
+    let(:version_1300) { Factorix::SerDes::Version64.new(1, 3, 0, 0) }
+    let(:version_2000) { Factorix::SerDes::Version64.new(2, 0, 0, 0) }
+    let(:version_1234_dup) { Factorix::SerDes::Version64.new(1, 2, 3, 4) }
 
     it "considers equal versions as equal" do
       expect(version_1234 <=> version_1234_dup).to eq(0)

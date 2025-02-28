@@ -2,19 +2,19 @@
 
 require "stringio"
 
-RSpec.describe Factorix::Deserializer do
-  let(:deserializer) { Factorix::Deserializer.new(stream) }
+RSpec.describe Factorix::SerDes::Deserializer do
+  let(:deserializer) { Factorix::SerDes::Deserializer.new(stream) }
   let(:stream) { StringIO.new(binary_data) }
 
   describe ".new" do
     context "with object without #read" do
       it "raises ArgumentError" do
-        expect { Factorix::Deserializer.new(%w(x y z)) }.to raise_error(ArgumentError)
+        expect { Factorix::SerDes::Deserializer.new(%w(x y z)) }.to raise_error(ArgumentError)
       end
     end
 
     it "instantiates with an input stream" do
-      expect(Factorix::Deserializer.new(StringIO.new("\x00\x01\x00\x02"))).to be_an_instance_of(Factorix::Deserializer)
+      expect(Factorix::SerDes::Deserializer.new(StringIO.new("\x00\x01\x00\x02"))).to be_an_instance_of(Factorix::SerDes::Deserializer)
     end
   end
 

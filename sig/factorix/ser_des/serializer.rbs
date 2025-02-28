@@ -1,0 +1,122 @@
+module Factorix
+  module SerDes
+    # Serialize data to binary format
+    class Serializer
+      # Create a new Serializer instance
+      #
+      # @param stream [IO] An IO-like object that responds to #write
+      # @raise [ArgumentError] If the stream doesn't respond to #write
+      def initialize: (untyped stream) -> void
+
+      # Write raw bytes to the stream
+      #
+      # @param data [String] Binary data to write
+      # @raise [ArgumentError] If data is nil
+      # @return [void]
+      def write_bytes: (String data) -> void
+
+      # Write an unsigned 8-bit integer
+      #
+      # @param uint8 [Integer] 8-bit unsigned integer
+      # @return [void]
+      def write_u8: (Integer uint8) -> void
+
+      # Write an unsigned 16-bit integer
+      #
+      # @param uint16 [Integer] 16-bit unsigned integer
+      # @return [void]
+      def write_u16: (Integer uint16) -> void
+
+      # Write an unsigned 32-bit integer
+      #
+      # @param uint32 [Integer] 32-bit unsigned integer
+      # @return [void]
+      def write_u32: (Integer uint32) -> void
+
+      # Write a space-optimized 16-bit unsigned integer
+      # https://wiki.factorio.com/Data_types#Space_Optimized
+      #
+      # @param uint16 [Integer] 16-bit unsigned integer
+      # @return [void]
+      def write_optim_u16: (Integer uint16) -> void
+
+      # Write a space-optimized 32-bit unsigned integer
+      # https://wiki.factorio.com/Data_types#Space_Optimized
+      #
+      # @param uint32 [Integer] 32-bit unsigned integer
+      # @return [void]
+      def write_optim_u32: (Integer uint32) -> void
+
+      # Write a boolean value
+      #
+      # @param bool [Boolean] Boolean value
+      # @return [void]
+      def write_bool: (bool bool) -> void
+
+      # Write a string
+      #
+      # @param str [String] String to write
+      # @return [void]
+      def write_str: (String str) -> void
+
+      # Write a string property
+      # https://wiki.factorio.com/Property_tree#String
+      #
+      # @param str [String] String to write
+      # @return [void]
+      def write_str_property: (String str) -> void
+
+      # Write a double-precision floating point number
+      # https://wiki.factorio.com/Property_tree#Number
+      #
+      # @param dbl [Float] Double-precision floating point number
+      # @return [void]
+      def write_double: (Float dbl) -> void
+
+      # Write a Version64 object
+      #
+      # @param v64 [Version64] Version64 object
+      # @return [void]
+      def write_version64: (SerDes::Version64 v64) -> void
+
+      # Write a Version24 object
+      #
+      # @param v24 [Version24] Version24 object
+      # @return [void]
+      def write_version24: (SerDes::Version24 v24) -> void
+
+      # Write a list
+      # https://wiki.factorio.com/Property_tree#List
+      #
+      # @param list [Array] List of objects
+      # @return [void]
+      def write_list: (Array[untyped] list) -> void
+
+      # Write a dictionary
+      # https://wiki.factorio.com/Property_tree#Dictionary
+      #
+      # @param dict [Hash] Dictionary of key-value pairs
+      # @return [void]
+      def write_dictionary: (Hash[String, untyped] dict) -> void
+
+      # Write a signed long integer (8 bytes)
+      #
+      # @param long [Integer] Signed long integer
+      # @return [void]
+      def write_long: (Integer long) -> void
+
+      # Write an unsigned long integer (8 bytes)
+      #
+      # @param ulong [Integer] Unsigned long integer
+      # @return [void]
+      def write_unsigned_long: (Integer ulong) -> void
+
+      # Write a property tree
+      #
+      # @param obj [Object] Object to write
+      # @raise [UnknownPropertyType] If the object type is not supported
+      # @return [void]
+      def write_property_tree: (untyped obj) -> void
+    end
+  end
+end
