@@ -139,6 +139,8 @@ end
 - Run tests locally to verify functionality
 - Follow the branch-based development model
 - Create pull requests for code reviews
+- Use `:inbox_tray:` (📥) emoji prefix for merge commits
+- Format merge commit messages as `:inbox_tray: Merge pull request #N: [PR title]`
 
 ## AI Guidelines
 
