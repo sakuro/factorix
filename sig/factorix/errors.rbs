@@ -12,4 +12,14 @@ module Factorix
   class UnknownPropertyType < Error
     def initialize: (untyped type) -> void
   end
+
+  # Raised when an invalid section name is encountered in mod settings.
+  class InvalidModSectionError < Error
+    def initialize: (String section_name) -> void
+  end
+
+  # Raised when a section is not found in mod settings.
+  class ModSectionNotFoundError < Error
+    def initialize: (String section_name) -> void
+  end
 end

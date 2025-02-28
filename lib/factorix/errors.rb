@@ -17,4 +17,18 @@ module Factorix
       super("Unknown property type: #{type}")
     end
   end
+
+  # Raised when an invalid section name is encountered in mod settings.
+  class InvalidModSectionError < Error
+    def initialize(section_name)
+      super("Invalid mod section name: #{section_name}")
+    end
+  end
+
+  # Raised when a section is not found in mod settings.
+  class ModSectionNotFoundError < Error
+    def initialize(section_name)
+      super("Mod section not found: #{section_name}")
+    end
+  end
 end

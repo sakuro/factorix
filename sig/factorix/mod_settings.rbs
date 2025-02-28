@@ -1,0 +1,25 @@
+module Factorix
+  class ModSettings
+    VALID_SECTIONS: Array[String]
+
+    class Section
+      attr_reader name: String
+
+      def initialize: (String name) -> void
+      def []=: (String key, untyped value) -> untyped
+      def []: (String key) -> untyped
+      def each: () { (String, untyped) -> void } -> void
+              | () -> Enumerator[[String, untyped], void]
+      def empty?: () -> bool
+    end
+
+    def initialize: (Pathname path) -> void
+    def []: (String name) -> Section
+    def each_section: () { (Section) -> void } -> void
+                    | () -> Enumerator[Section, void]
+
+    private
+    def load_settings: (Pathname path) -> void
+    def organize_into_sections: (Hash[String, Hash[String, Hash[String, untyped]]]) -> void
+  end
+end
