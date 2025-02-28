@@ -99,6 +99,16 @@ module Factorix
     # @return [Hash] Dictionary of key-value pairs
     def read_dictionary: () -> Hash[String, untyped]
 
+    # Read a signed long integer (8 bytes)
+    #
+    # @return [Integer] Signed long integer
+    def read_long: () -> Integer
+
+    # Read an unsigned long integer (8 bytes)
+    #
+    # @return [Integer] Unsigned long integer
+    def read_unsigned_long: () -> Integer
+
     # Read a property tree
     #
     # @raise [UnknownPropertyType] If the property type is not supported

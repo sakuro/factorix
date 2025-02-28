@@ -146,6 +146,10 @@ module Factorix
       _any_type_flag = read_bool
 
       case type
+      when 0
+        # Handle type 0 - None (null value)
+        # According to wiki.factorio.com/Property_tree
+        nil
       when 1
         read_bool
       when 2
@@ -162,9 +166,31 @@ module Factorix
         else
           dict
         end
+      when 6
+        # Handle type 6 - Signed integer
+        # According to wiki.factorio.com/Property_tree
+        read_long
+      when 7
+        # Handle type 7 - Unsigned integer
+        # According to wiki.factorio.com/Property_tree
+        read_unsigned_long
       else
         raise Factorix::UnknownPropertyType, type
       end
+    end
+
+    # Read a signed long integer (8 bytes)
+    #
+    # @return [Integer] Signed long integer
+    def read_long
+      read_bytes(8).unpack1("q<")
+    end
+
+    # Read an unsigned long integer (8 bytes)
+    #
+    # @return [Integer] Unsigned long integer
+    def read_unsigned_long
+      read_bytes(8).unpack1("Q<")
     end
   end
 end

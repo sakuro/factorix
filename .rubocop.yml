@@ -40,6 +40,7 @@ inherit_from:
 # compromising readability and maintainability.
 Metrics/AbcSize:
   Exclude:
+    - 'lib/factorix/deserializer.rb'
     - 'lib/factorix/serializer.rb'
 
 # The deserializer and serializer classes need to handle multiple data types
@@ -56,4 +57,10 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Exclude:
     - 'lib/factorix/deserializer.rb'
+    - 'lib/factorix/serializer.rb'
+
+# The serializer class needs to handle many different data types and formats,
+# which naturally leads to a larger class with more methods.
+Metrics/ClassLength:
+  Exclude:
     - 'lib/factorix/serializer.rb'

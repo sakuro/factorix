@@ -335,7 +335,7 @@ RSpec.describe Factorix::Deserializer do
     end
 
     context "when reading unknown type" do
-      let(:type_byte) { "\x06" }
+      let(:type_byte) { "\x08" }
 
       it "raises Factorix::UnknownPropertyType" do
         expect { deserializer.read_property_tree }.to raise_error(Factorix::UnknownPropertyType)
