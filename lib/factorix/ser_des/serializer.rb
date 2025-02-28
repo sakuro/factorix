@@ -10,6 +10,7 @@ module Factorix
       # @raise [ArgumentError] If the stream doesn't respond to #write
       def initialize(stream)
         raise ArgumentError, "can't write to the given argument" unless stream.respond_to?(:write)
+
         @stream = stream
       end
 
