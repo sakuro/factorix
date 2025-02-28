@@ -36,5 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-cli", ">= 1.2.0"
   spec.add_dependency "dry-core", ">= 1.1.0"
   spec.add_dependency "markdown-tables", ">= 1.1.1"
+  spec.add_dependency "perfect_toml", ">= 0.9.0"
   spec.add_dependency "sys-proctable", ">= 1.3.0"
 end

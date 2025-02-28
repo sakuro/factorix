@@ -12,6 +12,7 @@ launching Factorio with various options.
 - Launch Factorio with custom arguments
 - List all installed mods with different output formats
 - Enable and disable mods easily
+- Dump mod settings in TOML format
 
 ## Usage
 
@@ -96,6 +97,18 @@ factorix mod disable MOD_NAME [options]
 
 Options:
 - `--verbose`: Print more information during the operation
+
+#### Dump Mod Settings
+
+Dump mod settings in TOML format:
+
+```bash
+factorix mod settings dump
+```
+
+This command reads the mod-settings.dat file from your Factorio mods directory and outputs its contents in TOML format. This can be useful for inspecting or backing up your mod settings.
+
+If the settings file doesn't exist, an error message will be displayed.
 
 ## License
 

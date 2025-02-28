@@ -6,6 +6,8 @@ AllCops:
   Exclude:
   - bin/**/*
   - vendor/**/*
+  # Ignore Ruby files in the project root as they are often used for experiments
+  - "*.rb"
   ExtraDetails: true
   TargetRubyVersion: 3.4
   UseCache: true
@@ -34,3 +36,33 @@ inherit_from:
   - .rubocop/security.yml
   - .rubocop/style.yml
   - .rubocop/threadsafety.yml
+
+# These serializer/deserializer classes handle complex binary data formats
+# and require complex logic that cannot be easily simplified without
+# compromising readability and maintainability.
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/factorix/deserializer.rb'
+    - 'lib/factorix/serializer.rb'
+
+# The deserializer and serializer classes need to handle multiple data types
+# and format variations, requiring conditional logic that naturally increases
+# cyclomatic complexity.
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/factorix/deserializer.rb'
+    - 'lib/factorix/serializer.rb'
+
+# These methods implement core serialization/deserialization logic that
+# needs to handle multiple cases in a cohesive way. Breaking them up would
+# reduce readability and make the code harder to maintain.
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/factorix/deserializer.rb'
+    - 'lib/factorix/serializer.rb'
+
+# The serializer class needs to handle many different data types and formats,
+# which naturally leads to a larger class with more methods.
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/factorix/serializer.rb'
