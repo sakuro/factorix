@@ -1,0 +1,20 @@
+module Factorix
+  class CLI
+    module Commands
+      # Command for the info subcommand
+      class Info < Dry::CLI::Command
+        # Display runtime information
+        def call: (**untyped) -> void
+
+        # Display runtime information
+        private def display_runtime_info: (Factorix::Runtime runtime) -> void
+
+        # Return a hash of information items
+        private def info_items: (Factorix::Runtime runtime) -> Hash[String, Pathname]
+
+        # Display a single information item
+        private def display_item: (String label, untyped value) -> void
+      end
+    end
+  end
+end
