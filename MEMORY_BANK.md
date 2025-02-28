@@ -177,6 +177,70 @@ AI assistants should use GitHub CLI (`gh`) for PR management:
    - Delete the branch after merging (use `--delete-branch` flag with `gh pr merge`)
    - Switch back to the main branch if needed (`git checkout main`)
 
+## Git Submodule Management
+
+This project uses Git submodules for certain dependencies (e.g., `.rubocop` for RuboCop configuration).
+
+### Initial Setup After Clone
+
+After cloning the repository, submodules are not automatically populated. To initialize and update all submodules:
+
+```bash
+git submodule init
+git submodule update
+```
+
+Alternatively, clone with submodules in one command:
+
+```bash
+git clone --recurse-submodules https://github.com/sakuro/factorix.git
+```
+
+### Updating Submodules
+
+To update all submodules to their latest versions:
+
+```bash
+git submodule update --remote
+```
+
+To update a specific submodule:
+
+```bash
+git submodule update --remote .rubocop
+```
+
+After updating submodules, you need to commit these changes to the main repository:
+
+```bash
+# First verify which submodules were updated
+git status
+
+# Add the updated submodule(s)
+git add .rubocop
+
+# Commit the submodule update
+git commit -m ":arrow_up: Update .rubocop submodule"
+```
+
+This ensures that other developers pulling from the repository will get the same version of the submodule that you're now using.
+
+### Important Warnings
+
+⚠️ **NEVER directly edit files within submodules**. Submodules point to specific commits in their respective repositories, and direct edits will cause conflicts and versioning issues.
+
+If changes to a submodule are needed:
+1. Fork the submodule repository
+2. Make changes in your fork
+3. Submit a pull request to the original submodule repository
+4. After changes are merged, update the submodule reference in this project
+
+### Troubleshooting
+
+- **Empty submodule directories**: Run `git submodule init` followed by `git submodule update`
+- **Detached HEAD in submodule**: Normal state for submodules; only a concern if you need to make changes
+- **Submodule changes not recognized**: Commit changes in the main repository that reference the new submodule commit
+
 ## AI Guidelines
 
 When generating or modifying code for this project:
