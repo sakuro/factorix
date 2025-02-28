@@ -2,8 +2,8 @@
 
 require "dry/cli"
 require "factorix"
-require "perfect_toml"
 require "pathname"
+require "perfect_toml"
 
 module Factorix
   class CLI
