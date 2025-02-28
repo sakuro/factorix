@@ -21,34 +21,35 @@ module Factorix
               settings_path = runtime.mod_settings_path
 
               if settings_path.exist?
-                settings = parse_settings_file(settings_path)
-                output_toml(settings)
+                mod_settings = Factorix::ModSettings.new(settings_path)
+                output_toml(build_settings_hash(mod_settings))
               else
                 puts "Settings file not found: #{settings_path}"
               end
             end
 
+            # Output settings in TOML format
+            # @param settings [Hash] The settings to output
             private def output_toml(settings)
               puts PerfectTOML.generate(settings)
             end
 
-            # Parse the mod settings file
-            # @param settings_path [Pathname] Path to the mod settings file
-            # @return [Hash] Parsed settings
-            # @raise [RuntimeError] If there's an error parsing the file
-            private def parse_settings_file(settings_path)
-              settings_path.open("rb") do |file|
-                deserializer = Factorix::Deserializer.new(file)
+            # Build a hash suitable for TOML generation from mod settings
+            # @param mod_settings [ModSettings] The mod settings
+            # @return [Hash] Hash suitable for TOML generation
+            private def build_settings_hash(mod_settings)
+              result = {}
 
-                # 1. Read version64
-                deserializer.read_version64
+              mod_settings.each_section do |section|
+                next if section.empty?
 
-                # 2. Skip a boolean value
-                deserializer.read_bool
-
-                # 3. Read property tree
-                deserializer.read_property_tree
+                result[section.name] = {}
+                section.each do |key, value|
+                  result[section.name][key] = value
+                end
               end
+
+              result
             end
           end
         end
