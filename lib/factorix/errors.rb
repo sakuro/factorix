@@ -10,4 +10,11 @@ module Factorix
       super("MOD not found: #{mod}")
     end
   end
+
+  # Raised when an unknown property type is encountered during serialization/deserialization.
+  class UnknownPropertyType < Error
+    def initialize(type)
+      super("Unknown property type: #{type}")
+    end
+  end
 end

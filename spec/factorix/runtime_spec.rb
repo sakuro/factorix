@@ -107,6 +107,20 @@ RSpec.describe Factorix::Runtime do
     end
   end
 
+  describe "#mod_settings_path" do
+    subject(:mod_settings_path) { runtime.mod_settings_path }
+
+    let(:runtime) { Factorix::Runtime.runtime }
+
+    before do
+      allow(runtime).to receive(:mods_dir).and_return(Pathname.new("/user_dir/mods"))
+    end
+
+    it "returns the path of the mod-settings.dat file" do
+      expect(mod_settings_path).to eq(Pathname.new("/user_dir/mods/mod-settings.dat"))
+    end
+  end
+
   describe "#launch" do
     let(:runtime) { Factorix::Runtime.runtime }
 

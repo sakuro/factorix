@@ -48,6 +48,12 @@ module Factorix
       mods_dir + "mod-list.json"
     end
 
+    # Return the path of the mod-settings.dat file
+    # @return [Pathname] the path of the mod-settings.dat file
+    def mod_settings_path
+      mods_dir + "mod-settings.dat"
+    end
+
     # Launch the game
     # @return [void]
     # @raise [RuntimeError] if the game is already running
