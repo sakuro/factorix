@@ -17,5 +17,8 @@ module Factorix
 
     # Register the mod list command
     def self.register: (String, singleton(Factorix::CLI::Commands::Mod::List)) -> void
+
+    # Register the mod settings dump command
+    def self.register: (String, singleton(Factorix::CLI::Commands::Mod::Settings::Dump)) -> void
   end
 end

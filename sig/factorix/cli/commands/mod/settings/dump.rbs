@@ -1,0 +1,24 @@
+module Factorix
+  class CLI
+    module Commands
+      module Mod
+        module Settings
+          # Command for dumping MOD settings
+          class Dump < Dry::CLI::Command
+            # Dump MOD settings
+            # @param _options [Hash] The options for the command (unused)
+            def call: (**untyped _options) -> void
+
+            # Output settings in TOML format using PerfectTOML.generate
+            # @param settings [Hash] The settings to output
+            private def output_toml: (Hash[String, untyped] settings) -> void
+
+            # Create dummy settings for testing
+            # @return [Hash] Dummy settings
+            private def create_dummy_settings: () -> Hash[String, untyped]
+          end
+        end
+      end
+    end
+  end
+end
