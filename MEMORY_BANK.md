@@ -11,9 +11,9 @@ This document serves as a structured knowledge base for the Factorix project, de
 
 ## Code Architecture
 
-- **Mod**: Base class representing modules
-- **ModList**: Manages collections of modules
-- **ModState**: Tracks module states (enabled/disabled)
+- **Mod**: Base class representing MODs
+- **ModList**: Manages collections of MODs
+- **ModState**: Tracks MOD states (enabled/disabled)
 - **Runtime**: Provides runtime environments for different OS environments (Linux, macOS, Windows, WSL)
 - **CLI**: Command-line interface and command implementations
 
@@ -23,7 +23,7 @@ This document serves as a structured knowledge base for the Factorix project, de
 lib/factorix/                 # Main code
 ├── cli/                      # CLI command implementations
 │   └── commands/             # Individual commands
-│       └── mod/              # Module-related commands
+│       └── mod/              # MOD-related commands
 ├── runtime/                  # OS-specific implementations
 sig/                          # Type definitions (RBS)
 spec/                         # Test code (RSpec)
@@ -74,11 +74,11 @@ Example:
 ```ruby
 # Create MOD
 #
-# @param name [String] Module name
+# @param name [String] MOD name
 # @param version [String] Version in semantic versioning format
-# @param dependencies [Array<String>] Array of dependent module names
+# @param dependencies [Array<String>] Array of dependent MOD names
 # @return [Mod] Created Mod object
-# @raise [InvalidModError] If module definition is invalid
+# @raise [InvalidModError] If MOD definition is invalid
 def create_mod(name, version, dependencies = [])
   # Implementation...
 end
@@ -101,7 +101,7 @@ end
 
 ## Performance
 
-- Efficiently handle large numbers of modules
+- Efficiently handle large numbers of MODs
 - Minimize memory usage
 - Report progress for long-running operations
 - Consider buffering and async processing for I/O operations
@@ -141,6 +141,23 @@ end
 - Create pull requests for code reviews
 - Use `:inbox_tray:` (📥) emoji prefix for merge commits
 - Format merge commit messages as `:inbox_tray: Merge pull request #N: [PR title]`
+
+### Pull Request Merging Process
+
+When merging PRs, AI assistants should follow this process:
+
+1. **Pre-merge Checks**
+   - Verify all CI checks have passed
+   - Confirm required reviews are completed
+   - Ensure there are no merge conflicts
+
+2. **Merge Method**
+   - Use standard merge (`--merge`) as the default approach
+   - Commit message will follow the format: `:inbox_tray: Merge pull request #N: [PR title]`
+
+3. **Post-merge Cleanup**
+   - Delete the branch after merging (`gh pr merge --delete-branch`)
+   - Switch back to the main branch if needed (`git checkout main`)
 
 ## AI Guidelines
 
