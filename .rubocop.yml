@@ -6,6 +6,8 @@ AllCops:
   Exclude:
   - bin/**/*
   - vendor/**/*
+  # Ignore Ruby files in the project root as they are often used for experiments
+  - "*.rb"
   ExtraDetails: true
   TargetRubyVersion: 3.4
   UseCache: true
