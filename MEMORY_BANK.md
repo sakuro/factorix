@@ -133,6 +133,13 @@ end
 - Take special care with Data.define classes
 - Consider external library type definitions when needed
 
+## Development Workflow
+
+- Ensure RuboCop and RSpec pass successfully before pushing changes
+- Run tests locally to verify functionality
+- Follow the branch-based development model
+- Create pull requests for code reviews
+
 ## AI Guidelines
 
 When generating or modifying code for this project:
