@@ -4,15 +4,6 @@ module Factorix
       module Mod
         # Command for disabling a mod
         class Disable < Dry::CLI::Command
-          # Display description for the disable command
-          desc "Disable a MOD"
-
-          # Define arguments for the disable command
-          argument :mod, required: true, desc: "The MOD to disable"
-
-          # Define options for the disable command
-          option :verbose, type: :boolean, default: false, desc: "Print more information"
-
           # Disable a MOD
           # @param mod [String] The MOD to disable
           # @param options [Hash] The options for the command
