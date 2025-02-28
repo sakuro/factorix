@@ -117,8 +117,7 @@ RSpec.describe Factorix::ModSettings do
       end
 
       it "yields each key-value pair" do
-        pairs = []
-        section.each {|key, value| pairs << [key, value] }
+        pairs = section.map {|key, value| [key, value] }
 
         expect(pairs).to contain_exactly(%w[key1 value1], %w[key2 value2])
       end
