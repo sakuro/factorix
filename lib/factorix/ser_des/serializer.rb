@@ -9,8 +9,7 @@ module Factorix
       # @param stream [IO] An IO-like object that responds to #write
       # @raise [ArgumentError] If the stream doesn't respond to #write
       def initialize(stream)
-        raise ArgumentError, "can't read from the given argument" unless stream.respond_to?(:write)
-
+        raise ArgumentError, "can't write to the given argument" unless stream.respond_to?(:write)
         @stream = stream
       end
 
