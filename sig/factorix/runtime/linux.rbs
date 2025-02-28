@@ -1,0 +1,18 @@
+module Factorix
+  class Runtime
+    # Linux runtime environment
+    class Linux < Runtime
+      # Return the path to the Factorio executable
+      # @return [Pathname] path to the Factorio executable
+      def executable: () -> Pathname
+
+      # Return the path to the user's Factorio directory
+      # @return [Pathname] path to the user's Factorio directory
+      def user_dir: () -> Pathname
+
+      # Return the path to the Factorio data directory
+      # @return [Pathname] path to the Factorio data directory
+      def data_dir: () -> Pathname
+    end
+  end
+end

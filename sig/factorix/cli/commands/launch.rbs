@@ -1,0 +1,19 @@
+module Factorix
+  class CLI
+    module Commands
+      # Command for the launch subcommand
+      class Launch < Dry::CLI::Command
+        # Launch the game
+        # @param args [Array<String>] Additional arguments to pass to the game
+        # @param options [Hash] Options for the command
+        # @option options [Boolean] :wait Whether to wait for the game to finish
+        def call: (?args: Array[String], **untyped options) -> void
+
+        # Wait while the given block returns true
+        # @yield Block to evaluate
+        # @return [void]
+        private def wait_while: () { () -> bool } -> void
+      end
+    end
+  end
+end
