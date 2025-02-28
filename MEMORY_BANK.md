@@ -135,8 +135,18 @@ end
 
 ## Development Workflow
 
-- Ensure RuboCop and RSpec pass successfully before pushing changes
-- Run tests locally to verify functionality
+- **Working Branch Creation**:
+  - Always create a working branch before starting development of new features or bug fixes
+  - Use descriptive branch names that reflect the feature or task (e.g., `add-mod-settings-dump`)
+  - Create branches using the `git switch -c <branch-name>` command
+  - For older Git versions, use `git checkout -b <branch-name>` as an alternative
+
+- **Pre-commit Checks**:
+  - Run RuboCop and RSpec tests before committing code changes
+  - Use `bundle exec rubocop <changed-files>` to check code style
+  - Use `bundle exec rspec <relevant-spec-files>` to run tests
+  - Only commit changes after all checks have passed
+
 - Follow the branch-based development model
 - Create pull requests for code reviews
 - Use `:inbox_tray:` (📥) emoji prefix for merge commits
