@@ -123,6 +123,7 @@ end
   - `:memo:` (📝) - Documentation
   - `:hammer:` (🔨) - Refactor
   - `:test_tube:` (🧪) - Tests
+  - `:robot:` (🤖) - MEMORY_BANK.md updates
 
 ## RBS Type Definitions
 
