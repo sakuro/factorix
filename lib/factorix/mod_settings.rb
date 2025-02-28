@@ -14,7 +14,7 @@ module Factorix
       # @raise [InvalidModSectionError] If the section name is invalid
       def initialize(name)
         unless VALID_SECTIONS.include?(name)
-          raise InvalidModSectionError, name
+          raise InvalidModSectionError, "Invalid mod section name: #{name}"
         end
 
         @name = name
@@ -70,12 +70,12 @@ module Factorix
     # @raise [ModSectionNotFoundError] If the section is not found
     def [](name)
       unless VALID_SECTIONS.include?(name)
-        raise InvalidModSectionError, name
+        raise InvalidModSectionError, "Invalid mod section name: #{name}"
       end
 
       section = @sections[name]
       unless section
-        raise ModSectionNotFoundError, name
+        raise ModSectionNotFoundError, "Mod section not found: #{name}"
       end
 
       section
@@ -126,7 +126,7 @@ module Factorix
     private def process_raw_settings(raw_settings)
       raw_settings.each do |section_name, section_settings|
         unless VALID_SECTIONS.include?(section_name)
-          raise InvalidModSectionError, section_name
+          raise InvalidModSectionError, "Invalid mod section name: #{section_name}"
         end
 
         section = @sections[section_name] ||= Section.new(section_name)
