@@ -69,13 +69,6 @@ module Factorix
     # @return [Array<Integer>] Array of 16-bit unsigned integers
     def read_u16_tuple(length) = Array.new(length) { read_u16 }
 
-    # Read a tuple of optimized integers
-    #
-    # @param bit_size [Integer] Bit size of the integers
-    # @param length [Integer] Number of integers to read
-    # @return [Array<Integer>] Array of optimized integers
-    def read_optim_tuple(bit_size, length) = Array.new(length) { read_optim(bit_size) }
-
     # Read a boolean value
     #
     # @return [Boolean] Boolean value
