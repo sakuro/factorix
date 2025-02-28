@@ -25,6 +25,11 @@ RSpec/IndexedLet:
     - 'spec/factorix/version24_spec.rb'
     - 'spec/factorix/version64_spec.rb'
 
+# Configuration parameters: Max.
+RSpec/MultipleExpectations:
+  Exclude:
+    - 'spec/factorix/mod_settings_spec.rb'
+
 # Configuration parameters: AllowSubject, Max.
 RSpec/MultipleMemoizedHelpers:
   Exclude:
