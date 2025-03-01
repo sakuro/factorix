@@ -54,16 +54,94 @@ Factorix is a Ruby library and CLI for Factorio mod management.
 
 - Follow Semantic Versioning (semver.org)
 
-## Commit Messages
+## Commit Messages and PR Descriptions
 
 Format: Emoji prefix + concise present tense description
 
+Start description with a verb (Add, Fix, Update, etc.)
+
 Common prefixes:
-- `:new:` - New feature
-- `:beetle:` - Bug fix
-- `:memo:` - Documentation
-- `:hammer:` - Refactor
-- `:test_tube:` - Tests
+- `:new:` (🆕) - New feature
+- `:beetle:` (🪲) - Bug fix
+- `:memo:` (📝) - Documentation
+- `:hammer:` (🔨) - Refactor
+- `:test_tube:` (🧪) - Tests
+- `:robot:` (🤖) - MEMORY_BANK.md updates
+- `:inbox_tray:` (📥) - Merge commits (format: `:inbox_tray: Merge pull request #N: [PR title]`)
+
+### Command Line Usage for Messages
+
+The following guidelines apply to both git commit messages and GitHub PR descriptions.
+
+When creating messages with multiple lines or special characters:
+
+- Be cautious with double quotes as they allow shell interpretation
+- Consider using single quotes or heredocs for complex messages
+- For messages with Markdown formatting, avoid backticks in double-quoted strings
+- When possible, use stdin or file input for multi-line messages
+
+#### Git Commit Examples
+
+Example using BASH dollar-quoted string (not heredoc):
+```bash
+git commit -m $'First line\nSecond line with `code`'
+```
+
+Example using heredoc:
+```bash
+git commit <<EOF
+:memo: Update documentation
+
+- Add new section about X
+- Improve examples for Y
+- Fix typos in Z section
+EOF
+```
+
+Example using stdin:
+```bash
+git commit -F- <<EOF
+:new: Add new feature
+
+- Implement X functionality
+- Fix Y issue
+EOF
+```
+
+#### GitHub PR Examples
+
+Example using heredoc for PR creation:
+```bash
+gh pr create --title ":new: Add new feature" --body <<EOF
+This PR implements a new feature that:
+
+- Adds X functionality
+- Improves Y performance
+- Fixes Z issue
+
+## Testing
+- [x] Unit tests added
+- [x] Integration tests passed
+EOF
+```
+
+Example using a file for PR body:
+```bash
+# First create a file with the PR description
+cat > pr-description.md <<EOF
+:hammer: Refactor serialization code
+
+- Move classes to dedicated namespace
+- Improve error handling
+- Add comprehensive documentation
+
+## Breaking Changes
+None
+EOF
+
+# Then use the file for PR creation
+gh pr create --title ":hammer: Refactor serialization code" --body-file pr-description.md
+```
 
 ## RBS Type Definitions
 

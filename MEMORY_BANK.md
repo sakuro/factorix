@@ -113,17 +113,9 @@ end
 - **Minor**: Backward-compatible features
 - **Patch**: Backward-compatible fixes
 
-## Commit Messages
+## Commit Messages and PR Descriptions
 
-- Format: Emoji prefix + concise present tense description
-- Start description with a verb (Add, Fix, Update, etc.)
-- Common emoji prefixes:
-  - `:new:` (🆕) - New feature
-  - `:beetle:` (🪲) - Bug fix
-  - `:memo:` (📝) - Documentation
-  - `:hammer:` (🔨) - Refactor
-  - `:test_tube:` (🧪) - Tests
-  - `:robot:` (🤖) - MEMORY_BANK.md updates
+For detailed guidelines on commit message and PR description formatting, including examples of command line usage, refer to the [Commit Messages and PR Descriptions](DEVELOPMENT.md#commit-messages-and-pr-descriptions) section in DEVELOPMENT.md.
 
 ## RBS Type Definitions
 
@@ -243,6 +235,8 @@ If changes to a submodule are needed:
 
 ## AI Guidelines
 
+### Code Generation and Modification
+
 When generating or modifying code for this project:
 
 - Match existing patterns and styles
@@ -252,6 +246,26 @@ When generating or modifying code for this project:
 - Minimize dependencies
 - Follow established error handling patterns
 - Consider performance implications
+
+### Command Line Operations with Multi-line Text
+
+When executing commands that require multi-line text input (such as commit messages, PR descriptions, etc.):
+
+- Avoid using double quotes for text containing shell-interpretable characters
+  - Shell may interpret characters like `$`, `` ` ``, `\`, etc. within double quotes
+  - This is especially problematic when including Markdown code blocks with backticks
+- Prefer using one of these safer alternatives:
+  - Single quotes (which prevent shell interpretation)
+  - Heredocs (for complex multi-line content)
+  - File input (creating a temporary file and passing it to the command)
+- When working with GitHub CLI (`gh`), consider using the `--body-file` option for PR descriptions
+
+### Language Usage
+
+- **Chat Interactions**: Use the user's native language regardless of the language used in the user's input
+- **Code Comments**:
+  - During planning phase: Use the user's native language
+  - In actual code implementation/modification: Use English
 
 ---
 
