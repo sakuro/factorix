@@ -129,10 +129,9 @@ This PR implements a new feature that:
 EOF
 ```
 
-Example using a file for PR body:
+Example using --body-file with standard input:
 ```bash
-# First create a file with the PR description
-cat > pr-description.md <<EOF
+gh pr create --title ":hammer: Refactor serialization code" --body-file - <<EOF
 :hammer: Refactor serialization code
 
 - Move classes to dedicated namespace
@@ -142,10 +141,10 @@ cat > pr-description.md <<EOF
 ## Breaking Changes
 None
 EOF
-
-# Then use the file for PR creation
-gh pr create --title ":hammer: Refactor serialization code" --body-file pr-description.md
 ```
+
+# The - after --body-file tells gh to read from standard input
+# This is cleaner than using temporary files and avoids cleanup
 
 ## RBS Type Definitions
 
