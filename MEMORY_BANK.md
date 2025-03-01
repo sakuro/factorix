@@ -263,8 +263,9 @@ When executing commands that require multi-line text input (such as commit messa
   - Example: `git commit -F- <<EOF ... EOF`
   - The hyphen after `-F` tells git to read from standard input instead of a file
 - When working with GitHub CLI (`gh`):
-  - Use the `--body-file` option for PR descriptions
-  - Example: `gh pr create --title "Title" --body-file pr-body.txt`
+  - Use the `--body-file -` option to read PR descriptions from standard input
+  - Example: `gh pr create --title "Title" --body-file - <<EOF ... EOF`
+  - The hyphen after `--body-file` tells gh to read from standard input instead of a file
 
 See the [Commit Messages and PR Descriptions](DEVELOPMENT.md#commit-messages-and-pr-descriptions) section in DEVELOPMENT.md for detailed examples.
 
