@@ -274,6 +274,10 @@ See the [Commit Messages and PR Descriptions](DEVELOPMENT.md#commit-messages-and
 - **Code Comments**:
   - During planning phase: Use the user's native language
   - In actual code implementation/modification: Use English
+- **Command Execution**:
+  - Use English for all command line operations
+  - This includes commit messages, PR descriptions, and other command outputs
+  - Exception: When the command output is intended to be displayed to the user, use the user's native language
 
 ---
 
