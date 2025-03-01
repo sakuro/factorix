@@ -98,7 +98,7 @@ git commit <<EOF
 EOF
 ```
 
-Example using stdin:
+Example using -F option with standard input (recommended for AI assistants):
 ```bash
 git commit -F- <<EOF
 :new: Add new feature
@@ -106,6 +106,10 @@ git commit -F- <<EOF
 - Implement X functionality
 - Fix Y issue
 EOF
+```
+
+# The -F- syntax tells git to read from standard input
+# This is cleaner than using temporary files and avoids cleanup
 ```
 
 #### GitHub PR Examples

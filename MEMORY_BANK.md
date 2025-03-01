@@ -257,8 +257,16 @@ When executing commands that require multi-line text input (such as commit messa
 - Prefer using one of these safer alternatives:
   - Single quotes (which prevent shell interpretation)
   - Heredocs (for complex multi-line content)
-  - File input (creating a temporary file and passing it to the command)
-- When working with GitHub CLI (`gh`), consider using the `--body-file` option for PR descriptions
+  - File input with `-F` option (creating a temporary file and passing it to the command)
+- For git commit messages:
+  - Use `-F-` option to read from standard input (recommended for AI assistants)
+  - Example: `git commit -F- <<EOF ... EOF`
+  - The hyphen after `-F` tells git to read from standard input instead of a file
+- When working with GitHub CLI (`gh`):
+  - Use the `--body-file` option for PR descriptions
+  - Example: `gh pr create --title "Title" --body-file pr-body.txt`
+
+See the [Commit Messages and PR Descriptions](DEVELOPMENT.md#commit-messages-and-pr-descriptions) section in DEVELOPMENT.md for detailed examples.
 
 ### Language Usage
 
