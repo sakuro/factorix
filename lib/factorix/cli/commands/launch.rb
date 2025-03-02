@@ -9,7 +9,12 @@ module Factorix
     module Commands
       # Command for the launch subcommand
       class Launch < Dry::CLI::Command
-        SYNCHRONOUS_OPTIONS = %w[--data-dump --help].freeze
+        SYNCHRONOUS_OPTIONS = %w[
+          --dump-data
+          --dump-icon-sprites
+          --dump-prototype-locale
+          --help
+        ].freeze
         private_constant :SYNCHRONOUS_OPTIONS
 
         desc "Launch the game"

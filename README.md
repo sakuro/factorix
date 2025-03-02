@@ -49,8 +49,7 @@ Options:
 You can pass additional arguments to the Factorio executable by adding them after `--`:
 
 ```bash
-factorix launch -- --help
-factorix launch -- --data-dump
+factorix launch -- --dump-icon-sprites
 factorix launch --wait -- --mod-directory /path/to/mods
 ```
 
