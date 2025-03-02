@@ -9,7 +9,7 @@ RSpec.describe Factorix::ModContext do
   let(:another_enabled_mod) { Factorix::Mod[name: "mod3"] }
 
   let(:mod_list) { instance_double(Factorix::ModList) }
-  let(:context) { Factorix::ModContext.new(mod_list) }
+  let(:mod_context) { Factorix::ModContext.new(mod_list) }
 
   describe "#with_only_enabled" do
     before do
@@ -42,7 +42,7 @@ RSpec.describe Factorix::ModContext do
     context "when enabling a specific mod" do
       before do
         # Call with_only_enabled with disabled_mod
-        context.with_only_enabled("mod2") { "test block" }
+        mod_context.with_only_enabled("mod2") { "test block" }
       end
 
       it "does not disable the base mod" do
@@ -65,7 +65,7 @@ RSpec.describe Factorix::ModContext do
     context "when restoring original mod states" do
       before do
         # Call with_only_enabled with an empty list (only base mod enabled)
-        context.with_only_enabled { "test block" }
+        mod_context.with_only_enabled { "test block" }
       end
 
       it "re-enables the originally enabled mod" do
@@ -85,7 +85,7 @@ RSpec.describe Factorix::ModContext do
       before do
         # Call with_only_enabled with an empty list and a block that raises an error
 
-        context.with_only_enabled { raise RuntimeError, "Test error" }
+        mod_context.with_only_enabled { raise RuntimeError, "Test error" }
       rescue RuntimeError
         # Expected error, continue with the test
       end
@@ -105,7 +105,7 @@ RSpec.describe Factorix::ModContext do
 
     it "saves the mod list after enabling/disabling and after restoring" do
       # Call with_only_enabled
-      context.with_only_enabled("mod2") { "test block" }
+      mod_context.with_only_enabled("mod2") { "test block" }
 
       # Verify save was called twice
       expect(mod_list).to have_received(:save).twice
