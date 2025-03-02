@@ -115,6 +115,10 @@ RSpec.describe Factorix::CLI::Commands::Launch do
   end
 
   describe "#wait_while" do
+    before do
+      allow(command).to receive(:sleep)
+    end
+
     it "loops until the condition is false" do
       counter = 0
       condition = -> { (counter += 1) < 3 }
