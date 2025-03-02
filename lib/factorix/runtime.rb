@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "errors"
+require_relative "mod_context"
 require_relative "runtime/linux"
 require_relative "runtime/mac_os"
 require_relative "runtime/windows"
@@ -78,6 +79,16 @@ module Factorix
     # @return [Boolean] true if the game is running, false otherwise
     def running?
       raise NotImplementedError
+    end
+
+    # Evaluate the block with only the specified mods enabled
+    # @param mod_names [Array<String>] the names of the mods to enable
+    # @yield the block to evaluate
+    # @return [void]
+    def with_only_mod_enabled(*mod_names, &)
+      list = Factorix::ModList.load
+      context = ModContext.new(list)
+      context.with_only_enabled(*mod_names, &)
     end
   end
 end
