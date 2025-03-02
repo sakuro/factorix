@@ -78,11 +78,11 @@ RSpec.describe Factorix::CLI::Commands::Launch do
         allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
-      let(:args) { %w[--data-dump] }
+      let(:args) { %w[--dump-data] }
 
       it "launches the game synchronously" do
         call
-        expect(runtime).to have_received(:launch).with("--data-dump", async: false)
+        expect(runtime).to have_received(:launch).with("--dump-data", async: false)
       end
     end
 
@@ -91,7 +91,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
         allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
-      let(:args) { %w[--data-dump] }
+      let(:args) { %w[--dump-data] }
       let(:options) { {wait: true} }
 
       it "does not wait for the game" do
