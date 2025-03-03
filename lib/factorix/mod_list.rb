@@ -20,7 +20,7 @@ module Factorix
     def self.load(from: Factorix::Runtime.runtime.mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       new(raw_data[:mods].to_h {|e|
-        [Factorix::Mod[name: e[:name]], Factorix::ModState[**e.slice(:enabled, :version)]]
+        [Factorix::Mod[name: e[:name]], Factorix::ModState[enabled: e[:enabled], version: e[:version]]]
       })
     end
 
