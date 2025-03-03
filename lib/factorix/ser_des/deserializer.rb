@@ -118,7 +118,7 @@ module Factorix
       end
 
       # Read a list
-      # This type is identical ro dictionary
+      # This type is identical to dictionary
       #
       # @see https://wiki.factorio.com/Property_tree#List
       alias read_list read_dictionary
