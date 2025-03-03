@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require "dry/cli"
-require "factorix"
 require "pathname"
 require "perfect_toml"
+require_relative "../../../../mod_settings"
+require_relative "../../../../runtime"
 
 module Factorix
   class CLI

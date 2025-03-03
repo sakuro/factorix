@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/cli"
+require_relative "../../../mod_list"
 
 module Factorix
   class CLI
