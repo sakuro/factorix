@@ -105,15 +105,6 @@ module Factorix
       # @return [Version24] Version24 object
       def read_version24 = Factorix::SerDes::Version24[read_optim_u16, read_optim_u16, read_optim_u16]
 
-      # Read a list
-      #
-      # @see https://wiki.factorio.com/Property_tree#List
-      # @return [Array] List of objects
-      def read_list
-        length = read_optim_u32
-        Array.new(length) { read_property_tree }
-      end
-
       # Read a dictionary
       #
       # @see https://wiki.factorio.com/Property_tree#Dictionary
@@ -125,6 +116,12 @@ module Factorix
           dict[key] = read_property_tree
         end
       end
+
+      # Read a list
+      # This type is identical to dictionary
+      #
+      # @see https://wiki.factorio.com/Property_tree#List
+      alias read_list read_dictionary
 
       RGBA = %w[r g b a].freeze
       private_constant :RGBA

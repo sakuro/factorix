@@ -247,7 +247,10 @@ RSpec.describe Factorix::SerDes::Deserializer do
   end
 
   describe "#read_list" do
-    pending "Implementation of list deserialization tests"
+    it "is an alias of #read_dictionary" do
+      read_list = Factorix::SerDes::Deserializer.instance_method(:read_list)
+      expect(read_list.original_name).to eq(:read_dictionary)
+    end
   end
 
   describe "#read_dictionary" do
