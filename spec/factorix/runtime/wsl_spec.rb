@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "factorix/runtime/wsl"
+require_relative "../../../lib/factorix/runtime/wsl"
 
 RSpec.describe Factorix::Runtime::WSL do
   subject(:runtime) { Factorix::Runtime::WSL.new(path:) }

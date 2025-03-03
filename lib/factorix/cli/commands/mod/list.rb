@@ -2,8 +2,8 @@
 
 require "csv"
 require "dry/cli"
-require "factorix"
 require "markdown-tables"
+require_relative "../../../mod_list"
 
 module Factorix
   class CLI

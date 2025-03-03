@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "factorix/mod"
+require_relative "../../lib/factorix/mod"
 
 RSpec.describe Factorix::Mod do
   describe "#base?" do

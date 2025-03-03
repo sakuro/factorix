@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require_relative "../../lib/factorix/mod_settings"
 
 RSpec.describe Factorix::ModSettings do
   let(:settings_path) { Pathname.new("/path/to/mod-settings.dat") }

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../../lib/factorix/ser_des/version64"
+
 RSpec.describe Factorix::SerDes::Version64 do
   describe ".new" do
     context "with version string" do

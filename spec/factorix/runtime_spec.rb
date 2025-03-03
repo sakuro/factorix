@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require "factorix/runtime"
 require "fileutils"
 require "tempfile"
+require_relative "../../lib/factorix/mod_list"
+require_relative "../../lib/factorix/runtime"
 
 RSpec.describe Factorix::Runtime do
   describe ".runtime" do
