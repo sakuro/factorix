@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "factorix/mod_context"
+require_relative "../../lib/factorix/mod_context"
 
 RSpec.describe Factorix::ModContext do
   let(:base_mod) { Factorix::Mod[name: "base"] }
