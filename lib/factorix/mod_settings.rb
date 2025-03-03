@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "ser_des/deserializer"
+
 module Factorix
   # Class for handling MOD settings
   class ModSettings

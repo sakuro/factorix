@@ -2,7 +2,9 @@
 
 require "json"
 require_relative "errors"
+require_relative "mod"
 require_relative "mod_state"
+require_relative "runtime"
 
 module Factorix
   # Represent a list of MODs and their enabled status.
@@ -17,7 +19,9 @@ module Factorix
     # @return [Factorix::ModList] the loaded MOD list.
     def self.load(from: Factorix::Runtime.runtime.mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
-      new(raw_data[:mods].to_h {|e| [Mod[name: e[:name]], ModState[enabled: e[:enabled], version: e[:version]]] })
+      new(raw_data[:mods].to_h {|e|
+        [Factorix::Mod[name: e[:name]], Factorix::ModState[**e.slice(:enabled, :version)]]
+      })
     end
 
     # Initialize the MOD list.
