@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "factorix/runtime/mac_os"
+require_relative "../../../lib/factorix/runtime/mac_os"
 
 # Define ProcTableStruct for use in tests
 ProcTableStruct = Struct.new(:pid, :cmdline) unless defined?(ProcTableStruct)

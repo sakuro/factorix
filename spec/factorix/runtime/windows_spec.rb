@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "factorix/runtime/windows"
+require_relative "../../../lib/factorix/runtime/windows"
 
 RSpec.describe Factorix::Runtime::Windows do
   subject(:runtime) { Factorix::Runtime::Windows.new(path:) }
