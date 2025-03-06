@@ -17,7 +17,7 @@ Factorix is a Ruby library and CLI for Factorio mod management.
 
 ## Coding Conventions
 
-- Ruby 3.4+
+- Ruby 3.2+
 - RuboCop for formatting
 - 2 spaces indentation, 120 char line limit
 - `snake_case` methods, `PascalCase` classes, `SCREAMING_SNAKE_CASE` constants
