@@ -24,7 +24,7 @@ module Factorix
         # Launch the game
         def call(args: [], **options)
           runtime = Factorix::Runtime.runtime
-          async = args.none? { SYNCHRONOUS_OPTIONS.include?(it) }
+          async = args.none? {|arg| SYNCHRONOUS_OPTIONS.include?(arg) }
 
           runtime.launch(*args, async:)
 

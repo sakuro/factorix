@@ -7,7 +7,7 @@ This document serves as a structured knowledge base for the Factorix project, de
 - **Name**: Factorix
 - **Type**: Ruby library and CLI tool
 - **Purpose**: Factorio game mod management and launching
-- **Target Ruby Version**: 3.4+
+- **Target Ruby Version**: 3.2+
 
 ## Code Architecture
 
@@ -35,7 +35,7 @@ spec/                         # Test code (RSpec)
 
 ### Language
 
-- Ruby 3.4+
+- Ruby 3.2+
 - Modern Ruby features: pattern matching, keyword arguments, etc.
 - RBS type definitions in `sig/` directory
 
