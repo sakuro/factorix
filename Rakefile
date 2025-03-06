@@ -7,6 +7,6 @@ require "yard"
 RSpec::Core::RakeTask.new(:spec)
 YARD::Rake::YardocTask.new
 
-Dir["lib/tasks/*.rake"].each { load it }
+Dir["lib/tasks/*.rake"].each {|file| load file }
 
 task default: %i[spec rubocop]
