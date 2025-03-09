@@ -34,7 +34,7 @@ RSpec.describe Factorix::ModSettings do
 
   describe "#initialize" do
     it "loads settings from the given path" do
-      mod_settings = described_class.new(settings_path)
+      mod_settings = Factorix::ModSettings.new(settings_path)
 
       expect(mod_settings["startup"]).to be_a(Factorix::ModSettings::Section)
       expect(mod_settings["runtime-global"]).to be_a(Factorix::ModSettings::Section)
@@ -45,12 +45,12 @@ RSpec.describe Factorix::ModSettings do
       invalid_settings = {"invalid-section" => {}}
       allow(deserializer).to receive(:read_property_tree).and_return(invalid_settings)
 
-      expect { described_class.new(settings_path) }.to raise_error(Factorix::InvalidModSectionError)
+      expect { Factorix::ModSettings.new(settings_path) }.to raise_error(Factorix::InvalidModSectionError)
     end
   end
 
   describe "#[]" do
-    let(:mod_settings) { described_class.new(settings_path) }
+    let(:mod_settings) { Factorix::ModSettings.new(settings_path) }
 
     it "returns the section with the given name" do
       section = mod_settings["startup"]
@@ -74,7 +74,7 @@ RSpec.describe Factorix::ModSettings do
   end
 
   describe "#each_section" do
-    let(:mod_settings) { described_class.new(settings_path) }
+    let(:mod_settings) { Factorix::ModSettings.new(settings_path) }
 
     it "yields each section" do
       sections = []
