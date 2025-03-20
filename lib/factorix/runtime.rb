@@ -90,5 +90,25 @@ module Factorix
       context = ModContext.new(list)
       context.with_only_enabled(*mod_names, &)
     end
+
+    # @return [Pathname] path to the executable file
+    def executable
+      raise NotImplementedError
+    end
+
+    # @return [Pathname] path to the user directory
+    def user_dir
+      raise NotImplementedError
+    end
+
+    # @return [Pathname] path to the data directory
+    def data_dir
+      raise NotImplementedError
+    end
+
+    # @return [Pathname] path to the cache directory
+    def cache_dir
+      raise NotImplementedError
+    end
   end
 end

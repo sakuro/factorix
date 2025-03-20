@@ -9,7 +9,8 @@ RSpec.describe Factorix::Runtime::Windows do
     instance_double(
       Factorix::Runtime::Windows::WindowsPath,
       app_data: Pathname("C:/Users/wube/AppData/Roaming"),
-      program_files_x86: Pathname("C:/Program Files (x86)")
+      program_files_x86: Pathname("C:/Program Files (x86)"),
+      local_app_data: Pathname("C:/Users/wube/AppData/Local")
     )
   }
 
@@ -34,6 +35,14 @@ RSpec.describe Factorix::Runtime::Windows do
 
     it "returns the path of Factorio data directory" do
       expect(data_dir).to eq(Pathname("C:/Program Files (x86)/Steam/steamapps/common/Factorio/data"))
+    end
+  end
+
+  describe "#cache_dir" do
+    subject(:cache_dir) { runtime.cache_dir }
+
+    it "returns a path under local_app_data" do
+      expect(cache_dir).to eq(Pathname("C:/Users/wube/AppData/Local/factorix"))
     end
   end
 end

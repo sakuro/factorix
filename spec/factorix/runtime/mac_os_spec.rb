@@ -79,4 +79,16 @@ RSpec.describe Factorix::Runtime::MacOS do
       end
     end
   end
+
+  describe "#cache_dir" do
+    subject(:cache_dir) { runtime.cache_dir }
+
+    before do
+      allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME").and_return("/Users/wube/Library/Caches")
+    end
+
+    it "returns a path under ~/Library/Caches" do
+      expect(cache_dir).to eq(Pathname("/Users/wube/Library/Caches/factorix"))
+    end
+  end
 end
