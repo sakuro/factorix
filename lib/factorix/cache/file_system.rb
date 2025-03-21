@@ -23,10 +23,19 @@ module Factorix
         Digest::SHA1.hexdigest(url_string)
       end
 
+      # Check if a cache entry exists for the given key
+      #
+      # @param key [String] cache key to check
+      # @return [Boolean] true if the cache entry exists, false otherwise
       def exist?(key)
         cache_path_for(key).exist?
       end
 
+      # Fetch a cached file and copy it to the output path
+      #
+      # @param key [String] cache key to fetch
+      # @param output [Pathname, String] path to copy the cached file to
+      # @return [Boolean] true if the cache entry was found and copied, false otherwise
       def fetch(key, output)
         path = cache_path_for(key)
         return false unless path.exist?
@@ -35,6 +44,11 @@ module Factorix
         true
       end
 
+      # Store a file in the cache
+      #
+      # @param key [String] cache key to store under
+      # @param src [Pathname, String] path of the file to store
+      # @return [void]
       def store(key, src)
         path = cache_path_for(key)
         path.dirname.mkpath
