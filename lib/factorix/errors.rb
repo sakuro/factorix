@@ -15,4 +15,7 @@ module Factorix
 
   # Raised when a section is not found in mod settings.
   class ModSectionNotFoundError < Error; end
+
+  # Error raised when download fails
+  class DownloadError < Error; end
 end
