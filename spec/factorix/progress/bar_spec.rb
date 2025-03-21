@@ -11,7 +11,7 @@ RSpec.describe Factorix::Progress::Bar do
 
   before do
     allow(ProgressBar).to receive(:create).with(
-      title: title,
+      title:,
       format: "%t: |%B| %p%% %e",
       output: $stderr
     ).and_return(progress_bar)
@@ -21,7 +21,7 @@ RSpec.describe Factorix::Progress::Bar do
     it "creates a progress bar with the given title" do
       progress
       expect(ProgressBar).to have_received(:create).with(
-        title: title,
+        title:,
         format: "%t: |%B| %p%% %e",
         output: $stderr
       )

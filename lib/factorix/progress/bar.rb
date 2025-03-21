@@ -10,7 +10,7 @@ module Factorix
       # @param title [String] title of the progress bar
       def initialize(title: "Downloading")
         @bar = ProgressBar.create(
-          title: title,
+          title:,
           format: "%t: |%B| %p%% %e",
           output: $stderr
         )
