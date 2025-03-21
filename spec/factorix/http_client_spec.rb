@@ -15,8 +15,8 @@ RSpec.describe Factorix::HttpClient do
   let(:output) { output_dir.join("file.zip") }
 
   before do
-    allow(progress).to receive(:content_length_proc).and_return(proc { |size| size })
-    allow(progress).to receive(:progress_proc).and_return(proc { |size| size })
+    allow(progress).to receive(:content_length_proc).and_return(proc {|size| size })
+    allow(progress).to receive(:progress_proc).and_return(proc {|size| size })
     allow(uri).to receive(:open).and_return(nil)
   end
 
