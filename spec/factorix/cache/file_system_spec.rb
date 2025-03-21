@@ -21,7 +21,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       FileUtils.remove_entry(cache_dir)
       expect {
         Factorix::Cache::FileSystem.new(cache_dir)
-      }.to change { cache_dir.exist? }.from(false).to(true)
+      }.to change(cache_dir, :exist?).from(false).to(true)
     end
   end
 
@@ -98,7 +98,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     it "creates the cache subdirectory" do
       expect {
         cache.store(key, source_file)
-      }.to change { cache_path.dirname.exist? }.from(false).to(true)
+      }.to change(cache_path.dirname, :exist?).from(false).to(true)
     end
   end
 
