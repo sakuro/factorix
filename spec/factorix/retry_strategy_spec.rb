@@ -113,26 +113,16 @@ RSpec.describe Factorix::RetryStrategy do
   end
 
   describe "retry callback" do
-    let(:output) { StringIO.new }
-
     subject(:strategy) { Factorix::RetryStrategy.new(tries: 2, base_interval: 0) }
 
-    before do
-      $stderr = output
-    end
-
-    after do
-      $stderr = STDERR
-    end
-
     it "logs retry attempts" do
-      begin
-        strategy.with_retry { raise Errno::ETIMEDOUT, "Connection timed out" }
-      rescue Errno::ETIMEDOUT
-        # Expected error
-      end
-
-      expect(output.string).to match(/Download retry \d+ after \d+\.\d+e?-?\d*s, next in \d+\.\d+e?-?\d*s: Errno::ETIMEDOUT - Connection timed out/)
+      expect {
+        begin
+          strategy.with_retry { raise Errno::ETIMEDOUT, "Connection timed out" }
+        rescue Errno::ETIMEDOUT
+          # Expected error
+        end
+      }.to output(/Download retry \d+ after \d+\.\d+e?-?\d*s, next in \d+\.\d+e?-?\d*s: Errno::ETIMEDOUT - Connection timed out/).to_stderr
     end
   end
 end
