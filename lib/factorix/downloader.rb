@@ -3,8 +3,8 @@
 require "pathname"
 require "tmpdir"
 require_relative "cache/file_system"
-require_relative "http_client"
 require_relative "errors"
+require_relative "http_client"
 require_relative "runtime"
 
 module Factorix

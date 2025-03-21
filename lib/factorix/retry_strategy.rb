@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "retriable"
 require "net/protocol"
 require "openssl"
+require "retriable"
 
 module Factorix
   # Class that manages retry strategy
