@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "pathname"
-require "fileutils"
 require "digest"
+require "fileutils"
+require "pathname"
 
 module Factorix
   module Cache

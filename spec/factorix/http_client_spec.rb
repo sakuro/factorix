@@ -3,8 +3,8 @@
 require "pathname"
 require "tmpdir"
 require_relative "../../lib/factorix/http_client"
-require_relative "../../lib/factorix/retry_strategy"
 require_relative "../../lib/factorix/progress/bar"
+require_relative "../../lib/factorix/retry_strategy"
 
 RSpec.describe Factorix::HttpClient do
   let(:retry_strategy) { instance_double(Factorix::RetryStrategy) }
