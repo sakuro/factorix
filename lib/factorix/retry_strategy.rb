@@ -23,6 +23,7 @@ module Factorix
         EOFError
       ]
     }.freeze
+    private_constant :DEFAULT_OPTIONS
 
     # @param options [Hash] Options for retry behavior
     # @option options [Integer] :tries Number of attempts (including the initial try)

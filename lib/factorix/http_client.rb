@@ -14,6 +14,7 @@ module Factorix
       read_timeout: 60,
       ssl_verify_mode: OpenSSL::SSL::VERIFY_PEER
     }.freeze
+    private_constant :HTTP_OPTIONS
 
     # @param retry_strategy [RetryStrategy] retry strategy for downloads
     # @param progress [#content_length_proc, #progress_proc] progress tracking callbacks
