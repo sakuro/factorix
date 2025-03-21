@@ -53,7 +53,7 @@ RSpec.describe Factorix::RetryStrategy do
     end
 
     context "with custom retry callback" do
-      let(:custom_callback) { ->(exception, try, elapsed_time, next_interval) {} }
+      let(:custom_callback) { ->(_exception, _try, _elapsed_time, _next_interval) {} }
       subject(:strategy) { Factorix::RetryStrategy.new(on_retry: custom_callback) }
 
       it "uses the custom callback" do
