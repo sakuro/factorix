@@ -118,8 +118,8 @@ RSpec.describe Factorix::Cache::FileSystem do
 
     it "ensures the lock file is removed even if the block raises an error" do
       expect {
-        cache.with_lock(key) { raise "error" }
-      }.to raise_error("error")
+        cache.with_lock(key) { raise RuntimeError, "error" }
+      }.to raise_error(RuntimeError, "error")
       expect(lock_path).not_to exist
     end
 
