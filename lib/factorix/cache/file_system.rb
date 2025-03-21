@@ -40,7 +40,12 @@ module Factorix
         FileUtils.cp(src, path)
       end
 
-      def with_lock(key, &block)
+      # Executes the given block with a file lock
+      #
+      # @param key [String] cache key to lock
+      # @yield Executes the block with exclusive file lock
+      # @return [void]
+      def with_lock(key)
         lock_path = lock_path_for(key)
         cleanup_stale_lock(lock_path)
 
