@@ -108,12 +108,12 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     it "creates and removes the lock file" do
-      cache.with_lock(key) { }
+      cache.with_lock(key) {}
       expect(lock_path).not_to exist
     end
 
     it "yields to the block" do
-      expect { |b| cache.with_lock(key, &b) }.to yield_control
+      expect {|b| cache.with_lock(key, &b) }.to yield_control
     end
 
     it "ensures the lock file is removed even if the block raises an error" do
@@ -131,7 +131,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       end
 
       it "removes the stale lock file" do
-        cache.with_lock(key) { }
+        cache.with_lock(key) {}
         expect(lock_path).not_to exist
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe Factorix::Cache::FileSystem do
         # This test is a bit tricky because we can't easily test file locking
         # Instead, we just verify that the code doesn't raise any errors
         expect {
-          cache.with_lock(key) { }
+          cache.with_lock(key) {}
         }.not_to raise_error
       end
     end
