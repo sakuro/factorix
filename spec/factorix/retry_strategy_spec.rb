@@ -97,17 +97,13 @@ RSpec.describe Factorix::RetryStrategy do
 
     context "when the block always fails" do
       it "raises the last error" do
-        expect do
-          strategy.with_retry { raise Errno::ETIMEDOUT }
-        end.to raise_error(Errno::ETIMEDOUT)
+        expect { strategy.with_retry { raise Errno::ETIMEDOUT } }.to raise_error(Errno::ETIMEDOUT)
       end
     end
 
     context "when an unexpected error occurs" do
       it "does not retry" do
-        expect do
-          strategy.with_retry { raise StandardError }
-        end.to raise_error(StandardError)
+        expect { strategy.with_retry { raise StandardError } }.to raise_error(StandardError)
       end
     end
   end
