@@ -19,7 +19,7 @@ group :develop do
   gem "rubocop-thread_safety"
 
   # This branch supports Data subclasses being correctly documented as classes, rather than constants.
-  # https://github.com/lsegal/yard/pull/160
+  # https://github.com/lsegal/yard/pull/1600
   gem "yard", github: "marshall-lee/yard", branch: "data-define"
 end
 

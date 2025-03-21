@@ -16,8 +16,10 @@ module Factorix
         @cache_dir.mkpath
       end
 
-      def key_for(url)
-        Digest::SHA1.hexdigest(url.to_s)
+      # @param url_string [String] URL string to generate key for
+      # @return [String] cache key
+      def key_for(url_string)
+        Digest::SHA1.hexdigest(url_string)
       end
 
       def exist?(key)
