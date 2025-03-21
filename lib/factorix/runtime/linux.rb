@@ -4,22 +4,13 @@ module Factorix
   class Runtime
     # Linux runtime environment
     class Linux < self
-      # Return the path to the Factorio executable
-      # @return [Pathname] path to the Factorio executable
-      def executable
-        raise NotImplementedError
-      end
-
-      # Return the path to the Factorio data directory
-      # @return [Pathname] path to the Factorio data directory
-      def user_dir
-        raise NotImplementedError
-      end
-
-      # Return the path to the Factorio data directory
-      # @return [Pathname] path to the Factorio data directory
-      def data_dir
-        raise NotImplementedError
+      # Return the path to the cache directory
+      # @return [Pathname] path to the cache directory
+      def cache_dir
+        base = ENV.fetch("XDG_CACHE_HOME") {
+          File.expand_path("~/.cache")
+        }
+        Pathname(base).join("factorix")
       end
     end
   end

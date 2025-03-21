@@ -37,5 +37,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-core", ">= 1.1.0"
   spec.add_dependency "markdown-tables", ">= 1.1.1"
   spec.add_dependency "perfect_toml", ">= 0.9.0"
+  spec.add_dependency "retriable", ">= 3.1.2"
+  spec.add_dependency "ruby-progressbar", ">= 1.13.0"
   spec.add_dependency "sys-proctable", ">= 1.3.0"
 end
