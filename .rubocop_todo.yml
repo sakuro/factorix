@@ -21,9 +21,9 @@
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowMultilineFinalElement.
-Layout/FirstMethodParameterLineBreak:
-  Exclude:
-    - 'lib/factorix/downloader.rb'
+# Layout/FirstMethodParameterLineBreak:
+#   Exclude:
+#     - 'lib/factorix/downloader.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle.

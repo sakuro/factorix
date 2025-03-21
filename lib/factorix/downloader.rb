@@ -12,8 +12,10 @@ module Factorix
   class Downloader
     # @param cache_storage [Cache::FileSystem] cache storage
     # @param http_client [HttpClient] HTTP client
-    def initialize(cache_storage: Cache::FileSystem.new(Runtime.runtime.cache_dir),
-                  http_client: HttpClient.new)
+    def initialize(
+      cache_storage: Cache::FileSystem.new(Runtime.runtime.cache_dir),
+      http_client: HttpClient.new
+    )
       @cache_storage = cache_storage
       @http_client = http_client
     end
