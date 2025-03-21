@@ -13,8 +13,16 @@ RSpec.describe Factorix::Downloader do
   let(:output) { output_dir.join("file.zip") }
   let(:cache_key) { "cache_key" }
 
-  before(:all) do
-    # Clean up any leftover temporary directories
+  around do |example|
+    # テスト前の一時ディレクトリのクリーンアップ
+    Dir.glob(File.join(Dir.tmpdir, "factorix*")).each do |dir|
+      FileUtils.remove_entry(dir) rescue nil
+    end
+
+    # テストの実行
+    example.run
+
+    # テスト後の一時ディレクトリのクリーンアップ
     Dir.glob(File.join(Dir.tmpdir, "factorix*")).each do |dir|
       FileUtils.remove_entry(dir) rescue nil
     end
