@@ -31,7 +31,7 @@ module Factorix
     # @option options [Float] :rand_factor Randomization factor
     # @option options [Array<Class>] :on Exception classes to retry on
     # @option options [Proc] :on_retry Callback called on each retry
-    def initialize(options={})
+    def initialize(**options)
       @options = configure_options(options)
     end
 

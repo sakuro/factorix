@@ -35,7 +35,7 @@ RSpec.describe Factorix::RetryStrategy do
     end
 
     context "with custom options" do
-      subject(:strategy) { Factorix::RetryStrategy.new(custom_options) }
+      subject(:strategy) { Factorix::RetryStrategy.new(**custom_options) }
 
       let(:custom_options) do
         {
