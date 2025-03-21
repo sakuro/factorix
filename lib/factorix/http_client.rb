@@ -67,12 +67,10 @@ module Factorix
         end
       end
     rescue OpenURI::HTTPError => e
-      if e.message.start_with?("416") # Range Not Satisfiable
-        # File might have changed on server, try full download
-        download_full(uri, output)
-      else
-        raise DownloadError, "Download failed: #{e.message}"
-      end
+      # Range Not Satisfiable - File might have changed on server, try full download
+      return download_full(uri, output) if e.message.start_with?("416")
+
+      raise DownloadError, "Download failed: #{e.message}"
     end
 
     # @return [Hash] options for URI#open
