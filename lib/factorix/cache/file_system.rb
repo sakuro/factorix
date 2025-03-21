@@ -72,8 +72,8 @@ module Factorix
       end
 
       private def cleanup_stale_lock(lock_path)
-        return unless lock_path.exist?
-        return unless (Time.now - lock_path.mtime) > LOCK_FILE_LIFETIME
+        return if !lock_path.exist?
+        return if (Time.now - lock_path.mtime) <= LOCK_FILE_LIFETIME
 
         lock_path.unlink rescue nil
       end
