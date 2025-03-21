@@ -74,7 +74,7 @@ RSpec.describe Factorix::RetryStrategy do
     end
 
     context "when the block fails temporarily" do
-      let(:counter) { instance_double("Counter") }
+      let(:counter) { instance_double(Struct.new(:count)) }
 
       before do
         call_count = 0
