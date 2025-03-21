@@ -6,87 +6,15 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# This cop supports safe autocorrection (--autocorrect).
-# Layout/EmptyLineAfterGuardClause:
-#   Exclude:
-#     - 'lib/factorix/cache/file_system.rb'
-#     - 'spec/factorix/retry_strategy_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowForAlignment, AllowBeforeTrailingComments, ForceEqualSignAlignment.
-# Layout/ExtraSpacing:
-#   Exclude:
-#     - 'lib/factorix/cache/file_system.rb'
-#     - 'lib/factorix/downloader.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowMultilineFinalElement.
-# Layout/FirstMethodParameterLineBreak:
-#   Exclude:
-#     - 'lib/factorix/downloader.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: symmetrical, new_line, same_line
-Layout/MultilineMethodDefinitionBraceLayout:
-  Exclude:
-    - 'lib/factorix/downloader.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_parameter, with_fixed_indentation
-Layout/ParameterAlignment:
-  Exclude:
-    - 'lib/factorix/downloader.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: space, no_space
-Layout/SpaceAroundEqualsInParameterDefault:
-  Exclude:
-    - 'lib/factorix/retry_strategy.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideBlockBraces:
-  Exclude:
-    - 'spec/factorix/cache/file_system_spec.rb'
-    - 'spec/factorix/http_client_spec.rb'
-
-# Configuration parameters: AllowComments, AllowEmptyLambdas.
-Lint/EmptyBlock:
-  Exclude:
-    - 'spec/factorix/cache/file_system_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AutoCorrect, IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
+Lint/StructNewOverride:
   Exclude:
     - 'spec/factorix/retry_strategy_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AutoCorrect, AllowUnusedKeywordArguments, IgnoreEmptyMethods, IgnoreNotImplementedMethods, NotImplementedExceptions.
-# NotImplementedExceptions: NotImplementedError
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
 
 # Configuration parameters: CountComments, Max, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
   Exclude:
     - 'lib/factorix/cache/file_system.rb'
     - 'lib/factorix/downloader.rb'
-    - 'lib/factorix/http_client.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, BlockForwardingName.
-# SupportedStyles: anonymous, explicit
-Naming/BlockForwarding:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
-    - 'lib/factorix/retry_strategy.rb'
 
 # Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
 # SupportedStyles: snake_case, normalcase, non_integer
@@ -96,42 +24,17 @@ Naming/VariableNumber:
     - 'spec/factorix/ser_des/version24_spec.rb'
     - 'spec/factorix/ser_des/version64_spec.rb'
 
-RSpec/BeforeAfterAll:
-  Exclude:
-    - 'spec/factorix/downloader_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/EmptyLineAfterFinalLet:
-  Exclude:
-    - 'spec/factorix/retry_strategy_spec.rb'
-
 # Configuration parameters: Max, CountAsOne.
 RSpec/ExampleLength:
   Exclude:
     - 'spec/factorix/downloader_spec.rb'
     - 'spec/factorix/runtime_spec.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: method_call, block
-RSpec/ExpectChange:
-  Exclude:
-    - 'spec/factorix/cache/file_system_spec.rb'
-
-RSpec/ExpectOutput:
-  Exclude:
-    - 'spec/factorix/retry_strategy_spec.rb'
-
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
 RSpec/IndexedLet:
   Exclude:
     - 'spec/factorix/ser_des/version24_spec.rb'
     - 'spec/factorix/ser_des/version64_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/LeadingSubject:
-  Exclude:
-    - 'spec/factorix/retry_strategy_spec.rb'
 
 # Configuration parameters: Max.
 RSpec/MultipleExpectations:
@@ -153,74 +56,6 @@ RSpec/NestedGroups:
     - 'spec/factorix/http_client_spec.rb'
     - 'spec/factorix/ser_des/deserializer_spec.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-RSpec/ReceiveMessages:
-  Exclude:
-    - 'spec/factorix/http_client_spec.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-RSpec/VerifiedDoubleReference:
-  Exclude:
-    - 'spec/factorix/retry_strategy_spec.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowOnlyRestArgument, UseAnonymousForwarding, RedundantRestArgumentNames, RedundantKeywordRestArgumentNames, RedundantBlockArgumentNames.
-# RedundantRestArgumentNames: args, arguments
-# RedundantKeywordRestArgumentNames: kwargs, options, opts
-# RedundantBlockArgumentNames: blk, block, proc
-Style/ArgumentsForwarding:
-  Exclude:
-    - 'lib/factorix/retry_strategy.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, AllowedMethods, AllowedPatterns, AllowBracesOnProceduralOneLiners, BracesRequiredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining, always_braces
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# AllowedMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Exclude:
-    - 'lib/factorix/runtime/linux.rb'
-    - 'lib/factorix/runtime/mac_os.rb'
-    - 'spec/factorix/retry_strategy_spec.rb'
-
-# Configuration parameters: IgnoreModules.
-Style/ConstantVisibility:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
-    - 'lib/factorix/http_client.rb'
-    - 'lib/factorix/retry_strategy.rb'
-
-# Configuration parameters: AllowedMethods, RequireForNonPublicMethods.
-Style/DocumentationMethod:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: MinBodyLength, AllowConsecutiveConditionals.
-Style/GuardClause:
-  Exclude:
-    - 'lib/factorix/http_client.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedShorthandSyntax, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-# SupportedShorthandSyntax: always, never, either, consistent, either_consistent
-Style/HashSyntax:
-  Exclude:
-    - 'lib/factorix/progress/bar.rb'
-    - 'spec/factorix/progress/bar_spec.rb'
-
-Style/ImplicitRuntimeError:
-  Exclude:
-    - 'spec/factorix/cache/file_system_spec.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: InverseMethods.
-Style/InvertibleUnlessCondition:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
-
 # Configuration parameters: AllowedAddresses.
 # AllowedAddresses: ::
 Style/IpAddresses:
@@ -228,15 +63,12 @@ Style/IpAddresses:
     - 'spec/factorix/ser_des/version24_spec.rb'
     - 'spec/factorix/ser_des/version64_spec.rb'
 
-Style/MethodCalledOnDoEndBlock:
+# This cop supports safe autocorrection (--autocorrect).
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: both, prefix, postfix
+Style/NegatedIf:
   Exclude:
-    - 'spec/factorix/retry_strategy_spec.rb'
-
-# Configuration parameters: SuspiciousParamNames, Allowlist.
-# SuspiciousParamNames: options, opts, args, params, parameters
-Style/OptionHash:
-  Exclude:
-    - 'lib/factorix/retry_strategy.rb'
+    - 'lib/factorix/cache/file_system.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 Style/RescueModifier:
@@ -250,3 +82,4 @@ Style/RescueModifier:
 Layout/LineLength:
   Exclude:
     - 'lib/factorix/retry_strategy.rb'
+    - 'spec/factorix/retry_strategy_spec.rb'
