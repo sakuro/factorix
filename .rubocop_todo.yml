@@ -14,10 +14,10 @@
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowForAlignment, AllowBeforeTrailingComments, ForceEqualSignAlignment.
-Layout/ExtraSpacing:
-  Exclude:
-    - 'lib/factorix/cache/file_system.rb'
-    - 'lib/factorix/downloader.rb'
+# Layout/ExtraSpacing:
+#   Exclude:
+#     - 'lib/factorix/cache/file_system.rb'
+#     - 'lib/factorix/downloader.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowMultilineFinalElement.
