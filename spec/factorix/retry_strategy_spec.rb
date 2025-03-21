@@ -82,6 +82,7 @@ RSpec.describe Factorix::RetryStrategy do
           if call_count == 1
             raise Errno::ETIMEDOUT, "Connection timed out"
           end
+
           "success"
         end
       end

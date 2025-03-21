@@ -29,6 +29,7 @@ module Factorix
       def fetch(key, output)
         path = cache_path_for(key)
         return false unless path.exist?
+
         FileUtils.cp(path, output)
         true
       end
