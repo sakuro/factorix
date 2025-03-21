@@ -40,8 +40,8 @@ module Factorix
     # @yield Block to execute
     # @return [Object] Return value of the block
     # @raise [StandardError] If the block fails after all retries
-    def with_retry(&block)
-      Retriable.retriable(**@options, &block)
+    def with_retry(&)
+      Retriable.retriable(**@options, &)
     end
 
     private def configure_options(options)
