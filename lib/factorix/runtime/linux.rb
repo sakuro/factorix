@@ -7,9 +7,9 @@ module Factorix
       # Return the path to the cache directory
       # @return [Pathname] path to the cache directory
       def cache_dir
-        base = ENV.fetch("XDG_CACHE_HOME") do
+        base = ENV.fetch("XDG_CACHE_HOME") {
           File.expand_path("~/.cache")
-        end
+        }
         Pathname(base).join("factorix")
       end
     end
