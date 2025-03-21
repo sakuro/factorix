@@ -26,6 +26,15 @@ module Factorix
         home_dir + "Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/data"
       end
 
+      # Return the path to the cache directory
+      # @return [Pathname] path to the cache directory
+      def cache_dir
+        base = ENV.fetch("XDG_CACHE_HOME") {
+          (home_dir + "Library/Caches").to_s
+        }
+        Pathname(base).join("factorix")
+      end
+
       # Check if the game is running
       # @return [Boolean] true if the game is running, false otherwise
       def running?

@@ -37,6 +37,18 @@ module Factorix
         # @return [Pathname] path to the Program Files (x86) directory
         def program_files_x86 = Pathname(wslpath(cmd_echo("ProgramFiles(x86)")))
 
+        # Return the path to the user's Local AppData directory
+        # @return [Pathname] path to the user's Local AppData directory
+        def local_app_data = Pathname(wslpath(cmd_echo("LOCALAPPDATA")))
+
+        # Retrieve Windows environment variables through cmd.exe
+        #
+        # WSL cannot directly access Windows environment variables.
+        # This method uses cmd.exe to echo the value of a Windows environment variable.
+        # The command is executed in the Windows system drive to ensure proper environment resolution.
+        #
+        # @param name [String] name of the Windows environment variable
+        # @return [String] value of the environment variable
         private def cmd_echo(name)
           windows_system_root = wslpath(wslvar("SystemDrive") + File::SEPARATOR)
           fetch_or_store("cmd_echo", name) do
@@ -46,12 +58,28 @@ module Factorix
           end
         end
 
+        # Retrieve Windows system environment variables using wslvar
+        #
+        # The wslvar command is a WSL utility that provides access to certain Windows
+        # system environment variables. It is primarily used to get basic system information
+        # like SystemDrive, which is needed to properly execute cmd.exe commands.
+        #
+        # @param name [String] name of the Windows system environment variable
+        # @return [String] value of the system environment variable
         private def wslvar(name)
           fetch_or_store("wslvar", name) do
             %x[wslvar #{name}].chomp
           end
         end
 
+        # Convert Windows paths to WSL paths
+        #
+        # Windows paths cannot be directly used in WSL. This method uses the wslpath
+        # utility to convert Windows-style paths to their WSL equivalents.
+        # For example: "C:\Users" -> "/mnt/c/Users"
+        #
+        # @param path [String] Windows-style path to convert
+        # @return [String] equivalent WSL path
         private def wslpath(path)
           fetch_or_store("wslpath", path) do
             %x[wslpath "#{path}"].chomp

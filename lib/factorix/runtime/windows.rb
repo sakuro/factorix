@@ -32,6 +32,12 @@ module Factorix
         path.program_files_x86 + "Steam/steamapps/common/Factorio/data"
       end
 
+      # Return the path to the cache directory
+      # @return [Pathname] path to the cache directory
+      def cache_dir
+        path.local_app_data + "factorix"
+      end
+
       # Windows specific path handling
       class WindowsPath
         # Return the path to the user's AppData directory
@@ -41,6 +47,10 @@ module Factorix
         # Return the path to the Program Files (x86) directory
         # @return [Pathname] path to the Program Files (x86) directory
         def program_files_x86 = convert_env_path("ProgramFiles(x86)")
+
+        # Return the path to the user's Local AppData directory
+        # @return [Pathname] path to the user's Local AppData directory
+        def local_app_data = convert_env_path("LOCALAPPDATA")
 
         private def convert_env_path(name)
           Pathname(ENV.fetch(name).gsub(File::ALT_SEPARATOR, File::SEPARATOR))
