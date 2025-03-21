@@ -8,7 +8,7 @@ module Factorix
   module Cache
     # File system based cache storage implementation
     class FileSystem
-      LOCK_FILE_LIFETIME = 3600  # 1 hour in seconds
+      LOCK_FILE_LIFETIME = 3600 # 1 hour in seconds
 
       # @param cache_dir [Pathname, String] path to the cache directory
       def initialize(cache_dir)

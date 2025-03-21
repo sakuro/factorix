@@ -45,7 +45,7 @@ module Factorix
     private def with_temporary_file
       dir = Pathname(Dir.mktmpdir("factorix"))
       temp_file = dir.join("download")
-      temp_file.binwrite("")  # Create an empty file
+      temp_file.binwrite("") # Create an empty file
       yield temp_file
     ensure
       if temp_file&.exist?
