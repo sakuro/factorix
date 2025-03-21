@@ -35,6 +35,8 @@ RSpec.describe Factorix::RetryStrategy do
     end
 
     context "with custom options" do
+      subject(:strategy) { Factorix::RetryStrategy.new(custom_options) }
+
       let(:custom_options) do
         {
           tries: 5,
@@ -45,17 +47,15 @@ RSpec.describe Factorix::RetryStrategy do
         }
       end
 
-      subject(:strategy) { Factorix::RetryStrategy.new(custom_options) }
-
       it "merges custom options with defaults" do
         expect(strategy.instance_variable_get(:@options)).to include(custom_options)
       end
     end
 
     context "with custom retry callback" do
-      let(:custom_callback) { ->(_exception, _try, _elapsed_time, _next_interval) {} }
-
       subject(:strategy) { Factorix::RetryStrategy.new(on_retry: custom_callback) }
+
+      let(:custom_callback) { ->(_exception, _try, _elapsed_time, _next_interval) {} }
 
       it "uses the custom callback" do
         expect(strategy.instance_variable_get(:@options)[:on_retry]).to eq(custom_callback)
