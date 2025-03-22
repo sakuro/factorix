@@ -1,0 +1,50 @@
+module Factorix
+  module Cache
+    # File system based cache storage implementation
+    class FileSystem
+      LOCK_FILE_LIFETIME: Integer
+
+      # @param cache_dir [Pathname, String] path to the cache directory
+      def initialize: (Pathname | String cache_dir) -> void
+
+      # @param url_string [String] URL string to generate key for
+      # @return [String] cache key
+      def key_for: (String url_string) -> String
+
+      # Check if a cache entry exists for the given key
+      #
+      # @param key [String] cache key to check
+      # @return [Boolean] true if the cache entry exists, false otherwise
+      def exist?: (String key) -> bool
+
+      # Fetch a cached file and copy it to the output path
+      #
+      # @param key [String] cache key to fetch
+      # @param output [Pathname, String] path to copy the cached file to
+      # @return [Boolean] true if the cache entry was found and copied, false otherwise
+      def fetch: (String key, Pathname | String output) -> bool
+
+      # Store a file in the cache
+      #
+      # @param key [String] cache key to store under
+      # @param src [Pathname, String] path of the file to store
+      # @return [void]
+      def store: (String key, Pathname | String src) -> void
+
+      # Executes the given block with a file lock
+      #
+      # @param key [String] cache key to lock
+      # @yield Executes the block with exclusive file lock
+      # @return [void]
+      def with_lock: (String key) { () -> void } -> void
+
+      private
+
+      def cache_path_for: (String key) -> Pathname
+
+      def lock_path_for: (String key) -> Pathname
+
+      def cleanup_stale_lock: (Pathname lock_path) -> void
+    end
+  end
+end

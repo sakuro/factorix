@@ -1,0 +1,23 @@
+module Factorix
+  module Progress
+    # Progress bar implementation using ruby-progressbar
+    class Bar
+      # Create a new progress bar
+      # @param title [String] title of the progress bar
+      def initialize: (?title: String) -> void
+
+      # Called when the content length is known
+      # @return [Proc] callback for content length
+      def content_length_proc: () -> ^(Integer?) -> void
+
+      # Called when a chunk is downloaded
+      # @return [Proc] callback for progress updates
+      def progress_proc: () -> ^(Integer) -> void
+
+      private
+
+      # @return [ProgressBar] the progress bar instance
+      attr_reader bar: ProgressBar
+    end
+  end
+end
