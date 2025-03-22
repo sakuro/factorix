@@ -2,11 +2,11 @@ module Factorix
   # Factorio runtime environment
   class Runtime
     # Raised when run on unsupported platform
-    class UnsupportedPlatform < StandardError
+    class UnsupportedPlatform < Error
     end
 
     # Raised when the game is already running and an attempt to launch the game is made
-    class AlreadyRunning < StandardError
+    class AlreadyRunning < Error
     end
 
     # Return the platform the script is running on
@@ -60,5 +60,15 @@ module Factorix
     # Return the path of the player-data.json file
     # @return [Pathname] the path of the player-data.json file
     def player_data_path: () -> Pathname
+
+    # Return the path to the cache directory
+    # @return [Pathname] the path to the cache directory
+    def cache_dir: () -> Pathname
+
+    # Evaluate the block with only the specified mods enabled
+    # @param mod_names [Array<String>] the names of the mods to enable
+    # @yield the block to evaluate
+    # @return [void]
+    def with_only_mod_enabled: (*String) { () -> void } -> void
   end
 end

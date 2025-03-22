@@ -22,5 +22,8 @@ module Factorix
     private
     def load_settings: (Pathname path) -> void
     def organize_into_sections: (Hash[String, Hash[String, Hash[String, untyped]]]) -> void
+    def process_raw_settings: (Hash[String, Hash[String, Hash[String, untyped]]]) -> void
+    def add_settings_to_section: (Section, Hash[String, Hash[String, untyped]]) -> void
+    def ensure_all_sections_exist: () -> void
   end
 end
