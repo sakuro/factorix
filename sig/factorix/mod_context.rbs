@@ -1,0 +1,20 @@
+module Factorix
+  # Manages temporary mod configurations
+  class ModContext
+    # @param mod_list [Factorix::ModList] the mod list
+    def initialize: (ModList mod_list) -> void
+
+    # Execute a block with only specified mods enabled
+    # @param mod_names [Array<String>] the names of the mods to enable
+    def with_only_enabled: (*String mod_names) { () -> void } -> void
+
+    private
+
+    attr_reader mod_list: ModList
+    attr_reader original_states: Hash[Mod, bool]
+
+    def save_original_states: () -> void
+    def enable_only_specified: (*String mod_names) -> void
+    def restore_original_states: () -> void
+  end
+end

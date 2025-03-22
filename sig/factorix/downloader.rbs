@@ -1,0 +1,22 @@
+module Factorix
+  # Class responsible for file downloads
+  class Downloader
+    # @param cache_storage [Cache::FileSystem] cache storage
+    # @param http_client [HttpClient] HTTP client
+    def initialize: (
+      ?cache_storage: Cache::FileSystem,
+      ?http_client: HttpClient
+    ) -> void
+
+    # @param url [URI::HTTP] URL to download from
+    # @param output [String, Pathname] path to save the downloaded file
+    # @return [void]
+    # @raise [ArgumentError] if the URL is not HTTP(S)
+    # @raise [DownloadError] if the download fails
+    def download: (URI::HTTP url, String | Pathname output) -> void
+
+    private
+
+    def with_temporary_file: { (Pathname) -> void } -> void
+  end
+end
