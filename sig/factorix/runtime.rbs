@@ -56,5 +56,9 @@ module Factorix
     # Return the data directory of Factorio
     # @return [Pathname] the data directory of Factorio
     def data_dir: () -> Pathname
+
+    # Return the path of the player-data.json file
+    # @return [Pathname] the path of the player-data.json file
+    def player_data_path: () -> Pathname
   end
 end
