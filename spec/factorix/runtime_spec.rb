@@ -71,7 +71,7 @@ RSpec.describe Factorix::Runtime do
   describe "#mods_dir" do
     subject(:mods_dir) { runtime.mods_dir }
 
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
 
     before do
       allow(runtime).to receive(:user_dir).and_return(Pathname.new("/user_dir"))
@@ -85,7 +85,7 @@ RSpec.describe Factorix::Runtime do
   describe "#script_output_dir" do
     subject(:script_output_dir) { runtime.script_output_dir }
 
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
 
     before do
       allow(runtime).to receive(:user_dir).and_return(Pathname.new("/user_dir"))
@@ -99,7 +99,7 @@ RSpec.describe Factorix::Runtime do
   describe "#mod_list_path" do
     subject(:mod_list_path) { runtime.mod_list_path }
 
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
 
     before do
       allow(runtime).to receive(:user_dir).and_return(Pathname.new("/user_dir"))
@@ -113,7 +113,7 @@ RSpec.describe Factorix::Runtime do
   describe "#mod_settings_path" do
     subject(:mod_settings_path) { runtime.mod_settings_path }
 
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
 
     before do
       allow(runtime).to receive(:mods_dir).and_return(Pathname.new("/user_dir/mods"))
@@ -124,8 +124,22 @@ RSpec.describe Factorix::Runtime do
     end
   end
 
+  describe "#player_data_path" do
+    subject(:player_data_path) { runtime.player_data_path }
+
+    let(:runtime) { Factorix::Runtime.new }
+
+    before do
+      allow(runtime).to receive(:user_dir).and_return(Pathname.new("/user_dir"))
+    end
+
+    it "returns the path of the player-data.json file" do
+      expect(player_data_path).to eq(Pathname.new("/user_dir/player-data.json"))
+    end
+  end
+
   describe "#launch" do
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
 
     describe "when the game is not running, async: true, without arguments" do
       subject(:launch) { runtime.launch(async: true) }
@@ -231,7 +245,7 @@ RSpec.describe Factorix::Runtime do
   end
 
   describe "#with_only_mod_enabled" do
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
     let(:mod_list) { instance_double(Factorix::ModList) }
     let(:mod_context) { instance_double(Factorix::ModContext) }
 
@@ -274,7 +288,7 @@ RSpec.describe Factorix::Runtime do
   end
 
   describe "#with_only_mod_enabled integration", :integration do
-    let(:runtime) { Factorix::Runtime.runtime }
+    let(:runtime) { Factorix::Runtime.new }
     let(:mod_list_path) { Pathname("spec/fixtures/mod-list/list.json") }
     let(:base_mod) { Factorix::Mod[name: "base"] }
     let(:enabled_mod) { Factorix::Mod[name: "enabled-mod"] }

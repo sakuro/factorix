@@ -56,6 +56,12 @@ module Factorix
       mods_dir + "mod-settings.dat"
     end
 
+    # Return the path of the player-data.json file
+    # @return [Pathname] the path of the player-data.json file
+    def player_data_path
+      user_dir + "player-data.json"
+    end
+
     # Launch the game
     # @return [void]
     # @raise [RuntimeError] if the game is already running
