@@ -1,0 +1,45 @@
+module Factorix
+  # HTTP client for downloading files
+  class HttpClient
+    HTTP_OPTIONS: Hash[Symbol, Integer]
+
+    # @param retry_strategy [RetryStrategy] retry strategy for downloads
+    # @param progress [#content_length_proc, #progress_proc] progress tracking callbacks
+    def initialize: (
+      ?retry_strategy: RetryStrategy,
+      ?progress: _ProgressCallbacks?
+    ) -> void
+
+    # Download a file from the given URL
+    # @param url [URI::HTTP] URL to download from (HTTP or HTTPS)
+    # @param output [Pathname] path to save the downloaded file
+    # @return [void]
+    # @raise [DownloadError] if the download fails
+    # @raise [ArgumentError] if the URL is not HTTP(S)
+    def download: (URI::HTTP url, Pathname output) -> void
+
+    private
+
+    # Download a file from scratch
+    # @param uri [URI::HTTP] URL to download from
+    # @param output [Pathname] path to save the downloaded file
+    # @return [void]
+    # @raise [DownloadError] if the download fails
+    def download_full: (URI::HTTP uri, Pathname output) -> void
+
+    # Resume a partially downloaded file
+    # @param uri [URI::HTTP] URL to download from
+    # @param output [Pathname] path to save the downloaded file
+    # @return [void]
+    # @raise [DownloadError] if the download fails
+    def download_with_resume: (URI::HTTP uri, Pathname output) -> void
+
+    # @return [Hash] options for URI#open
+    def download_options: () -> Hash[Symbol | String, Integer | ^(Integer) -> void | ^(Integer) -> void]
+  end
+
+  interface _ProgressCallbacks
+    def content_length_proc: () -> ^(Integer?) -> void
+    def progress_proc: () -> ^(Integer) -> void
+  end
+end
