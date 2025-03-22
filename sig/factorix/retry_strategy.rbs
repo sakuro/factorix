@@ -1,0 +1,35 @@
+module Factorix
+  # Class that manages retry strategy
+  class RetryStrategy
+    DEFAULT_OPTIONS: Hash[Symbol, Integer | Float | Array[Class]]
+
+    # @param options [Hash] Options for retry behavior
+    # @option options [Integer] :tries Number of attempts (including the initial try)
+    # @option options [Float] :base_interval Initial interval between retries (seconds)
+    # @option options [Float] :multiplier Exponential backoff multiplier
+    # @option options [Float] :rand_factor Randomization factor
+    # @option options [Array<Class>] :on Exception classes to retry on
+    # @option options [Proc] :on_retry Callback called on each retry
+    def initialize: (
+      ?tries: Integer?,
+      ?base_interval: Float?,
+      ?multiplier: Float?,
+      ?rand_factor: Float?,
+      ?on: Array[Class]?,
+      ?on_retry: ^(Exception, Integer, Float, Float) -> void?
+    ) -> void
+
+    # Execute the block and retry if necessary
+    #
+    # @yield Block to execute
+    # @return [Object] Return value of the block
+    # @raise [StandardError] If the block fails after all retries
+    def with_retry: [T] { () -> T } -> T
+
+    private
+
+    def configure_options: (Hash[Symbol, untyped] options) -> Hash[Symbol, untyped]
+
+    def default_retry_callback: (Exception exception, Integer try, Float elapsed_time, Float next_interval) -> void
+  end
+end
