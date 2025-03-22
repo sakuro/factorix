@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "factorix/credential"
 require_relative "factorix/errors"
 require_relative "factorix/mod"
 require_relative "factorix/mod_list"
