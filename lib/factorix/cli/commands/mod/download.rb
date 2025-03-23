@@ -80,7 +80,7 @@ module Factorix
             raise DirectoryNotWritableError, "Directory is not writable: #{output_dir}" unless output_dir.writable?
 
             output_path = output_dir / filename
-            raise FileExistsError, output_path if output_path.exist?
+            raise FileExistsError, "File already exists: #{output_path}" if output_path.exist?
 
             output_path
           end
@@ -127,7 +127,7 @@ module Factorix
             return if actual_sha1 == expected_sha1
 
             path.unlink
-            raise SHA1MismatchError.new(path, expected: expected_sha1, actual: actual_sha1)
+            raise SHA1MismatchError, "SHA1 hash mismatch for #{path}: expected #{expected_sha1}, got #{actual_sha1}"
           end
         end
       end
