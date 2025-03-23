@@ -1,0 +1,95 @@
+module Factorix
+  module ModPortal
+    module Types
+      type pagination_links = PaginationLinks
+      type pagination = Pagination
+      type release = Release
+      type license = License
+      type mod_entry = ModEntry
+      type mod = Mod
+      type mod_with_details = ModWithDetails
+      type mod_list = ModList
+
+      class PaginationLinks < Data::Base
+        attr_reader first: String?
+        attr_reader prev: String?
+        attr_reader next: String?
+        attr_reader last: String?
+      end
+
+      class Pagination < Data::Base
+        attr_reader page: Integer
+        attr_reader page_count: Integer
+        attr_reader page_size: Integer
+        attr_reader count: Integer
+        attr_reader links: pagination_links
+      end
+
+      class Release < Data::Base
+        attr_reader version: String
+        attr_reader released_at: Time
+        attr_reader download_url: URI::HTTPS
+        attr_reader file_name: String
+        attr_reader sha1: String
+        attr_reader info_json: Hash[String, untyped]
+      end
+
+      class License < Data::Base
+        attr_reader description: String
+      end
+
+      class ModEntry < Data::Base
+        attr_reader name: String
+        attr_reader title: String
+        attr_reader owner: String
+        attr_reader summary: String
+        attr_reader downloads_count: Integer
+        attr_reader category: String
+        attr_reader thumbnail: URI::HTTPS?
+        attr_reader score: Float?
+        attr_reader latest_release: release?
+        attr_reader releases: Array[release]?
+      end
+
+      class Mod < Data::Base
+        attr_reader name: String
+        attr_reader title: String
+        attr_reader owner: String
+        attr_reader summary: String
+        attr_reader downloads_count: Integer
+        attr_reader category: String
+        attr_reader thumbnail: URI::HTTPS?
+        attr_reader score: Float?
+        attr_reader releases: Array[release]
+      end
+
+      class ModWithDetails < Data::Base
+        attr_reader name: String
+        attr_reader title: String
+        attr_reader owner: String
+        attr_reader summary: String
+        attr_reader downloads_count: Integer
+        attr_reader category: String
+        attr_reader thumbnail: URI::HTTPS?
+        attr_reader score: Float?
+        attr_reader releases: Array[release]
+        attr_reader created_at: Time
+        attr_reader updated_at: Time
+        attr_reader last_highlighted_at: Time?
+        attr_reader description: String
+        attr_reader homepage: String?
+        attr_reader source_url: String?
+        attr_reader tags: Array[String]
+        attr_reader license: license?
+        attr_reader deprecated: bool?
+        attr_reader changelog: String?
+        attr_reader github_path: String?
+      end
+
+      class ModList < Data::Base
+        attr_reader results: Array[mod_entry]
+        attr_reader pagination: pagination
+      end
+    end
+  end
+end

@@ -1,0 +1,15 @@
+module Factorix
+  module ModPortal
+    class Error < Factorix::Error
+    end
+
+    class RequestError < Error
+    end
+
+    class ResponseError < Error
+    end
+
+    class ValidationError < Error
+    end
+  end
+end

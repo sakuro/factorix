@@ -1,0 +1,54 @@
+module Factorix
+  module ModPortal
+    class API
+      private BASE_URL: URI::HTTPS
+      private ASSETS_URL: URI::HTTPS
+      private VALID_SORT_FIELDS: Array[String]
+      private VALID_SORT_ORDERS: Array[String]
+      private VALID_VERSIONS: Array[String]
+      private CATEGORY_NAMES: Hash[String, String]
+
+      def initialize: -> void
+
+      def mods: (?hide_deprecated: bool?,
+                ?page: Integer?,
+                ?page_size: (Integer | String)?,
+                ?sort: String?,
+                ?sort_order: String?,
+                ?namelist: (String | Array[String])?,
+                ?version: String?) -> Types::mod_list
+
+      def mod: (String name) -> Types::mod
+
+      def mod_with_details: (String name) -> Types::mod_with_details
+
+      private
+
+      def request: (String path, **untyped params) -> Hash[String, untyped]
+
+      def parse_mod_list: (Hash[String, untyped] json) -> Types::mod_list
+
+      def parse_pagination: (Hash[String, untyped] json) -> Types::pagination
+
+      def parse_mod_entry: (Hash[String, untyped] json) -> Types::mod_entry
+
+      def parse_mod: (Hash[String, untyped] json) -> Types::mod
+
+      def parse_mod_with_details: (Hash[String, untyped] json) -> Types::mod_with_details
+
+      def parse_release: (Hash[String, untyped] json) -> Types::release
+
+      def parse_license: (Hash[String, untyped] json) -> Types::license
+
+      def parse_time: (String? time_str) -> Time?
+
+      def to_absolute_url: (String? path) -> URI::HTTPS?
+
+      def validate_sort: (String? sort) -> void
+
+      def validate_sort_order: (String? sort_order) -> void
+
+      def validate_version: (String? version) -> void
+    end
+  end
+end
