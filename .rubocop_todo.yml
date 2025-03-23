@@ -49,14 +49,8 @@ RSpec/MultipleExpectations:
 # Configuration parameters: AllowSubject, Max.
 RSpec/MultipleMemoizedHelpers:
   Exclude:
+    - 'spec/factorix/cli/commands/mod/download_spec.rb'
     - 'spec/factorix/cli/commands/mod/list_spec.rb'
-
-# Configuration parameters: Max, AllowedGroups.
-RSpec/NestedGroups:
-  Exclude:
-    - 'spec/factorix/downloader_spec.rb'
-    - 'spec/factorix/http_client_spec.rb'
-    - 'spec/factorix/ser_des/deserializer_spec.rb'
 
 # Configuration parameters: AllowedAddresses.
 # AllowedAddresses: ::

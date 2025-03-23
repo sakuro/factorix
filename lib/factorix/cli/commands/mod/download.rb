@@ -75,8 +75,11 @@ module Factorix
           private def determine_output_path(mod_name, version, output_directory)
             filename = "#{mod_name}_#{version}.zip"
             output_dir = Pathname(output_directory || Dir.pwd)
-            output_path = output_dir / filename
 
+            raise DirectoryNotFoundError, "Directory does not exist: #{output_dir}" unless output_dir.exist?
+            raise DirectoryNotWritableError, "Directory is not writable: #{output_dir}" unless output_dir.writable?
+
+            output_path = output_dir / filename
             raise FileExistsError, output_path if output_path.exist?
 
             output_path
