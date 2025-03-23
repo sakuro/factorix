@@ -146,5 +146,29 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
           .to raise_error("No matching release found for version 9.9.9")
       end
     end
+
+    context "when output directory does not exist" do
+      let(:non_existent_dir) { Pathname(output_dir) / "non_existent" }
+
+      it "raises DirectoryNotFoundError" do
+        expect { command.call(mod_name: "foo", output_directory: non_existent_dir) }
+          .to raise_error(Factorix::CLI::DirectoryNotFoundError, "Directory does not exist: #{non_existent_dir}")
+      end
+    end
+
+    context "when output directory is not writable" do
+      before do
+        FileUtils.chmod(0444, output_dir)
+      end
+
+      after do
+        FileUtils.chmod(0755, output_dir)
+      end
+
+      it "raises DirectoryNotWritableError" do
+        expect { command.call(mod_name: "foo", output_directory: output_dir) }
+          .to raise_error(Factorix::CLI::DirectoryNotWritableError, "Directory is not writable: #{output_dir}")
+      end
+    end
   end
 end

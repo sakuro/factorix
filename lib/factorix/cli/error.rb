@@ -17,5 +17,11 @@ module Factorix
         super("SHA1 hash mismatch for #{path}: expected #{expected}, got #{actual}")
       end
     end
+
+    # Raised when output directory does not exist
+    class DirectoryNotFoundError < Error; end
+
+    # Raised when output directory is not writable
+    class DirectoryNotWritableError < Error; end
   end
 end
