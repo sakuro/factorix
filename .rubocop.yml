@@ -90,3 +90,6 @@ Metrics/ParameterLists:
     # Breaking these parameters into a separate object would add unnecessary complexity
     # for what is essentially a simple API wrapper.
     - 'lib/factorix/mod_portal/api.rb'
+
+RSpec/NestedGroups:
+  Max: 4

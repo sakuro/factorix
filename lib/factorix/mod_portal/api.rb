@@ -58,7 +58,7 @@ module Factorix
       # @param namelist [Array<String>] Return only mods that match the given names
       # @param version [String] Only return non-deprecated mods compatible with this Factorio version
       # @return [Types::ModList]
-      # @raise [RequestError] when request fails
+      # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
       # @raise [ValidationError] when parameters are invalid
       def mods(hide_deprecated: nil, page: nil, page_size: nil, sort: nil, sort_order: nil, namelist: nil, version: nil)
@@ -83,7 +83,7 @@ module Factorix
       # Get information about a specific mod
       # @param name [String] The mod's name
       # @return [Types::Mod]
-      # @raise [RequestError] when request fails
+      # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
       def mod(name)
         response = request("/mods/#{name}")
@@ -93,7 +93,7 @@ module Factorix
       # Get detailed information about a specific mod
       # @param name [String] The mod's name
       # @return [Types::ModWithDetails]
-      # @raise [RequestError] when request fails
+      # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
       def mod_with_details(name)
         response = request("/mods/#{name}/full")
@@ -105,9 +105,19 @@ module Factorix
         uri.path = File.join(uri.path, path)
         uri.query = URI.encode_www_form(params) unless params.empty?
 
-        JSON.parse(uri.read)
+        JSON.parse(uri.read(open_timeout: 5, read_timeout: 10))
       rescue OpenURI::HTTPError => e
         raise RequestError, e.message
+      rescue Net::OpenTimeout => e
+        raise RequestError, "connection timeout: #{e.message}"
+      rescue Net::ReadTimeout => e
+        raise RequestError, "read timeout: #{e.message}"
+      rescue OpenSSL::SSL::SSLError => e
+        raise RequestError, "SSL/TLS error: #{e.message}"
+      rescue SocketError => e
+        raise RequestError, "network error: #{e.message}"
+      rescue SystemCallError => e
+        raise RequestError, "connection error: #{e.message}"
       rescue JSON::ParserError => e
         raise ResponseError, e.message
       end
