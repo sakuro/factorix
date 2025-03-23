@@ -2,21 +2,22 @@
 
 # Factorix
 
-Factorix is a command-line tool for managing Factorio mods and launching the game.
-It provides a simple interface for enabling, disabling, and listing mods, as well as
+Factorix is a command-line tool for managing Factorio MODs and launching the game.
+It provides a simple interface for enabling, disabling, and listing MODs, as well as
 launching Factorio with various options.
 
 ## Features
 
 - Display information about your Factorio installation
 - Launch Factorio with custom arguments
-- List all installed mods with different output formats
-- Enable and disable mods easily
-- Dump mod settings in TOML format
+- List all installed MODs with different output formats
+- Enable and disable MODs easily
+- Download MODs from the Factorio MOD Portal
+- Dump MOD settings in TOML format
 
 ## Usage
 
-Factorix provides several commands to help you manage your Factorio mods and launch
+Factorix provides several commands to help you manage your Factorio MODs and launch
 the game.
 
 ### Info Command
@@ -32,7 +33,7 @@ This command shows:
 - Executable path
 - User directory
 - Data directory
-- Mod directory
+- MOD directory
 - Script output directory
 
 ### Launch Command
@@ -59,11 +60,11 @@ The `--wait` option is useful when you want to run commands after the game exits
 factorix launch --wait && echo "Game has exited"
 ```
 
-### Mod Management
+### MOD Management
 
-#### List Mods
+#### List MODs
 
-List all mods under the management of the game:
+List all MODs under the management of the game:
 
 ```bash
 factorix mod list [options]
@@ -72,12 +73,44 @@ factorix mod list [options]
 Options:
 - `--format FORMAT`: Output format (csv, markdown)
 
-By default, this command outputs just the mod names. With the `--format` option, you
+By default, this command outputs just the MOD names. With the `--format` option, you
 can get more detailed information in CSV or Markdown table format.
 
-#### Enable a Mod
+#### Download a MOD
 
-Enable a specific mod:
+Download a MOD from the Factorio MOD Portal:
+
+```bash
+factorix mod download MOD_NAME [options]
+```
+
+Options:
+- `--version VERSION`: Specific version to download (defaults to latest)
+- `--output-directory DIR`: Directory to save the downloaded MOD file (defaults to current directory)
+- `--quiet`: Suppress progress output during download
+
+This command will:
+1. Download the specified version (or latest if not specified)
+2. Save the MOD file to the specified directory (or current directory if not specified)
+
+Example usage:
+```bash
+# Download the latest version of a MOD
+factorix mod download even-distribution
+
+# Download a specific version
+factorix mod download even-distribution --version 1.0.0
+
+# Download to a specific directory
+factorix mod download even-distribution --output-directory /path/to/mods
+
+# Download quietly without progress bar
+factorix mod download even-distribution --quiet
+```
+
+#### Enable a MOD
+
+Enable a specific MOD:
 
 ```bash
 factorix mod enable MOD_NAME [options]
@@ -86,9 +119,9 @@ factorix mod enable MOD_NAME [options]
 Options:
 - `--verbose`: Print more information during the operation
 
-#### Disable a Mod
+#### Disable a MOD
 
-Disable a specific mod:
+Disable a specific MOD:
 
 ```bash
 factorix mod disable MOD_NAME [options]
@@ -97,15 +130,15 @@ factorix mod disable MOD_NAME [options]
 Options:
 - `--verbose`: Print more information during the operation
 
-#### Dump Mod Settings
+#### Dump MOD Settings
 
-Dump mod settings in TOML format:
+Dump MOD settings in TOML format:
 
 ```bash
 factorix mod settings dump
 ```
 
-This command reads the mod-settings.dat file from your Factorio mods directory and outputs its contents in TOML format. This can be useful for inspecting or backing up your mod settings.
+This command reads the mod-settings.dat file from your Factorio MODs directory and outputs its contents in TOML format. This can be useful for inspecting or backing up your MOD settings.
 
 If the settings file doesn't exist, an error message will be displayed.
 
