@@ -8,8 +8,10 @@ require_relative "http_client"
 require_relative "runtime"
 
 module Factorix
-  # Class responsible for file downloads
+  # Class responsible for file downloads with caching support
   class Downloader
+    # Initialize a new downloader with cache storage and HTTP client
+    #
     # @param cache_storage [Cache::FileSystem] cache storage
     # @param http_client [HttpClient] HTTP client
     def initialize(
@@ -20,6 +22,12 @@ module Factorix
       @http_client = http_client
     end
 
+    # Download a file from the given URL with caching support.
+    #
+    # If the file exists in cache, it will be copied from cache instead of downloading.
+    # If multiple processes attempt to download the same file, only one will download
+    # while others wait for the download to complete
+    #
     # @param url [URI::HTTP] URL to download from
     # @param output [String, Pathname] path to save the downloaded file
     # @return [void]
@@ -44,6 +52,11 @@ module Factorix
       end
     end
 
+    # Create a temporary file for downloading, ensuring cleanup after use.
+    # The temporary file is created in a unique directory to avoid conflicts
+    #
+    # @yield [Pathname] the temporary file path
+    # @return [void]
     private def with_temporary_file
       dir = Pathname(Dir.mktmpdir("factorix"))
       temp_file = dir.join("download")
