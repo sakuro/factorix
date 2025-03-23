@@ -106,7 +106,7 @@ module Factorix
             downloader = Factorix::Downloader.new(
               http_client: Factorix::HttpClient.new(
                 # U+2699 GEAR + U+FE0F VARIATION SELECTOR-16
-                progress: quiet ? nil : Progress::Bar.new(title: "\u2699\uFE0F #{output_path.basename}")
+                progress: quiet ? nil : Factorix::Progress::Bar.new(title: "\u2699\uFE0F #{output_path.basename}")
               )
             )
             downloader.download(download_url, output_path)
