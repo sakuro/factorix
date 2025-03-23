@@ -5,7 +5,7 @@ require "openssl"
 require "retriable"
 
 module Factorix
-  # Class that manages retry strategy
+  # Class that manages retry strategy with exponential backoff and randomization
   class RetryStrategy
     DEFAULT_OPTIONS = {
       tries: 3,                 # Number of attempts (including the initial try)
@@ -25,6 +25,8 @@ module Factorix
     }.freeze
     private_constant :DEFAULT_OPTIONS
 
+    # Initialize a new retry strategy with customizable options
+    #
     # @param options [Hash] Options for retry behavior
     # @option options [Integer] :tries Number of attempts (including the initial try)
     # @option options [Float] :base_interval Initial interval between retries (seconds)
@@ -36,7 +38,8 @@ module Factorix
       @options = configure_options(options)
     end
 
-    # Execute the block and retry if necessary
+    # Execute the block with automatic retry on specified exceptions.
+    # Uses exponential backoff with randomization for retry intervals
     #
     # @yield Block to execute
     # @return [Object] Return value of the block
@@ -45,6 +48,10 @@ module Factorix
       Retriable.retriable(**@options, &)
     end
 
+    # Configure retry options by merging with defaults and setting up callbacks
+    #
+    # @param options [Hash] User-provided options to merge with defaults
+    # @return [Hash] Complete set of configured options
     private def configure_options(options)
       result = DEFAULT_OPTIONS.merge(options)
       unless result.key?(:on_retry)
@@ -53,6 +60,13 @@ module Factorix
       result
     end
 
+    # Default callback for retry attempts that logs retry information
+    #
+    # @param exception [StandardError] The exception that triggered the retry
+    # @param try [Integer] The current retry attempt number
+    # @param elapsed_time [Float] Time elapsed since first attempt
+    # @param next_interval [Float] Time until next retry attempt
+    # @return [void]
     private def default_retry_callback(exception, try, elapsed_time, next_interval)
       warn "Download retry #{try} after #{elapsed_time}s, next in #{next_interval}s: #{exception.class} - #{exception.message}"
     end

@@ -15,6 +15,7 @@ module Factorix
     class ModNotInListError < Factorix::ModNotFoundError; end
 
     # Load the MOD list from the given file.
+    #
     # @param from [Pathname] the path to the file to load the MOD list from.
     # @return [Factorix::ModList] the loaded MOD list.
     def self.load(from: Factorix::Runtime.runtime.mod_list_path)
@@ -25,6 +26,7 @@ module Factorix
     end
 
     # Initialize the MOD list.
+    #
     # @param mods [Hash{Factorix::Mod => ModState}] the MODs and their state.
     # @return [void]
     def initialize(mods={})
@@ -35,6 +37,7 @@ module Factorix
     end
 
     # Save the MOD list to the given file.
+    #
     # @param to [Pathname] the path to the file to save the MOD list to.
     # @return [void]
     def save(to: Factorix::Runtime.runtime.mod_list_path)
@@ -48,6 +51,7 @@ module Factorix
     end
 
     # Iterate through all MOD-state pairs.
+    #
     # @yieldparam mod [Factorix::Mod] the MOD.
     # @yieldparam state [Factorix::ModState] the MOD state.
     # @return [Enumerator] if no block is given.
@@ -61,6 +65,7 @@ module Factorix
     end
 
     # Iterate through all MODs.
+    #
     # @yieldparam mod [Factorix::Mod] the MOD.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
@@ -73,12 +78,14 @@ module Factorix
     end
 
     # Alias for each_mod
+    #
     # @yieldparam mod [Factorix::Mod] the MOD.
     # @return [Enumerator] if no block is given.
     # @return [Factorix::ModList] if a block is given.
     alias each_key each_mod
 
     # Add the MOD to the list.
+    #
     # @param mod [Factorix::Mod] the MOD to add.
     # @param enabled [Boolean] the enabled status. Default to true.
     # @param version [String, nil] the version of the MOD. Default to nil.
@@ -91,6 +98,7 @@ module Factorix
     end
 
     # Remove the MOD from the list.
+    #
     # @param mod [Factorix::Mod] the MOD to remove.
     # @return [void]
     # @raise [ArgumentError] if the MOD is the base MOD.
@@ -101,11 +109,13 @@ module Factorix
     end
 
     # Check if the MOD is in the list.
+    #
     # @param mod [Factorix::Mod] the MOD to check.
     # @return [Boolean] true if the MOD is in the list, false otherwise.
     def exist?(mod) = @mods.key?(mod)
 
     # Check if the MOD is enabled.
+    #
     # @param mod [Factorix::Mod] the MOD to check.
     # @return [Boolean] true if the MOD is enabled, false otherwise.
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
@@ -116,6 +126,7 @@ module Factorix
     end
 
     # Get the version of the MOD.
+    #
     # @param mod [Factorix::Mod] the MOD to check.
     # @return [String, nil] the version of the MOD, or nil if not specified.
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
@@ -126,6 +137,7 @@ module Factorix
     end
 
     # Enable the MOD.
+    #
     # @param mod [Factorix::Mod] the MOD to enable.
     # @return [void]
     # @raise [Factorix::ModList::ModNotInListError] if the MOD is not in the list.
@@ -138,6 +150,7 @@ module Factorix
     end
 
     # Disable the MOD.
+    #
     # @param mod [Factorix::Mod] the MOD to disable.
     # @return [void]
     # @raise [ArgumentError] if the MOD is the base MOD.

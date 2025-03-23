@@ -12,6 +12,9 @@ module Factorix
     # Represents a section in mod settings
     class Section
       include Enumerable
+
+      # Initialize a new section with the given name
+      #
       # @param name [String] The section name
       # @raise [InvalidModSectionError] If the section name is invalid
       def initialize(name)
@@ -23,10 +26,13 @@ module Factorix
         @settings = {}
       end
 
+      # Get the section name
+      #
       # @return [String] The section name
       attr_reader :name
 
-      # Set a setting value
+      # Set a setting value in this section
+      #
       # @param key [String] The setting key
       # @param value [Object] The setting value
       # @return [Object] The setting value
@@ -34,14 +40,16 @@ module Factorix
         @settings[key] = value
       end
 
-      # Get a setting value
+      # Get a setting value from this section
+      #
       # @param key [String] The setting key
       # @return [Object, nil] The setting value or nil if not found
       def [](key)
         @settings[key]
       end
 
-      # Iterate over settings
+      # Iterate over all settings in this section
+      #
       # @yield [key, value] Block to be called for each setting
       # @yieldparam key [String] The setting key
       # @yieldparam value [Object] The setting value
@@ -52,6 +60,8 @@ module Factorix
         @settings.each {|k, v| yield(k, v) }
       end
 
+      # Check if this section has any settings
+      #
       # @return [Boolean] True if the section has no settings
       def empty?
         @settings.empty?
@@ -59,13 +69,15 @@ module Factorix
     end
 
     # Create a new ModSettings instance and load settings from file
+    #
     # @param path [Pathname] Path to the mod settings file
     def initialize(path)
       @sections = {}
       load_settings(path)
     end
 
-    # Get a section by name
+    # Get a section by name from the mod settings
+    #
     # @param name [String] The section name
     # @return [Section] The section
     # @raise [InvalidModSectionError] If the section name is invalid
@@ -83,7 +95,8 @@ module Factorix
       section
     end
 
-    # Iterate over sections
+    # Iterate over all sections in the mod settings
+    #
     # @yield [section] Block to be called for each section
     # @yieldparam section [Section] The section
     # @return [Enumerator] If no block is given
@@ -93,7 +106,8 @@ module Factorix
       @sections.each_value {|section| yield(section) }
     end
 
-    # Load settings from file
+    # Load settings from the specified file
+    #
     # @param path [Pathname] Path to the mod settings file
     # @return [void]
     private def load_settings(path)
@@ -112,7 +126,8 @@ module Factorix
       end
     end
 
-    # Organize raw settings into sections
+    # Organize raw settings data into appropriate sections
+    #
     # @param raw_settings [Hash] Raw settings from deserializer
     # @return [void]
     # @raise [InvalidModSectionError] If an invalid section name is encountered
@@ -121,7 +136,8 @@ module Factorix
       ensure_all_sections_exist
     end
 
-    # Process raw settings and add them to sections
+    # Process raw settings and add them to their respective sections
+    #
     # @param raw_settings [Hash] Raw settings from deserializer
     # @return [void]
     # @raise [InvalidModSectionError] If an invalid section name is encountered
@@ -136,7 +152,8 @@ module Factorix
       end
     end
 
-    # Add settings to a section
+    # Add the provided settings to the specified section
+    #
     # @param section [Section] The section to add settings to
     # @param section_settings [Hash] The settings to add
     # @return [void]
@@ -147,7 +164,8 @@ module Factorix
       end
     end
 
-    # Ensure all valid sections exist, even if empty
+    # Ensure all valid sections exist in the settings, creating empty ones if necessary
+    #
     # @return [void]
     private def ensure_all_sections_exist
       VALID_SECTIONS.each do |section_name|
