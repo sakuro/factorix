@@ -77,7 +77,7 @@ RSpec.describe Factorix::Runtime do
       allow(runtime).to receive(:user_dir).and_return(Pathname.new("/user_dir"))
     end
 
-    it "returns the mods directory of Factorio" do
+    it "returns the MODs directory of Factorio" do
       expect(mods_dir).to eq(Pathname.new("/user_dir/mods"))
     end
   end
@@ -260,15 +260,15 @@ RSpec.describe Factorix::Runtime do
         runtime.with_only_mod_enabled("mod1", "mod2") { "test block" }
       end
 
-      it "loads the mod list" do
+      it "loads the MOD list" do
         expect(Factorix::ModList).to have_received(:load)
       end
 
-      it "creates a ModContext with the loaded mod list" do
+      it "creates a ModContext with the loaded MOD list" do
         expect(Factorix::ModContext).to have_received(:new).with(mod_list)
       end
 
-      it "calls with_only_enabled on the context with the specified mod names" do
+      it "calls with_only_enabled on the context with the specified MOD names" do
         expect(mod_context).to have_received(:with_only_enabled).with("mod1", "mod2")
       end
     end
@@ -311,7 +311,7 @@ RSpec.describe Factorix::Runtime do
         mod_names.each do |name|
           enabled_states[name] = true
         end
-        # Any mod not in mod_names and not base would be disabled
+        # Any MOD not in mod_names and not base would be disabled
         %w[enabled-mod disabled-mod].each do |name|
           enabled_states[name] = false unless name == "base" || mod_names.include?(name)
         end
@@ -321,20 +321,20 @@ RSpec.describe Factorix::Runtime do
       end
     end
 
-    context "when enabling a specific mod" do
+    context "when enabling a specific MOD" do
       before do
         runtime.with_only_mod_enabled("disabled-mod") { "test block" }
       end
 
-      it "enables the base mod" do
+      it "enables the base MOD" do
         expect(enabled_states["base"]).to be true
       end
 
-      it "enables the specified mod" do
+      it "enables the specified MOD" do
         expect(enabled_states["disabled-mod"]).to be true
       end
 
-      it "disables other mods" do
+      it "disables other MODs" do
         expect(enabled_states["enabled-mod"]).to be false
       end
     end

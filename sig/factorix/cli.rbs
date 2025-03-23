@@ -9,16 +9,16 @@ module Factorix
     # Register the launch command
     def self.register: (String, singleton(Factorix::CLI::Commands::Launch)) -> void
 
-    # Register the mod disable command
+    # Register the MOD disable command
     def self.register: (String, singleton(Factorix::CLI::Commands::Mod::Disable)) -> void
 
-    # Register the mod enable command
+    # Register the MOD enable command
     def self.register: (String, singleton(Factorix::CLI::Commands::Mod::Enable)) -> void
 
-    # Register the mod list command
+    # Register the MOD list command
     def self.register: (String, singleton(Factorix::CLI::Commands::Mod::List)) -> void
 
-    # Register the mod settings dump command
+    # Register the MOD settings dump command
     def self.register: (String, singleton(Factorix::CLI::Commands::Mod::Settings::Dump)) -> void
   end
 end

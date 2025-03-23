@@ -33,10 +33,10 @@ module Factorix
       end
     end
 
-    # Get the mods directory path of Factorio
-    # This directory contains all installed mods and mod configuration files
+    # Get the MODs directory path of Factorio
+    # This directory contains all installed MODs and MOD configuration files
     #
-    # @return [Pathname] the mods directory of Factorio
+    # @return [Pathname] the MODs directory of Factorio
     def mods_dir
       user_dir + "mods"
     end
@@ -50,7 +50,7 @@ module Factorix
     end
 
     # Get the path of the mod-list.json file
-    # This file contains the list of installed mods and their enabled status
+    # This file contains the list of installed MODs and their enabled status
     #
     # @return [Pathname] the path of the mod-list.json file
     def mod_list_path
@@ -58,7 +58,7 @@ module Factorix
     end
 
     # Get the path of the mod-settings.dat file
-    # This file contains the settings for all installed mods
+    # This file contains the settings for all installed MODs
     #
     # @return [Pathname] the path of the mod-settings.dat file
     def mod_settings_path
@@ -100,9 +100,9 @@ module Factorix
       raise NotImplementedError
     end
 
-    # Evaluate the block with only the specified mods enabled, temporarily disabling all other mods
+    # Evaluate the block with only the specified MODs enabled, temporarily disabling all other MODs
     #
-    # @param mod_names [Array<String>] the names of the mods to enable
+    # @param mod_names [Array<String>] the names of the MODs to enable
     # @yield the block to evaluate
     # @return [void]
     def with_only_mod_enabled(*mod_names, &)

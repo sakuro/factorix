@@ -13,12 +13,12 @@ module Factorix
     def initialize: (untyped type) -> void
   end
 
-  # Raised when an invalid section name is encountered in mod settings.
+  # Raised when an invalid section name is encountered in MOD settings.
   class InvalidModSectionError < Error
     def initialize: (String section_name) -> void
   end
 
-  # Raised when a section is not found in mod settings.
+  # Raised when a section is not found in MOD settings.
   class ModSectionNotFoundError < Error
     def initialize: (String section_name) -> void
   end

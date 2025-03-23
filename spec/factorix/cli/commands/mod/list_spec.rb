@@ -31,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
   describe "#call with default format" do
     let(:options) { {} }
 
-    it "outputs mod names only" do
+    it "outputs MOD names only" do
       expected_output = <<~OUTPUT
         base
         enabled-mod
@@ -44,7 +44,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
   describe "#call with csv format" do
     let(:options) { {format: "csv"} }
 
-    it "outputs CSV with headers and mod data" do
+    it "outputs CSV with headers and MOD data" do
       expected_output = <<~OUTPUT
         Name,Enabled,Version
         base,true,
@@ -58,7 +58,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
   describe "#call with markdown format" do
     let(:options) { {format: "markdown"} }
 
-    it "outputs markdown table with headers and mod data" do
+    it "outputs markdown table with headers and MOD data" do
       # Use left alignment for all columns
       expected_output = <<~OUTPUT
         |Name|Enabled|Version|
@@ -114,7 +114,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
     context "with csv format" do
       let(:options) { {format: "csv"} }
 
-      it "outputs CSV with headers and mod data" do
+      it "outputs CSV with headers and MOD data" do
         expected_output = <<~OUTPUT
           Name,Enabled,Version
           base,true,
@@ -128,7 +128,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::List do
     context "with markdown format" do
       let(:options) { {format: "markdown"} }
 
-      it "outputs markdown table with headers and mod data" do
+      it "outputs markdown table with headers and MOD data" do
         # Use left alignment for all columns
         expected_output = <<~OUTPUT
           |Name|Enabled|Version|

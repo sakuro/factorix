@@ -9,7 +9,7 @@ module Factorix
     VALID_SECTIONS = %w[startup runtime-global runtime-per-user].freeze
     private_constant :VALID_SECTIONS
 
-    # Represents a section in mod settings
+    # Represents a section in MOD settings
     class Section
       include Enumerable
 
@@ -19,7 +19,7 @@ module Factorix
       # @raise [InvalidModSectionError] If the section name is invalid
       def initialize(name)
         unless VALID_SECTIONS.include?(name)
-          raise InvalidModSectionError, "Invalid mod section name: #{name}"
+          raise InvalidModSectionError, "Invalid MOD section name: #{name}"
         end
 
         @name = name
@@ -70,13 +70,13 @@ module Factorix
 
     # Create a new ModSettings instance and load settings from file
     #
-    # @param path [Pathname] Path to the mod settings file
+    # @param path [Pathname] Path to the MOD settings file
     def initialize(path)
       @sections = {}
       load_settings(path)
     end
 
-    # Get a section by name from the mod settings
+    # Get a section by name from the MOD settings
     #
     # @param name [String] The section name
     # @return [Section] The section
@@ -84,18 +84,18 @@ module Factorix
     # @raise [ModSectionNotFoundError] If the section is not found
     def [](name)
       unless VALID_SECTIONS.include?(name)
-        raise InvalidModSectionError, "Invalid mod section name: #{name}"
+        raise InvalidModSectionError, "Invalid MOD section name: #{name}"
       end
 
       section = @sections[name]
       unless section
-        raise ModSectionNotFoundError, "Mod section not found: #{name}"
+        raise ModSectionNotFoundError, "MOD section not found: #{name}"
       end
 
       section
     end
 
-    # Iterate over all sections in the mod settings
+    # Iterate over all sections in the MOD settings
     #
     # @yield [section] Block to be called for each section
     # @yieldparam section [Section] The section
@@ -108,7 +108,7 @@ module Factorix
 
     # Load settings from the specified file
     #
-    # @param path [Pathname] Path to the mod settings file
+    # @param path [Pathname] Path to the MOD settings file
     # @return [void]
     private def load_settings(path)
       path.open("rb") do |file|
@@ -144,7 +144,7 @@ module Factorix
     private def process_raw_settings(raw_settings)
       raw_settings.each do |section_name, section_settings|
         unless VALID_SECTIONS.include?(section_name)
-          raise InvalidModSectionError, "Invalid mod section name: #{section_name}"
+          raise InvalidModSectionError, "Invalid MOD section name: #{section_name}"
         end
 
         section = @sections[section_name] ||= Section.new(section_name)

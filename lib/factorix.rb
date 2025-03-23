@@ -9,6 +9,6 @@ require_relative "factorix/runtime"
 require_relative "factorix/ser_des"
 require_relative "factorix/version"
 
-# Factorix is a Factorio mod management and development tool.
+# Factorix is a Factorio MOD management and development tool.
 module Factorix
 end
