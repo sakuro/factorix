@@ -21,7 +21,7 @@ RSpec.describe Factorix::ModPortal::API do
         end
       end
 
-      it "contains mod entries" do
+      it "contains MOD entries" do
         aggregate_failures do
           expect(mod_list.results).to be_an(Array)
           expect(mod_list.results).to all(be_a(Factorix::ModPortal::Types::ModEntry))
@@ -37,7 +37,7 @@ RSpec.describe Factorix::ModPortal::API do
         expect(mod_list).to be_a(Factorix::ModPortal::Types::ModList)
       end
 
-      it "contains mod entry" do
+      it "contains MOD entry" do
         mod_entry = mod_list.results.first
         aggregate_failures do
           expect(mod_entry.name).to eq("alien-biomes")
@@ -124,7 +124,7 @@ RSpec.describe Factorix::ModPortal::API do
       expect(mod).to be_a(Factorix::ModPortal::Types::Mod)
     end
 
-    it "contains basic mod information" do
+    it "contains basic MOD information" do
       aggregate_failures do
         expect(mod.name).to eq("alien-biomes")
         expect(mod.title).to eq("Alien Biomes")
@@ -136,7 +136,7 @@ RSpec.describe Factorix::ModPortal::API do
       end
     end
 
-    context "with non-existent mod" do
+    context "with non-existent MOD" do
       it "raises RequestError" do
         expect { api.mod("non_existent_mod") }.to raise_error(Factorix::ModPortal::RequestError)
       end
@@ -150,7 +150,7 @@ RSpec.describe Factorix::ModPortal::API do
       expect(mod).to be_a(Factorix::ModPortal::Types::ModWithDetails)
     end
 
-    it "contains basic mod information" do
+    it "contains basic MOD information" do
       aggregate_failures do
         expect(mod.name).to eq("alien-biomes")
         expect(mod.title).to eq("Alien Biomes")
@@ -180,7 +180,7 @@ RSpec.describe Factorix::ModPortal::API do
       end
     end
 
-    context "with non-existent mod" do
+    context "with non-existent MOD" do
       it "raises RequestError" do
         expect { api.mod_with_details("non_existent_mod") }.to raise_error(Factorix::ModPortal::RequestError)
       end

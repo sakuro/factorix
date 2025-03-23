@@ -45,7 +45,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
       FileUtils.remove_entry output_dir
     end
 
-    context "when downloading a mod" do
+    context "when downloading a MOD" do
       before do
         allow(downloader).to receive(:download) do |_url, path|
           File.write(path, "dummy data")
@@ -53,7 +53,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
         allow(Digest::SHA1).to receive(:file).with(output_path).and_return(sha1_digest)
       end
 
-      it "downloads the mod" do
+      it "downloads the MOD" do
         expect { command.call(mod_name: "foo", output_directory: output_dir) }.not_to raise_error
       end
 

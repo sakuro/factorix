@@ -10,33 +10,38 @@ module Factorix
     end
 
     # Return the platform the script is running on
+    #
     # @return [Runtime] the runtime environment
     # @raise [UnsupportedPlatform] if the platform is not supported
     def self.runtime: () -> Runtime
 
-    # Return the mods directory of Factorio
-    # @return [Pathname] the mods directory of Factorio
+    # Return the MODs directory of Factorio
+    #
+    # @return [Pathname] the MODs directory of Factorio
     def mods_dir: () -> Pathname
 
     # Return the script-output directory of Factorio
+    #
     # @return [Pathname] the script-output directory of Factorio
     def script_output_dir: () -> Pathname
 
     # Return the path of the mod-list.json file
+    #
     # @return [Pathname] the path of the mod-list.json file
     def mod_list_path: () -> Pathname
 
     # Return the path of the mod-settings.dat file
+    #
     # @return [Pathname] the path of the mod-settings.dat file
     def mod_settings_path: () -> Pathname
 
     # Launch the game
+    #
     # @return [void]
     # @raise [RuntimeError] if the game is already running
     def launch: (*untyped, async: bool) -> void
 
-    # Check if the game is running
-    #
+    # Check if the game is running.
     # Becasuse the game becomes daemonized on launch, we cannot use the process ID nor Process groups
     # to check if the game is running.  Instead, we check if the game is running by external means.
     # (e.g. polling the process list periodically)

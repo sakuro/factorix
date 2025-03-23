@@ -13,7 +13,7 @@ RSpec.describe Factorix::ModContext do
 
   describe "#with_only_enabled" do
     before do
-      # Setup the mod_list double to return the mods
+      # Setup the mod_list double to return the MODs
       allow(mod_list).to receive(:each_mod) do |&block|
         if block
           block.call(base_mod)
@@ -39,44 +39,44 @@ RSpec.describe Factorix::ModContext do
       allow(mod_list).to receive(:save)
     end
 
-    context "when enabling a specific mod" do
+    context "when enabling a specific MOD" do
       before do
         # Call with_only_enabled with disabled_mod
         mod_context.with_only_enabled("mod2") { "test block" }
       end
 
-      it "does not disable the base mod" do
+      it "does not disable the base MOD" do
         expect(mod_list).not_to have_received(:disable).with(base_mod)
       end
 
-      it "disables the enabled mod" do
+      it "disables the enabled MOD" do
         expect(mod_list).to have_received(:disable).with(enabled_mod)
       end
 
-      it "enables the disabled mod" do
+      it "enables the disabled MOD" do
         expect(mod_list).to have_received(:enable).with(disabled_mod)
       end
 
-      it "disables the other enabled mod" do
+      it "disables the other enabled MOD" do
         expect(mod_list).to have_received(:disable).with(another_enabled_mod)
       end
     end
 
-    context "when restoring original mod states" do
+    context "when restoring original MOD states" do
       before do
-        # Call with_only_enabled with an empty list (only base mod enabled)
+        # Call with_only_enabled with an empty list (only base MOD enabled)
         mod_context.with_only_enabled { "test block" }
       end
 
-      it "re-enables the originally enabled mod" do
+      it "re-enables the originally enabled MOD" do
         expect(mod_list).to have_received(:enable).with(enabled_mod).at_least(:once)
       end
 
-      it "keeps the originally disabled mod disabled" do
+      it "keeps the originally disabled MOD disabled" do
         expect(mod_list).to have_received(:disable).with(disabled_mod).at_least(:once)
       end
 
-      it "re-enables the other originally enabled mod" do
+      it "re-enables the other originally enabled MOD" do
         expect(mod_list).to have_received(:enable).with(another_enabled_mod).at_least(:once)
       end
     end
@@ -90,20 +90,20 @@ RSpec.describe Factorix::ModContext do
         # Expected error, continue with the test
       end
 
-      it "re-enables the originally enabled mod" do
+      it "re-enables the originally enabled MOD" do
         expect(mod_list).to have_received(:enable).with(enabled_mod).at_least(:once)
       end
 
-      it "keeps the originally disabled mod disabled" do
+      it "keeps the originally disabled MOD disabled" do
         expect(mod_list).to have_received(:disable).with(disabled_mod).at_least(:once)
       end
 
-      it "re-enables the other originally enabled mod" do
+      it "re-enables the other originally enabled MOD" do
         expect(mod_list).to have_received(:enable).with(another_enabled_mod).at_least(:once)
       end
     end
 
-    it "saves the mod list after enabling/disabling and after restoring" do
+    it "saves the MOD list after enabling/disabling and after restoring" do
       # Call with_only_enabled
       mod_context.with_only_enabled("mod2") { "test block" }
 
