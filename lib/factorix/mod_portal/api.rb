@@ -10,20 +10,27 @@ require_relative "types"
 
 module Factorix
   module ModPortal
-    # API client for Factorio Mod Portal
+    # API client for Factorio MOD Portal.
+    # Provides methods to interact with the Factorio MOD Portal API,
+    # including searching MODs, getting MOD details, and accessing MOD releases.
     class API
+      # Base URL for the MOD Portal API.
       BASE_URL = URI("https://mods.factorio.com/api")
       private_constant :BASE_URL
 
+      # Base URL for MOD assets (thumbnails, etc.)
       ASSETS_URL = URI("https://assets-mod.factorio.com")
       private_constant :ASSETS_URL
 
+      # Valid fields for sorting MOD lists.
       VALID_SORT_FIELDS = %w[name created_at updated_at].freeze
       private_constant :VALID_SORT_FIELDS
 
+      # Valid sort orders for MOD lists.
       VALID_SORT_ORDERS = %w[asc desc].freeze
       private_constant :VALID_SORT_ORDERS
 
+      # Valid Factorio versions for MOD compatibility.
       VALID_VERSIONS = %w[0.13 0.14 0.15 0.16 0.17 0.18 1.0 1.1 2.0].freeze
       private_constant :VALID_VERSIONS
 
@@ -49,14 +56,16 @@ module Factorix
       }.freeze
       private_constant :CATEGORY_NAMES
 
-      # List mods from Mod Portal
-      # @param hide_deprecated [Boolean] Only return non-deprecated mods
-      # @param page [Integer] Page number you would like to show
-      # @param page_size [Integer, "max"] The amount of results to show in your search
-      # @param sort [String] Sort results by this property (name, created_at or updated_at)
-      # @param sort_order [String] Sort results ascending or descending (asc or desc)
-      # @param namelist [Array<String>] Return only mods that match the given names
-      # @param version [String] Only return non-deprecated mods compatible with this Factorio version
+      # List MODs from MOD Portal with various filtering and sorting options.
+      # Results are paginated and can be filtered by various criteria.
+      #
+      # @param hide_deprecated [Boolean] Only return non-deprecated MODs.
+      # @param page [Integer] Page number you would like to show.
+      # @param page_size [Integer, "max"] The amount of results to show in your search.
+      # @param sort [String] Sort results by this property (name, created_at or updated_at).
+      # @param sort_order [String] Sort results ascending or descending (asc or desc).
+      # @param namelist [Array<String>] Return only MODs that match the given names.
+      # @param version [String] Only return non-deprecated MODs compatible with this Factorio version.
       # @return [Types::ModList]
       # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
@@ -80,8 +89,10 @@ module Factorix
         parse_mod_list(response)
       end
 
-      # Get information about a specific mod
-      # @param name [String] The mod's name
+      # Get basic information about a specific MOD.
+      # This includes the MOD's metadata and list of releases.
+      #
+      # @param name [String] The MOD's name.
       # @return [Types::Mod]
       # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
@@ -90,8 +101,11 @@ module Factorix
         parse_mod(response)
       end
 
-      # Get detailed information about a specific mod
-      # @param name [String] The mod's name
+      # Get detailed information about a specific MOD
+      # This includes all basic information plus additional details like
+      # description, changelog, license, and more
+      #
+      # @param name [String] The MOD's name
       # @return [Types::ModWithDetails]
       # @raise [RequestError] when request fails (including timeouts)
       # @raise [ResponseError] when response cannot be parsed
@@ -100,6 +114,14 @@ module Factorix
         parse_mod_with_details(response)
       end
 
+      # Make an HTTP request to the MOD Portal API
+      # Handles various network errors and response parsing
+      #
+      # @param path [String] API endpoint path
+      # @param params [Hash] Query parameters
+      # @return [Hash] Parsed JSON response
+      # @raise [RequestError] when request fails
+      # @raise [ResponseError] when response cannot be parsed
       private def request(path, **params)
         uri = BASE_URL.dup
         uri.path = File.join(uri.path, path)
@@ -122,6 +144,11 @@ module Factorix
         raise ResponseError, e.message
       end
 
+      # Parse a MOD list response from the API.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::ModList]
+      # @raise [TypeError] if the response structure is invalid.
       private def parse_mod_list(json)
         pagination = parse_pagination(json["pagination"])
         results = json["results"].map {|result| parse_mod_entry(result) }
@@ -132,6 +159,10 @@ module Factorix
         Types::ModList[results:, pagination:]
       end
 
+      # Parse pagination information from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::Pagination]
       private def parse_pagination(json)
         links = json["links"]
         links = Types::PaginationLinks[
@@ -150,6 +181,10 @@ module Factorix
         ]
       end
 
+      # Parse a MOD entry from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::ModEntry]
       private def parse_mod_entry(json)
         Types::ModEntry[
           name: json["name"],
@@ -165,6 +200,10 @@ module Factorix
         ]
       end
 
+      # Parse basic MOD information from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::Mod]
       private def parse_mod(json)
         Types::Mod[
           name: json["name"],
@@ -179,6 +218,10 @@ module Factorix
         ]
       end
 
+      # Parse detailed MOD information from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::ModWithDetails]
       private def parse_mod_with_details(json)
         Types::ModWithDetails[
           name: json["name"],
@@ -204,6 +247,10 @@ module Factorix
         ]
       end
 
+      # Parse release information from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::Release]
       private def parse_release(json)
         Types::Release[
           version: json["version"],
@@ -215,10 +262,18 @@ module Factorix
         ]
       end
 
+      # Parse license information from the API response.
+      #
+      # @param json [Hash] Raw JSON response.
+      # @return [Types::License]
       private def parse_license(json)
         Types::License[description: json["description"]]
       end
 
+      # Parse an ISO8601 time string into a UTC Time object.
+      #
+      # @param time_str [String, nil] ISO8601 time string.
+      # @return [Time, nil] Parsed time in UTC, or nil if input is nil or invalid.
       private def parse_time(time_str)
         return nil if time_str.nil?
 
@@ -229,6 +284,11 @@ module Factorix
         end
       end
 
+      # Convert a relative URL to an absolute URL
+      # Assets URLs are prefixed with ASSETS_URL, others with BASE_URL
+      #
+      # @param path [String, nil] Relative URL path
+      # @return [URI, nil] Absolute URL, or nil if input is nil
       private def to_absolute_url(path)
         return nil if path.nil?
 
@@ -240,6 +300,9 @@ module Factorix
         end
       end
 
+      # Validate the sort parameter
+      # @param sort [String] Sort field name
+      # @raise [ValidationError] if the sort field is invalid
       private def validate_sort(sort)
         return if sort.nil?
 
@@ -247,18 +310,27 @@ module Factorix
         raise ValidationError, "invalid sort: #{sort}" unless valid_sorts.include?(sort)
       end
 
+      # Validate the sort order parameter
+      # @param sort_order [String] Sort order (asc or desc)
+      # @raise [ValidationError] if the sort order is invalid
       private def validate_sort_order(sort_order)
         return if VALID_SORT_ORDERS.include?(sort_order)
 
         raise ValidationError, "Invalid sort order: #{sort_order}. Valid values are: #{VALID_SORT_ORDERS.join(", ")}"
       end
 
+      # Validate the version parameter
+      # @param version [String] Factorio version
+      # @raise [ValidationError] if the version is invalid
       private def validate_version(version)
         return if VALID_VERSIONS.include?(version)
 
         raise ValidationError, "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
       end
 
+      # Normalize a category name to its display form
+      # @param category [String] Raw category name from API
+      # @return [String] Display form of the category name
       private def normalize_category(category)
         CATEGORY_NAMES.fetch(category.downcase, category)
       end

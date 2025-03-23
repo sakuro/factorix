@@ -23,12 +23,12 @@ RSpec.describe Factorix::CLI::Commands::Mod::Enable do
         expect { command.call(mod: mod_name, **options) }.to output(/Enabling MOD: #{mod_name}/).to_stdout
       end
 
-      it "enables the mod in the mod list" do
+      it "enables the MOD in the MOD list" do
         command.call(mod: mod_name, **options)
         expect(mod_list).to have_received(:enable).with(Factorix::Mod[name: mod_name])
       end
 
-      it "saves the mod list" do
+      it "saves the MOD list" do
         command.call(mod: mod_name, **options)
         expect(mod_list).to have_received(:save)
       end
@@ -41,12 +41,12 @@ RSpec.describe Factorix::CLI::Commands::Mod::Enable do
         expect { command.call(mod: mod_name, **options) }.not_to output.to_stdout
       end
 
-      it "enables the mod in the mod list" do
+      it "enables the MOD in the MOD list" do
         command.call(mod: mod_name, **options)
         expect(mod_list).to have_received(:enable).with(Factorix::Mod[name: mod_name])
       end
 
-      it "saves the mod list" do
+      it "saves the MOD list" do
         command.call(mod: mod_name, **options)
         expect(mod_list).to have_received(:save)
       end

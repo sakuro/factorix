@@ -6,7 +6,7 @@ require_relative "errors"
 require_relative "retry_strategy"
 
 module Factorix
-  # HTTP client for downloading files
+  # HTTP client for downloading files with retry and resume capabilities
   class HttpClient
     # Default options for HTTP connections
     HTTP_OPTIONS = {
@@ -16,6 +16,8 @@ module Factorix
     }.freeze
     private_constant :HTTP_OPTIONS
 
+    # Initialize a new HTTP client with retry and progress tracking capabilities
+    #
     # @param retry_strategy [RetryStrategy] retry strategy for downloads
     # @param progress [#content_length_proc, #progress_proc] progress tracking callbacks
     def initialize(retry_strategy: RetryStrategy.new, progress: nil)
@@ -23,7 +25,9 @@ module Factorix
       @progress = progress
     end
 
-    # Download a file from the given URL
+    # Download a file from the given URL, with automatic retry and resume support.
+    # If the output file exists, attempts to resume the download from the current size
+    #
     # @param url [URI::HTTP] URL to download from (HTTP or HTTPS)
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
@@ -41,7 +45,8 @@ module Factorix
       end
     end
 
-    # Download a file from scratch
+    # Download a file from scratch, without attempting to resume
+    #
     # @param uri [URI::HTTP] URL to download from
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
@@ -54,7 +59,9 @@ module Factorix
       raise DownloadError, "Download failed: #{e.message}"
     end
 
-    # Resume a partially downloaded file
+    # Resume a partially downloaded file from its current size.
+    # Falls back to full download if the server doesn't support range requests
+    #
     # @param uri [URI::HTTP] URL to download from
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
@@ -73,6 +80,8 @@ module Factorix
       raise DownloadError, "Download failed: #{e.message}"
     end
 
+    # Get the HTTP options for URI#open, optionally including progress tracking
+    #
     # @return [Hash] options for URI#open
     private def download_options
       return HTTP_OPTIONS if @progress.nil?

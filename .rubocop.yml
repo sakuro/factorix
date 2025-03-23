@@ -71,7 +71,7 @@ Metrics/ClassLength:
     # The serializer class needs to handle many different data types and formats,
     # which naturally leads to a larger class with more methods.
     - 'lib/factorix/ser_des/serializer.rb'
-    # The API class handles complex data structures from the Factorio Mod Portal API.
+    # The API class handles complex data structures from the Factorio MOD Portal API.
     # The class length is primarily due to the large number of attributes in API responses
     # that need proper parsing and type conversion. Breaking this into smaller classes
     # would add unnecessary complexity and reduce maintainability.
@@ -85,7 +85,7 @@ RSpec/ExampleLength:
 
 Metrics/ParameterLists:
   Exclude:
-    # The parameters directly reflect the Factorio Mod Portal API's query parameters.
+    # The parameters directly reflect the Factorio MOD Portal API's query parameters.
     # Using keyword arguments makes the interface clear and self-documenting.
     # Breaking these parameters into a separate object would add unnecessary complexity
     # for what is essentially a simple API wrapper.

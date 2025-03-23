@@ -25,7 +25,7 @@ RSpec.describe Factorix::CLI::Commands::Info do
         Executable: /path/to/factorio
         User directory: /path/to/user_dir
         Data directory: /path/to/data_dir
-        Mod directory: /path/to/mods_dir
+        MOD directory: /path/to/mods_dir
         Script output directory: /path/to/script_output_dir
       OUTPUT
     end

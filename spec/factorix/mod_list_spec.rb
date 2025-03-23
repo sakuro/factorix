@@ -18,19 +18,19 @@ RSpec.describe Factorix::ModList do
   let(:list) { Factorix::ModList.load(from: list_path) }
 
   describe ".load" do
-    it "loads base mod" do
+    it "loads base MOD" do
       expect(list).to exist(base_mod)
     end
 
-    it "loads enabled mod" do
+    it "loads enabled MOD" do
       expect(list).to exist(enabled_mod)
     end
 
-    it "loads disabled mod" do
+    it "loads disabled MOD" do
       expect(list).to exist(disabled_mod)
     end
 
-    it "does not load non-listed mod" do
+    it "does not load non-listed MOD" do
       expect(list).not_to exist(non_listed_mod)
     end
 
@@ -38,17 +38,17 @@ RSpec.describe Factorix::ModList do
       expect(list.version(enabled_mod)).to eq("1.0.0")
     end
 
-    it "returns nil for version when not specified for base mod" do
+    it "returns nil for version when not specified for base MOD" do
       expect(list.version(base_mod)).to be_nil
     end
 
-    it "returns nil for version when not specified for disabled mod" do
+    it "returns nil for version when not specified for disabled MOD" do
       expect(list.version(disabled_mod)).to be_nil
     end
   end
 
   describe "#save" do
-    it "saves current mod list" do
+    it "saves current MOD list" do
       Tempfile.open(%w[mod-list- .json]) do |file|
         list.save(to: Pathname(file.path))
         expect(JSON.load_file(file.path)).to eq(JSON.load_file(list_path))

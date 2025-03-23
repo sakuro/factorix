@@ -1,11 +1,11 @@
 module Factorix
   # Manages temporary mod configurations
   class ModContext
-    # @param mod_list [Factorix::ModList] the mod list
+    # @param mod_list [Factorix::ModList] the MOD list
     def initialize: (ModList mod_list) -> void
 
-    # Execute a block with only specified mods enabled
-    # @param mod_names [Array<String>] the names of the mods to enable
+    # Execute a block with only specified MODs enabled
+    # @param mod_names [Array<String>] the names of the MODs to enable
     def with_only_enabled: (*String mod_names) { () -> void } -> void
 
     private

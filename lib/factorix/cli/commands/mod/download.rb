@@ -15,15 +15,15 @@ module Factorix
   class CLI
     module Commands
       module Mod
-        # Command to download a mod from Factorio Mod Portal
+        # Command to download a MOD from Factorio MOD Portal.
         class Download < Dry::CLI::Command
-          desc "Download a mod from Factorio Mod Portal"
+          desc "Download a MOD from Factorio MOD Portal"
 
-          argument :mod_name, required: true, desc: "Name of the mod to download"
-          option :version, desc: "Version of the mod to download (default: latest)"
+          argument :mod_name, required: true, desc: "Name of the MOD to download"
+          option :version, desc: "Version of the MOD to download (default: latest)"
           option :output_directory,
             aliases: ["-d"],
-            desc: "Directory to save the downloaded mod (default: current directory)"
+            desc: "Directory to save the downloaded MOD (default: current directory)"
           option :quiet, type: :boolean, default: false, desc: "Suppress progress and completion messages"
 
           example [
@@ -32,13 +32,14 @@ module Factorix
             "alien-biomes -d mods"
           ]
 
-          # Download a mod from Factorio Mod Portal
+          # Download a MOD from Factorio MOD Portal.
           #
-          # @param mod_name [String] Name of the mod to download
-          # @param options [Hash] Command options
-          # @option options [String] :version Version of the mod to download (default: latest)
-          # @option options [String] :output_directory Directory to save the downloaded mod (default: current directory)
-          # @option options [Boolean] :quiet Suppress progress and completion messages (default: false)
+          # @param mod_name [String] Name of the MOD to download.
+          # @param options [Hash] Command options.
+          # @option options [String] :version Version of the MOD to download (default: latest).
+          # @option options [String] :output_directory Directory to save the downloaded MOD (default: current
+          #                          directory).
+          # @option options [Boolean] :quiet Suppress progress and completion messages (default: false).
           # @raise [Factorix::ModPortal::Error] when API request fails
           # @raise [Factorix::DownloadError] when download fails
           # @raise [Factorix::CLI::FileExistsError] when output file already exists
