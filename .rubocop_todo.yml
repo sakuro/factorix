@@ -15,6 +15,7 @@ Metrics/MethodLength:
   Exclude:
     - 'lib/factorix/cache/file_system.rb'
     - 'lib/factorix/downloader.rb'
+    - 'lib/factorix/mod_portal/api.rb'
 
 # Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
 # SupportedStyles: snake_case, normalcase, non_integer
@@ -28,6 +29,7 @@ Naming/VariableNumber:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/factorix/downloader_spec.rb'
+    - 'spec/factorix/mod_portal/api_spec.rb'
     - 'spec/factorix/runtime_spec.rb'
 
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.

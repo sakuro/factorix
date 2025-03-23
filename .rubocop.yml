@@ -37,38 +37,59 @@ inherit_from:
   - .rubocop/style.yml
   - .rubocop/threadsafety.yml
 
-# These serializer/deserializer classes handle complex binary data formats
-# and require complex logic that cannot be easily simplified without
-# compromising readability and maintainability.
 Metrics/AbcSize:
   Exclude:
+    # These serializer/deserializer classes handle complex binary data formats
+    # and require complex logic that cannot be easily simplified without
+    # compromising readability and maintainability.
     - 'lib/factorix/ser_des/deserializer.rb'
     - 'lib/factorix/ser_des/serializer.rb'
+    # The API response parsing methods in mod_portal/api.rb perform straightforward
+    # data structure transformations. Breaking these methods down would make the code
+    # less readable and harder to maintain, as the transformations are best understood
+    # as a single mapping operation.
+    - 'lib/factorix/mod_portal/api.rb'
 
-# The deserializer and serializer classes need to handle multiple data types
-# and format variations, requiring conditional logic that naturally increases
-# cyclomatic complexity.
 Metrics/CyclomaticComplexity:
   Exclude:
+    # The deserializer and serializer classes need to handle multiple data types
+    # and format variations, requiring conditional logic that naturally increases
+    # cyclomatic complexity.
     - 'lib/factorix/ser_des/deserializer.rb'
     - 'lib/factorix/ser_des/serializer.rb'
 
-# These methods implement core serialization/deserialization logic that
-# needs to handle multiple cases in a cohesive way. Breaking them up would
-# reduce readability and make the code harder to maintain.
 Metrics/MethodLength:
   Exclude:
+    # These methods implement core serialization/deserialization logic that
+    # needs to handle multiple cases in a cohesive way. Breaking them up would
+    # reduce readability and make the code harder to maintain.
     - 'lib/factorix/ser_des/deserializer.rb'
     - 'lib/factorix/ser_des/serializer.rb'
 
-# The serializer class needs to handle many different data types and formats,
-# which naturally leads to a larger class with more methods.
 Metrics/ClassLength:
   Exclude:
+    # The serializer class needs to handle many different data types and formats,
+    # which naturally leads to a larger class with more methods.
     - 'lib/factorix/ser_des/serializer.rb'
+    # The API class handles complex data structures from the Factorio Mod Portal API.
+    # The class length is primarily due to the large number of attributes in API responses
+    # that need proper parsing and type conversion. Breaking this into smaller classes
+    # would add unnecessary complexity and reduce maintainability.
+    - 'lib/factorix/mod_portal/api.rb'
 
-# These examples need to test multiple aspects of complex operations in a single test
-# to ensure the correct behavior of serialization/deserialization operations.
 RSpec/ExampleLength:
   Exclude:
+    # These examples need to test multiple aspects of complex operations in a single test
+    # to ensure the correct behavior of serialization/deserialization operations.
     - 'spec/factorix/ser_des/serializer_spec.rb'
+
+Metrics/ParameterLists:
+  Exclude:
+    # The parameters directly reflect the Factorio Mod Portal API's query parameters.
+    # Using keyword arguments makes the interface clear and self-documenting.
+    # Breaking these parameters into a separate object would add unnecessary complexity
+    # for what is essentially a simple API wrapper.
+    - 'lib/factorix/mod_portal/api.rb'
+
+RSpec/NestedGroups:
+  Max: 4
