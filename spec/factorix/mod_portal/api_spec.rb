@@ -47,6 +47,61 @@ RSpec.describe Factorix::ModPortal::API do
       end
     end
 
+    context "with connection errors" do
+      before do
+        stub_request(:get, "https://mods.factorio.com/api/mods").to_raise(error)
+      end
+
+      context "with connection timeout" do
+        let(:error) { Net::OpenTimeout.new("execution expired") }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "connection timeout: execution expired")
+        end
+      end
+
+      context "with read timeout" do
+        let(:error) { Net::ReadTimeout.new("execution expired") }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "read timeout: Net::ReadTimeout with \"execution expired\"")
+        end
+      end
+
+      context "with SSL error" do
+        let(:error) { OpenSSL::SSL::SSLError.new("certificate verify failed") }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "SSL/TLS error: certificate verify failed")
+        end
+      end
+
+      context "with network error" do
+        let(:error) { SocketError.new("getaddrinfo: Name or service not known") }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "network error: getaddrinfo: Name or service not known")
+        end
+      end
+
+      context "with connection error" do
+        let(:error) { Errno::ECONNREFUSED.new }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "connection error: Connection refused")
+        end
+      end
+
+      context "with HTTP error" do
+        let(:error_response) { StringIO.new('{"message":"Mod not found","status":404}') }
+        let(:error) { OpenURI::HTTPError.new("404 Not Found", error_response) }
+
+        it "raises RequestError" do
+          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "404 Not Found")
+        end
+      end
+    end
+
     context "with invalid parameters" do
       it "raises ValidationError for invalid sort" do
         expect { api.mods(sort: "invalid") }.to raise_error(Factorix::ModPortal::ValidationError)
