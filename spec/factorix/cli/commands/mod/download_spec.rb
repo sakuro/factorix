@@ -112,15 +112,13 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
         allow(Digest::SHA1).to receive(:file).with(output_path).and_return(sha1_digest)
       end
 
-      it "raises SHA1MismatchError" do
-        expect { command.call(mod_name: "foo", output_directory: output_dir) }
-          .to raise_error(Factorix::CLI::SHA1MismatchError)
-      end
-
-      it "removes the downloaded file" do
-        command.call(mod_name: "foo", output_directory: output_dir)
-      rescue Factorix::CLI::SHA1MismatchError
-        expect(output_path).not_to exist
+      it "raises SHA1MismatchError and removes the downloaded file" do
+        aggregate_failures do
+          expect {
+            command.call(mod_name: "foo", output_directory: output_dir)
+          }.to raise_error(Factorix::CLI::SHA1MismatchError)
+          expect(output_path).not_to exist
+        end
       end
     end
 
@@ -132,15 +130,13 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
         end
       end
 
-      it "raises the error" do
-        expect { command.call(mod_name: "foo", output_directory: output_dir) }
-          .to raise_error(Factorix::DownloadError, "Download failed")
-      end
-
-      it "removes the partially downloaded file" do
-        command.call(mod_name: "foo", output_directory: output_dir)
-      rescue Factorix::DownloadError
-        expect(output_path).not_to exist
+      it "raises DownloadError and removes the partially downloaded file" do
+        aggregate_failures do
+          expect {
+            command.call(mod_name: "foo", output_directory: output_dir)
+          }.to raise_error(Factorix::DownloadError, "Download failed")
+          expect(output_path).not_to exist
+        end
       end
     end
 
