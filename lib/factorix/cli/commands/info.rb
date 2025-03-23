@@ -28,7 +28,7 @@ module Factorix
             "Executable" => runtime.executable,
             "User directory" => runtime.user_dir,
             "Data directory" => runtime.data_dir,
-            "Mod directory" => runtime.mods_dir,
+            "MOD directory" => runtime.mods_dir,
             "Script output directory" => runtime.script_output_dir
           }
         end

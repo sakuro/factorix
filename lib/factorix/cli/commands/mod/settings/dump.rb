@@ -35,9 +35,10 @@ module Factorix
               puts PerfectTOML.generate(settings)
             end
 
-            # Build a hash suitable for TOML generation from mod settings
-            # @param mod_settings [ModSettings] The mod settings
-            # @return [Hash] Hash suitable for TOML generation
+            # Build a hash suitable for TOML generation from MOD settings.
+            #
+            # @param mod_settings [ModSettings] The MOD settings.
+            # @return [Hash] Hash suitable for TOML generation.
             private def build_settings_hash(mod_settings)
               result = {}
 

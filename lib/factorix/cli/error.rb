@@ -4,7 +4,7 @@ module Factorix
   class CLI
     class Error < StandardError; end
 
-    # Raised when trying to download a mod to a path that already exists
+    # Raised when trying to download a MOD to a path that already exists
     class FileExistsError < Error; end
 
     # Raised when downloaded file's SHA1 hash does not match the expected value

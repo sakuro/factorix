@@ -10,10 +10,10 @@ module Factorix
   # Raised when an unknown property type is encountered during serialization/deserialization.
   class UnknownPropertyType < Error; end
 
-  # Raised when an invalid section name is encountered in mod settings.
+  # Raised when an invalid section name is encountered in MOD settings.
   class InvalidModSectionError < Error; end
 
-  # Raised when a section is not found in mod settings.
+  # Raised when a section is not found in MOD settings.
   class ModSectionNotFoundError < Error; end
 
   # Error raised when download fails
