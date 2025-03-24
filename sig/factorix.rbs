@@ -1,6 +1,6 @@
 module Factorix
   VERSION: String
 
-  # Factorix is a Factorio mod management and development tool.
+  # Factorix is a Factorio MOD management and development tool.
   # This module serves as the namespace for all Factorix functionality.
 end
