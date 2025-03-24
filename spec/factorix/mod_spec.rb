@@ -47,11 +47,11 @@ RSpec.describe Factorix::Mod do
         expect(Factorix::Mod[name: "b"]).to be > Factorix::Mod[name: "a"]
       end
 
-      it "correctly identifies different mods as not equal" do
+      it "correctly identifies different MODs as not equal" do
         expect(Factorix::Mod[name: "foo"]).not_to eq Factorix::Mod[name: "bar"]
       end
 
-      it "correctly orders mods with special characters" do
+      it "correctly orders MODs with special characters" do
         expect(Factorix::Mod[name: "a-mod"]).to be < Factorix::Mod[name: "b-mod"]
       end
     end
@@ -74,38 +74,38 @@ RSpec.describe Factorix::Mod do
       end
     end
 
-    context "when comparing with base mod" do
-      it "places base mod before any non-base mod" do
+    context "when comparing with base MOD" do
+      it "places base MOD before any non-base MOD" do
         expect(Factorix::Mod[name: "base"]).to be < Factorix::Mod[name: "a"]
       end
 
-      it "places base mod before non-base mod even if alphabetically later" do
+      it "places base MOD before non-base MOD even if alphabetically later" do
         expect(Factorix::Mod[name: "base"]).to be < Factorix::Mod[name: "a-mod"]
       end
 
-      it "places non-base mod after base mod" do
+      it "places non-base MOD after base MOD" do
         expect(Factorix::Mod[name: "a"]).to be > Factorix::Mod[name: "base"]
       end
 
-      it "places non-base mod after base mod even if alphabetically earlier" do
+      it "places non-base MOD after base MOD even if alphabetically earlier" do
         expect(Factorix::Mod[name: "a-mod"]).to be > Factorix::Mod[name: "base"]
       end
 
-      it "considers two base mods with same name equal" do
+      it "considers two base MODs with same name equal" do
         mod1 = Factorix::Mod[name: "base"]
         mod2 = Factorix::Mod[name: "base"]
         expect(mod1).to eq mod2
       end
 
-      it "considers base mod with different case as not equal to base mod" do
+      it "considers base MOD with different case as not equal to base MOD" do
         expect(Factorix::Mod[name: "base"]).not_to eq Factorix::Mod[name: "BASE"]
       end
 
-      it "compares Base and base normally (Base is not considered the base mod)" do
+      it "compares Base and base normally (Base is not considered the base MOD)" do
         expect(Factorix::Mod[name: "Base"]).to be > Factorix::Mod[name: "base"]
       end
 
-      it "compares BASE and base normally (BASE is not considered the base mod)" do
+      it "compares BASE and base normally (BASE is not considered the base MOD)" do
         expect(Factorix::Mod[name: "BASE"]).to be > Factorix::Mod[name: "base"]
       end
     end
