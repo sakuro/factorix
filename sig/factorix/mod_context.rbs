@@ -1,5 +1,5 @@
 module Factorix
-  # Manages temporary mod configurations
+  # Manages temporary MOD configurations
   class ModContext
     # @param mod_list [Factorix::ModList] the MOD list
     def initialize: (ModList mod_list) -> void

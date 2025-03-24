@@ -306,7 +306,7 @@ RSpec.describe Factorix::Runtime do
 
       # Setup the mod_context to track enabled states during block execution
       allow(mod_context).to receive(:with_only_enabled) do |*mod_names, &block|
-        # Record which mods would be enabled during the block
+        # Record which MODs would be enabled during the block
         enabled_states["base"] = true # base is always enabled
         mod_names.each do |name|
           enabled_states[name] = true

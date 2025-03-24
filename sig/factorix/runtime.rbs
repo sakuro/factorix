@@ -70,8 +70,8 @@ module Factorix
     # @return [Pathname] the path to the cache directory
     def cache_dir: () -> Pathname
 
-    # Evaluate the block with only the specified mods enabled
-    # @param mod_names [Array<String>] the names of the mods to enable
+    # Evaluate the block with only the specified MODs enabled
+    # @param mod_names [Array<String>] the names of the MODs to enable
     # @yield the block to evaluate
     # @return [void]
     def with_only_mod_enabled: (*String) { () -> void } -> void
