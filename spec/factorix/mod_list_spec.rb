@@ -178,7 +178,7 @@ RSpec.describe Factorix::ModList do
 
     context "when preserving version information" do
       before do
-        # Add a mod with version
+        # Add a MOD with version
         list.add(non_listed_mod, enabled: false, version: "3.0.0")
       end
 
@@ -248,15 +248,15 @@ RSpec.describe Factorix::ModList do
   end
 
   describe "#version" do
-    it "returns the version for a mod with version" do
+    it "returns the version for a MOD with version" do
       expect(list.version(enabled_mod)).to eq("1.0.0")
     end
 
-    it "returns nil for base mod without version" do
+    it "returns nil for base MOD without version" do
       expect(list.version(base_mod)).to be_nil
     end
 
-    it "returns nil for disabled mod without version" do
+    it "returns nil for disabled MOD without version" do
       expect(list.version(disabled_mod)).to be_nil
     end
 

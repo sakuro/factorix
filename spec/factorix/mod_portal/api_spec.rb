@@ -30,7 +30,7 @@ RSpec.describe Factorix::ModPortal::API do
       end
     end
 
-    context "when requesting mod by name" do
+    context "when requesting MOD by name" do
       let(:mod_list) { api.mods(namelist: "alien-biomes") }
 
       it "returns a ModList" do

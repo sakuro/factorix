@@ -13,8 +13,8 @@ module Factorix
             # @param settings [Hash] The settings to output
             private def output_toml: (Hash[String, untyped] settings) -> void
 
-            # Build a hash suitable for TOML generation from mod settings
-            # @param mod_settings [ModSettings] The mod settings
+            # Build a hash suitable for TOML generation from MOD settings
+            # @param mod_settings [ModSettings] The MOD settings
             # @return [Hash] Hash suitable for TOML generation
             private def build_settings_hash: (ModSettings mod_settings) -> Hash[String, Hash[String, untyped]]
           end

@@ -2,23 +2,23 @@ module Factorix
   class CLI
     module Commands
       module Mod
-        # Command for listing mods
+        # Command for listing MODs
         class List < Dry::CLI::Command
           # List all MODs
           # @param options [Hash] The options for the command
           # @option options [String] :format Output format
           def call: (**untyped options) -> void
 
-          # Output the mod list in default format (names only)
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in default format (names only)
+          # @param list [Factorix::ModList] The MOD list
           private def output_default: (Factorix::ModList list) -> void
 
-          # Output the mod list in CSV format
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in CSV format
+          # @param list [Factorix::ModList] The MOD list
           private def output_csv: (Factorix::ModList list) -> void
 
-          # Output the mod list in Markdown table format
-          # @param list [Factorix::ModList] The mod list
+          # Output the MOD list in Markdown table format
+          # @param list [Factorix::ModList] The MOD list
           private def output_markdown: (Factorix::ModList list) -> void
         end
       end
