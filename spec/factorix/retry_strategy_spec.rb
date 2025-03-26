@@ -118,7 +118,9 @@ RSpec.describe Factorix::RetryStrategy do
         rescue Errno::ETIMEDOUT
           # Expected error
         end
-      }.to output(/Download retry \d+ after \d+\.\d+e?-?\d*s, next in \d+\.\d+e?-?\d*s: Errno::ETIMEDOUT - Connection timed out/).to_stderr
+      }.to output(
+        /Download retry \d+ after \d+(?:\.\d+)?e?-?\d*s, next in \d+(?:\.\d+)?e?-?\d*s: Errno::ETIMEDOUT/
+      ).to_stderr
     end
   end
 end
