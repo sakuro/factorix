@@ -2,4 +2,4 @@
 _.path = ["bin", "exe"]
 
 [tools]
-ruby = "3.2.7"
+ruby = "3.2.8"
