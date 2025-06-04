@@ -190,6 +190,13 @@ module Factorix
       def read_unsigned_long
         read_bytes(8).unpack1("Q<")
       end
+
+      # Check if the stream is at EOF
+      #
+      # @return [Boolean] True if at end of file, false otherwise
+      def eof?
+        @stream.eof?
+      end
     end
   end
 end
