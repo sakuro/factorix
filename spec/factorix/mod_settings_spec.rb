@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+require_relative "../../lib/factorix/cli/error"
 require_relative "../../lib/factorix/mod_settings"
 
 RSpec.describe Factorix::ModSettings do
   let(:settings_path) { Pathname.new("/path/to/mod-settings.dat") }
-  let(:deserializer) { instance_double(Factorix::SerDes::Deserializer) }
+  let(:deserializer) { instance_double(Factorix::SerDes::Deserializer, eof?: true) }
   let(:raw_settings) do
     {
       "startup" => {
@@ -46,6 +47,12 @@ RSpec.describe Factorix::ModSettings do
       allow(deserializer).to receive(:read_property_tree).and_return(invalid_settings)
 
       expect { Factorix::ModSettings.new(settings_path) }.to raise_error(Factorix::InvalidModSectionError)
+    end
+
+    it "raises ExtraDataError if extra data exists at the end of file" do
+      allow(deserializer).to receive_messages(eof?: false, read_property_tree: raw_settings)
+
+      expect { Factorix::ModSettings.new(settings_path) }.to raise_error(Factorix::CLI::ExtraDataError)
     end
   end
 

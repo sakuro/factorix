@@ -15,5 +15,8 @@ module Factorix
 
     # Raised when output directory is not writable
     class DirectoryNotWritableError < Error; end
+
+    # Raised when MOD settings file contains extra data at the end
+    class ExtraDataError < Error; end
   end
 end

@@ -123,6 +123,11 @@ module Factorix
         # 3. Read property tree and organize into sections
         raw_settings = deserializer.read_property_tree
         organize_into_sections(raw_settings)
+
+        # 4. Check for extra data at the end of file
+        unless deserializer.eof?
+          raise Factorix::CLI::ExtraDataError, "Extra data found at the end of MOD settings file"
+        end
       end
     end
 

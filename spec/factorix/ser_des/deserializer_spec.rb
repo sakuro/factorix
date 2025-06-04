@@ -347,4 +347,32 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
     end
   end
+
+  describe "#eof?" do
+    context "when stream is at EOF" do
+      let(:binary_data) { "" }
+
+      it "returns true" do
+        expect(deserializer.eof?).to be true
+      end
+    end
+
+    context "when stream is not at EOF" do
+      let(:binary_data) { "abc" }
+
+      it "returns false after reading part of the stream" do
+        stream.read(1)
+        expect(deserializer.eof?).to be false
+      end
+    end
+
+    context "when stream is at EOF after reading all data" do
+      let(:binary_data) { "abc" }
+
+      it "returns true after reading all data" do
+        stream.read
+        expect(deserializer.eof?).to be true
+      end
+    end
+  end
 end
