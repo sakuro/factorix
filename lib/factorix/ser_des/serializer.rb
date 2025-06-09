@@ -200,16 +200,16 @@ module Factorix
           write_bool(false)
           write_dictionary(obj)
         when Integer
-          if obj.negative?
-            # Type 6 - Signed integer
-            write_u8(6)
-            write_bool(false)
-            write_long(obj)
-          else
+          if obj >= 0
             # Type 7 - Unsigned integer
             write_u8(7)
             write_bool(false)
             write_unsigned_long(obj)
+          else
+            # Type 6 - Signed integer
+            write_u8(6)
+            write_bool(false)
+            write_long(obj)
           end
         else
           raise Factorix::UnknownPropertyType, "Unknown property type: #{obj.class}"
