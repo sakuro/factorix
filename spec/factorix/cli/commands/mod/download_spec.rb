@@ -98,7 +98,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
 
       it "raises FileExistsError" do
         expect { command.call(mod_name: "foo", output_directory: output_dir) }
-          .to raise_error(Factorix::CLI::FileExistsError, "File already exists: #{output_path}")
+          .to raise_error(Factorix::FileExistsError, "File already exists: #{output_path}")
       end
     end
 
@@ -116,7 +116,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
         aggregate_failures do
           expect {
             command.call(mod_name: "foo", output_directory: output_dir)
-          }.to raise_error(Factorix::CLI::SHA1MismatchError)
+          }.to raise_error(Factorix::SHA1MismatchError)
           expect(output_path).not_to exist
         end
       end
@@ -152,7 +152,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
 
       it "raises DirectoryNotFoundError" do
         expect { command.call(mod_name: "foo", output_directory: non_existent_dir) }
-          .to raise_error(Factorix::CLI::DirectoryNotFoundError, "Directory does not exist: #{non_existent_dir}")
+          .to raise_error(Factorix::DirectoryNotFoundError, "Directory does not exist: #{non_existent_dir}")
       end
     end
 
@@ -167,7 +167,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
 
       it "raises DirectoryNotWritableError" do
         expect { command.call(mod_name: "foo", output_directory: output_dir) }
-          .to raise_error(Factorix::CLI::DirectoryNotWritableError, "Directory is not writable: #{output_dir}")
+          .to raise_error(Factorix::DirectoryNotWritableError, "Directory is not writable: #{output_dir}")
       end
     end
   end
