@@ -158,7 +158,7 @@ module Factorix
       # Write a property tree
       #
       # @param obj [Object] Object to write
-      # @raise [UnknownPropertyType] If the object type is not supported
+      # @raise [Factorix::UnknownPropertyType] If the object type is not supported
       # @return [void]
       def write_property_tree(obj)
         case obj
@@ -200,16 +200,16 @@ module Factorix
           write_bool(false)
           write_dictionary(obj)
         when Integer
-          if obj >= 0
-            # Type 7 - Unsigned integer
-            write_u8(7)
-            write_bool(false)
-            write_unsigned_long(obj)
-          else
+          if obj.negative?
             # Type 6 - Signed integer
             write_u8(6)
             write_bool(false)
             write_long(obj)
+          else
+            # Type 7 - Unsigned integer
+            write_u8(7)
+            write_bool(false)
+            write_unsigned_long(obj)
           end
         else
           raise Factorix::UnknownPropertyType, "Unknown property type: #{obj.class}"

@@ -16,7 +16,7 @@ module Factorix
       # Initialize a new section with the given name
       #
       # @param name [String] The section name
-      # @raise [InvalidModSectionError] If the section name is invalid
+      # @raise [Factorix::InvalidModSectionError] If the section name is invalid
       def initialize(name)
         unless VALID_SECTIONS.include?(name)
           raise InvalidModSectionError, "Invalid MOD section name: #{name}"
@@ -80,8 +80,8 @@ module Factorix
     #
     # @param name [String] The section name
     # @return [Section] The section
-    # @raise [InvalidModSectionError] If the section name is invalid
-    # @raise [ModSectionNotFoundError] If the section is not found
+    # @raise [Factorix::InvalidModSectionError] If the section name is invalid
+    # @raise [Factorix::ModSectionNotFoundError] If the section is not found
     def [](name)
       unless VALID_SECTIONS.include?(name)
         raise InvalidModSectionError, "Invalid MOD section name: #{name}"
@@ -135,7 +135,7 @@ module Factorix
     #
     # @param raw_settings [Hash] Raw settings from deserializer
     # @return [void]
-    # @raise [InvalidModSectionError] If an invalid section name is encountered
+    # @raise [Factorix::InvalidModSectionError] If an invalid section name is encountered
     private def organize_into_sections(raw_settings)
       process_raw_settings(raw_settings)
       ensure_all_sections_exist
@@ -145,7 +145,7 @@ module Factorix
     #
     # @param raw_settings [Hash] Raw settings from deserializer
     # @return [void]
-    # @raise [InvalidModSectionError] If an invalid section name is encountered
+    # @raise [Factorix::InvalidModSectionError] If an invalid section name is encountered
     private def process_raw_settings(raw_settings)
       raw_settings.each do |section_name, section_settings|
         unless VALID_SECTIONS.include?(section_name)

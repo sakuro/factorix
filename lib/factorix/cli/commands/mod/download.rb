@@ -40,10 +40,10 @@ module Factorix
           # @option options [String] :output_directory Directory to save the downloaded MOD (default: current
           #                          directory).
           # @option options [Boolean] :quiet Suppress progress and completion messages (default: false).
-          # @raise [ModPortalError] when API request fails
-          # @raise [DownloadError] when download fails
-          # @raise [FileExistsError] when output file already exists
-          # @raise [SHA1MismatchError] when SHA1 hash does not match
+          # @raise [Factorix::ModPortalError] when API request fails
+          # @raise [Factorix::DownloadError] when download fails
+          # @raise [Factorix::FileExistsError] when output file already exists
+          # @raise [Factorix::SHA1MismatchError] when SHA1 hash does not match
           def call(mod_name:, **options)
             release = find_mod_release(mod_name, options[:version])
             output_path = determine_output_path(mod_name, release.version, options[:output_directory])

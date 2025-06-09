@@ -32,7 +32,7 @@ module Factorix
     # @param output [String, Pathname] path to save the downloaded file
     # @return [void]
     # @raise [ArgumentError] if the URL is not HTTP(S)
-    # @raise [DownloadError] if the download fails
+    # @raise [Factorix::DownloadError] if the download fails
     def download(url, output)
       raise ArgumentError, "URL must be HTTP or HTTPS" unless url.is_a?(URI::HTTP)
 
