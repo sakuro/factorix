@@ -126,7 +126,7 @@ module Factorix
 
         # 4. Check for extra data at the end of file
         unless deserializer.eof?
-          raise Factorix::CLI::ExtraDataError, "Extra data found at the end of MOD settings file"
+          raise ExtraDataError, "Extra data found at the end of MOD settings file"
         end
       end
     end

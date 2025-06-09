@@ -5,11 +5,11 @@ require "pathname"
 require "uri"
 
 require_relative "../../../../factorix"
+require_relative "../../../../factorix/errors"
 require_relative "../../../credential"
 require_relative "../../../downloader"
 require_relative "../../../mod_portal/api"
 require_relative "../../../progress/bar"
-require_relative "../../error"
 
 module Factorix
   class CLI
@@ -40,17 +40,17 @@ module Factorix
           # @option options [String] :output_directory Directory to save the downloaded MOD (default: current
           #                          directory).
           # @option options [Boolean] :quiet Suppress progress and completion messages (default: false).
-          # @raise [Factorix::ModPortal::Error] when API request fails
-          # @raise [Factorix::DownloadError] when download fails
-          # @raise [Factorix::CLI::FileExistsError] when output file already exists
-          # @raise [Factorix::CLI::SHA1MismatchError] when SHA1 hash does not match
+          # @raise [ModPortalError] when API request fails
+          # @raise [DownloadError] when download fails
+          # @raise [FileExistsError] when output file already exists
+          # @raise [SHA1MismatchError] when SHA1 hash does not match
           def call(mod_name:, **options)
             release = find_mod_release(mod_name, options[:version])
             output_path = determine_output_path(mod_name, release.version, options[:output_directory])
             download_url = build_download_url(release.download_url)
 
             download_mod(download_url, output_path, release.sha1, options[:quiet])
-          rescue Factorix::ModPortal::Error, Factorix::DownloadError => e
+          rescue ModPortalError, DownloadError => e
             output_path.unlink if output_path&.exist?
             raise e
           end
@@ -60,7 +60,7 @@ module Factorix
             mod = api.mod(mod_name)
 
             release = find_release(mod.releases, version)
-            raise Factorix::CLI::Error, "No matching release found for version #{version}" if release.nil?
+            raise CLIError, "No matching release found for version #{version}" if release.nil?
 
             release
           end

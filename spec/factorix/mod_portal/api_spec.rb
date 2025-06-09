@@ -56,7 +56,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Net::OpenTimeout.new("execution expired") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "connection timeout: execution expired")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "connection timeout: execution expired")
         end
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Net::ReadTimeout.new("execution expired") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "read timeout: Net::ReadTimeout with \"execution expired\"")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "read timeout: Net::ReadTimeout with \"execution expired\"")
         end
       end
 
@@ -72,7 +72,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { OpenSSL::SSL::SSLError.new("certificate verify failed") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "SSL/TLS error: certificate verify failed")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "SSL/TLS error: certificate verify failed")
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { SocketError.new("getaddrinfo: Name or service not known") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "network error: getaddrinfo: Name or service not known")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "network error: getaddrinfo: Name or service not known")
         end
       end
 
@@ -88,7 +88,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Errno::ECONNREFUSED.new }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "connection error: Connection refused")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "connection error: Connection refused")
         end
       end
 
@@ -97,22 +97,22 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { OpenURI::HTTPError.new("404 Not Found", error_response) }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortal::RequestError, "404 Not Found")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "404 Not Found")
         end
       end
     end
 
     context "with invalid parameters" do
       it "raises ValidationError for invalid sort" do
-        expect { api.mods(sort: "invalid") }.to raise_error(Factorix::ModPortal::ValidationError)
+        expect { api.mods(sort: "invalid") }.to raise_error(Factorix::ModPortalValidationError)
       end
 
       it "raises ValidationError for invalid sort_order" do
-        expect { api.mods(sort_order: "invalid") }.to raise_error(Factorix::ModPortal::ValidationError)
+        expect { api.mods(sort_order: "invalid") }.to raise_error(Factorix::ModPortalValidationError)
       end
 
       it "raises ValidationError for invalid version" do
-        expect { api.mods(version: "invalid") }.to raise_error(Factorix::ModPortal::ValidationError)
+        expect { api.mods(version: "invalid") }.to raise_error(Factorix::ModPortalValidationError)
       end
     end
   end
@@ -138,7 +138,7 @@ RSpec.describe Factorix::ModPortal::API do
 
     context "with non-existent MOD" do
       it "raises RequestError" do
-        expect { api.mod("non_existent_mod") }.to raise_error(Factorix::ModPortal::RequestError)
+        expect { api.mod("non_existent_mod") }.to raise_error(Factorix::ModPortalRequestError)
       end
     end
   end
@@ -182,7 +182,7 @@ RSpec.describe Factorix::ModPortal::API do
 
     context "with non-existent MOD" do
       it "raises RequestError" do
-        expect { api.mod_with_details("non_existent_mod") }.to raise_error(Factorix::ModPortal::RequestError)
+        expect { api.mod_with_details("non_existent_mod") }.to raise_error(Factorix::ModPortalRequestError)
       end
     end
   end
