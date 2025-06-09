@@ -5,7 +5,7 @@ require "open-uri"
 require "time"
 require "uri"
 
-require_relative "../../factorix/errors"
+require_relative "../errors"
 require_relative "types"
 
 module Factorix

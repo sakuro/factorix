@@ -5,9 +5,9 @@ require "pathname"
 require "uri"
 
 require_relative "../../../../factorix"
-require_relative "../../../../factorix/errors"
 require_relative "../../../credential"
 require_relative "../../../downloader"
+require_relative "../../../errors"
 require_relative "../../../mod_portal/api"
 require_relative "../../../progress/bar"
 
