@@ -158,7 +158,7 @@ module Factorix
       # Write a property tree
       #
       # @param obj [Object] Object to write
-      # @raise [UnknownPropertyType] If the object type is not supported
+      # @raise [Factorix::UnknownPropertyType] If the object type is not supported
       # @return [void]
       def write_property_tree(obj)
         case obj

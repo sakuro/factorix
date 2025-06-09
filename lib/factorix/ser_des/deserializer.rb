@@ -134,7 +134,7 @@ module Factorix
 
       # Read a property tree
       #
-      # @raise [UnknownPropertyType] If the property type is not supported
+      # @raise [Factorix::UnknownPropertyType] If the property type is not supported
       # @return [Object] Object read
       def read_property_tree
         type = read_u8

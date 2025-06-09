@@ -31,7 +31,7 @@ module Factorix
     # @param url [URI::HTTP] URL to download from (HTTP or HTTPS)
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
-    # @raise [DownloadError] if the download fails
+    # @raise [Factorix::DownloadError] if the download fails
     # @raise [ArgumentError] if the URL is not HTTP(S)
     def download(url, output)
       raise ArgumentError, "URL must be HTTP or HTTPS" unless url.is_a?(URI::HTTP)
@@ -50,7 +50,7 @@ module Factorix
     # @param uri [URI::HTTP] URL to download from
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
-    # @raise [DownloadError] if the download fails
+    # @raise [Factorix::DownloadError] if the download fails
     private def download_full(uri, output)
       uri.open("rb", **download_options) do |remote|
         output.binwrite(remote.read)
@@ -65,7 +65,7 @@ module Factorix
     # @param uri [URI::HTTP] URL to download from
     # @param output [Pathname] path to save the downloaded file
     # @return [void]
-    # @raise [DownloadError] if the download fails
+    # @raise [Factorix::DownloadError] if the download fails
     private def download_with_resume(uri, output)
       options = download_options.merge("Range" => "bytes=#{output.size}-")
       uri.open("rb", **options) do |remote|

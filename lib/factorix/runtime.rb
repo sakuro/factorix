@@ -19,7 +19,7 @@ module Factorix
     # Return the platform the script is running on
     #
     # @return [Runtime] the runtime environment
-    # @raise [UnsupportedPlatform] if the platform is not supported
+    # @raise [Factorix::Runtime::UnsupportedPlatform] if the platform is not supported
     def self.runtime
       case RUBY_PLATFORM
       when /darwin/
@@ -77,7 +77,7 @@ module Factorix
     #
     # @param async [Boolean] whether to launch the game asynchronously
     # @return [void]
-    # @raise [RuntimeError] if the game is already running
+    # @raise [Factorix::Runtime::AlreadyRunning] if the game is already running
     def launch(*, async:)
       raise AlreadyRunning, "The game is already running" if running?
 
