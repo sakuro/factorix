@@ -5,7 +5,7 @@ require "open-uri"
 require "time"
 require "uri"
 
-require_relative "error"
+require_relative "../errors"
 require_relative "types"
 
 module Factorix
@@ -67,9 +67,9 @@ module Factorix
       # @param namelist [Array<String>] Return only MODs that match the given names.
       # @param version [String] Only return non-deprecated MODs compatible with this Factorio version.
       # @return [Types::ModList]
-      # @raise [RequestError] when request fails (including timeouts)
-      # @raise [ResponseError] when response cannot be parsed
-      # @raise [ValidationError] when parameters are invalid
+      # @raise [Factorix::ModPortalRequestError] when request fails (including timeouts)
+      # @raise [Factorix::ModPortalResponseError] when response cannot be parsed
+      # @raise [Factorix::ModPortalValidationError] when parameters are invalid
       def mods(hide_deprecated: nil, page: nil, page_size: nil, sort: nil, sort_order: nil, namelist: nil, version: nil)
         validate_sort(sort) if sort
         validate_sort_order(sort_order) if sort_order
@@ -94,8 +94,8 @@ module Factorix
       #
       # @param name [String] The MOD's name.
       # @return [Types::Mod]
-      # @raise [RequestError] when request fails (including timeouts)
-      # @raise [ResponseError] when response cannot be parsed
+      # @raise [Factorix::ModPortalRequestError] when request fails (including timeouts)
+      # @raise [Factorix::ModPortalResponseError] when response cannot be parsed
       def mod(name)
         response = request("/mods/#{name}")
         parse_mod(response)
@@ -107,8 +107,8 @@ module Factorix
       #
       # @param name [String] The MOD's name
       # @return [Types::ModWithDetails]
-      # @raise [RequestError] when request fails (including timeouts)
-      # @raise [ResponseError] when response cannot be parsed
+      # @raise [Factorix::ModPortalRequestError] when request fails (including timeouts)
+      # @raise [Factorix::ModPortalResponseError] when response cannot be parsed
       def mod_with_details(name)
         response = request("/mods/#{name}/full")
         parse_mod_with_details(response)
@@ -120,8 +120,8 @@ module Factorix
       # @param path [String] API endpoint path
       # @param params [Hash] Query parameters
       # @return [Hash] Parsed JSON response
-      # @raise [RequestError] when request fails
-      # @raise [ResponseError] when response cannot be parsed
+      # @raise [Factorix::ModPortalRequestError] when request fails
+      # @raise [Factorix::ModPortalResponseError] when response cannot be parsed
       private def request(path, **params)
         uri = BASE_URL.dup
         uri.path = File.join(uri.path, path)
@@ -129,19 +129,19 @@ module Factorix
 
         JSON.parse(uri.read(open_timeout: 5, read_timeout: 10))
       rescue OpenURI::HTTPError => e
-        raise RequestError, e.message
+        raise ModPortalRequestError, e.message
       rescue Net::OpenTimeout => e
-        raise RequestError, "connection timeout: #{e.message}"
+        raise ModPortalRequestError, "connection timeout: #{e.message}"
       rescue Net::ReadTimeout => e
-        raise RequestError, "read timeout: #{e.message}"
+        raise ModPortalRequestError, "read timeout: #{e.message}"
       rescue OpenSSL::SSL::SSLError => e
-        raise RequestError, "SSL/TLS error: #{e.message}"
+        raise ModPortalRequestError, "SSL/TLS error: #{e.message}"
       rescue SocketError => e
-        raise RequestError, "network error: #{e.message}"
+        raise ModPortalRequestError, "network error: #{e.message}"
       rescue SystemCallError => e
-        raise RequestError, "connection error: #{e.message}"
+        raise ModPortalRequestError, "connection error: #{e.message}"
       rescue JSON::ParserError => e
-        raise ResponseError, e.message
+        raise ModPortalResponseError, e.message
       end
 
       # Parse a MOD list response from the API.
@@ -302,30 +302,31 @@ module Factorix
 
       # Validate the sort parameter
       # @param sort [String] Sort field name
-      # @raise [ValidationError] if the sort field is invalid
+      # @raise [Factorix::ModPortalValidationError] if the sort field is invalid
       private def validate_sort(sort)
         return if sort.nil?
 
         valid_sorts = %w[name created_at updated_at]
-        raise ValidationError, "invalid sort: #{sort}" unless valid_sorts.include?(sort)
+        raise ModPortalValidationError, "invalid sort: #{sort}" unless valid_sorts.include?(sort)
       end
 
       # Validate the sort order parameter
       # @param sort_order [String] Sort order (asc or desc)
-      # @raise [ValidationError] if the sort order is invalid
+      # @raise [Factorix::ModPortalValidationError] if the sort order is invalid
       private def validate_sort_order(sort_order)
         return if VALID_SORT_ORDERS.include?(sort_order)
 
-        raise ValidationError, "Invalid sort order: #{sort_order}. Valid values are: #{VALID_SORT_ORDERS.join(", ")}"
+        raise ModPortalValidationError,
+          "Invalid sort order: #{sort_order}. Valid values are: #{VALID_SORT_ORDERS.join(", ")}"
       end
 
       # Validate the version parameter
       # @param version [String] Factorio version
-      # @raise [ValidationError] if the version is invalid
+      # @raise [Factorix::ModPortalValidationError] if the version is invalid
       private def validate_version(version)
         return if VALID_VERSIONS.include?(version)
 
-        raise ValidationError, "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
+        raise ModPortalValidationError, "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
       end
 
       # Normalize a category name to its display form

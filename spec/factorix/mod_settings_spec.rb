@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/factorix/cli/error"
 require_relative "../../lib/factorix/mod_settings"
 
 RSpec.describe Factorix::ModSettings do
@@ -52,7 +51,7 @@ RSpec.describe Factorix::ModSettings do
     it "raises ExtraDataError if extra data exists at the end of file" do
       allow(deserializer).to receive_messages(eof?: false, read_property_tree: raw_settings)
 
-      expect { Factorix::ModSettings.new(settings_path) }.to raise_error(Factorix::CLI::ExtraDataError)
+      expect { Factorix::ModSettings.new(settings_path) }.to raise_error(Factorix::ExtraDataError)
     end
   end
 
