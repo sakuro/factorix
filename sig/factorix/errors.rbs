@@ -3,23 +3,146 @@ module Factorix
   class Error < StandardError
   end
 
-  # Raised when a MOD is not found.
-  class ModNotFoundError < Error
-    def initialize: (untyped mod) -> void
+  # =====================================
+  # Infrastructure layer errors
+  # =====================================
+  class InfrastructureError < Error
   end
 
-  # Raised when an unknown property type is encountered during serialization/deserialization.
-  class UnknownPropertyType < Error
+  # Network related errors
+  class NetworkError < InfrastructureError
+  end
+
+  class NetworkTimeoutError < NetworkError
+  end
+
+  class NetworkConnectionError < NetworkError
+  end
+
+  class SSLTLSError < NetworkError
+  end
+
+  # HTTP specific errors
+  class HTTPError < NetworkError
+  end
+
+  class HTTPClientError < HTTPError
+  end
+
+  class HTTPServerError < HTTPError
+  end
+
+  class HTTPTimeoutError < HTTPError
+  end
+
+  class HTTPConnectionError < HTTPError
+  end
+
+  class HTTPResponseError < HTTPError
+  end
+
+  # File system related errors
+  class FileSystemError < InfrastructureError
+  end
+
+  class FileNotFoundError < FileSystemError
+  end
+
+  class DirectoryNotFoundError < FileSystemError
+  end
+
+  class DirectoryNotWritableError < FileSystemError
+  end
+
+  class FileExistsError < FileSystemError
+  end
+
+  # File format related errors
+  class FileFormatError < InfrastructureError
+  end
+
+  class SHA1MismatchError < FileFormatError
+  end
+
+  class ExtraDataError < FileFormatError
+  end
+
+  class InvalidModSectionError < FileFormatError
+    def initialize: (String section_name) -> void
+  end
+
+  class UnknownPropertyType < FileFormatError
     def initialize: (untyped type) -> void
   end
 
-  # Raised when an invalid section name is encountered in MOD settings.
-  class InvalidModSectionError < Error
+  # Runtime platform errors
+  class RuntimeError < InfrastructureError
+  end
+
+  class UnsupportedPlatformError < RuntimeError
+  end
+
+  class AlreadyRunningError < RuntimeError
+  end
+
+  # =====================================
+  # ModPortal API layer errors
+  # =====================================
+  class ModPortalAPIError < Error
+  end
+
+  class ModPortalRequestError < ModPortalAPIError
+  end
+
+  class ModPortalResponseError < ModPortalAPIError
+  end
+
+  class ModPortalValidationError < ModPortalAPIError
+  end
+
+  class ModPortalRateLimitError < ModPortalAPIError
+  end
+
+  class ModPortalAuthenticationError < ModPortalAPIError
+  end
+
+  # =====================================
+  # Application layer errors
+  # =====================================
+  class ApplicationError < Error
+  end
+
+  # MOD related errors
+  class ModError < ApplicationError
+  end
+
+  class ModNotFoundError < ModError
+    def initialize: (untyped mod) -> void
+  end
+
+  class ModSectionNotFoundError < ModError
     def initialize: (String section_name) -> void
   end
 
-  # Raised when a section is not found in MOD settings.
-  class ModSectionNotFoundError < Error
-    def initialize: (String section_name) -> void
+  class DownloadError < ModError
   end
+
+  class ModNotInListError < ModError
+  end
+
+  # CLI related errors
+  class CLIError < ApplicationError
+  end
+
+  # Validation errors
+  class ValidationError < ApplicationError
+  end
+
+  class InvalidParameterError < ValidationError
+  end
+
+  # =====================================
+  # Backward compatibility aliases
+  # =====================================
+  ModPortalError = ModPortalAPIError
 end

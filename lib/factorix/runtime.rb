@@ -29,7 +29,7 @@ module Factorix
       when /linux/
         /microsoft/i.match?(File.read("/proc/version")) ? WSL.new : Linux.new
       else
-        raise UnsupportedPlatform, "Platform is not supported: #{RUBY_PLATFORM}"
+        raise UnsupportedPlatformError, "Platform is not supported: #{RUBY_PLATFORM}"
       end
     end
 
@@ -77,9 +77,9 @@ module Factorix
     #
     # @param async [Boolean] whether to launch the game asynchronously
     # @return [void]
-    # @raise [Factorix::Runtime::AlreadyRunning] if the game is already running
+    # @raise [Factorix::AlreadyRunningError] if the game is already running
     def launch(*, async:)
-      raise AlreadyRunning, "The game is already running" if running?
+      raise AlreadyRunningError, "The game is already running" if running?
 
       if async
         spawn([executable.to_s, "factorio"], *, out: IO::NULL)
