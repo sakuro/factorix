@@ -1,4 +1,4 @@
-# RuboCop Response Guide
+# Code Quality Management
 
 ## Basic Principles
 
@@ -6,9 +6,9 @@
 2. **Appropriate Exclusion**: Properly exclude violations that require complex refactoring
 3. **Consistency Maintenance**: Prioritize unified coding standards across the team
 
-## Response Procedure
+## RuboCop Management
 
-### Step 1: Violation Check and Classification
+### Violation Check and Classification
 
 ```bash
 # Check all violations
@@ -35,7 +35,7 @@ bundle exec rubocop path/to/file.rb
 - **Metrics/AbcSize**: Method complexity
 - **Metrics/ClassLength**: Class length
 
-### Step 2: Execute Auto-corrections
+### Auto-corrections
 
 ```bash
 # Safe auto-correction (recommended)
@@ -49,7 +49,7 @@ bundle exec rubocop -A
 - The `-A` flag may include destructive changes, so create a git stash or commit beforehand
 - Always run tests after auto-correction to verify functionality
 
-### Step 3: Manual Corrections
+### Manual Corrections
 
 #### Style/CommentedKeyword Response Example
 
@@ -72,7 +72,7 @@ raise ModPortalValidationError,
   "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
 ```
 
-### Step 4: Exclude Complex Violations
+### Exclude Complex Violations
 
 ```bash
 # Regenerate TODO file to exclude violations
@@ -84,7 +84,7 @@ bundle exec rake rubocop:regenerate_todo
 - `Metrics/AbcSize` requiring architectural changes
 - `Style/Documentation` in legacy code
 
-### Step 5: Commit Strategy
+### Commit Strategy for RuboCop Fixes
 
 #### Separate commits by violation type
 
@@ -98,7 +98,7 @@ git add .rubocop_todo.yml
 git commit -m ":police_officer: Regenerate RuboCop TODO to exclude complex violations"
 ```
 
-## Commit Message Patterns
+## Commit Message Patterns for Code Quality
 
 ### Auto-correction
 ```
@@ -161,6 +161,17 @@ that require significant refactoring.
 - Directly affect readability
 - Important items related to team conventions
 
+## Development Workflow Integration
+
+As part of the standard development workflow, code quality verification is essential:
+
+1. **Before Committing**: Always run `bundle exec rubocop` to check for violations
+2. **During PR Review**: Ensure all RuboCop issues are resolved or properly documented  
+3. **Continuous Integration**: RuboCop checks should be part of the CI pipeline
+4. **Code Quality**: RuboCop helps maintain consistent code style and catches potential issues
+
+This ensures consistent code quality and maintainability across the project.
+
 ## Related Commands
 
 ```bash
@@ -172,4 +183,13 @@ bundle exec rubocop --except Metrics/MethodLength
 
 # Run with specific config file
 bundle exec rubocop --config .rubocop_todo.yml
+
+# Testing commands
+bundle exec rspec
+
+# Type checking (if applicable)
+bundle exec steep check
+
+# Documentation generation
+bundle exec yard
 ```
