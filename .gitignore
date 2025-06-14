@@ -2,7 +2,7 @@
 /.yardoc
 /_yardoc/
 /coverage/
-/doc/
+/docs/api/
 /pkg/
 /spec/reports/
 /tmp/
