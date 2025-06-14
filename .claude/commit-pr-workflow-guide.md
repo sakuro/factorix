@@ -94,13 +94,13 @@ Use bullet points for multiple changes:
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-#### Emoji Guidelines for Commit Messages
+#### Emoji Guidelines
 
-**Important**: These emoji guidelines apply specifically to commit messages only.
+**Scope**: These emoji guidelines apply to all git-managed content including commit messages, pull request descriptions, documentation, source code comments, and any other text files in the repository.
 
-**Notation Format**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
+**Notation Format**: Always use GitHub emoji notation (`:emoji:`) instead of raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
 
-**GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set when writing commit messages. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
+**GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
 
 ##### Available Emojis
 
