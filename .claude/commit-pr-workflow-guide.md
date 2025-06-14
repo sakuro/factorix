@@ -94,30 +94,30 @@ Use bullet points for multiple changes:
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-**Important**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (🚫). This ensures consistency and compatibility across different Git tools and platforms.
+**Important**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
 
 #### Emoji Guide
 
-- `:new:` - New feature – Adding a new feature or capability
-- `:beetle:` - Bug fix – Fixing an issue or bug
-- `:memo:` - Documentation – Writing or updating documentation
-- `:lipstick:` - Style – Code style changes (formatting, linting)
-- `:hammer:` - Refactor – Code changes that neither fix a bug nor add a feature
-- `:zap:` - Performance – Improving performance
-- `:test_tube:` - Tests – Adding or updating tests
-- `:recycle:` - Remove – Removing code or files
-- `:bookmark:` - Release – Tagging for release
-- `:wrench:` - Config – Configuration or build system changes
-- `:gem:` - Dependency – Adding or updating dependencies (Ruby)
-- `:package:` - Dependency – Adding or updating dependencies (non Ruby)
-- `:rewind:` - Revert – Reverting changes
-- `:rocket:` - Deploy – Deploying stuff
-- `:inbox_tray:` - Merge – Merging branches
-- `:truck:` - Move – Moving or renaming files
-- `:bulb:` - Idea – Idea or proposal
-- `:construction:` - WIP – Work in progress
-- `:computer:` - Terminal operation – Result of invoking some commands
-- `:tada:` - Initial – Initial commit
+- `:new:` - New feature - Adding a new feature or capability
+- `:beetle:` - Bug fix - Fixing an issue or bug
+- `:memo:` - Documentation - Writing or updating documentation
+- `:lipstick:` - Style - Code style changes (formatting, linting)
+- `:hammer:` - Refactor - Code changes that neither fix a bug nor add a feature
+- `:zap:` - Performance - Improving performance
+- `:test_tube:` - Tests - Adding or updating tests
+- `:recycle:` - Remove - Removing code or files
+- `:bookmark:` - Release - Tagging for release
+- `:wrench:` - Config - Configuration or build system changes
+- `:gem:` - Dependency - Adding or updating dependencies (Ruby)
+- `:package:` - Dependency - Adding or updating dependencies (non Ruby)
+- `:rewind:` - Revert - Reverting changes
+- `:rocket:` - Deploy - Deploying stuff
+- `:inbox_tray:` - Merge - Merging branches
+- `:truck:` - Move - Moving or renaming files
+- `:bulb:` - Idea - Idea or proposal
+- `:construction:` - WIP - Work in progress
+- `:computer:` - Terminal operation - Result of invoking some commands
+- `:tada:` - Initial - Initial commit
 
 ## PR Creation and Management
 
