@@ -94,7 +94,9 @@ Use bullet points for multiple changes:
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-#### Emoji Guidelines
+#### Emoji Guidelines for Commit Messages
+
+**Important**: These emoji guidelines apply specifically to commit messages only.
 
 **Notation Format**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
 
