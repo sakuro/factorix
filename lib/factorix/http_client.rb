@@ -56,7 +56,14 @@ module Factorix
         output.binwrite(remote.read)
       end
     rescue OpenURI::HTTPError => e
-      raise DownloadError, "Download failed: #{e.message}"
+      # Convert HTTP errors to our exception hierarchy
+      if e.message.start_with?("4")
+        raise HTTPClientError, "Client error: #{e.message}"
+      elsif e.message.start_with?("5")
+        raise HTTPServerError, "Server error: #{e.message}"
+      else
+        raise HTTPError, "HTTP error: #{e.message}"
+      end
     end
 
     # Resume a partially downloaded file from its current size.
@@ -77,7 +84,14 @@ module Factorix
       # Range Not Satisfiable - File might have changed on server, try full download
       return download_full(uri, output) if e.message.start_with?("416")
 
-      raise DownloadError, "Download failed: #{e.message}"
+      # Convert HTTP errors to our exception hierarchy
+      if e.message.start_with?("4")
+        raise HTTPClientError, "Client error: #{e.message}"
+      elsif e.message.start_with?("5")
+        raise HTTPServerError, "Server error: #{e.message}"
+      else
+        raise HTTPError, "HTTP error: #{e.message}"
+      end
     end
 
     # Get the HTTP options for URI#open, optionally including progress tracking
