@@ -72,5 +72,4 @@ module Factorix
   # Validation errors
   class ValidationError < ApplicationError; end
   class InvalidParameterError < ValidationError; end
-
 end
