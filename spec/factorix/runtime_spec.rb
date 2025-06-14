@@ -63,7 +63,7 @@ RSpec.describe Factorix::Runtime do
       end
 
       it "raises UnsupportedPlatform" do
-        expect { runtime }.to raise_error(Factorix::Runtime::UnsupportedPlatform)
+        expect { runtime }.to raise_error(Factorix::UnsupportedPlatformError)
       end
     end
   end
@@ -239,7 +239,7 @@ RSpec.describe Factorix::Runtime do
       end
 
       it "raises AlreadyRunning" do
-        expect { runtime.launch(async: true) }.to raise_error(Factorix::Runtime::AlreadyRunning)
+        expect { runtime.launch(async: true) }.to raise_error(Factorix::AlreadyRunningError)
       end
     end
   end

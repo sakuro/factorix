@@ -108,17 +108,17 @@ RSpec.describe Factorix::Downloader do
       before do
         allow(cache_storage).to receive(:fetch).with(cache_key, output).and_return(false)
         allow(cache_storage).to receive(:with_lock).with(cache_key).and_yield
-        allow(http_client).to receive(:download).and_raise(Factorix::DownloadError)
+        allow(http_client).to receive(:download).and_raise(Factorix::HTTPClientError)
       end
 
       it "raises DownloadError" do
-        expect { downloader.download(uri, output) }.to raise_error(Factorix::DownloadError)
+        expect { downloader.download(uri, output) }.to raise_error(Factorix::HTTPClientError)
       end
 
       it "cleans up temporary files" do
         begin
           downloader.download(uri, output)
-        rescue Factorix::DownloadError
+        rescue Factorix::HTTPClientError
           # Expected exception
         end
 
