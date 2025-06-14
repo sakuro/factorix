@@ -14,6 +14,8 @@ When modifying this CLAUDE.md file:
 
 @.claude/language-guidelines.md
 @.claude/file-format-guidelines.md
+@.claude/rubocop-response-guide.md
+@.claude/commit-pr-workflow-guide.md
 
 ## Special Instructions
 
