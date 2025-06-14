@@ -16,6 +16,7 @@ When modifying this CLAUDE.md file:
 @.claude/git-workflow.md
 @.claude/code-quality.md
 @.claude/project-conventions.md
+@.claude/unclassified.md
 
 ## Special Instructions
 
