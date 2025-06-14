@@ -12,15 +12,13 @@ When modifying this CLAUDE.md file:
 
 ## Guidelines Documentation
 
-@.claude/language-guidelines.md
-@.claude/file-format-guidelines.md
-@.claude/rubocop-response-guide.md
-@.claude/commit-pr-workflow-guide.md
+@.claude/development-standards.md
+@.claude/git-workflow.md
+@.claude/code-quality.md
+@.claude/project-conventions.md
+@.claude/unclassified.md
 
 ## Special Instructions
 
 - If an instruction does not fit into existing categories, create a new file in the .claude directory and reference it from CLAUDE.md
-
-## Development Memories
-
-- Display progress messages when starting and completing the loading of CLAUDE.md file and referenced files
+- Development memories and project-specific conventions are documented in project-conventions.md

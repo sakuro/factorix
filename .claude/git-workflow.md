@@ -1,4 +1,4 @@
-# Commit and PR Workflow Guide
+# Git Workflow Guide
 
 ## Basic Principles
 
@@ -18,7 +18,7 @@ git checkout -b feature/description-of-change
 git checkout -b refactor/description-of-refactoring
 ```
 
-#### Branch Naming Conventions
+### Branch Naming Conventions
 
 - **feature/**: New feature addition
 - **refactor/**: Refactoring
@@ -28,9 +28,9 @@ git checkout -b refactor/description-of-refactoring
 
 ## Commit Strategy
 
-### 1. Gradual Commits
+### Gradual Commits
 
-#### Logically divide large changes
+Logically divide large changes into smaller, focused commits:
 
 ```bash
 # Example: Exception hierarchy redesign
@@ -52,32 +52,7 @@ git add lib/factorix/errors.rb
 git commit -m ":police_officer: Fix Style/CommentedKeyword violations"
 ```
 
-### 2. Commit Modification and Integration
-
-#### Interactive Rebase
-
-```bash
-# Edit recent 3 commits
-git rebase -i HEAD~3
-
-# When integrating commits
-pick abc1234 :hammer: Redesign exception hierarchy
-squash def5678 :fire: Remove backward compatibility alias
-pick ghi9012 :police_officer: Fix style violations
-```
-
-#### Commit Splitting
-
-```bash
-# Split latest commit
-git reset --soft HEAD^
-git add -p  # Selectively stage changes
-git commit -m ":police_officer: Fix Style/CommentedKeyword violations"
-git add .
-git commit -m ":fire: Remove backward compatibility alias"
-```
-
-### 3. Commit Message Guidelines
+### Commit Message Guidelines
 
 #### Basic Format
 
@@ -98,9 +73,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **Scope**: These emoji guidelines apply to all git-managed content including commit messages, pull request descriptions, documentation, source code comments, and any other text files in the repository.
 
-**Notation Format**: Always use GitHub emoji notation (`:emoji:`) instead of raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
+**Notation Format**: Always use GitHub emoji notation (`:emoji:`) instead of raw Unicode emojis. This ensures consistency and compatibility across different Git tools and platforms.
 
-**GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
+**GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set.
 
 ##### Available Emojis
 
@@ -125,9 +100,44 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - `:computer:` - Terminal operation - Result of invoking some commands
 - `:tada:` - Initial - Initial commit
 
-## PR Creation and Management
+## Advanced Git Operations
 
-### 1. Pre-PR Creation Checklist
+### Interactive Rebase
+
+```bash
+# Edit recent 3 commits
+git rebase -i HEAD~3
+
+# When integrating commits
+pick abc1234 :hammer: Redesign exception hierarchy
+squash def5678 :fire: Remove backward compatibility alias
+pick ghi9012 :police_officer: Fix style violations
+```
+
+### Commit Splitting
+
+```bash
+# Split latest commit
+git reset --soft HEAD^
+git add -p  # Selectively stage changes
+git commit -m ":police_officer: Fix Style/CommentedKeyword violations"
+git add .
+git commit -m ":fire: Remove backward compatibility alias"
+```
+
+### Selective Change Staging
+
+```bash
+# Stage only specific changes within file
+git add -p file.rb
+
+# Stage specific lines only (interactive mode)
+git add -i
+```
+
+## Pull Request Management
+
+### Pre-PR Creation Checklist
 
 ```bash
 # Run tests
@@ -143,7 +153,7 @@ bundle exec steep check
 bundle exec yard
 ```
 
-### 2. PR Creation
+### PR Creation
 
 ```bash
 # Push branch
@@ -187,7 +197,7 @@ EOF
 )"
 ```
 
-### 3. PR Description Components
+### PR Description Components
 
 #### Required Sections
 - **Summary**: Overview of changes
@@ -199,133 +209,31 @@ EOF
 - **Breaking Changes**: Breaking changes
 - **Architecture Benefits**: Architectural benefits
 
-### 4. Review Response
-
-#### Review Comment Response Example
-
-```markdown
-@reviewer Thanks for the review! Regarding the [specific concern]:
-
-While I understand the concern about [issue], I've chosen to keep the current implementation for the following reasons:
-
-1. **Technical Reason**: Detailed explanation of technical choice
-2. **Context Consideration**: Explanation of specific context (e.g., CLI vs library)
-3. **Trade-off Analysis**: Explanation of trade-offs considered
-
-The current implementation prioritizes [priority] over [alternative], which I believe is appropriate for this use case.
-```
-
-## Advanced Git Operations
-
-### 1. Commit History Organization
-
-#### Multiple Commit Integration
-
-```bash
-# Integrate feature commits and style fixes
-git reset --soft HEAD~2
-git commit -m ":hammer: Feature implementation with style fixes
-
-- Implement main feature functionality
-- Fix related RuboCop violations
-- Update tests and documentation"
-```
-
-#### Commit Order Changes
-
-```bash
-git rebase -i HEAD~4
-# Change order in editor
-pick ghi9012 :hammer: Main feature
-pick def5678 :lipstick: Style fixes
-pick abc1234 :test_tube: Tests
-pick jkl3456 :memo: Documentation
-```
-
-### 2. Selective Change Staging
-
-```bash
-# Stage only specific changes within file
-git add -p file.rb
-
-# Stage specific lines only (interactive mode)
-git add -i
-```
-
-### 3. Emergency Fix Response
-
-```bash
-# Temporarily save work in progress
-git stash push -m "Work in progress"
-
-# Fix in hotfix branch
-git checkout -b hotfix/urgent-fix
-# Fix work
-git commit -m ":beetle: Fix urgent issue"
-
-# Return to original branch and continue work
-git checkout feature/original-work
-git stash pop
-```
-
-## CI/CD Integration
-
-### 1. Pre-push Hook Response
-
-```bash
-# Prepare for automatic checks before push
-git add .
-git commit -m ":lipstick: Pre-push fixes"
-git push
-# RuboCop/RSpec executed by hooks
-```
-
-### 2. Failure Response
-
-```bash
-# Fix when CI fails
-git add .
-git commit --amend --no-edit
-git push --force-with-lease
-```
-
 ## Best Practices
 
-### 1. Commit Granularity
+### Commit Granularity
 
 - **1 commit = 1 logical change**
 - **Maintain compilable/testable state**
 - **Reviewable size (guideline: < 500 lines changed)**
-- **Verify RuboCop compliance before committing**
 
-### 2. Branch Management
+### Branch Management
 
 - **Short-lived branches**: Merge within 1-2 weeks
 - **Regular rebase**: Sync with main branch
 - **Branch deletion after merge**: `git branch -d feature-branch`
 
-### 3. PR Management
+### PR Management
 
 - **Appropriate size**: 1 PR = 1 feature/fix
 - **Sufficient explanation**: Clearly state why the change is needed
 - **Quick review**: Target initial review within 24 hours
 
-## Development Workflow Integration
-
-As part of the standard development workflow, RuboCop verification is essential:
-
-1. **Before Committing**: Always run `bundle exec rubocop` to check for violations
-2. **During PR Review**: Ensure all RuboCop issues are resolved or properly documented  
-3. **Continuous Integration**: RuboCop checks should be part of the CI pipeline
-4. **Code Quality**: RuboCop helps maintain consistent code style and catches potential issues
-
-This ensures consistent code quality and maintainability across the project. For detailed RuboCop response procedures, refer to the RuboCop Response Guide.
-
 ## Troubleshooting
 
 ### Common Issues and Solutions
 
-#### 1. Conflict Resolution
+#### Conflict Resolution
 
 ```bash
 # Conflicts during rebase
@@ -335,7 +243,7 @@ git add .
 git rebase --continue
 ```
 
-#### 2. Incorrect Commit Fixes
+#### Incorrect Commit Fixes
 
 ```bash
 # Fix latest commit
@@ -346,7 +254,7 @@ git rebase -i HEAD~n
 # Change target commit to 'edit'
 ```
 
-#### 3. Pushed Commit Fixes
+#### Pushed Commit Fixes
 
 ```bash
 # Safe force push
