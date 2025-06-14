@@ -3,6 +3,6 @@
 require "rake/clean"
 
 CLEAN.include("coverage/*")
-CLEAN.include("doc/*")
+CLEAN.include("docs/api/*")
 CLOBBER.include("coverage")
-CLOBBER.include("doc")
+CLOBBER.include("docs/api")
