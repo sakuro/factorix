@@ -9,7 +9,6 @@
 - Use English for code comments
 - Write inline code documentation in English
 - Use English for API documentation
-- Write all source code comments in English
 - Use clear and descriptive English for complex logic explanations
 - Follow established commenting conventions for the programming language
 
