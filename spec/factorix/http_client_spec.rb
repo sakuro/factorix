@@ -116,7 +116,7 @@ RSpec.describe Factorix::HttpClient do
         end
 
         it "raises DownloadError without retrying" do
-          expect { http_client.download(uri, output) }.to raise_error(Factorix::DownloadError, "Download failed: 403 Forbidden")
+          expect { http_client.download(uri, output) }.to raise_error(Factorix::HTTPClientError, "Client error: 403 Forbidden")
           expect(uri).to have_received(:open).once
         end
       end
@@ -135,7 +135,7 @@ RSpec.describe Factorix::HttpClient do
       end
 
       it "raises DownloadError" do
-        expect { http_client.download(uri, output) }.to raise_error(Factorix::DownloadError, "Download failed: 404 Not Found")
+        expect { http_client.download(uri, output) }.to raise_error(Factorix::HTTPClientError, "Client error: 404 Not Found")
       end
     end
   end

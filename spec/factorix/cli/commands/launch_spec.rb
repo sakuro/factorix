@@ -32,7 +32,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "raises AlreadyRunning" do
-        expect { call }.to raise_error(Factorix::Runtime::AlreadyRunning)
+        expect { call }.to raise_error(Factorix::AlreadyRunningError)
       end
     end
 

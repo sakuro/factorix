@@ -129,19 +129,26 @@ module Factorix
 
         JSON.parse(uri.read(open_timeout: 5, read_timeout: 10))
       rescue OpenURI::HTTPError => e
-        raise ModPortalRequestError, e.message
+        # Use more specific HTTP error classification
+        if e.message.start_with?("4")
+          raise Factorix::ModPortalRequestError, "Client error: #{e.message}"
+        elsif e.message.start_with?("5")
+          raise Factorix::ModPortalRequestError, "Server error: #{e.message}"
+        else
+          raise Factorix::ModPortalRequestError, "HTTP error: #{e.message}"
+        end
       rescue Net::OpenTimeout => e
-        raise ModPortalRequestError, "connection timeout: #{e.message}"
+        raise Factorix::ModPortalRequestError, "Connection timeout: #{e.message}"
       rescue Net::ReadTimeout => e
-        raise ModPortalRequestError, "read timeout: #{e.message}"
+        raise Factorix::ModPortalRequestError, "Read timeout: #{e.message}"
       rescue OpenSSL::SSL::SSLError => e
-        raise ModPortalRequestError, "SSL/TLS error: #{e.message}"
+        raise Factorix::ModPortalRequestError, "SSL/TLS error: #{e.message}"
       rescue SocketError => e
-        raise ModPortalRequestError, "network error: #{e.message}"
+        raise Factorix::ModPortalRequestError, "Network error: #{e.message}"
       rescue SystemCallError => e
-        raise ModPortalRequestError, "connection error: #{e.message}"
+        raise Factorix::ModPortalRequestError, "Connection error: #{e.message}"
       rescue JSON::ParserError => e
-        raise ModPortalResponseError, e.message
+        raise Factorix::ModPortalResponseError, e.message
       end
 
       # Parse a MOD list response from the API.
@@ -307,7 +314,7 @@ module Factorix
         return if sort.nil?
 
         valid_sorts = %w[name created_at updated_at]
-        raise ModPortalValidationError, "invalid sort: #{sort}" unless valid_sorts.include?(sort)
+        raise Factorix::ModPortalValidationError, "invalid sort: #{sort}" unless valid_sorts.include?(sort)
       end
 
       # Validate the sort order parameter
@@ -316,7 +323,7 @@ module Factorix
       private def validate_sort_order(sort_order)
         return if VALID_SORT_ORDERS.include?(sort_order)
 
-        raise ModPortalValidationError,
+        raise Factorix::ModPortalValidationError,
           "Invalid sort order: #{sort_order}. Valid values are: #{VALID_SORT_ORDERS.join(", ")}"
       end
 
@@ -326,7 +333,8 @@ module Factorix
       private def validate_version(version)
         return if VALID_VERSIONS.include?(version)
 
-        raise ModPortalValidationError, "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
+        raise Factorix::ModPortalValidationError,
+          "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
       end
 
       # Normalize a category name to its display form

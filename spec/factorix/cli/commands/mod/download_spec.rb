@@ -126,7 +126,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
       before do
         allow(downloader).to receive(:download) do |_url, path|
           File.write(path, "partial data")
-          raise Factorix::DownloadError, "Download failed"
+          raise Factorix::HTTPClientError, "Download failed"
         end
       end
 
@@ -134,7 +134,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
         aggregate_failures do
           expect {
             command.call(mod_name: "foo", output_directory: output_dir)
-          }.to raise_error(Factorix::DownloadError, "Download failed")
+          }.to raise_error(Factorix::HTTPClientError, "Download failed")
           expect(output_path).not_to exist
         end
       end

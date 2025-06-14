@@ -56,7 +56,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Net::OpenTimeout.new("execution expired") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "connection timeout: execution expired")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "Connection timeout: execution expired")
         end
       end
 
@@ -64,7 +64,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Net::ReadTimeout.new("execution expired") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "read timeout: Net::ReadTimeout with \"execution expired\"")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "Read timeout: Net::ReadTimeout with \"execution expired\"")
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { SocketError.new("getaddrinfo: Name or service not known") }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "network error: getaddrinfo: Name or service not known")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "Network error: getaddrinfo: Name or service not known")
         end
       end
 
@@ -88,7 +88,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { Errno::ECONNREFUSED.new }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "connection error: Connection refused")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "Connection error: Connection refused")
         end
       end
 
@@ -97,7 +97,7 @@ RSpec.describe Factorix::ModPortal::API do
         let(:error) { OpenURI::HTTPError.new("404 Not Found", error_response) }
 
         it "raises RequestError" do
-          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "404 Not Found")
+          expect { api.mods }.to raise_error(Factorix::ModPortalRequestError, "Client error: 404 Not Found")
         end
       end
     end
