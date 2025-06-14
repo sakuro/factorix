@@ -94,11 +94,13 @@ Use bullet points for multiple changes:
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-**Important**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
+#### Emoji Guidelines
 
-**GitHub Emoji Guidelines**: Only use emojis that are part of GitHub's official emoji set when writing commit messages. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
+**Notation Format**: Always use GitHub emoji notation (`:emoji:`) in commit messages, not raw Unicode emojis (:no_entry_sign:). This ensures consistency and compatibility across different Git tools and platforms.
 
-#### Emoji Guide
+**GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set when writing commit messages. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
+
+**Available Emojis**
 
 - `:new:` - New feature - Adding a new feature or capability
 - `:beetle:` - Bug fix - Fixing an issue or bug
