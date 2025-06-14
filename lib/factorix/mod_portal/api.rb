@@ -333,7 +333,8 @@ module Factorix
       private def validate_version(version)
         return if VALID_VERSIONS.include?(version)
 
-        raise Factorix::ModPortalValidationError, "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
+        raise Factorix::ModPortalValidationError,
+          "Invalid version: #{version}. Valid values are: #{VALID_VERSIONS.join(", ")}"
       end
 
       # Normalize a category name to its display form
