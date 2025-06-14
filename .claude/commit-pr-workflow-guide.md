@@ -100,7 +100,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 **GitHub Emoji Set**: Only use emojis that are part of GitHub's official emoji set when writing commit messages. Non-GitHub emojis should be avoided or replaced with appropriate GitHub emoji alternatives.
 
-**Available Emojis**
+##### Available Emojis
 
 - `:new:` - New feature - Adding a new feature or capability
 - `:beetle:` - Bug fix - Fixing an issue or bug
