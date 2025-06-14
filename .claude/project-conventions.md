@@ -80,9 +80,6 @@ This document contains conventions and guidelines specific to the Factorix proje
 
 ## Special Instructions
 
-### Development Memories
-- Display progress messages when starting and completing the loading of CLAUDE.md file and referenced files
-
 ### Modification Guidelines
 - If an instruction does not fit into existing categories, create a new file in the .claude directory and reference it from CLAUDE.md
 - Keep project-specific conventions in this file
