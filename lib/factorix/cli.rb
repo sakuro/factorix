@@ -9,7 +9,7 @@ require_relative "cli/commands/mod/download"
 require_relative "cli/commands/mod/enable"
 require_relative "cli/commands/mod/list"
 require_relative "cli/commands/mod/settings/dump"
-require_relative "cli/error"
+require_relative "errors"
 
 module Factorix
   # Command-line interface for Factorix
