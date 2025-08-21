@@ -100,53 +100,30 @@ module Factorix
           end
 
           def create_info_json(mod_directory, mod_name, factorio_version, author_name)
-            template = ERB.new(<<~JSON)
-              {
-                "name": "<%= mod_name %>",
-                "version": "0.0.1",
-                "title": "<%= capitalize_mod_name(mod_name) %>",
-                "author": "<%= author_name %>",
-                "factorio_version": "<%= factorio_version %>",
-                "dependencies": []
-              }
-            JSON
-
+            template_path = Pathname(__dir__).parent.parent.parent.parent / "data" / "templates" / "mod" / "new" / "info.json.tt"
+            template = ERB.new(template_path.read)
             content = template.result(binding)
             (mod_directory / "info.json").write(content)
           end
 
           def create_locale_cfg(locale_dir, mod_name)
-            template = ERB.new(<<~CFG)
-              [mod-name]
-              <%= mod_name %>=<%= capitalize_mod_name(mod_name) %>
-
-              [mod-description]
-              <%= mod_name %>=<%= capitalize_mod_name(mod_name) %>
-            CFG
-
+            template_path = Pathname(__dir__).parent.parent.parent.parent / "data" / "templates" / "mod" / "new" / "locale" / "en" / "{mod_name}.cfg.tt"
+            template = ERB.new(template_path.read)
             content = template.result(binding)
             (locale_dir / "#{mod_name}.cfg").write(content)
           end
 
           def create_changelog_txt(mod_directory)
             current_date = Time.now.strftime("%Y-%m-%d")
-            template = ERB.new(<<~CHANGELOG)
-              ---------------------------------------------------------------------------------------------------
-              Version: 0.0.1
-              Date: <%= current_date %>
-              Changes:
-                - Initial release
-            CHANGELOG
-
+            template_path = Pathname(__dir__).parent.parent.parent.parent / "data" / "templates" / "mod" / "new" / "changelog.txt.tt"
+            template = ERB.new(template_path.read)
             content = template.result(binding)
             (mod_directory / "changelog.txt").write(content)
           end
 
           def create_readme_md(mod_directory, mod_name)
-            template = ERB.new(<<~MARKDOWN)
-              # <%= mod_name %>
-            MARKDOWN
-
+            template_path = Pathname(__dir__).parent.parent.parent.parent / "data" / "templates" / "mod" / "new" / "README.md.tt"
+            template = ERB.new(template_path.read)
             content = template.result(binding)
             (mod_directory / "README.md").write(content)
           end

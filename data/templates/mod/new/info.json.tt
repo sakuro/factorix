@@ -1,0 +1,8 @@
+{
+  "name": "<%= mod_name %>",
+  "version": "0.0.1",
+  "title": "<%= capitalize_mod_name(mod_name) %>",
+  "author": "<%= author_name %>",
+  "factorio_version": "<%= factorio_version %>",
+  "dependencies": []
+}

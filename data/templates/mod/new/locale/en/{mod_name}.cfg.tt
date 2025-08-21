@@ -1,0 +1,5 @@
+[mod-name]
+<%= mod_name %>=<%= capitalize_mod_name(mod_name) %>
+
+[mod-description]
+<%= mod_name %>=<%= capitalize_mod_name(mod_name) %>
