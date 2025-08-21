@@ -28,6 +28,7 @@ module Factorix
   class FileNotFoundError < FileSystemError; end
   class DirectoryNotFoundError < FileSystemError; end
   class DirectoryNotWritableError < FileSystemError; end
+  class DirectoryExistsError < FileSystemError; end
   class FileExistsError < FileSystemError; end
 
   # File format related errors

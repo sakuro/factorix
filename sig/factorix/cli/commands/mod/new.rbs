@@ -1,0 +1,30 @@
+# frozen_string_literal: true
+
+module Factorix
+  class CLI
+    module Commands
+      module Mod
+        class New < Dry::CLI::Command
+          def call: (mod_name: String, **untyped options) -> void
+
+          private
+
+          def validate_mod_name: (String mod_name) -> void
+          def validate_factorio_version: (String version) -> void
+          def determine_target_directory: (String? directory) -> Pathname
+          def determine_author_name: (String? author_name) -> String
+          def create_mod_directory: (Pathname target_dir, String mod_name) -> Pathname
+          def create_mod_structure: (Pathname mod_directory, String mod_name, String factorio_version, String author_name) -> void
+          def create_info_json: (Pathname mod_directory, String mod_name, String factorio_version, String author_name) -> void
+          def create_locale_cfg: (Pathname locale_dir, String mod_name) -> void
+          def create_changelog_txt: (Pathname mod_directory) -> void
+          def create_readme_md: (Pathname mod_directory, String mod_name) -> void
+          def create_thumbnail_png: (Pathname mod_directory) -> void
+          def create_lua_files: (Pathname mod_directory) -> void
+          def initialize_git_repository: (Pathname mod_directory) -> void
+          def capitalize_mod_name: (String mod_name) -> String
+        end
+      end
+    end
+  end
+end
