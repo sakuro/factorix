@@ -138,8 +138,7 @@ module Factorix
             locale_dir.mkpath
 
             # Initialize template renderer
-            template_dir = Pathname(__dir__).parent.parent.parent.parent.parent / "data" / "templates" / "mod" / "new"
-            renderer = TemplateRenderer.new(template_dir, new_mod_dir)
+            renderer = TemplateRenderer.new("mod/new", new_mod_dir)
 
             # Render all files
             current_date = Time.now.strftime("%Y-%m-%d")
@@ -173,8 +172,8 @@ module Factorix
               mod_name:
             )
 
-            # Copy thumbnail.png with error handling
-            copy_thumbnail_image(template_dir, new_mod_dir)
+            # Copy thumbnail.png
+            renderer.copy_file("thumbnail.png", "thumbnail.png")
 
             # Create empty Lua files with error handling
             create_lua_files(new_mod_dir)
@@ -216,26 +215,6 @@ module Factorix
               unless system("git", "add", ".", out: File::NULL, err: File::NULL)
                 raise CLIError, "Git staging failed"
               end
-            end
-          end
-
-          # Copy thumbnail image with proper error handling
-          # @param template_dir [Pathname] Template directory path
-          # @param new_mod_dir [Pathname] MOD directory path
-          private def copy_thumbnail_image(template_dir, new_mod_dir)
-            thumbnail_source = template_dir / "thumbnail.png"
-            thumbnail_dest = new_mod_dir / "thumbnail.png"
-
-            return unless thumbnail_source.exist?
-
-            begin
-              thumbnail_dest.binwrite(thumbnail_source.binread)
-            rescue Errno::ENOSPC
-              raise FileSystemError, "Not enough disk space to copy thumbnail image"
-            rescue Errno::EACCES
-              raise DirectoryNotWritableError, "Permission denied: cannot write thumbnail to #{thumbnail_dest}"
-            rescue => e
-              raise FileSystemError, "Failed to copy thumbnail image: #{e.message}"
             end
           end
 

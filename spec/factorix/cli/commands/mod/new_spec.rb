@@ -129,8 +129,12 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
       end
 
       it "raises FileSystemError when thumbnail copy fails" do
-        # Mock the copy_thumbnail_image method directly to simulate file system error
-        allow(command).to receive(:copy_thumbnail_image).and_raise(
+        # Mock TemplateRenderer copy_file to simulate file system error for thumbnail
+        mock_renderer = instance_double(Factorix::TemplateRenderer)
+        allow(Factorix::TemplateRenderer).to receive(:new).and_return(mock_renderer)
+        allow(mock_renderer).to receive(:template_root).and_return(Pathname("/dummy"))
+        allow(mock_renderer).to receive(:render)
+        allow(mock_renderer).to receive(:copy_file).with("thumbnail.png", "thumbnail.png").and_raise(
           Factorix::FileSystemError, "Not enough disk space to copy thumbnail image"
         )
 
