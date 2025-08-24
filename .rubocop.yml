@@ -100,3 +100,9 @@ ThreadSafety/DirChdir:
   Exclude:
     - lib/factorix/cli/commands/mod/new.rb  # Git operations in new_mod_dir
     - spec/factorix/cli/commands/mod/new_spec.rb  # Test directory isolation
+
+# Allow stubbing methods on the subject for testing error conditions
+# This is necessary for testing failure scenarios where system commands fail
+RSpec/SubjectStub:
+  Exclude:
+    - spec/factorix/cli/commands/mod/new_spec.rb  # Git command failure testing
