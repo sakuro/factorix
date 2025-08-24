@@ -133,10 +133,6 @@ module Factorix
           # @param author_name [String] Author name
           # @param factorio_version [String] Factorio version
           private def create_mod_structure(new_mod_dir, mod_name, author_name, factorio_version)
-            # Create locale directory structure (parent exists, safe to use mkpath)
-            locale_dir = new_mod_dir / "locale" / "en"
-            locale_dir.mkpath
-
             # Initialize template renderer
             renderer = TemplateRenderer.new("mod/new", new_mod_dir)
 
@@ -209,12 +205,11 @@ module Factorix
           # @param new_mod_dir [Pathname] MOD directory path
           private def initialize_git_repo(new_mod_dir)
             Dir.chdir(new_mod_dir) do
-              # Use array form to prevent command injection
-              unless system("git", "init", out: File::NULL, err: File::NULL)
+              unless system("git", "init")
                 raise CLIError, "Git repository initialization failed"
               end
 
-              unless system("git", "add", ".", out: File::NULL, err: File::NULL)
+              unless system("git", "add", ".")
                 raise CLIError, "Git staging failed"
               end
             end
