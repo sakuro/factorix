@@ -40,7 +40,22 @@ module Factorix
             author_name = options[:author_name] || ENV["USER"] || ENV.fetch("USERNAME", nil)
             validate_author_name(author_name)
 
-            create_mod_structure(new_mod_dir, mod_name, author_name, factorio_version)
+            # Atomically create MOD directory to prevent race conditions
+            begin
+              new_mod_dir.mkdir
+            rescue Errno::EEXIST
+              raise FileExistsError, "Directory already exists: #{new_mod_dir}"
+            end
+
+            # Wrap all creation operations in rescue block for cleanup
+            begin
+              create_mod_structure(new_mod_dir, mod_name, author_name, factorio_version)
+            rescue => e
+              # Clean up partially created directory on failure
+              cleanup_partial_directory(new_mod_dir)
+              raise e
+            end
+
             initialize_git_repo(new_mod_dir) if options[:git]
 
             puts "MOD '#{mod_name}' created successfully in #{new_mod_dir}"
@@ -112,13 +127,6 @@ module Factorix
           # @param author_name [String] Author name
           # @param factorio_version [String] Factorio version
           private def create_mod_structure(new_mod_dir, mod_name, author_name, factorio_version)
-            # Atomically create MOD directory to prevent race conditions
-            begin
-              new_mod_dir.mkdir
-            rescue Errno::EEXIST
-              raise FileExistsError, "Directory already exists: #{new_mod_dir}"
-            end
-
             # Create locale directory structure (parent exists, safe to use mkpath)
             locale_dir = new_mod_dir / "locale" / "en"
             locale_dir.mkpath
@@ -164,6 +172,19 @@ module Factorix
 
             # Create empty Lua files with error handling
             create_lua_files(new_mod_dir)
+          end
+
+          # Clean up partially created directory
+          # @param dir [Pathname] Directory to clean up
+          private def cleanup_partial_directory(dir)
+            return unless dir.exist? && dir.directory?
+
+            begin
+              dir.rmtree
+            rescue => e
+              # Log cleanup failure but don't raise (original error is more important)
+              warn "Warning: Failed to clean up partial directory #{dir}: #{e.message}"
+            end
           end
 
           # Capitalize MOD name according to specification

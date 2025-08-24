@@ -149,6 +149,39 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
           command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
         }.to raise_error(Factorix::DirectoryNotWritableError, /Permission denied.*settings\.lua/)
       end
+
+      it "cleans up partially created directory when creation fails" do
+        mod_dir = @tmpdir / mod_name
+
+        # Mock create_mod_structure to fail after directory creation
+        allow(command).to receive(:create_mod_structure).and_raise(
+          Factorix::FileSystemError, "Simulated failure during file creation"
+        )
+
+        # Verify directory doesn't exist after cleanup
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::FileSystemError, /Simulated failure/)
+
+        expect(mod_dir).not_to exist
+      end
+
+      it "warns but continues if cleanup fails" do
+        # Mock create_mod_structure to fail
+        allow(command).to receive(:create_mod_structure).and_raise(
+          Factorix::FileSystemError, "Creation failure"
+        )
+
+        # Mock cleanup to fail
+        allow(command).to receive(:cleanup_partial_directory) do |dir|
+          warn "Warning: Failed to clean up partial directory #{dir}: Permission denied"
+          # Don't actually clean up to simulate cleanup failure
+        end
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::FileSystemError, /Creation failure/)
+      end
     end
 
     context "with default values" do
