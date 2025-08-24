@@ -175,8 +175,10 @@ module Factorix
             # Copy thumbnail.png
             renderer.copy_file("thumbnail.png", "thumbnail.png")
 
-            # Create empty Lua files with error handling
-            create_lua_files(new_mod_dir)
+            # Copy empty Lua files
+            renderer.copy_file("settings.lua", "settings.lua")
+            renderer.copy_file("data.lua", "data.lua")
+            renderer.copy_file("control.lua", "control.lua")
           end
 
           # Clean up partially created directory
@@ -214,23 +216,6 @@ module Factorix
 
               unless system("git", "add", ".", out: File::NULL, err: File::NULL)
                 raise CLIError, "Git staging failed"
-              end
-            end
-          end
-
-          # Create empty Lua files with proper error handling
-          # @param new_mod_dir [Pathname] MOD directory path
-          private def create_lua_files(new_mod_dir)
-            %w[settings.lua data.lua control.lua].each do |lua_file|
-              file_path = new_mod_dir / lua_file
-              begin
-                file_path.write("")
-              rescue Errno::ENOSPC
-                raise FileSystemError, "Not enough disk space to create #{lua_file}"
-              rescue Errno::EACCES
-                raise DirectoryNotWritableError, "Permission denied: cannot write #{lua_file}"
-              rescue => e
-                raise FileSystemError, "Failed to create #{lua_file}: #{e.message}"
               end
             end
           end
