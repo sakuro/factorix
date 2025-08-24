@@ -31,6 +31,26 @@ This document contains conventions and guidelines specific to the Factorix proje
 - Use SCREAMING_SNAKE_CASE for constants
 - Use descriptive names that reflect functionality
 
+## File Management
+
+### Untracked Files Policy
+
+**Configuration and Instruction Files**: 
+- Keep necessary instruction files (like `CLAUDE.md`, development guidelines, etc.) untracked if they are not meant to be committed
+- These files should remain in the working directory for development purposes
+- Do not accidentally commit temporary configuration files
+
+**Best Practices**:
+- Use explicit file paths with `git add` to avoid committing untracked files unintentionally
+- Regularly review `git status` to understand what files are tracked vs. untracked
+- Use `.gitignore` for files that should never be committed (build artifacts, logs, etc.)
+- Keep project-specific instruction files accessible but uncommitted when appropriate
+
+**Important Notes**:
+- Untracked instruction files should not be deleted unless explicitly requested
+- The untracked status is intentional for certain development files
+- Always verify what will be committed using `git status` before committing
+
 ## Error Handling
 - Use appropriate exception hierarchy
 - Provide meaningful error messages
