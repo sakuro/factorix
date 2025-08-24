@@ -189,8 +189,14 @@ module Factorix
           # @param new_mod_dir [Pathname] MOD directory path
           private def initialize_git_repo(new_mod_dir)
             Dir.chdir(new_mod_dir) do
-              system("git init", out: File::NULL, err: File::NULL)
-              system("git add .", out: File::NULL, err: File::NULL)
+              # Use array form to prevent command injection
+              unless system("git", "init", out: File::NULL, err: File::NULL)
+                raise CLIError, "Git repository initialization failed"
+              end
+
+              unless system("git", "add", ".", out: File::NULL, err: File::NULL)
+                raise CLIError, "Git staging failed"
+              end
             end
           end
         end

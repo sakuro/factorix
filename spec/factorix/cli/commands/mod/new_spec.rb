@@ -118,6 +118,15 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
         mod_dir = @tmpdir / mod_name
         expect(mod_dir / ".git").not_to exist
       end
+
+      it "raises error when git command fails" do
+        # Mock system to simulate git failure
+        allow(command).to receive(:system).and_return(false)
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:, git: true)
+        }.to raise_error(Factorix::CLIError, /Git repository initialization failed/)
+      end
     end
 
     context "with default values" do
