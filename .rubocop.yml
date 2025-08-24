@@ -93,3 +93,10 @@ Metrics/ParameterLists:
 
 RSpec/NestedGroups:
   Max: 4
+
+# Allow Dir.chdir when used with blocks for git operations and test isolation
+ThreadSafety/DirChdir:
+  AllowCallWithBlock: true
+  Exclude:
+    - lib/factorix/cli/commands/mod/new.rb  # Git operations in new_mod_dir
+    - spec/factorix/cli/commands/mod/new_spec.rb  # Test directory isolation
