@@ -2,6 +2,7 @@
 
 require "erb"
 require "pathname"
+require_relative "errors"
 
 module Factorix
   # Template renderer for generating files from ERB templates
@@ -27,17 +28,49 @@ module Factorix
       end
 
       # Create output directory if it doesn't exist
-      output_path.parent.mkpath
+      begin
+        output_path.parent.mkpath
+      rescue Errno::EACCES
+        raise DirectoryNotWritableError, "Permission denied: cannot create directory #{output_path.parent}"
+      rescue Errno::ENOSPC
+        raise FileSystemError, "Not enough disk space to create directory #{output_path.parent}"
+      rescue => e
+        raise FileSystemError, "Failed to create output directory #{output_path.parent}: #{e.message}"
+      end
 
       # Read template content
-      template_content = template_path.read
+      begin
+        template_content = template_path.read
+      rescue Errno::EACCES
+        raise FileNotFoundError, "Permission denied: cannot read template #{template_path}"
+      rescue Errno::EIO, Errno::ENODEV
+        raise FileSystemError, "I/O error reading template #{template_path}"
+      rescue => e
+        raise FileSystemError, "Failed to read template #{template_path}: #{e.message}"
+      end
 
       # Render template using result_with_hash
-      erb = ERB.new(template_content)
-      rendered_content = erb.result_with_hash(variables)
+      begin
+        erb = ERB.new(template_content)
+        rendered_content = erb.result_with_hash(variables)
+      rescue SyntaxError => e
+        raise TemplateError, "Template syntax error in #{template_file}: #{e.message}"
+      rescue NameError => e
+        raise TemplateError, "Template variable error in #{template_file}: #{e.message}"
+      rescue => e
+        raise TemplateError, "Template rendering error in #{template_file}: #{e.message}"
+      end
 
       # Write output file
-      output_path.write(rendered_content)
+      begin
+        output_path.write(rendered_content)
+      rescue Errno::EACCES
+        raise DirectoryNotWritableError, "Permission denied: cannot write to #{output_path}"
+      rescue Errno::ENOSPC
+        raise FileSystemError, "Not enough disk space to write #{output_path}"
+      rescue => e
+        raise FileSystemError, "Failed to write output file #{output_path}: #{e.message}"
+      end
     end
   end
 end

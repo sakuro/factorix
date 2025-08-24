@@ -49,6 +49,9 @@ Metrics/AbcSize:
     # less readable and harder to maintain, as the transformations are best understood
     # as a single mapping operation.
     - 'lib/factorix/mod_portal/api.rb'
+    # The template rendering method has high complexity due to comprehensive error
+    # handling for multiple failure scenarios. This complexity is necessary for robustness.
+    - 'lib/factorix/template_renderer.rb'
 
 Metrics/CyclomaticComplexity:
   Exclude:
@@ -65,6 +68,9 @@ Metrics/MethodLength:
     # reduce readability and make the code harder to maintain.
     - 'lib/factorix/ser_des/deserializer.rb'
     - 'lib/factorix/ser_des/serializer.rb'
+    # The template rendering method needs comprehensive error handling for
+    # multiple failure scenarios. Breaking it up would reduce clarity.
+    - 'lib/factorix/template_renderer.rb'
 
 Metrics/ClassLength:
   Exclude:
