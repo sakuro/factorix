@@ -45,6 +45,12 @@ module Factorix
               new_mod_dir.mkdir
             rescue Errno::EEXIST
               raise FileExistsError, "Directory already exists: #{new_mod_dir}"
+            rescue Errno::EACCES
+              raise DirectoryNotWritableError, "Permission denied: cannot create directory #{new_mod_dir}"
+            rescue Errno::ENOSPC
+              raise FileSystemError, "Not enough disk space to create directory #{new_mod_dir}"
+            rescue => e
+              raise FileSystemError, "Failed to create directory #{new_mod_dir}: #{e.message}"
             end
 
             # Wrap all creation operations in rescue block for cleanup

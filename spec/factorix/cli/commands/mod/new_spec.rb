@@ -182,6 +182,46 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
           command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
         }.to raise_error(Factorix::FileSystemError, /Creation failure/)
       end
+
+      it "raises TemplateError when template rendering fails" do
+        # Create a mock renderer that fails
+        mock_renderer = instance_double(Factorix::TemplateRenderer)
+        allow(Factorix::TemplateRenderer).to receive(:new).and_return(mock_renderer)
+        allow(mock_renderer).to receive(:render).and_raise(
+          Factorix::TemplateError, "Template syntax error in info.json.erb: undefined method 'invalid_method'"
+        )
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::TemplateError, /Template syntax error.*info\.json\.erb/)
+      end
+
+      it "raises FileSystemError when template file reading fails" do
+        # Create a mock renderer that fails
+        mock_renderer = instance_double(Factorix::TemplateRenderer)
+        allow(Factorix::TemplateRenderer).to receive(:new).and_return(mock_renderer)
+        allow(mock_renderer).to receive(:render).and_raise(
+          Factorix::FileSystemError, "I/O error reading template info.json.erb"
+        )
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::FileSystemError, %r{I/O error reading template})
+      end
+
+      it "raises DirectoryNotWritableError when directory creation fails due to permissions" do
+        # Create a read-only directory to simulate permission error
+        readonly_dir = @tmpdir / "readonly"
+        readonly_dir.mkdir
+        readonly_dir.chmod(0444) # Read-only
+
+        expect {
+          command.call(mod_name:, directory: readonly_dir.to_s, author_name:)
+        }.to raise_error(Factorix::DirectoryNotWritableError, /Permission denied.*cannot create directory/)
+
+        # Cleanup
+        readonly_dir.chmod(0755)
+      end
     end
 
     context "with default values" do
