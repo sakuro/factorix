@@ -36,7 +36,6 @@ module Factorix
             validate_target_directory(target_dir)
 
             new_mod_dir = target_dir / mod_name
-            validate_mod_directory_not_exists(new_mod_dir)
 
             author_name = options[:author_name] || ENV["USER"] || ENV.fetch("USERNAME", nil)
             validate_author_name(author_name)
@@ -107,23 +106,20 @@ module Factorix
             raise ValidationError, "Target directory path contains relative path indicators after resolution"
           end
 
-          # Validate MOD directory doesn't already exist
-          # @param new_mod_dir [Pathname] MOD directory path
-          private def validate_mod_directory_not_exists(new_mod_dir)
-            return unless new_mod_dir.exist?
-
-            raise FileExistsError, "Directory already exists: #{new_mod_dir}"
-          end
-
           # Create MOD directory structure and files
           # @param new_mod_dir [Pathname] MOD directory path
           # @param mod_name [String] MOD name
           # @param author_name [String] Author name
           # @param factorio_version [String] Factorio version
           private def create_mod_structure(new_mod_dir, mod_name, author_name, factorio_version)
-            new_mod_dir.mkpath
+            # Atomically create MOD directory to prevent race conditions
+            begin
+              new_mod_dir.mkdir
+            rescue Errno::EEXIST
+              raise FileExistsError, "Directory already exists: #{new_mod_dir}"
+            end
 
-            # Create locale directory structure
+            # Create locale directory structure (parent exists, safe to use mkpath)
             locale_dir = new_mod_dir / "locale" / "en"
             locale_dir.mkpath
 

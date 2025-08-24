@@ -230,6 +230,9 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
           command.call(mod_name:, directory: @tmpdir.to_s)
         }.to raise_error(Factorix::FileExistsError, /Directory already exists/)
       end
+
+      # NOTE: Race condition protection is handled by using mkdir (not mkpath)
+      # in create_mod_structure, which atomically fails if directory exists
     end
 
     context "with capitalized MOD names" do
