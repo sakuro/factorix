@@ -86,12 +86,25 @@ module Factorix
               "Author name is required. Use --author-name option or set USER/USERNAME environment variable"
           end
 
-          # Validate target directory exists
+          # Validate target directory exists and is safe
           # @param target_dir [Pathname] Target directory path
           private def validate_target_directory(target_dir)
-            return if target_dir.exist? && target_dir.directory?
+            # Resolve and normalize the path to prevent path traversal
+            begin
+              resolved_path = target_dir.realpath
+            rescue Errno::ENOENT
+              raise DirectoryNotFoundError, "Target directory does not exist: #{target_dir}"
+            end
 
-            raise DirectoryNotFoundError, "Target directory does not exist: #{target_dir}"
+            # Ensure it's actually a directory
+            unless resolved_path.directory?
+              raise DirectoryNotFoundError, "Target path is not a directory: #{target_dir}"
+            end
+
+            # Additional security check: ensure the resolved path doesn't contain suspicious patterns
+            return unless resolved_path.to_s.include?("..")
+
+            raise ValidationError, "Target directory path contains relative path indicators after resolution"
           end
 
           # Validate MOD directory doesn't already exist
