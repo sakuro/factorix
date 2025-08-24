@@ -127,6 +127,28 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
           command.call(mod_name:, directory: @tmpdir.to_s, author_name:, git: true)
         }.to raise_error(Factorix::CLIError, /Git repository initialization failed/)
       end
+
+      it "raises FileSystemError when thumbnail copy fails" do
+        # Mock the copy_thumbnail_image method directly to simulate file system error
+        allow(command).to receive(:copy_thumbnail_image).and_raise(
+          Factorix::FileSystemError, "Not enough disk space to copy thumbnail image"
+        )
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::FileSystemError, /Not enough disk space/)
+      end
+
+      it "raises DirectoryNotWritableError when lua file creation fails due to permissions" do
+        # Mock the create_lua_files method directly to simulate permission error
+        allow(command).to receive(:create_lua_files).and_raise(
+          Factorix::DirectoryNotWritableError, "Permission denied: cannot write settings.lua"
+        )
+
+        expect {
+          command.call(mod_name:, directory: @tmpdir.to_s, author_name:)
+        }.to raise_error(Factorix::DirectoryNotWritableError, /Permission denied.*settings\.lua/)
+      end
     end
 
     context "with default values" do
