@@ -144,8 +144,13 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
       end
 
       it "raises DirectoryNotWritableError when lua file creation fails due to permissions" do
-        # Mock the create_lua_files method directly to simulate permission error
-        allow(command).to receive(:create_lua_files).and_raise(
+        # Mock TemplateRenderer copy_file to simulate permission error for Lua files
+        mock_renderer = instance_double(Factorix::TemplateRenderer)
+        allow(Factorix::TemplateRenderer).to receive(:new).and_return(mock_renderer)
+        allow(mock_renderer).to receive(:template_root).and_return(Pathname("/dummy"))
+        allow(mock_renderer).to receive(:render)
+        allow(mock_renderer).to receive(:copy_file).with("thumbnail.png", "thumbnail.png")
+        allow(mock_renderer).to receive(:copy_file).with("settings.lua", "settings.lua").and_raise(
           Factorix::DirectoryNotWritableError, "Permission denied: cannot write settings.lua"
         )
 
