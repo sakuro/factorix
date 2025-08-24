@@ -159,15 +159,11 @@ module Factorix
               mod_name:
             )
 
-            # Copy thumbnail.png
-            thumbnail_source = template_dir / "thumbnail.png"
-            thumbnail_dest = new_mod_dir / "thumbnail.png"
-            thumbnail_dest.binwrite(thumbnail_source.binread) if thumbnail_source.exist?
+            # Copy thumbnail.png with error handling
+            copy_thumbnail_image(template_dir, new_mod_dir)
 
-            # Create empty Lua files
-            %w[settings.lua data.lua control.lua].each do |lua_file|
-              (new_mod_dir / lua_file).write("")
-            end
+            # Create empty Lua files with error handling
+            create_lua_files(new_mod_dir)
           end
 
           # Capitalize MOD name according to specification
@@ -192,6 +188,43 @@ module Factorix
 
               unless system("git", "add", ".", out: File::NULL, err: File::NULL)
                 raise CLIError, "Git staging failed"
+              end
+            end
+          end
+
+          # Copy thumbnail image with proper error handling
+          # @param template_dir [Pathname] Template directory path
+          # @param new_mod_dir [Pathname] MOD directory path
+          private def copy_thumbnail_image(template_dir, new_mod_dir)
+            thumbnail_source = template_dir / "thumbnail.png"
+            thumbnail_dest = new_mod_dir / "thumbnail.png"
+
+            return unless thumbnail_source.exist?
+
+            begin
+              thumbnail_dest.binwrite(thumbnail_source.binread)
+            rescue Errno::ENOSPC
+              raise FileSystemError, "Not enough disk space to copy thumbnail image"
+            rescue Errno::EACCES
+              raise DirectoryNotWritableError, "Permission denied: cannot write thumbnail to #{thumbnail_dest}"
+            rescue => e
+              raise FileSystemError, "Failed to copy thumbnail image: #{e.message}"
+            end
+          end
+
+          # Create empty Lua files with proper error handling
+          # @param new_mod_dir [Pathname] MOD directory path
+          private def create_lua_files(new_mod_dir)
+            %w[settings.lua data.lua control.lua].each do |lua_file|
+              file_path = new_mod_dir / lua_file
+              begin
+                file_path.write("")
+              rescue Errno::ENOSPC
+                raise FileSystemError, "Not enough disk space to create #{lua_file}"
+              rescue Errno::EACCES
+                raise DirectoryNotWritableError, "Permission denied: cannot write #{lua_file}"
+              rescue => e
+                raise FileSystemError, "Failed to create #{lua_file}: #{e.message}"
               end
             end
           end
