@@ -204,6 +204,15 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
         }.to raise_error(Factorix::DirectoryNotFoundError, /Target directory does not exist/)
       end
 
+      it "raises DirectoryNotFoundError when directory is actually a file" do
+        file_path = @tmpdir / "not_a_directory"
+        file_path.write("test content")
+
+        expect {
+          command.call(mod_name:, directory: file_path.to_s)
+        }.to raise_error(Factorix::DirectoryNotFoundError, /Target path is not a directory/)
+      end
+
       it "raises FileExistsError when MOD directory already exists" do
         existing_dir = @tmpdir / mod_name
         existing_dir.mkpath
