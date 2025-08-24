@@ -7,10 +7,6 @@ require_relative "errors"
 module Factorix
   # Template renderer for generating files from ERB templates
   class TemplateRenderer
-    # Get template root directory
-    # @return [Pathname] Template root directory path
-    attr_reader :template_root
-
     # Initialize template renderer
     # @param template_root [Pathname, String] Root directory for templates (relative to project data dir if relative)
     # @param output_root [Pathname, String] Root directory for output files
