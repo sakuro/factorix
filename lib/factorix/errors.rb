@@ -37,6 +37,9 @@ module Factorix
   class InvalidModSectionError < FileFormatError; end
   class UnknownPropertyType < FileFormatError; end
 
+  # Template related errors
+  class TemplateError < InfrastructureError; end
+
   # Runtime platform errors
   class RuntimeError < InfrastructureError; end
   class UnsupportedPlatformError < RuntimeError; end
