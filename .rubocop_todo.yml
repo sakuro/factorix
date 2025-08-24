@@ -16,6 +16,16 @@ Metrics/AbcSize:
     - 'lib/factorix/cli/commands/mod/new.rb'
     - 'lib/factorix/http_client.rb'
 
+# Configuration parameters: CountComments, Max, CountAsOne.
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/factorix/cli/commands/mod/new.rb'
+
+# Configuration parameters: AllowedMethods, AllowedPatterns, Max.
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/factorix/cli/commands/mod/new.rb'
+
 # Configuration parameters: CountComments, Max, CountAsOne, AllowedMethods, AllowedPatterns.
 Metrics/MethodLength:
   Exclude:
@@ -102,7 +112,6 @@ Style/RescueModifier:
   Exclude:
     - 'lib/factorix/cache/file_system.rb'
     - 'spec/factorix/downloader_spec.rb'
-
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: Max, AllowHeredoc, AllowURI, AllowQualifiedName, URISchemes, IgnoreCopDirectives, AllowedPatterns, SplitStrings.
