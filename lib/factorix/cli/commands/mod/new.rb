@@ -72,18 +72,6 @@ module Factorix
               raise ValidationError, "MOD name must be between 4 and 49 characters long"
             end
 
-            if mod_name.include?("..")
-              raise ValidationError, "MOD name cannot contain relative path indicators"
-            end
-
-            if mod_name.include?(File::SEPARATOR)
-              raise ValidationError, "MOD name cannot contain path separators"
-            end
-
-            if File::ALT_SEPARATOR && mod_name.include?(File::ALT_SEPARATOR)
-              raise ValidationError, "MOD name cannot contain path separators"
-            end
-
             return if mod_name.match?(/\A[a-zA-Z0-9_-]+\z/)
 
             raise ValidationError, "MOD name can only contain alphanumeric characters, underscores, and hyphens"
