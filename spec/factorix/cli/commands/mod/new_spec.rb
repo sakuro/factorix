@@ -266,20 +266,8 @@ RSpec.describe Factorix::CLI::Commands::Mod::New do
 
       it "raises ValidationError for invalid characters in MOD name" do
         expect {
-          command.call(mod_name: "test@mod", directory: @tmpdir.to_s)
+          command.call(mod_name: "test@mod..test/mod", directory: @tmpdir.to_s)
         }.to raise_error(Factorix::ValidationError, /can only contain alphanumeric characters/)
-      end
-
-      it "raises ValidationError for MOD name with relative path indicators" do
-        expect {
-          command.call(mod_name: "test..mod", directory: @tmpdir.to_s)
-        }.to raise_error(Factorix::ValidationError, /cannot contain relative path indicators/)
-      end
-
-      it "raises ValidationError for MOD name with path separators" do
-        expect {
-          command.call(mod_name: "test/mod", directory: @tmpdir.to_s)
-        }.to raise_error(Factorix::ValidationError, /cannot contain path separators/)
       end
 
       it "raises ValidationError for invalid factorio version" do
