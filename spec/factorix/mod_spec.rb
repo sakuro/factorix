@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/factorix/mod"
-
 RSpec.describe Factorix::Mod do
   describe "#base?" do
     context "when it is the base with exact case 'base'" do

@@ -2,11 +2,10 @@
 
 require "pathname"
 require "tmpdir"
-require_relative "../../lib/factorix/downloader"
 
 RSpec.describe Factorix::Downloader do
   let(:cache_storage) { instance_double(Factorix::Cache::FileSystem) }
-  let(:http_client) { instance_double(Factorix::HttpClient) }
+  let(:http_client) { instance_double(Factorix::HTTPClient) }
   let(:downloader) { Factorix::Downloader.new(cache_storage:, http_client:) }
   let(:uri) { URI("https://example.com/file.zip") }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../../lib/factorix/cli/commands/info"
-
 RSpec.describe Factorix::CLI::Commands::Info do
   let(:runtime) { Factorix::Runtime.new }
   let(:command) { Factorix::CLI::Commands::Info.new }

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "ruby-progressbar"
-require_relative "../../../lib/factorix/progress/bar"
 
 RSpec.describe Factorix::Progress::Bar do
   subject(:progress) { Factorix::Progress::Bar.new(title:) }

@@ -3,8 +3,6 @@
 require "dry/cli"
 require "erb"
 require "pathname"
-require_relative "../../../errors"
-require_relative "../../../template_renderer"
 
 module Factorix
   class CLI

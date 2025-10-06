@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../lib/factorix/mod_portal/api"
-
 RSpec.describe Factorix::ModPortal::API do
   subject(:api) { Factorix::ModPortal::API.new }
 

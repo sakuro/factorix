@@ -2,16 +2,6 @@
 
 require "dry/cli"
 
-require_relative "cli/commands/info"
-require_relative "cli/commands/launch"
-require_relative "cli/commands/mod/disable"
-require_relative "cli/commands/mod/download"
-require_relative "cli/commands/mod/enable"
-require_relative "cli/commands/mod/list"
-require_relative "cli/commands/mod/new"
-require_relative "cli/commands/mod/settings/dump"
-require_relative "errors"
-
 module Factorix
   # Command-line interface for Factorix
   class CLI

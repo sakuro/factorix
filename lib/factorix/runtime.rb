@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "errors"
-require_relative "mod_context"
-require_relative "runtime/linux"
-require_relative "runtime/mac_os"
-require_relative "runtime/windows"
-require_relative "runtime/wsl"
-
 module Factorix
   # Factorio runtime environment
   class Runtime

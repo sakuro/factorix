@@ -2,8 +2,6 @@
 
 require "dry/cli"
 
-require_relative "../../runtime"
-
 module Factorix
   class CLI
     module Commands

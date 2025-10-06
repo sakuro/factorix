@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "tempfile"
-require_relative "../../../../../lib/factorix/cli/commands/mod/enable"
 
 RSpec.describe Factorix::CLI::Commands::Mod::Enable do
   let(:command) { Factorix::CLI::Commands::Mod::Enable.new }

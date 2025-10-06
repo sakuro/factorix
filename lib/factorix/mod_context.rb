@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "mod_list"
-
 module Factorix
   # Manages temporary MOD configurations.
   class ModContext

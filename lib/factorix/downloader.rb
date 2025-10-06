@@ -2,10 +2,6 @@
 
 require "pathname"
 require "tmpdir"
-require_relative "cache/file_system"
-require_relative "errors"
-require_relative "http_client"
-require_relative "runtime"
 
 module Factorix
   # Class responsible for file downloads with caching support
@@ -13,10 +9,10 @@ module Factorix
     # Initialize a new downloader with cache storage and HTTP client
     #
     # @param cache_storage [Cache::FileSystem] cache storage
-    # @param http_client [HttpClient] HTTP client
+    # @param http_client [HTTPClient] HTTP client
     def initialize(
       cache_storage: Cache::FileSystem.new(Runtime.runtime.cache_dir),
-      http_client: HttpClient.new
+      http_client: HTTPClient.new
     )
       @cache_storage = cache_storage
       @http_client = http_client

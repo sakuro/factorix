@@ -6,6 +6,8 @@ SimpleCov.start do
   add_filter %r{\A/spec/}
 end
 
+require "factorix"
+
 require "vcr"
 require "webmock/rspec"
 

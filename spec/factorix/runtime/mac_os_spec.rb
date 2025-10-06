@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../../lib/factorix/runtime/mac_os"
-
 RSpec.describe Factorix::Runtime::MacOS do
   let(:runtime) { Factorix::Runtime::MacOS.new }
 

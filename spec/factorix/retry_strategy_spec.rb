@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/factorix/retry_strategy"
-
 RSpec.describe Factorix::RetryStrategy do
   describe "#initialize" do
     context "with default options" do

@@ -2,15 +2,12 @@
 
 require "pathname"
 require "tmpdir"
-require_relative "../../lib/factorix/http_client"
-require_relative "../../lib/factorix/progress/bar"
-require_relative "../../lib/factorix/retry_strategy"
 
-RSpec.describe Factorix::HttpClient do
+RSpec.describe Factorix::HTTPClient do
   let(:retry_strategy) { instance_double(Factorix::RetryStrategy) }
   let(:progress) { instance_double(Factorix::Progress::Bar) }
   let(:uri) { URI("https://example.com/file.zip") }
-  let(:http_client) { Factorix::HttpClient.new(retry_strategy:, progress:) }
+  let(:http_client) { Factorix::HTTPClient.new(retry_strategy:, progress:) }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }
   let(:output) { output_dir.join("file.zip") }
 
@@ -59,7 +56,7 @@ RSpec.describe Factorix::HttpClient do
       end
 
       context "without progress tracking" do
-        let(:http_client) { Factorix::HttpClient.new(retry_strategy:) }
+        let(:http_client) { Factorix::HTTPClient.new(retry_strategy:) }
 
         it "downloads without progress callbacks" do
           http_client.download(uri, output)

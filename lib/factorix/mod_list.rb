@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 require "json"
-require_relative "errors"
-require_relative "mod"
-require_relative "mod_state"
-require_relative "runtime"
 
 module Factorix
   # Represent a list of MODs and their enabled status.
