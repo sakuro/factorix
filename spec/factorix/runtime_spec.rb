@@ -138,6 +138,37 @@ RSpec.describe Factorix::Runtime do
     end
   end
 
+  describe "#running?" do
+    subject(:running?) { runtime.running? }
+
+    let(:runtime) { Factorix::Runtime.new }
+    let(:lock_path) { instance_double(Pathname) }
+
+    before do
+      allow(runtime).to receive(:lock_path).and_return(lock_path)
+    end
+
+    context "when the lock file exists" do
+      before do
+        allow(lock_path).to receive(:exist?).and_return(true)
+      end
+
+      it "returns true" do
+        expect(running?).to be true
+      end
+    end
+
+    context "when the lock file does not exist" do
+      before do
+        allow(lock_path).to receive(:exist?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(running?).to be false
+      end
+    end
+  end
+
   describe "#launch" do
     let(:runtime) { Factorix::Runtime.new }
 

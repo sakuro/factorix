@@ -73,6 +73,12 @@ module Factorix
       user_dir + "player-data.json"
     end
 
+    # Return the path to the lock file
+    # @return [Pathname] path to the lock file
+    def lock_path
+      user_dir + ".lock"
+    end
+
     # Launch the game with the specified options
     #
     # @param async [Boolean] whether to launch the game asynchronously
@@ -90,14 +96,11 @@ module Factorix
 
     # Check if the game is running
     #
-    # Becasuse the game becomes daemonized on launch, we cannot use the process ID nor Process groups
-    # to check if the game is running.  Instead, we check if the game is running by external means.
-    # (e.g. polling the process list periodically)
-    #
-    # Note: Subclasses should implement this method
+    # Because the game becomes daemonized on launch, we cannot use the process ID nor Process groups
+    # to check if the game is running.  Instead, we check the existence of the lock file.
     # @return [Boolean] true if the game is running, false otherwise
     def running?
-      raise NotImplementedError
+      lock_path.exist?
     end
 
     # Evaluate the block with only the specified MODs enabled, temporarily disabling all other MODs

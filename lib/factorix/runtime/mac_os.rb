@@ -10,12 +10,6 @@ module Factorix
         home_dir + "Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio"
       end
 
-      # Return the path to the lock file
-      # @return [Pathname] path to the lock file
-      def lock
-        user_dir + ".lock"
-      end
-
       # Return the path to the user's Factorio directory
       # @return [Pathname] path to the user's Factorio directory
       def user_dir
@@ -35,12 +29,6 @@ module Factorix
           (home_dir + "Library/Caches").to_s
         }
         Pathname(base).join("factorix")
-      end
-
-      # Check if the game is running
-      # @return [Boolean] true if the game is running, false otherwise
-      def running?
-        lock.exist?
       end
 
       private def home_dir = Pathname(Dir.home)

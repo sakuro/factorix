@@ -39,36 +39,6 @@ RSpec.describe Factorix::Runtime::MacOS do
     end
   end
 
-  describe "#running?" do
-    subject(:running?) { runtime.running? }
-
-    let(:lock) { instance_double(Pathname) }
-
-    before do
-      allow(runtime).to receive(:lock).and_return(lock)
-    end
-
-    context "when the lock file exists" do
-      before do
-        allow(lock).to receive(:exist?).and_return(true)
-      end
-
-      it "returns true" do
-        expect(running?).to be true
-      end
-    end
-
-    context "when the lock file does not exist" do
-      before do
-        allow(lock).to receive(:exist?).and_return(false)
-      end
-
-      it "returns false" do
-        expect(running?).to be false
-      end
-    end
-  end
-
   describe "#cache_dir" do
     subject(:cache_dir) { runtime.cache_dir }
 
