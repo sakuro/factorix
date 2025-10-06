@@ -4,13 +4,6 @@ require "digest"
 require "pathname"
 require "uri"
 
-require_relative "../../../../factorix"
-require_relative "../../../credential"
-require_relative "../../../downloader"
-require_relative "../../../errors"
-require_relative "../../../mod_portal/api"
-require_relative "../../../progress/bar"
-
 module Factorix
   class CLI
     module Commands
@@ -105,7 +98,7 @@ module Factorix
 
           private def download_file(download_url, output_path, quiet)
             downloader = Factorix::Downloader.new(
-              http_client: Factorix::HttpClient.new(
+              http_client: Factorix::HTTPClient.new(
                 # U+2699 GEAR + U+FE0F VARIATION SELECTOR-16
                 progress: quiet ? nil : Factorix::Progress::Bar.new(title: "\u2699\uFE0F #{output_path.basename}")
               )

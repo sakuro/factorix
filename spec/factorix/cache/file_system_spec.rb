@@ -2,7 +2,6 @@
 
 require "pathname"
 require "tmpdir"
-require_relative "../../../lib/factorix/cache/file_system"
 
 RSpec.describe Factorix::Cache::FileSystem do
   let(:cache_dir) { Pathname(Dir.mktmpdir("cache")) }

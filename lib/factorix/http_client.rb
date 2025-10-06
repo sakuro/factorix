@@ -2,12 +2,10 @@
 
 require "open-uri"
 require "openssl"
-require_relative "errors"
-require_relative "retry_strategy"
 
 module Factorix
   # HTTP client for downloading files with retry and resume capabilities
-  class HttpClient
+  class HTTPClient
     # Default options for HTTP connections
     HTTP_OPTIONS = {
       open_timeout: 60,

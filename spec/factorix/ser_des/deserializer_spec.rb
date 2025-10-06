@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "stringio"
-require_relative "../../../lib/factorix/errors"
-require_relative "../../../lib/factorix/ser_des/deserializer"
 
 RSpec.describe Factorix::SerDes::Deserializer do
   let(:deserializer) { Factorix::SerDes::Deserializer.new(stream) }

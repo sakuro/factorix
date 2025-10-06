@@ -4,9 +4,6 @@ require "json"
 require "pathname"
 require "spec_helper"
 require "tmpdir"
-require_relative "../../../../../lib/factorix/cli/commands/mod/new"
-require_relative "../../../../../lib/factorix/errors"
-require_relative "../../../../../lib/factorix/template_renderer"
 
 RSpec.describe Factorix::CLI::Commands::Mod::New do
   subject(:command) { Factorix::CLI::Commands::Mod::New.new }

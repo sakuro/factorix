@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../errors"
-require_relative "version24"
-require_relative "version64"
-
 module Factorix
   module SerDes
     # Deserialize data from binary format

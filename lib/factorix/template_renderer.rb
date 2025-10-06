@@ -2,7 +2,6 @@
 
 require "erb"
 require "pathname"
-require_relative "errors"
 
 module Factorix
   # Template renderer for generating files from ERB templates

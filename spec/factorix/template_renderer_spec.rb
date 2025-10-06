@@ -3,8 +3,6 @@
 require "pathname"
 require "spec_helper"
 require "tmpdir"
-require_relative "../../lib/factorix/errors"
-require_relative "../../lib/factorix/template_renderer"
 
 RSpec.describe Factorix::TemplateRenderer do
   subject(:renderer) { Factorix::TemplateRenderer.new(template_dir, output_dir) }

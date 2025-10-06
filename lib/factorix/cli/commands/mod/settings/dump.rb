@@ -3,8 +3,6 @@
 require "dry/cli"
 require "pathname"
 require "perfect_toml"
-require_relative "../../../../mod_settings"
-require_relative "../../../../runtime"
 
 module Factorix
   class CLI

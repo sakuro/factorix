@@ -5,9 +5,6 @@ require "open-uri"
 require "time"
 require "uri"
 
-require_relative "../errors"
-require_relative "types"
-
 module Factorix
   module ModPortal
     # API client for Factorio MOD Portal.

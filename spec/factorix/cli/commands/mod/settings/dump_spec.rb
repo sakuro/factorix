@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "tempfile"
-require_relative "../../../../../../lib/factorix/cli/commands/mod/settings/dump"
 
 RSpec.describe Factorix::CLI::Commands::Mod::Settings::Dump do
   let(:command) { Factorix::CLI::Commands::Mod::Settings::Dump.new }

@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "perfect_toml", ">= 0.9.0"
   spec.add_dependency "retriable", ">= 3.1.2"
   spec.add_dependency "ruby-progressbar", ">= 1.13.0"
+  spec.add_dependency "zeitwerk", ">= 2.7.1"
 end

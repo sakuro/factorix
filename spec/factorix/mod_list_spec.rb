@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "tempfile"
-require_relative "../../lib/factorix/mod"
-require_relative "../../lib/factorix/mod_list"
 
 RSpec.describe Factorix::ModList do
   let(:base_mod) { Factorix::Mod[name: "base"] }

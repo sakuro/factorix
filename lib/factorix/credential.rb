@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "json"
-require_relative "runtime"
 
 module Factorix
   # Manages Factorio service credentials

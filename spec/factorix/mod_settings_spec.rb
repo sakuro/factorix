@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/factorix/mod_settings"
-
 RSpec.describe Factorix::ModSettings do
   let(:settings_path) { Pathname.new("/path/to/mod-settings.dat") }
   let(:deserializer) { instance_double(Factorix::SerDes::Deserializer, eof?: true) }

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "pathname"
-require_relative "../../lib/factorix/credential"
 
 RSpec.describe Factorix::Credential do
   let(:credential) { Factorix::Credential.new }

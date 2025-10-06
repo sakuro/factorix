@@ -6,8 +6,6 @@ require "fileutils"
 require "pathname"
 require "tempfile"
 
-require_relative "../../../../../lib/factorix/cli/commands/mod/download"
-
 RSpec.describe Factorix::CLI::Commands::Mod::Download do
   subject(:command) { Factorix::CLI::Commands::Mod::Download.new }
 
@@ -23,7 +21,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
   end
   let(:credential) { instance_double(Factorix::Credential, username: "user", token: "token") }
   let(:downloader) { instance_double(Factorix::Downloader) }
-  let(:http_client) { instance_double(Factorix::HttpClient) }
+  let(:http_client) { instance_double(Factorix::HTTPClient) }
   let(:progress_bar) { instance_double(Factorix::Progress::Bar) }
   let(:sha1_digest) { instance_double(Digest::SHA1, hexdigest: release.sha1) }
 
@@ -33,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::Mod::Download do
     allow(mod).to receive(:releases).and_return([release])
     allow(Factorix::Credential).to receive(:new).and_return(credential)
     allow(Factorix::Downloader).to receive(:new).and_return(downloader)
-    allow(Factorix::HttpClient).to receive(:new).and_return(http_client)
+    allow(Factorix::HTTPClient).to receive(:new).and_return(http_client)
     allow(Factorix::Progress::Bar).to receive(:new).and_return(progress_bar)
   end
 
