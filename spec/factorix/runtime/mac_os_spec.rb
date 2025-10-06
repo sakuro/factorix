@@ -2,20 +2,11 @@
 
 require_relative "../../../lib/factorix/runtime/mac_os"
 
-# Define ProcTableStruct for use in tests
-ProcTableStruct = Struct.new(:pid, :cmdline) unless defined?(ProcTableStruct)
-
 RSpec.describe Factorix::Runtime::MacOS do
   let(:runtime) { Factorix::Runtime::MacOS.new }
 
   before do
     allow(Dir).to receive(:home).and_return("/Users/wube")
-
-    # Use a simple object with a ps method as a mock for Sys::ProcTable
-    mock_proctable = Object.new
-    def mock_proctable.ps = []
-
-    stub_const("Sys::ProcTable", mock_proctable)
   end
 
   describe "#executable" do
@@ -51,27 +42,25 @@ RSpec.describe Factorix::Runtime::MacOS do
   describe "#running?" do
     subject(:running?) { runtime.running? }
 
+    let(:lock) { instance_double(Pathname) }
+
     before do
-      allow(Sys::ProcTable).to receive(:ps).and_return(
-        [
-          ProcTableStruct.new(pid: 1, cmdline: runtime.executable.to_s),
-          ProcTableStruct.new(pid: 2, cmdline: "another_process")
-        ]
-      )
+      allow(runtime).to receive(:lock).and_return(lock)
     end
 
-    it "returns true if Factorio is running" do
-      expect(running?).to be true
-    end
-
-    context "when Factorio is not running" do
+    context "when the lock file exists" do
       before do
-        allow(Sys::ProcTable).to receive(:ps).and_return(
-          [
-            ProcTableStruct.new(pid: 1, cmdline: "another_process"),
-            ProcTableStruct.new(pid: 2, cmdline: "yet_another_process")
-          ]
-        )
+        allow(lock).to receive(:exist?).and_return(true)
+      end
+
+      it "returns true" do
+        expect(running?).to be true
+      end
+    end
+
+    context "when the lock file does not exist" do
+      before do
+        allow(lock).to receive(:exist?).and_return(false)
       end
 
       it "returns false" do
