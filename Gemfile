@@ -12,6 +12,8 @@ end
 group :develop do
   gem "rake"
 
+  # An opinionated RuboCop configuration
+  gem "docquet", github: "sakuro/docquet"
   gem "rubocop"
   gem "rubocop-performance"
   gem "rubocop-rake"
