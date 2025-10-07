@@ -1,3 +1,0 @@
-[submodule ".rubocop"]
-	path = .rubocop
-	url = https://github.com/sakuro/rubocop-config
