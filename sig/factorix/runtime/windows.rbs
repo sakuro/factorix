@@ -1,30 +1,13 @@
 module Factorix
   class Runtime
-    # Windows runtime environment
-    #
-    # This implementation uses Windows environment variables (APPDATA, LOCALAPPDATA)
-    # to locate Factorio directories. It assumes Factorio is installed via Steam.
     class Windows < Base
-      # Initialize Windows runtime environment
-      #
-      # @param path [WindowsPath] the path provider (for dependency injection)
       def initialize: (?path: WindowsPath) -> void
 
-      # Get the Factorio user directory path
-      #
-      # @return [Pathname] the Factorio user directory
       def user_dir: () -> Pathname
 
-      # Windows-specific path provider
       class WindowsPath
-        # Get the AppData directory path
-        #
-        # @return [Pathname] the AppData directory
         def app_data: () -> Pathname
 
-        # Get the Local AppData directory path
-        #
-        # @return [Pathname] the Local AppData directory
         def local_app_data: () -> Pathname
       end
     end
