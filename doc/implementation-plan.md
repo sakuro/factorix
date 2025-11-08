@@ -18,15 +18,16 @@ Components with no external dependencies.
 Platform abstraction layer for cross-platform compatibility.
 
 - [ ] `runtime/base.rb` - Abstract base class
-  - [ ] `#mods_dir` - Game MOD directory path
-  - [ ] `#player_data_path` - player-data.json path
-  - [ ] `#xdg_cache_home_dir` - XDG cache directory (platform-aware)
-  - [ ] `#xdg_config_home_dir` - XDG config directory (platform-aware)
-  - [ ] `#xdg_data_home_dir` - XDG data directory (platform-aware)
-- [ ] `runtime/linux.rb` - Linux implementation
-- [ ] `runtime/mac_os.rb` - macOS implementation
+  - [ ] `#user_dir` - Abstract method (NotImplementedError)
+  - [ ] `#mods_dir` - Derived from user_dir (user_dir + "mods")
+  - [ ] `#player_data_path` - Derived from user_dir (user_dir + "player-data.json")
+  - [ ] `#xdg_cache_home_dir` - XDG cache directory (platform-aware defaults)
+  - [ ] `#xdg_config_home_dir` - XDG config directory (platform-aware defaults)
+  - [ ] `#xdg_data_home_dir` - XDG data directory (platform-aware defaults)
+- [ ] `runtime/linux.rb` - Linux implementation (partial: XDG methods only, user_dir NotImplementedError)
+- [ ] `runtime/mac_os.rb` - macOS implementation (full)
 - [ ] `runtime/windows.rb` - Windows implementation (AppData support)
-- [ ] `runtime/wsl.rb` - WSL implementation
+- [ ] `runtime/wsl.rb` - WSL implementation (inherits Windows)
 - [ ] `runtime.rb` - Platform detection and factory
 - [ ] Tests: `spec/factorix/runtime/**/*_spec.rb`
 - [ ] Zeitwerk inflection: `"mac_os" => "MacOS"`, `"wsl" => "WSL"`
