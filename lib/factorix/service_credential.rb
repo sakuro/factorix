@@ -22,10 +22,15 @@ module Factorix
     # @return [ServiceCredential] new instance with credentials from environment
     # @raise [ArgumentError] if username or token is not set in environment
     def self.from_env
-      new(
-        username: ENV.fetch(ENV_USERNAME, nil),
-        token: ENV.fetch(ENV_TOKEN, nil)
-      )
+      username = ENV.fetch(ENV_USERNAME, nil)
+      token = ENV.fetch(ENV_TOKEN, nil)
+
+      raise ArgumentError, "#{ENV_USERNAME} environment variable is not set" if username.nil?
+      raise ArgumentError, "#{ENV_USERNAME} environment variable is empty" if username.empty?
+      raise ArgumentError, "#{ENV_TOKEN} environment variable is not set" if token.nil?
+      raise ArgumentError, "#{ENV_TOKEN} environment variable is empty" if token.empty?
+
+      new(username:, token:)
     end
 
     # Create a new ServiceCredential instance from player-data.json
@@ -38,26 +43,17 @@ module Factorix
       player_data_path = runtime.player_data_path
       data = JSON.parse(player_data_path.read)
 
-      new(
-        username: data["service-username"],
-        token: data["service-token"]
-      )
+      username = data["service-username"]
+      token = data["service-token"]
+
+      raise ArgumentError, "service-username is missing in player-data.json" if username.nil?
+      raise ArgumentError, "service-username is empty in player-data.json" if username.empty?
+      raise ArgumentError, "service-token is missing in player-data.json" if token.nil?
+      raise ArgumentError, "service-token is empty in player-data.json" if token.empty?
+
+      new(username:, token:)
     end
 
     private_class_method :new, :[]
-
-    # Initialize ServiceCredential with validation
-    #
-    # @param username [String] the username
-    # @param token [String] the token
-    # @raise [ArgumentError] if username or token is nil or empty
-    def initialize(username:, token:)
-      raise ArgumentError, "username must not be nil" if username.nil?
-      raise ArgumentError, "username must not be empty" if username.empty?
-      raise ArgumentError, "token must not be nil" if token.nil?
-      raise ArgumentError, "token must not be empty" if token.empty?
-
-      super
-    end
   end
 end

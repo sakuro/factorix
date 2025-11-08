@@ -12,13 +12,13 @@ RSpec.describe Factorix::APICredential do
     it "raises ArgumentError when environment variable is not set" do
       allow(ENV).to receive(:fetch).with("FACTORIO_API_KEY", nil).and_return(nil)
 
-      expect { Factorix::APICredential.from_env }.to raise_error(ArgumentError, "api_key must not be nil")
+      expect { Factorix::APICredential.from_env }.to raise_error(ArgumentError, "FACTORIO_API_KEY environment variable is not set")
     end
 
     it "raises ArgumentError when environment variable is empty" do
       allow(ENV).to receive(:fetch).with("FACTORIO_API_KEY", nil).and_return("")
 
-      expect { Factorix::APICredential.from_env }.to raise_error(ArgumentError, "api_key must not be empty")
+      expect { Factorix::APICredential.from_env }.to raise_error(ArgumentError, "FACTORIO_API_KEY environment variable is empty")
     end
   end
 end

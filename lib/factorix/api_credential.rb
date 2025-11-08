@@ -16,20 +16,13 @@ module Factorix
     # @return [APICredential] new instance with API key from environment
     # @raise [ArgumentError] if API key is not set in environment
     def self.from_env
-      new(api_key: ENV.fetch(ENV_API_KEY, nil))
+      api_key = ENV.fetch(ENV_API_KEY, nil)
+      raise ArgumentError, "#{ENV_API_KEY} environment variable is not set" if api_key.nil?
+      raise ArgumentError, "#{ENV_API_KEY} environment variable is empty" if api_key.empty?
+
+      new(api_key:)
     end
 
     private_class_method :new, :[]
-
-    # Initialize APICredential with validation
-    #
-    # @param api_key [String] the API key
-    # @raise [ArgumentError] if api_key is nil or empty
-    def initialize(api_key:)
-      raise ArgumentError, "api_key must not be nil" if api_key.nil?
-      raise ArgumentError, "api_key must not be empty" if api_key.empty?
-
-      super
-    end
   end
 end
