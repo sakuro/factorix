@@ -102,13 +102,15 @@ Authentication credentials for API access.
 
 - [ ] `service_credential.rb` - username + token (MOD downloads)
   - [ ] Load from `player-data.json` via Runtime
-  - [ ] Load from environment variables
-  - [ ] Integration with mise/.env
-- [ ] `api_credential.rb` - API key (Portal API)
-  - [ ] Load from environment variables
-  - [ ] Integration with mise/.env
+  - [ ] Load from environment variables (FACTORIO_USERNAME, FACTORIO_TOKEN)
+- [ ] `api_credential.rb` - API key (MOD Upload/Publish API)
+  - [ ] Load from environment variables (FACTORIO_API_KEY)
 - [ ] Tests: `spec/factorix/service_credential_spec.rb`
 - [ ] Tests: `spec/factorix/api_credential_spec.rb`
+
+**Reference**:
+- ServiceCredential: https://wiki.factorio.com/Mod_portal_API
+- APICredential: https://wiki.factorio.com/Mod_upload_API
 
 **Dependencies**: Runtime
 
@@ -157,11 +159,11 @@ Low-level API wrappers returning Hash (parsed JSON).
   - [ ] `GET /api/mods` - List MODs with pagination
   - [ ] `GET /api/mods/{name}` - Basic MOD info
   - [ ] `GET /api/mods/{name}/full` - Full MOD info with dependencies
-- [ ] `api/download_api.rb` - Download endpoints (username + token)
-  - [ ] Download MOD files with authentication
-- [ ] `api/portal_api.rb` - Portal management (API key)
-  - [ ] `POST /v2/mods/init_upload` - Initialize upload
-  - [ ] `POST /v2/mods/init_publish` - Initialize publish
+- [ ] `api/download_api.rb` - Download endpoints (ServiceCredential)
+  - [ ] Download MOD files with username + token parameters
+- [ ] `api/portal_api.rb` - Portal management endpoints (APICredential)
+  - [ ] `POST /v2/mods/releases/init_upload` - Initialize upload
+  - [ ] `POST /v2/mods/releases/init_publish` - Initialize publish
   - [ ] `POST /v2/mods/edit_details` - Edit MOD details
   - [ ] `POST /v2/mods/images/add` - Add images
   - [ ] `POST /v2/mods/images/edit` - Edit image order
@@ -170,6 +172,8 @@ Low-level API wrappers returning Hash (parsed JSON).
 - [ ] Error handling (4xx, 5xx, network, SSL, JSON parsing)
 
 **Reference**: Test actual API responses to inform Types design
+- https://wiki.factorio.com/Mod_portal_API
+- https://wiki.factorio.com/Mod_upload_API
 
 **Dependencies**: Transfer, Credentials
 
