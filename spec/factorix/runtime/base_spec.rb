@@ -104,4 +104,24 @@ RSpec.describe Factorix::Runtime::Base do
       end
     end
   end
+
+  describe "#factorix_cache_dir" do
+    before do
+      allow(runtime).to receive(:xdg_cache_home_dir).and_return(Pathname("/home/wube/.cache"))
+    end
+
+    it "returns xdg_cache_home_dir / factorix" do
+      expect(runtime.factorix_cache_dir).to eq(Pathname("/home/wube/.cache/factorix"))
+    end
+  end
+
+  describe "#factorix_config_path" do
+    before do
+      allow(runtime).to receive(:xdg_config_home_dir).and_return(Pathname("/home/wube/.config"))
+    end
+
+    it "returns xdg_config_home_dir / factorix / config.rb" do
+      expect(runtime.factorix_config_path).to eq(Pathname("/home/wube/.config/factorix/config.rb"))
+    end
+  end
 end

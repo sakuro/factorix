@@ -86,6 +86,24 @@ module Factorix
         end
       end
 
+      # Get the Factorix cache directory
+      #
+      # Returns the directory where Factorix stores its cache data.
+      #
+      # @return [Pathname] the Factorix cache directory
+      def factorix_cache_dir
+        xdg_cache_home_dir / "factorix"
+      end
+
+      # Get the Factorix configuration file path
+      #
+      # Returns the path to the Factorix configuration file.
+      #
+      # @return [Pathname] the Factorix configuration file path
+      def factorix_config_path
+        xdg_config_home_dir / "factorix" / "config.rb"
+      end
+
       # Get the default cache home directory for this platform
       #
       # This method should be overridden by platform-specific subclasses
