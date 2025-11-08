@@ -1,0 +1,28 @@
+module Factorix
+  class Runtime
+    # WSL (Windows Subsystem for Linux) runtime environment
+    #
+    # This implementation inherits from Windows and converts Windows paths
+    # to WSL paths. It accesses Windows environment variables through cmd.exe
+    # and uses wslpath to convert paths.
+    class WSL < Windows
+      # Initialize WSL runtime environment
+      #
+      # @param path [WSLPath] the path provider (for dependency injection)
+      def initialize: (?path: WSLPath) -> void
+
+      # WSL-specific path provider
+      class WSLPath
+        # Get the AppData directory path (WSL-converted)
+        #
+        # @return [Pathname] the AppData directory
+        def app_data: () -> Pathname
+
+        # Get the Local AppData directory path (WSL-converted)
+        #
+        # @return [Pathname] the Local AppData directory
+        def local_app_data: () -> Pathname
+      end
+    end
+  end
+end

@@ -1,0 +1,17 @@
+module Factorix
+  # Factorio runtime environment abstraction
+  #
+  # This class provides a factory method to detect the current platform
+  # and return the appropriate runtime environment instance.
+  class Runtime
+    # Error raised when running on an unsupported platform
+    class UnsupportedPlatform < Error
+    end
+
+    # Detect the current platform and return the appropriate runtime
+    #
+    # @return [Runtime::Base] the runtime environment for the current platform
+    # @raise [UnsupportedPlatform] if the platform is not supported
+    def self.detect: () -> Base
+  end
+end

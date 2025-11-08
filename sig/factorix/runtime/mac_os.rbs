@@ -1,0 +1,13 @@
+module Factorix
+  class Runtime
+    # macOS runtime environment
+    #
+    # This implementation assumes Factorio is installed via Steam.
+    class MacOS < Base
+      # Get the Factorio user directory path
+      #
+      # @return [Pathname] the Factorio user directory
+      def user_dir: () -> Pathname
+    end
+  end
+end

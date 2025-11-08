@@ -1,0 +1,62 @@
+module Factorix
+  class Runtime
+    # Abstract base class for platform-specific runtime environments
+    #
+    # This class defines the interface that all platform-specific runtime
+    # implementations must provide. It provides common implementations for
+    # derived paths and XDG Base Directory specification support.
+    class Base
+      # Get the Factorio user directory path
+      #
+      # This directory contains user-specific Factorio data including mods,
+      # saves, configuration files, and player data.
+      #
+      # @return [Pathname] the Factorio user directory
+      # @raise [NotImplementedError] if not implemented by the platform
+      def user_dir: () -> Pathname
+
+      # Get the MODs directory path of Factorio
+      #
+      # This directory contains all installed MODs and MOD configuration files
+      # such as mod-list.json and mod-settings.dat.
+      #
+      # @return [Pathname] the MODs directory of Factorio
+      def mods_dir: () -> Pathname
+
+      # Get the path of the player-data.json file
+      #
+      # This file contains player-specific data including authentication credentials,
+      # preferences, and game statistics.
+      #
+      # @return [Pathname] the path of the player-data.json file
+      def player_data_path: () -> Pathname
+
+      # Get the XDG cache home directory
+      #
+      # Returns the base directory for user-specific cache data according to
+      # the XDG Base Directory Specification. On platforms that don't follow
+      # XDG conventions, this returns the platform-appropriate equivalent.
+      #
+      # @return [Pathname] the XDG cache home directory
+      def xdg_cache_home_dir: () -> Pathname
+
+      # Get the XDG config home directory
+      #
+      # Returns the base directory for user-specific configuration files according to
+      # the XDG Base Directory Specification. On platforms that don't follow
+      # XDG conventions, this returns the platform-appropriate equivalent.
+      #
+      # @return [Pathname] the XDG config home directory
+      def xdg_config_home_dir: () -> Pathname
+
+      # Get the XDG data home directory
+      #
+      # Returns the base directory for user-specific data files according to
+      # the XDG Base Directory Specification. On platforms that don't follow
+      # XDG conventions, this returns the platform-appropriate equivalent.
+      #
+      # @return [Pathname] the XDG data home directory
+      def xdg_data_home_dir: () -> Pathname
+    end
+  end
+end
