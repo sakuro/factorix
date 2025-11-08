@@ -1,0 +1,44 @@
+module Factorix
+  class Application
+    extend Dry::Container::Mixin
+    extend Dry::Configurable
+
+    def self.register: (Symbol, ?memoize: bool) { () -> untyped } -> void
+
+    def self.resolve: (Symbol) -> untyped
+
+    def self.[]: (Symbol) -> untyped
+
+    def self.config: () -> Config
+
+    def self.configure: () { (Config) -> void } -> void
+
+    def self.load_config: (?String? path) -> void
+
+    class Config
+      def cache_dir: () -> Pathname
+
+      def cache_dir=: (Pathname | String) -> void
+
+      def log_level: () -> Symbol
+
+      def log_level=: (Symbol) -> void
+
+      def http: () -> HttpConfig
+    end
+
+    class HttpConfig
+      def connect_timeout: () -> Integer
+
+      def connect_timeout=: (Integer) -> void
+
+      def read_timeout: () -> Integer
+
+      def read_timeout=: (Integer) -> void
+
+      def write_timeout: () -> Integer
+
+      def write_timeout=: (Integer) -> void
+    end
+  end
+end

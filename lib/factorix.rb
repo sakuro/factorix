@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry-auto_inject"
 require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"
@@ -18,4 +19,7 @@ module Factorix
     "mod_version" => "MODVersion"
   )
   loader.setup
+
+  Import = Dry::AutoInject(Application)
+  public_constant :Import
 end

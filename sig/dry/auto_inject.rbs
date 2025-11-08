@@ -1,0 +1,7 @@
+module Dry
+  module AutoInject
+    def self.new: (untyped container) -> untyped
+  end
+
+  def self.AutoInject: (untyped container) -> untyped
+end

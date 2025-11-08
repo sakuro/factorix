@@ -1,0 +1,9 @@
+module Dry
+  module Configurable
+    def setting: (Symbol, ?default: untyped, ?constructor: ^(untyped) -> untyped) ?{ () -> void } -> void
+
+    def config: () -> untyped
+
+    def configure: () { (untyped) -> void } -> void
+  end
+end

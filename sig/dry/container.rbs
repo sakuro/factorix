@@ -1,0 +1,11 @@
+module Dry
+  module Container
+    module Mixin
+      def register: (Symbol | String, ?memoize: bool) ?{ () -> untyped } -> void
+
+      def resolve: (Symbol | String) -> untyped
+
+      def []: (Symbol | String) -> untyped
+    end
+  end
+end
