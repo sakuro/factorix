@@ -11,9 +11,9 @@ module Factorix
 
   loader = Zeitwerk::Loader.for_gem
   loader.ignore("#{__dir__}/factorix/version.rb")
-  # loader.inflector.inflect(
-  #   "html" => "HTML",
-  #   "ssl" => "SSL"
-  # )
+  loader.inflector.inflect(
+    "mac_os" => "MacOS",
+    "wsl" => "WSL"
+  )
   loader.setup
 end
