@@ -31,3 +31,6 @@
 ## Ignore serena stuff except project.yml
 /.serena/
 !/.serena/project.yml
+
+# Reference implementation
+/factorix.old/
