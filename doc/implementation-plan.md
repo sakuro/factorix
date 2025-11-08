@@ -120,12 +120,15 @@ Authentication credentials for API access.
 
 DI container and configuration management.
 
-- [ ] `application.rb` - dry-container + dry-configurable
-  - [ ] Configuration settings (cache_dir, config_dir, log_level, http timeouts)
-  - [ ] Container registration (cache, logger, retry_strategy, credentials)
-  - [ ] Load configuration from `$XDG_CONFIG_HOME/factorix/config.rb`
-- [ ] `Import = Dry::AutoInject(Factorix::Application)` for DI
-- [ ] Tests: `spec/factorix/application_spec.rb`
+- [x] `application.rb` - dry-container + dry-configurable
+  - [x] Configuration settings (cache_dir, log_level, http timeouts)
+  - [x] Container registration (runtime)
+  - [ ] Container registration (cache, logger, retry_strategy, credentials) - deferred
+  - [x] Load configuration from `Runtime#factorix_config_path`
+- [x] `Import = Dry::AutoInject(Factorix::Application)` for DI
+- [x] Tests: `spec/factorix/application_spec.rb`
+- [x] RBS: `sig/factorix/application.rbs`
+- [x] RBS: Minimal dry-rb type definitions
 
 **Dependencies**: Runtime, Credentials
 
