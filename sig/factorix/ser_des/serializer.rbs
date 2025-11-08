@@ -1,0 +1,99 @@
+module Factorix
+  module SerDes
+    # Serialize data to binary format
+    #
+    # This class provides methods to serialize various data types to Factorio's
+    # binary file format, following the specifications documented in the Factorio wiki.
+    class Serializer
+      # Create a new Serializer instance
+      #
+      # @param stream An IO-like object that responds to #write
+      def initialize: (untyped stream) -> void
+
+      # Write raw bytes to the stream
+      #
+      # @param data Binary data to write
+      def write_bytes: (String data) -> void
+
+      # Write an unsigned 8-bit integer
+      #
+      # @param uint8 8-bit unsigned integer
+      def write_u8: (Integer uint8) -> void
+
+      # Write an unsigned 16-bit integer
+      #
+      # @param uint16 16-bit unsigned integer
+      def write_u16: (Integer uint16) -> void
+
+      # Write an unsigned 32-bit integer
+      #
+      # @param uint32 32-bit unsigned integer
+      def write_u32: (Integer uint32) -> void
+
+      # Write a space-optimized 16-bit unsigned integer
+      #
+      # @param uint16 16-bit unsigned integer
+      def write_optim_u16: (Integer uint16) -> void
+
+      # Write a space-optimized 32-bit unsigned integer
+      #
+      # @param uint32 32-bit unsigned integer
+      def write_optim_u32: (Integer uint32) -> void
+
+      # Write a boolean value
+      #
+      # @param bool Boolean value
+      def write_bool: (bool bool) -> void
+
+      # Write a string
+      #
+      # @param str String to write (must be UTF-8 encoded)
+      def write_str: (String str) -> void
+
+      # Write a string property
+      #
+      # @param str String to write
+      def write_str_property: (String str) -> void
+
+      # Write a double-precision floating point number
+      #
+      # @param dbl Double-precision floating point number
+      def write_double: (Float dbl) -> void
+
+      # Write a GameVersion object
+      #
+      # @param game_version GameVersion object
+      def write_game_version: (GameVersion game_version) -> void
+
+      # Write a MODVersion object
+      #
+      # @param mod_version MODVersion object
+      def write_mod_version: (MODVersion mod_version) -> void
+
+      # Write a list
+      #
+      # @param list List of objects
+      def write_list: (Array[untyped] list) -> void
+
+      # Write a dictionary
+      #
+      # @param dict Dictionary of key-value pairs
+      def write_dictionary: (Hash[String, untyped] dict) -> void
+
+      # Write a signed long integer (8 bytes)
+      #
+      # @param long Signed long integer
+      def write_long: (Integer long) -> void
+
+      # Write an unsigned long integer (8 bytes)
+      #
+      # @param ulong Unsigned long integer
+      def write_unsigned_long: (Integer ulong) -> void
+
+      # Write a property tree
+      #
+      # @param obj Object to write
+      def write_property_tree: (nil | bool | Float | String | Array[untyped] | Hash[String, untyped] | Integer obj) -> void
+    end
+  end
+end

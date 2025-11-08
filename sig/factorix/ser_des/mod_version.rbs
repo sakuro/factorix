@@ -1,0 +1,37 @@
+module Factorix
+  module SerDes
+    # Represent a 3-component MOD version number (major.minor.patch)
+    #
+    # This class represents Factorio's MOD version format, which uses
+    # 24 bits (3 x 8-bit unsigned integers) to store version information.
+    class MODVersion
+      include Comparable
+
+      # Create a new MODVersion instance
+      #
+      # @param args Either a version string "X.Y.Z" or 3 integers representing major, minor, patch
+      def initialize: (String version_string) -> void
+                    | (Integer major, Integer minor, Integer patch) -> void
+
+      # Factory method (alias for new)
+      def self.[]: (String version_string) -> MODVersion
+                 | (Integer major, Integer minor, Integer patch) -> MODVersion
+
+      # Convert to string representation
+      #
+      # @return Version string in format "X.Y.Z"
+      def to_s: () -> String
+
+      # Convert to array of integers
+      #
+      # @return Array containing [major, minor, patch]
+      def to_a: () -> Array[Integer]
+
+      # Compare with another MODVersion
+      #
+      # @param other Version to compare with
+      # @return -1, 0, 1 for less than, equal to, greater than; nil if not comparable
+      def <=>: (MODVersion other) -> Integer?
+    end
+  end
+end

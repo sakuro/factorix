@@ -1,0 +1,37 @@
+module Factorix
+  module SerDes
+    # Represent a 4-component game version number (major.minor.patch-build)
+    #
+    # This class represents Factorio's game version format, which uses
+    # 64 bits (4 x 16-bit unsigned integers) to store version information.
+    class GameVersion
+      include Comparable
+
+      # Create a new GameVersion instance
+      #
+      # @param args Either a version string "X.Y.Z-B" or 4 integers representing major, minor, patch, build
+      def initialize: (String version_string) -> void
+                    | (Integer major, Integer minor, Integer patch, Integer build) -> void
+
+      # Factory method (alias for new)
+      def self.[]: (String version_string) -> GameVersion
+                 | (Integer major, Integer minor, Integer patch, Integer build) -> GameVersion
+
+      # Convert to string representation
+      #
+      # @return Version string in format "X.Y.Z-B"
+      def to_s: () -> String
+
+      # Convert to array of integers
+      #
+      # @return Array containing [major, minor, patch, build]
+      def to_a: () -> Array[Integer]
+
+      # Compare with another GameVersion
+      #
+      # @param other Version to compare with
+      # @return -1, 0, 1 for less than, equal to, greater than; nil if not comparable
+      def <=>: (GameVersion other) -> Integer?
+    end
+  end
+end

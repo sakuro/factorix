@@ -1,0 +1,111 @@
+module Factorix
+  module SerDes
+    # Deserialize data from binary format
+    #
+    # This class provides methods to deserialize various data types from Factorio's
+    # binary file format, following the specifications documented in the Factorio wiki.
+    class Deserializer
+      # Create a new Deserializer instance
+      #
+      # @param stream An IO-like object that responds to #read
+      def initialize: (untyped stream) -> void
+
+      # Read raw bytes from the stream
+      #
+      # @param length Number of bytes to read
+      # @return Binary data read
+      def read_bytes: (Integer length) -> String
+
+      # Read an unsigned 8-bit integer
+      #
+      # @return 8-bit unsigned integer
+      def read_u8: () -> Integer
+
+      # Read an unsigned 16-bit integer
+      #
+      # @return 16-bit unsigned integer
+      def read_u16: () -> Integer
+
+      # Read an unsigned 32-bit integer
+      #
+      # @return 32-bit unsigned integer
+      def read_u32: () -> Integer
+
+      # Read a space-optimized 16-bit unsigned integer
+      #
+      # @return 16-bit unsigned integer
+      def read_optim_u16: () -> Integer
+
+      # Read a space-optimized 32-bit unsigned integer
+      #
+      # @return 32-bit unsigned integer
+      def read_optim_u32: () -> Integer
+
+      # Read a tuple of 16-bit unsigned integers
+      #
+      # @param length Number of integers to read
+      # @return Array of 16-bit unsigned integers
+      def read_u16_tuple: (Integer length) -> Array[Integer]
+
+      # Read a boolean value
+      #
+      # @return Boolean value
+      def read_bool: () -> bool
+
+      # Read a string
+      #
+      # @return String read
+      def read_str: () -> String
+
+      # Read a string property
+      #
+      # @return String property
+      def read_str_property: () -> String
+
+      # Read a double-precision floating point number
+      #
+      # @return Double-precision floating point number
+      def read_double: () -> Float
+
+      # Read a GameVersion object
+      #
+      # @return GameVersion object
+      def read_game_version: () -> GameVersion
+
+      # Read a MODVersion object
+      #
+      # @return MODVersion object
+      def read_mod_version: () -> MODVersion
+
+      # Read a signed long integer (8 bytes)
+      #
+      # @return Signed long integer
+      def read_long: () -> Integer
+
+      # Read an unsigned long integer (8 bytes)
+      #
+      # @return Unsigned long integer
+      def read_unsigned_long: () -> Integer
+
+      # Read a dictionary
+      #
+      # @return Dictionary of key-value pairs
+      def read_dictionary: () -> Hash[String, untyped]
+
+      # Read a list (alias for read_dictionary)
+      #
+      # @return Dictionary of key-value pairs
+      def read_list: () -> Hash[String, untyped]
+
+      # Read a property tree
+      #
+      # @return Object read (can be nil, bool, Float, String, Array, Hash, or Integer)
+      def read_property_tree: () -> (nil | bool | Float | String | Array[untyped] | Hash[String, untyped] | Integer)
+
+      # Check if the stream is at EOF
+      #
+      # @return True if at end of file, false otherwise
+      def eof?: () -> bool
+    end
+  end
+end
