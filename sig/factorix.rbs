@@ -1,6 +1,3 @@
 module Factorix
   VERSION: String
-
-  class Error < StandardError
-  end
 end

@@ -1,0 +1,21 @@
+module Factorix
+  # Base error class for Factorix
+  class Error < StandardError
+  end
+
+  # =====================================
+  # Infrastructure layer errors
+  # =====================================
+
+  # Infrastructure layer error base class
+  class InfrastructureError < Error
+  end
+
+  # File format related errors
+  class FileFormatError < InfrastructureError
+  end
+
+  # Error raised when encountering an unknown property type during serialization/deserialization
+  class UnknownPropertyType < FileFormatError
+  end
+end
