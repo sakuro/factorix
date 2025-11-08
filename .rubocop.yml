@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - bin/**/*
     - vendor/**/*
+    - factorix.old/**/*
   ExtraDetails: true
   NewCops: enable
   TargetRubyVersion: 3.2
