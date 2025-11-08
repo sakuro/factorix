@@ -100,13 +100,15 @@ Binary data format handling for Factorio game files.
 
 Authentication credentials for API access.
 
-- [ ] `service_credential.rb` - username + token (MOD downloads)
-  - [ ] Load from `player-data.json` via Runtime
-  - [ ] Load from environment variables (FACTORIO_USERNAME, FACTORIO_TOKEN)
-- [ ] `api_credential.rb` - API key (MOD Upload/Publish API)
-  - [ ] Load from environment variables (FACTORIO_API_KEY)
-- [ ] Tests: `spec/factorix/service_credential_spec.rb`
-- [ ] Tests: `spec/factorix/api_credential_spec.rb`
+- [x] `service_credential.rb` - username + token (MOD downloads)
+  - [x] Load from `player-data.json` via Runtime
+  - [x] Load from environment variables (FACTORIO_USERNAME, FACTORIO_TOKEN)
+- [x] `api_credential.rb` - API key (MOD Upload/Publish API)
+  - [x] Load from environment variables (FACTORIO_API_KEY)
+- [x] Tests: `spec/factorix/service_credential_spec.rb`
+- [x] Tests: `spec/factorix/api_credential_spec.rb`
+- [x] RBS: `sig/factorix/service_credential.rbs`
+- [x] RBS: `sig/factorix/api_credential.rbs`
 
 **Reference**:
 - ServiceCredential: https://wiki.factorio.com/Mod_portal_API
