@@ -36,33 +36,63 @@ Platform abstraction layer for cross-platform compatibility.
 
 **Dependencies**: None
 
-### 1.2 Error Hierarchy
+### 1.2 Error Hierarchy (Partial)
 
 Simple error class hierarchy.
 
-- [ ] `errors.rb` - Define error classes
-  - [ ] `Factorix::Error` - Base error
+- [x] `errors.rb` - Define error classes (partial implementation)
+  - [x] `Factorix::Error` - Base error
+  - [x] `Factorix::InfrastructureError` - Infrastructure layer errors
+  - [x] `Factorix::FileFormatError` - File format errors
+  - [x] `Factorix::UnknownPropertyType` - Unknown property type error
   - [ ] Network errors (timeout, connection, etc.)
   - [ ] API errors (authentication, not found, etc.)
   - [ ] Validation errors
 - [ ] Tests: `spec/factorix/errors_spec.rb`
-- [ ] Zeitwerk ignore: `loader.ignore("#{__dir__}/factorix/errors.rb")`
+- [x] Zeitwerk ignore: `loader.ignore("#{__dir__}/factorix/errors.rb")`
 
 **Dependencies**: None
 
-### 1.3 SerDes (Serialization/Deserialization)
+### 1.3 SerDes (Serialization/Deserialization) ✅ COMPLETED
 
 Binary data format handling for Factorio game files.
 
-- [ ] `ser_des/serializer.rb` - Binary serialization
-- [ ] `ser_des/deserializer.rb` - Binary deserialization
-- [ ] `ser_des/game_version.rb` - 64-bit game version format
-- [ ] `ser_des/mod_version.rb` - 24-bit MOD version format
-- [ ] Tests: `spec/factorix/ser_des/**/*_spec.rb`
+- [x] `ser_des/serializer.rb` - Binary serialization
+  - [x] Basic types (u8, u16, u32, bool, string, double)
+  - [x] Space-optimized integers (optim_u16, optim_u32)
+  - [x] Property tree serialization (nil, bool, number, string, list, dictionary)
+  - [x] RGBA color conversion ("rgba:RRGGBBAA" ↔ dictionary)
+  - [x] UTF-8 encoding validation
+  - [x] Long integers (signed/unsigned 64-bit)
+- [x] `ser_des/deserializer.rb` - Binary deserialization
+  - [x] Basic types (u8, u16, u32, bool, string, double)
+  - [x] Space-optimized integers (optim_u16, optim_u32)
+  - [x] Property tree deserialization (nil, bool, number, string, list, dictionary)
+  - [x] RGBA color conversion (dictionary → "rgba:RRGGBBAA")
+  - [x] UTF-8 encoding support
+  - [x] Long integers (signed/unsigned 64-bit)
+- [x] `ser_des/game_version.rb` - 64-bit game version format (4 × u16)
+  - [x] String parsing ("1.2.3-4" or "1.2.3")
+  - [x] Integer tuple construction
+  - [x] Comparable support
+  - [x] `to_s`, `to_a` methods
+- [x] `ser_des/mod_version.rb` - 24-bit MOD version format (3 × u8)
+  - [x] String parsing ("1.2.3")
+  - [x] Integer tuple construction
+  - [x] Comparable support
+  - [x] `to_s`, `to_a` methods
+- [x] Tests: `spec/factorix/ser_des/**/*_spec.rb`
+  - [x] 128 examples, 0 failures
+  - [x] Line Coverage: 92.66% (202/218)
+  - [x] Branch Coverage: 85.71% (54/63)
+  - [x] Boundary value tests (255 for space-optimized)
+  - [x] Multibyte UTF-8 string tests
+  - [x] Encoding validation tests
+- [x] Zeitwerk inflection: `"mod_version" => "MODVersion"`
 
 **Reference**: `factorix.old/lib/factorix/ser_des/`
 
-**Dependencies**: None
+**Dependencies**: Errors (UnknownPropertyType)
 
 ## Phase 2: Authentication & Configuration
 

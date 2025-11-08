@@ -39,3 +39,42 @@ inherit_from: .rubocop_todo.yml
 # Project-specific settings
 Layout/LineLength:
   Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Naming/PredicateMethod:
+  Exclude:
+    - lib/factorix/ser_des/deserializer.rb
+
+Naming/VariableNumber:
+  Exclude:
+    - spec/factorix/ser_des/deserializer_spec.rb
+    - spec/factorix/ser_des/game_version_spec.rb
+    - spec/factorix/ser_des/mod_version_spec.rb
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/IndexedLet:
+  Exclude:
+    - spec/factorix/ser_des/game_version_spec.rb
+    - spec/factorix/ser_des/mod_version_spec.rb
+
+RSpec/RepeatedExampleGroupBody:
+  Exclude:
+    - spec/factorix/ser_des/deserializer_spec.rb
+
+Style/IpAddresses:
+  Exclude:
+    - spec/factorix/ser_des/game_version_spec.rb
+    - spec/factorix/ser_des/mod_version_spec.rb
