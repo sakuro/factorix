@@ -163,7 +163,7 @@ module Factorix
   module Types
     class MODInfo
       def latest_version
-        releases.first&.version
+        releases.max_by(&:released_at)&.version
       end
     end
   end

@@ -187,8 +187,27 @@ module Factorix
         thumbnail = thumbnail ? build_thumbnail_uri(thumbnail) : nil
         latest_release = latest_release ? Release.new(**latest_release) : nil
         releases = (releases || []).map {|r| Release.new(**r) }
-        # Only create Detail if all required fields are present (Full API)
-        detail = all_required_detail_fields?(detail_fields) ? Detail.new(**detail_fields) : nil
+
+        # Filter detail_fields to only include keys that Detail.new accepts
+        # Exclude deprecated fields like github_path
+        detail = if all_required_detail_fields?(detail_fields)
+                   allowed_keys = %i[
+                     changelog
+                     created_at
+                     updated_at
+                     last_highlighted_at
+                     description
+                     source_url
+                     homepage
+                     faq
+                     tags
+                     license
+                     images
+                     deprecated
+                   ]
+                   filtered_fields = detail_fields.slice(*allowed_keys)
+                   Detail.new(**filtered_fields)
+                 end
 
         super(
           name:,

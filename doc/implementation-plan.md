@@ -302,25 +302,31 @@ Dependency parsing and validation.
 
 **Dependencies**: Types
 
-### 4.3 Portal
+### 4.3 Portal ✅ COMPLETED
 
 High-level API wrapper converting Hash to Types.
 
-- [ ] `portal.rb` - Object-oriented API wrapper
-  - [ ] `#list_mods` → `Types::MODList`
-  - [ ] `#get_mod_info(name)` → `Types::MODInfo`
-  - [ ] `#get_mod_full(name)` → `Types::MODInfoWithDeps`
-  - [ ] `#download_mod(name, version)`
-  - [ ] `#upload_mod(file)`
-  - [ ] `#publish_mod(file, options)`
-  - [ ] `#edit_mod_details(name, details)`
-  - [ ] `#add_mod_images(name, images)`
-  - [ ] `#edit_mod_images(name, image_ids)`
-- [ ] Hash → Types conversion logic
-- [ ] Business logic (if any)
-- [ ] Tests: `spec/factorix/portal_spec.rb`
+- [x] `portal.rb` - Object-oriented API wrapper
+  - [x] `#list_mods(**params)` → `Array[Types::MODInfo]`
+  - [x] `#get_mod(name)` → `Types::MODInfo` (Short API)
+  - [x] `#get_mod_full(name)` → `Types::MODInfo` (Full API with Detail)
+  - [x] `#download_mod(release, output)` → void
+  - [x] Uses dry-auto_inject for dependency injection (mod_list_api, mod_download_api)
+  - [ ] Upload/Publish/Edit endpoints (deferred until MODManagementAPI)
+- [x] Hash → Types conversion logic
+  - [x] Converts API response hashes to MODInfo objects
+  - [x] Filters deprecated fields (github_path) when creating Detail
+- [x] Tests: `spec/factorix/portal_spec.rb`
+  - [x] 5 examples, 0 failures
+- [x] RBS: `sig/factorix/portal.rbs`
+- [x] Application container registration (`:portal`)
 
-**Dependencies**: API, Types, MODDependencies
+**Implementation Notes**:
+- Method naming: `get_mod` (not `get_mod_info`) to match API layer
+- Latest release: Use `releases.max_by(&:released_at)` (order not guaranteed)
+- Deprecated fields: Filtered via `allowed_keys.slice` before Detail.new
+
+**Dependencies**: API, Types
 
 ## Phase 5: Storage Layer
 

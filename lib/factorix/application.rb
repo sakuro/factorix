@@ -86,6 +86,11 @@ module Factorix
       Factorix::API::MODDownloadAPI.new
     end
 
+    # Register portal (high-level API wrapper)
+    register(:portal) do
+      Factorix::Portal.new
+    end
+
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
 

@@ -1,0 +1,15 @@
+module Factorix
+  class Portal
+    def list_mods: (**untyped params) -> Array[Types::MODInfo]
+
+    def get_mod: (String name) -> Types::MODInfo
+
+    def get_mod_full: (String name) -> Types::MODInfo
+
+    def download_mod: (Types::Release release, Pathname | String output) -> void
+
+    attr_reader mod_list_api: API::MODListAPI
+
+    attr_reader mod_download_api: API::MODDownloadAPI
+  end
+end
