@@ -1,0 +1,50 @@
+# frozen_string_literal: true
+
+require "time"
+
+module Factorix
+  module Types
+    Release = Data.define(
+      :download_url,
+      :file_name,
+      :info_json,
+      :released_at,
+      :version,
+      :sha1
+    )
+
+    # Release object from Mod Portal API
+    #
+    # Represents a specific version/release of a mod
+    #
+    # @see https://wiki.factorio.com/Mod_portal_API#Releases
+    class Release
+      # @!attribute [r] download_url
+      #   @return [String] relative URL path for downloading this release
+      # @!attribute [r] file_name
+      #   @return [String] file name of the release archive
+      # @!attribute [r] info_json
+      #   @return [Hash] info.json metadata from the mod
+      # @!attribute [r] released_at
+      #   @return [Time] release timestamp in UTC
+      # @!attribute [r] version
+      #   @return [String] semantic version string (e.g., "1.0.0")
+      # @!attribute [r] sha1
+      #   @return [String] SHA1 checksum of the release file
+
+      # Create Release from API response hash
+      #
+      # @param download_url [String] download URL path
+      # @param file_name [String] release file name
+      # @param info_json [Hash] info.json metadata
+      # @param released_at [String] ISO 8601 timestamp
+      # @param version [String] version string
+      # @param sha1 [String] SHA1 checksum
+      # @return [Release] new Release instance
+      def initialize(download_url:, file_name:, info_json:, released_at:, version:, sha1:)
+        released_at = Time.parse(released_at).utc
+        super
+      end
+    end
+  end
+end

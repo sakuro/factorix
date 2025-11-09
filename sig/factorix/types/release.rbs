@@ -1,0 +1,21 @@
+module Factorix
+  module Types
+    class Release
+      attr_reader download_url: String
+      attr_reader file_name: String
+      attr_reader info_json: Hash[String, untyped]
+      attr_reader released_at: Time
+      attr_reader version: String
+      attr_reader sha1: String
+
+      def initialize: (
+        download_url: String,
+        file_name: String,
+        info_json: Hash[String, untyped],
+        released_at: String,
+        version: String,
+        sha1: String
+      ) -> void
+    end
+  end
+end

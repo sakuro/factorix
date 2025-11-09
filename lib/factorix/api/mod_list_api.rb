@@ -20,7 +20,7 @@ module Factorix
       # Retrieve mod list with optional filters
       #
       # @param params [Hash] query parameters (hide_deprecated, page, page_size, sort, sort_order, namelist, version)
-      # @return [Hash] parsed JSON response with "results" and "pagination" keys
+      # @return [Hash{Symbol => untyped}] parsed JSON response with :results and :pagination keys
       def get_mods(**params)
         uri = build_uri("/api/mods", **params)
         fetch_with_cache(uri)
@@ -29,7 +29,7 @@ module Factorix
       # Retrieve basic information for a specific mod
       #
       # @param name [String] mod name
-      # @return [Hash] parsed JSON response with mod metadata and releases
+      # @return [Hash{Symbol => untyped}] parsed JSON response with mod metadata and releases
       def get_mod(name)
         uri = build_uri("/api/mods/#{name}")
         fetch_with_cache(uri)
@@ -38,7 +38,7 @@ module Factorix
       # Retrieve detailed information for a specific mod
       #
       # @param name [String] mod name
-      # @return [Hash] parsed JSON response with full mod details including dependencies
+      # @return [Hash{Symbol => untyped}] parsed JSON response with full mod details including dependencies
       def get_mod_full(name)
         uri = build_uri("/api/mods/#{name}/full")
         fetch_with_cache(uri)
@@ -53,13 +53,13 @@ module Factorix
       # Fetch data with cache support
       #
       # @param uri [URI::HTTPS] URI to fetch
-      # @return [Hash] parsed JSON response
+      # @return [Hash{Symbol => untyped}] parsed JSON response with symbolized keys
       private def fetch_with_cache(uri)
         key = api_cache.key_for(uri.to_s)
 
         # Try cache first
         cached = api_cache.read(key, encoding: "UTF-8")
-        return JSON.parse(cached) if cached
+        return JSON.parse(cached, symbolize_names: true) if cached
 
         # Cache miss - fetch from API
         response_body = fetch_from_api(uri)
@@ -67,7 +67,7 @@ module Factorix
         # Store in cache
         store_in_cache(key, response_body)
 
-        JSON.parse(response_body)
+        JSON.parse(response_body, symbolize_names: true)
       end
 
       # Fetch data from API via HTTP

@@ -10,7 +10,7 @@ RSpec.describe Factorix::API::MODListAPI do
 
   describe "#get_mods" do
     let(:response_body) { '{"results": [], "pagination": {}}' }
-    let(:parsed_response) { {"results" => [], "pagination" => {}} }
+    let(:parsed_response) { {results: [], pagination: {}} }
 
     context "when cache miss" do
       before do
@@ -66,7 +66,7 @@ RSpec.describe Factorix::API::MODListAPI do
 
   describe "#get_mod" do
     let(:response_body) { '{"name": "example-mod", "releases": []}' }
-    let(:parsed_response) { {"name" => "example-mod", "releases" => []} }
+    let(:parsed_response) { {name: "example-mod", releases: []} }
 
     context "when cache miss" do
       before do
@@ -102,7 +102,7 @@ RSpec.describe Factorix::API::MODListAPI do
 
   describe "#get_mod_full" do
     let(:response_body) { '{"name": "example-mod", "changelog": "...", "releases": []}' }
-    let(:parsed_response) { {"name" => "example-mod", "changelog" => "...", "releases" => []} }
+    let(:parsed_response) { {name: "example-mod", changelog: "...", releases: []} }
 
     context "when cache miss" do
       before do

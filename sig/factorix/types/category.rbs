@@ -1,0 +1,16 @@
+module Factorix
+  module Types
+    class Category
+      attr_reader value: String
+      attr_reader name: String
+      attr_reader description: String
+
+      def self.for: (String value) -> Category
+
+      private
+
+      def self.new: (value: String, name: String, description: String) -> Category
+      def self.[]: (value: String, name: String, description: String) -> Category
+    end
+  end
+end
