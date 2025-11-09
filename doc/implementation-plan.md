@@ -71,16 +71,8 @@ Binary data format handling for Factorio game files.
   - [x] RGBA color conversion (dictionary → "rgba:RRGGBBAA")
   - [x] UTF-8 encoding support
   - [x] Long integers (signed/unsigned 64-bit)
-- [x] `ser_des/game_version.rb` - 64-bit game version format (4 × u16)
-  - [x] String parsing ("1.2.3-4" or "1.2.3")
-  - [x] Integer tuple construction
-  - [x] Comparable support
-  - [x] `to_s`, `to_a` methods
-- [x] `ser_des/mod_version.rb` - 24-bit MOD version format (3 × u8)
-  - [x] String parsing ("1.2.3")
-  - [x] Integer tuple construction
-  - [x] Comparable support
-  - [x] `to_s`, `to_a` methods
+- [x] ~~`ser_des/game_version.rb`~~ - Moved to `types/game_version.rb` (Phase 4.1)
+- [x] ~~`ser_des/mod_version.rb`~~ - Moved to `types/mod_version.rb` (Phase 4.1)
 - [x] Tests: `spec/factorix/ser_des/**/*_spec.rb`
   - [x] 128 examples, 0 failures
   - [x] Line Coverage: 92.66% (202/218)
@@ -88,11 +80,9 @@ Binary data format handling for Factorio game files.
   - [x] Boundary value tests (255 for space-optimized)
   - [x] Multibyte UTF-8 string tests
   - [x] Encoding validation tests
-- [x] Zeitwerk inflection: `"mod_version" => "MODVersion"`
-
 **Reference**: `factorix.old/lib/factorix/ser_des/`
 
-**Dependencies**: Errors (UnknownPropertyType)
+**Dependencies**: Errors (UnknownPropertyType), Types (MODVersion, GameVersion)
 
 ## Phase 2: Authentication & Configuration
 
@@ -218,21 +208,45 @@ Low-level API wrappers returning Hash (parsed JSON).
 
 Immutable value objects based on actual API responses.
 
-### 4.1 Types
+### 4.1 Types ✅ COMPLETED
 
 Value objects using Data.define (Ruby 3.2+).
 
-- [ ] `types/pagination.rb` - Pagination metadata
-- [ ] `types/pagination_links.rb` - Pagination links (first, prev, next, last)
-- [ ] `types/license.rb` - License information
-- [ ] `types/release.rb` - MOD release information
-  - [ ] Design based on actual API responses from Phase 3.2
-  - [ ] Handle `info_json` with/without dependencies
-- [ ] `types/mod_list_entry.rb` - Entry from `/api/mods`
-- [ ] `types/mod_info.rb` - Basic info from `/api/mods/{name}`
-- [ ] `types/mod_info_with_deps.rb` - Full info from `/api/mods/{name}/full`
-- [ ] `types/mod_list.rb` - List with pagination
-- [ ] Tests: `spec/factorix/types/**/*_spec.rb`
+- [x] `types/mod_version.rb` - MOD version (3 × u8: major.minor.patch)
+  - [x] Moved from ser_des/ to types/
+  - [x] Reimplemented with Data.define for immutable value objects
+  - [x] Factory methods (.from_string, .from_numbers) with private constructors
+  - [x] Validation: uint8 (0-255) for each component
+  - [x] Comparable support, to_s, to_a methods
+- [x] `types/game_version.rb` - Game version (4 × u16: major.minor.patch-build)
+  - [x] Moved from ser_des/ to types/
+  - [x] Reimplemented with Data.define for immutable value objects
+  - [x] Factory methods (.from_string, .from_numbers) with private constructors
+  - [x] Validation: uint16 (0-65535) for each component
+  - [x] Comparable support, to_s, to_a methods
+- [x] `types/category.rb` - MOD category (content, overhaul, tweaks, utilities, scenarios, mod-packs, localizations, internal)
+  - [x] Flyweight pattern for instances
+  - [x] From/to string conversion
+  - [x] Zeitwerk inflection: `"mod_packs" => "MODPacks"`
+- [x] `types/release.rb` - MOD release information
+  - [x] Uses MODVersion type (not String) for version field
+  - [x] Converts released_at to Time object
+  - [x] Handles info_json metadata
+- [x] `types/mod_list_entry.rb` - Entry from `/api/mods`
+  - [x] Handles latest_release (without namelist) OR releases (with namelist)
+  - [x] Converts category string to Category object
+  - [x] Converts release hashes to Release objects
+- ~~`types/pagination.rb` - Pagination metadata~~ (not implemented - API returns all results)
+- ~~`types/pagination_links.rb` - Pagination links~~ (not implemented - API returns all results)
+- [ ] `types/license.rb` - License information (deferred)
+- [ ] `types/mod_info.rb` - Basic info from `/api/mods/{name}` (deferred)
+- [ ] `types/mod_info_with_deps.rb` - Full info from `/api/mods/{name}/full` (deferred)
+- [ ] `types/mod_list.rb` - List container (deferred)
+- [x] Tests: `spec/factorix/types/**/*_spec.rb`
+  - [x] 74 examples, 0 failures
+  - [x] Line Coverage: 96.73%
+- [x] RBS type signatures for all implemented types
+- [x] Zeitwerk inflection: `"mod_version" => "MODVersion"`
 
 **Dependencies**: None (pure data structures)
 
