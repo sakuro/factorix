@@ -15,7 +15,7 @@ module Factorix
 
     # Release object from Mod Portal API
     #
-    # Represents a specific version/release of a mod
+    # Represents a specific version/release of a MOD
     #
     # @see https://wiki.factorio.com/Mod_portal_API#Releases
     class Release
@@ -24,7 +24,7 @@ module Factorix
       # @!attribute [r] file_name
       #   @return [String] file name of the release archive
       # @!attribute [r] info_json
-      #   @return [Hash] info.json metadata from the mod
+      #   @return [Hash] info.json metadata from the MOD
       # @!attribute [r] released_at
       #   @return [Time] release timestamp in UTC
       # @!attribute [r] version

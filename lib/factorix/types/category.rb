@@ -10,7 +10,7 @@ module Factorix
 
     # Category object from Mod Portal API
     #
-    # Represents a mod category with value, name, and description.
+    # Represents a MOD category with value, name, and description.
     # Uses flyweight pattern - same category value returns same instance.
     #
     # @see https://wiki.factorio.com/Mod_details_API#Category

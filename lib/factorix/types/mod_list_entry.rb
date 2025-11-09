@@ -16,7 +16,7 @@ module Factorix
 
     # MOD list entry from /api/mods endpoint
     #
-    # Represents a single mod entry from the mod list API.
+    # Represents a single MOD entry from the MOD list API.
     # Note: The API returns either `latest_release` OR `releases` depending on parameters:
     # - Without namelist parameter: includes `latest_release` (single Release)
     # - With namelist parameter: includes `releases` (array of Releases), no `latest_release`
@@ -24,19 +24,19 @@ module Factorix
     # @see https://wiki.factorio.com/Mod_portal_API#Result_Entry
     class MODListEntry
       # @!attribute [r] name
-      #   @return [String] internal mod name (unique identifier)
+      #   @return [String] internal MOD name (unique identifier)
       # @!attribute [r] title
-      #   @return [String] human-readable mod title
+      #   @return [String] human-readable MOD title
       # @!attribute [r] owner
-      #   @return [String] mod owner username
+      #   @return [String] MOD owner username
       # @!attribute [r] summary
-      #   @return [String] short description of the mod
+      #   @return [String] short description of the MOD
       # @!attribute [r] downloads_count
       #   @return [Integer] total number of downloads
       # @!attribute [r] category
-      #   @return [Category] mod category
+      #   @return [Category] MOD category
       # @!attribute [r] score
-      #   @return [Float] mod score/rating
+      #   @return [Float] MOD score/rating
       # @!attribute [r] latest_release
       #   @return [Release, nil] latest release (present when called without namelist parameter)
       # @!attribute [r] releases
