@@ -60,16 +60,16 @@ Naming/PredicateMethod:
 Naming/VariableNumber:
   Exclude:
     - spec/factorix/ser_des/deserializer_spec.rb
-    - spec/factorix/ser_des/game_version_spec.rb
-    - spec/factorix/ser_des/mod_version_spec.rb
+    - spec/factorix/types/game_version_spec.rb
+    - spec/factorix/types/mod_version_spec.rb
 
 RSpec/ExampleLength:
   Enabled: false
 
 RSpec/IndexedLet:
   Exclude:
-    - spec/factorix/ser_des/game_version_spec.rb
-    - spec/factorix/ser_des/mod_version_spec.rb
+    - spec/factorix/types/game_version_spec.rb
+    - spec/factorix/types/mod_version_spec.rb
 
 RSpec/RepeatedExampleGroupBody:
   Exclude:
@@ -77,5 +77,5 @@ RSpec/RepeatedExampleGroupBody:
 
 Style/IpAddresses:
   Exclude:
-    - spec/factorix/ser_des/game_version_spec.rb
-    - spec/factorix/ser_des/mod_version_spec.rb
+    - spec/factorix/types/game_version_spec.rb
+    - spec/factorix/types/mod_version_spec.rb

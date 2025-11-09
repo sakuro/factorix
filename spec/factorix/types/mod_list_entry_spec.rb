@@ -46,7 +46,8 @@ RSpec.describe Factorix::Types::MODListEntry do
         entry = Factorix::Types::MODListEntry.new(**entry_hash)
 
         expect(entry.latest_release).to be_a(Factorix::Types::Release)
-        expect(entry.latest_release.version).to eq("1.0.0")
+        expect(entry.latest_release.version).to be_a(Factorix::Types::MODVersion)
+        expect(entry.latest_release.version.to_s).to eq("1.0.0")
         expect(entry.latest_release.released_at).to be_a(Time)
       end
 
@@ -100,9 +101,9 @@ RSpec.describe Factorix::Types::MODListEntry do
       it "preserves releases order (oldest first, newest last)" do
         entry = Factorix::Types::MODListEntry.new(**entry_hash)
 
-        expect(entry.releases.first.version).to eq("0.9.0")
+        expect(entry.releases.first.version.to_s).to eq("0.9.0")
         expect(entry.releases.first.released_at.iso8601).to eq("2024-08-15T10:00:00Z")
-        expect(entry.releases.last.version).to eq("1.0.0")
+        expect(entry.releases.last.version.to_s).to eq("1.0.0")
         expect(entry.releases.last.released_at.iso8601).to eq("2024-10-21T12:34:56Z")
       end
 

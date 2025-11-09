@@ -116,14 +116,14 @@ module Factorix
       #
       # @return [GameVersion] GameVersion object
       def read_game_version
-        Factorix::SerDes::GameVersion[read_u16, read_u16, read_u16, read_u16]
+        Factorix::Types::GameVersion.from_numbers(read_u16, read_u16, read_u16, read_u16)
       end
 
       # Read a MODVersion object
       #
       # @return [MODVersion] MODVersion object
       def read_mod_version
-        Factorix::SerDes::MODVersion[read_optim_u16, read_optim_u16, read_optim_u16]
+        Factorix::Types::MODVersion.from_numbers(read_optim_u16, read_optim_u16, read_optim_u16)
       end
 
       # Read a signed long integer (8 bytes)

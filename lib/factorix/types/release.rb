@@ -28,7 +28,7 @@ module Factorix
       # @!attribute [r] released_at
       #   @return [Time] release timestamp in UTC
       # @!attribute [r] version
-      #   @return [String] semantic version string (e.g., "1.0.0")
+      #   @return [MODVersion] MOD version object
       # @!attribute [r] sha1
       #   @return [String] SHA1 checksum of the release file
 
@@ -38,11 +38,12 @@ module Factorix
       # @param file_name [String] release file name
       # @param info_json [Hash] info.json metadata
       # @param released_at [String] ISO 8601 timestamp
-      # @param version [String] version string
+      # @param version [String] version string in "X.Y.Z" format
       # @param sha1 [String] SHA1 checksum
       # @return [Release] new Release instance
       def initialize(download_url:, file_name:, info_json:, released_at:, version:, sha1:)
         released_at = Time.parse(released_at).utc
+        version = MODVersion.from_string(version)
         super
       end
     end

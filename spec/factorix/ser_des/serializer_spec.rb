@@ -165,13 +165,13 @@ RSpec.describe Factorix::SerDes::Serializer do
 
   describe "#write_game_version" do
     it "writes GameVersion" do
-      expect { serializer.write_game_version(Factorix::SerDes::GameVersion.new(1, 2, 3, 4)) }.to change(stream, :string).from("".b).to("\x01\x00\x02\x00\x03\x00\x04\x00".b)
+      expect { serializer.write_game_version(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4)) }.to change(stream, :string).from("".b).to("\x01\x00\x02\x00\x03\x00\x04\x00".b)
     end
   end
 
   describe "#write_mod_version" do
     it "writes MODVersion" do
-      expect { serializer.write_mod_version(Factorix::SerDes::MODVersion.new(1, 2, 3)) }.to change(stream, :string).from("".b).to("\x01\x02\x03".b)
+      expect { serializer.write_mod_version(Factorix::Types::MODVersion.from_numbers(1, 2, 3)) }.to change(stream, :string).from("".b).to("\x01\x02\x03".b)
     end
   end
 

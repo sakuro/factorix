@@ -23,7 +23,8 @@ RSpec.describe Factorix::Types::Release do
       expect(release.download_url).to eq("/download/example-mod/1.0.0")
       expect(release.file_name).to eq("example-mod_1.0.0.zip")
       expect(release.info_json).to eq({"factorio_version" => "2.0", "dependencies" => ["base >= 2.0"]})
-      expect(release.version).to eq("1.0.0")
+      expect(release.version).to be_a(Factorix::Types::MODVersion)
+      expect(release.version.to_s).to eq("1.0.0")
       expect(release.sha1).to eq("abc123def456")
     end
 

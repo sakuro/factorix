@@ -1,0 +1,25 @@
+module Factorix
+  module Types
+    class MODVersion
+      include Comparable
+
+      attr_reader major: Integer
+      attr_reader minor: Integer
+      attr_reader patch: Integer
+
+      def self.from_string: (String str) -> MODVersion
+
+      def self.from_numbers: (Integer major, Integer minor, Integer patch) -> MODVersion
+
+      def to_s: () -> String
+
+      def to_a: () -> Array[Integer]
+
+      def <=>: (MODVersion other) -> Integer?
+
+      private
+
+      def initialize: (major: Integer, minor: Integer, patch: Integer) -> void
+    end
+  end
+end
