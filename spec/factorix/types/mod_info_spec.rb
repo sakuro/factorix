@@ -121,7 +121,7 @@ RSpec.describe Factorix::Types::MODInfo do
           source_url: "https://github.com/user/full-mod",
           homepage: "https://example.com",
           faq: "Q: How to install?\nA: Just download it.",
-          tags: %w[gameplay overhaul],
+          tags: %w[combat logistics],
           license: {
             id: "mit",
             name: "MIT",
@@ -149,7 +149,9 @@ RSpec.describe Factorix::Types::MODInfo do
         expect(mod_info.detail.homepage).to be_a(URI)
         expect(mod_info.detail.homepage.to_s).to eq("https://example.com")
         expect(mod_info.detail.faq).to eq("Q: How to install?\nA: Just download it.")
-        expect(mod_info.detail.tags).to eq(%w[gameplay overhaul])
+        expect(mod_info.detail.tags.size).to eq(2)
+        expect(mod_info.detail.tags.first).to be_a(Factorix::Types::Tag)
+        expect(mod_info.detail.tags.map(&:value)).to eq(%w[combat logistics])
         expect(mod_info.detail.license).to be_a(Factorix::Types::License)
         expect(mod_info.detail.images.size).to eq(1)
         expect(mod_info.detail.images.first).to be_a(Factorix::Types::Image)

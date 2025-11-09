@@ -42,7 +42,7 @@ module Factorix
         attr_reader source_url: URI::HTTPS?
         attr_reader homepage: URI | String
         attr_reader faq: String
-        attr_reader tags: Array[String]
+        attr_reader tags: Array[Tag]
         attr_reader license: License?
         attr_reader images: Array[Image]
         attr_reader deprecated: bool

@@ -99,7 +99,7 @@ RSpec.describe Factorix::Portal do
         description: "Full description",
         homepage: "https://example.com",
         faq: "Q: How?\nA: Easy.",
-        tags: ["gameplay"]
+        tags: %w[combat logistics]
       }
       allow(mod_list_api).to receive(:get_mod_full).with("full-mod").and_return(api_response)
 

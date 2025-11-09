@@ -87,7 +87,7 @@ module Factorix
         # @!attribute [r] faq
         #   @return [String] FAQ text
         # @!attribute [r] tags
-        #   @return [Array<String>] tags
+        #   @return [Array<Tag>] tags
         # @!attribute [r] license
         #   @return [License, nil] license information
         # @!attribute [r] images
@@ -132,7 +132,7 @@ module Factorix
           source_url = source_url ? URI(source_url) : nil
           homepage = parse_homepage(homepage)
           faq ||= ""
-          tags ||= []
+          tags = (tags || []).map {|tag_value| Tag.for(tag_value) }
           license = license ? License.new(**license) : nil
           images = (images || []).map {|img| Image.new(**img) }
           deprecated ||= false
