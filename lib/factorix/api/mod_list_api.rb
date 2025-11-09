@@ -19,9 +19,39 @@ module Factorix
 
       # Retrieve mod list with optional filters
       #
-      # @param params [Hash] query parameters (hide_deprecated, page, page_size, sort, sort_order, namelist, version)
+      # @param namelist [Array<String>] mod names to filter (positional arguments, sorted for cache consistency)
+      # @param hide_deprecated [Boolean, nil] hide deprecated mods
+      # @param page [Integer, nil] page number (1-based)
+      # @param page_size [Integer, String, nil] number of results per page (positive integer or "max")
+      # @param sort [String, nil] sort field (name, created_at, updated_at)
+      # @param sort_order [String, nil] sort order (asc, desc)
+      # @param version [String, nil] Factorio version filter
       # @return [Hash{Symbol => untyped}] parsed JSON response with :results and :pagination keys
-      def get_mods(**params)
+      def get_mods(
+        *namelist,
+        hide_deprecated: nil,
+        page: nil,
+        page_size: nil,
+        sort: nil,
+        sort_order: nil,
+        version: nil
+      )
+        validate_page_size!(page_size) if page_size
+        validate_sort!(sort) if sort
+        validate_sort_order!(sort_order) if sort_order
+        validate_version!(version) if version
+
+        params = {
+          namelist: namelist.sort,
+          hide_deprecated:,
+          page:,
+          page_size:,
+          sort:,
+          sort_order:,
+          version:
+        }
+        params.reject! {|_k, v| v.is_a?(Array) && v.empty? }
+        params.compact!
         uri = build_uri("/api/mods", **params)
         fetch_with_cache(uri)
       end
@@ -134,6 +164,54 @@ module Factorix
         ensure
           temp_file.unlink
         end
+      end
+
+      # Validate page_size parameter
+      #
+      # @param page_size [Integer, String] page size value
+      # @return [void]
+      # @raise [ArgumentError] if page_size is invalid
+      private def validate_page_size!(page_size)
+        return if page_size == "max"
+        return if page_size.is_a?(Integer) && page_size.positive?
+
+        raise ArgumentError, "page_size must be a positive integer or 'max', got: #{page_size.inspect}"
+      end
+
+      # Validate sort parameter
+      #
+      # @param sort [String] sort field name
+      # @return [void]
+      # @raise [ArgumentError] if sort is invalid
+      private def validate_sort!(sort)
+        valid_sorts = %w[name created_at updated_at]
+        return if valid_sorts.include?(sort)
+
+        raise ArgumentError, "sort must be one of #{valid_sorts.join(", ")}, got: #{sort.inspect}"
+      end
+
+      # Validate sort_order parameter
+      #
+      # @param sort_order [String] sort order
+      # @return [void]
+      # @raise [ArgumentError] if sort_order is invalid
+      private def validate_sort_order!(sort_order)
+        valid_orders = %w[asc desc]
+        return if valid_orders.include?(sort_order)
+
+        raise ArgumentError, "sort_order must be one of #{valid_orders.join(", ")}, got: #{sort_order.inspect}"
+      end
+
+      # Validate version parameter
+      #
+      # @param version [String] Factorio version
+      # @return [void]
+      # @raise [ArgumentError] if version is invalid
+      private def validate_version!(version)
+        valid_versions = %w[0.13 0.14 0.15 0.16 0.17 0.18 1.0 1.1 2.0]
+        return if valid_versions.include?(version)
+
+        raise ArgumentError, "version must be one of #{valid_versions.join(", ")}, got: #{version.inspect}"
       end
     end
   end

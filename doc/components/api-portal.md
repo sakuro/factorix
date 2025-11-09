@@ -54,15 +54,21 @@ Split into three classes based on authentication method.
 #### 1. GET /mods - Retrieve MOD list
 
 **Parameters**:
-- `hide_deprecated`: Exclude deprecated MODs
-- `page`: Page number
-- `page_size`: Page size (or "max")
-- `sort`: Sort field (name, created_at, updated_at)
-- `sort_order`: Sort order (asc, desc)
-- `namelist`: Filter by name (array)
-- `version`: Factorio version compatibility (0.13-2.0)
+- `*namelist`: Positional arguments for MOD names to filter (array, sorted for cache consistency)
+- `hide_deprecated`: Boolean - Exclude deprecated MODs
+- `page`: Integer - Page number (1-based)
+- `page_size`: Integer or "max" - Number of results per page (validated: positive integer or literal "max")
+- `sort`: String - Sort field (validated: "name", "created_at", or "updated_at")
+- `sort_order`: String - Sort order (validated: "asc" or "desc")
+- `version`: String - Factorio version compatibility (validated: "0.13", "0.14", "0.15", "0.16", "0.17", "0.18", "1.0", "1.1", or "2.0")
 
 **Response**: MOD list with pagination information
+
+**Validation**: Invalid parameter values raise `ArgumentError` with descriptive messages
+
+**Cache optimization**:
+- namelist is sorted before URI construction to ensure consistent cache keys
+- Empty arrays are excluded from query parameters
 
 #### 2. GET /mods/{name} - Retrieve MOD basic information
 
@@ -189,13 +195,58 @@ Class that wraps the API for more object-oriented handling.
 
 - **Responsibility**: Convert JSON to Types objects, domain logic
 - **Return value**: Data.define objects under Types
-- Return value example: `Portal#list_mods` → `Types::MODList` instance
+- Return value example: `Portal#list_mods` → `Array[Types::MODInfo]`
 
 ### Design Policy
 
 - Convert Hash received from API layer to Types::*
+- Use argument forwarding (`...`) to pass parameters transparently to API layer
 - Implement business logic
 - Used directly from CLI layer
+
+### Portal Methods
+
+#### `Portal#list_mods(...)`
+
+Forwards all arguments to `MODListAPI#get_mods` and converts results to `Types::MODInfo` array.
+
+**Usage**:
+```ruby
+portal = Factorix::Application[:portal]
+
+# List all mods
+portal.list_mods
+
+# Filter specific mods
+portal.list_mods("mod-a", "mod-b")
+
+# With pagination and sorting
+portal.list_mods("mod-a", "mod-b", page_size: 10, sort: "updated_at", sort_order: "desc")
+```
+
+**Return**: `Array[Types::MODInfo]` - Converts `response[:results]` to typed objects
+
+#### `Portal#get_mod(name)`
+
+Retrieves basic MOD information (Short API).
+
+**Return**: `Types::MODInfo` (without Detail)
+
+#### `Portal#get_mod_full(name)`
+
+Retrieves full MOD information including dependencies (Full API).
+
+**Return**: `Types::MODInfo` (with Detail if available)
+
+#### `Portal#download_mod(release, output)`
+
+Downloads a MOD file.
+
+**Parameters**:
+- `release`: `Types::Release` object with download_url
+- `output`: `Pathname` or `String` output path
+
+**Note**: Use `releases.max_by(&:released_at)` to get the latest release (order not guaranteed)
 
 ## Related Documentation
 

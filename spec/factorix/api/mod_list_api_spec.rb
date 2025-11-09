@@ -164,4 +164,73 @@ RSpec.describe Factorix::API::MODListAPI do
       end
     end
   end
+
+  describe "parameter validation" do
+    describe "#get_mods" do
+      let(:response_body) { '{"pagination": {}, "results": []}' }
+
+      before do
+        allow(api_cache).to receive(:read).and_return(nil)
+        allow(api_cache).to receive(:store)
+      end
+
+      context "with valid parameters" do
+        it "accepts valid page_size as integer" do
+          stub_request(:get, "https://mods.factorio.com/api/mods?page_size=10")
+            .to_return(status: 200, body: response_body)
+          expect { api.get_mods(page_size: 10) }.not_to raise_error
+        end
+
+        it "accepts valid page_size as 'max'" do
+          stub_request(:get, "https://mods.factorio.com/api/mods?page_size=max")
+            .to_return(status: 200, body: response_body)
+          expect { api.get_mods(page_size: "max") }.not_to raise_error
+        end
+
+        it "accepts valid sort values" do
+          %w[name created_at updated_at].each do |sort_value|
+            stub_request(:get, "https://mods.factorio.com/api/mods?sort=#{sort_value}")
+              .to_return(status: 200, body: response_body)
+            expect { api.get_mods(sort: sort_value) }.not_to raise_error
+          end
+        end
+
+        it "accepts valid sort_order values" do
+          %w[asc desc].each do |order_value|
+            stub_request(:get, "https://mods.factorio.com/api/mods?sort_order=#{order_value}")
+              .to_return(status: 200, body: response_body)
+            expect { api.get_mods(sort_order: order_value) }.not_to raise_error
+          end
+        end
+
+        it "accepts valid version values" do
+          %w[0.13 0.14 0.15 0.16 0.17 0.18 1.0 1.1 2.0].each do |version_value|
+            stub_request(:get, "https://mods.factorio.com/api/mods?version=#{version_value}")
+              .to_return(status: 200, body: response_body)
+            expect { api.get_mods(version: version_value) }.not_to raise_error
+          end
+        end
+      end
+
+      context "with invalid parameters" do
+        it "raises ArgumentError for invalid page_size" do
+          expect { api.get_mods(page_size: 0) }.to raise_error(ArgumentError, /page_size must be/)
+          expect { api.get_mods(page_size: -1) }.to raise_error(ArgumentError, /page_size must be/)
+          expect { api.get_mods(page_size: "invalid") }.to raise_error(ArgumentError, /page_size must be/)
+        end
+
+        it "raises ArgumentError for invalid sort" do
+          expect { api.get_mods(sort: "invalid") }.to raise_error(ArgumentError, /sort must be one of/)
+        end
+
+        it "raises ArgumentError for invalid sort_order" do
+          expect { api.get_mods(sort_order: "invalid") }.to raise_error(ArgumentError, /sort_order must be one of/)
+        end
+
+        it "raises ArgumentError for invalid version" do
+          expect { api.get_mods(version: "9.9") }.to raise_error(ArgumentError, /version must be one of/)
+        end
+      end
+    end
+  end
 end

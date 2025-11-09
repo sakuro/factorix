@@ -28,17 +28,16 @@ module Factorix
 
     # List mods from the Mod Portal
     #
-    # @param params [Hash] query parameters
-    # @option params [Boolean] :hide_deprecated hide deprecated mods
-    # @option params [Integer] :page page number (1-based)
-    # @option params [Integer] :page_size number of results per page
-    # @option params [String] :sort sort field (name, created_at, updated_at)
-    # @option params [String] :sort_order sort order (asc, desc)
-    # @option params [String] :namelist comma-separated mod names to filter
-    # @option params [String] :version Factorio version filter
+    # @param namelist [Array<String>] mod names to filter (positional arguments)
+    # @param hide_deprecated [Boolean, nil] hide deprecated mods
+    # @param page [Integer, nil] page number (1-based)
+    # @param page_size [Integer, nil] number of results per page
+    # @param sort [String, nil] sort field (name, created_at, updated_at)
+    # @param sort_order [String, nil] sort order (asc, desc)
+    # @param version [String, nil] Factorio version filter
     # @return [Array<Types::MODInfo>] array of MODInfo objects
-    def list_mods(**params)
-      response = mod_list_api.get_mods(**params)
+    def list_mods(...)
+      response = mod_list_api.get_mods(...)
       response[:results].map {|mod_data| Types::MODInfo.new(**mod_data) }
     end
 

@@ -7,7 +7,15 @@ module Factorix
 
       def initialize: (?api_cache: Cache::FileSystem) -> void
 
-      def get_mods: (**untyped params) -> Hash[String, untyped]
+      def get_mods: (
+                      *String namelist,
+                      ?hide_deprecated: bool?,
+                      ?page: Integer?,
+                      ?page_size: (Integer | String)?,
+                      ?sort: ("name" | "created_at" | "updated_at")?,
+                      ?sort_order: ("asc" | "desc")?,
+                      ?version: ("0.13" | "0.14" | "0.15" | "0.16" | "0.17" | "0.18" | "1.0" | "1.1" | "2.0")?
+                    ) -> Hash[String, untyped]
 
       def get_mod: (String name) -> Hash[String, untyped]
 
