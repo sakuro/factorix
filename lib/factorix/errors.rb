@@ -9,6 +9,11 @@ module Factorix
   # =====================================
   class InfrastructureError < Error; end
 
+  # HTTP errors
+  class HTTPError < InfrastructureError; end
+  class HTTPClientError < HTTPError; end
+  class HTTPServerError < HTTPError; end
+
   # File format related errors
   class FileFormatError < InfrastructureError; end
   class UnknownPropertyType < FileFormatError; end

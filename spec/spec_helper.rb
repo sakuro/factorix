@@ -4,6 +4,10 @@ require "simplecov"
 SimpleCov.start
 
 require "factorix"
+require "webmock/rspec"
+
+# Load support files
+Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

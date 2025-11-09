@@ -82,23 +82,68 @@ Class for uploading files to the portal.
 
 ## Common: Progress Notification Functionality
 
-### Design Policy
+### Design Policy (Updated 2025-11-09)
 
-- Make progress notification functionality injectable (DI)
-- Unified interface for download/upload
-- Standard implementation: Use ruby-progressbar (Progress::Bar)
+- Use **dry-events** for event-driven progress notification
+- Transfer layer publishes events, subscribers listen
+- Standard implementation: Progress::Bar as event listener
+- Extensible: Can add logging, metrics, APM subscribers
 
-### Progress::Base Interface
+### Event-Based Architecture
 
-- `on_start(total_size)` - At transfer start (receives total size)
-- `on_progress(current_size)` - On progress update (receives current size)
-- `on_complete` - At transfer complete
+Transfer layer includes `Dry::Events::Publisher[:transfer]` and publishes events:
+
+**Download events:**
+- `download.started` - payload: `{ total_size: Integer }`
+- `download.progress` - payload: `{ current_size: Integer, total_size: Integer }`
+- `download.completed` - payload: `{ total_size: Integer }`
+
+**Upload events:**
+- `upload.started` - payload: `{ total_size: Integer }`
+- `upload.progress` - payload: `{ current_size: Integer, total_size: Integer }`
+- `upload.completed` - payload: `{ total_size: Integer }`
+
+### Progress::Bar as Event Listener
+
+Implements event handler methods following dry-events convention:
+
+```ruby
+class Progress::Bar
+  def on_download_started(event)
+    @bar.total = event[:total_size]
+  end
+
+  def on_download_progress(event)
+    @bar.progress = event[:current_size]
+  end
+
+  def on_download_completed(event)
+    @bar.finish
+  end
+
+  # Similar methods for upload events
+end
+```
+
+### Usage
+
+```ruby
+# Subscribe progress bar to transfer events
+http = Transfer::HTTP.new
+http.subscribe(Progress::Bar.new)
+http.download(url, output)
+
+# Multiple subscribers possible
+http.subscribe(Progress::Bar.new)
+http.subscribe(MyLogger.new)
+http.subscribe(MyMetrics.new)
+```
 
 ### Implementation Method
 
-- Manually notify progress during chunk read/write with net/http
-- Download: Notify while reading response body with `Net::HTTP#request`
-- Upload: Notify while writing request body
+- Manually publish events during chunk read/write with net/http
+- Download: Publish while reading response body with `Net::HTTP#request`
+- Upload: Publish while writing request body
 
 ## Related Documentation
 

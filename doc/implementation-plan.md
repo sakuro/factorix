@@ -136,25 +136,41 @@ DI container and configuration management.
 
 HTTP communication layer that works with raw Hash data.
 
-### 3.1 Transfer
+### 3.1 Transfer ✅ COMPLETED
 
-File transfer with retry and progress notification.
+File transfer with retry and progress notification using dry-events.
 
-- [ ] `transfer/retry_strategy.rb` - Wrapper for retriable gem
-  - [ ] Exponential backoff configuration
-  - [ ] Retry conditions (network errors, timeouts)
-- [ ] `transfer/http.rb` - net/http wrapper
-  - [ ] Resume support for downloads
-  - [ ] Progress notification hooks
-  - [ ] Timeout configuration
-- [ ] `transfer/downloader.rb` - File download with caching
-- [ ] `transfer/uploader.rb` - File upload (multipart/form-data)
-- [ ] `progress/base.rb` - Progress notification base class
-- [ ] `progress/bar.rb` - ruby-progressbar implementation
-- [ ] Tests: `spec/factorix/transfer/**/*_spec.rb`
-- [ ] Tests: Use WebMock for HTTP stubbing
+- [x] Add dependencies: `dry-events ~> 1.1`, `retriable ~> 3.1`, `ruby-progressbar ~> 1.13`
+- [x] `transfer/retry_strategy.rb` - Wrapper for retriable gem
+  - [x] Exponential backoff configuration
+  - [x] Retry conditions (network errors, timeouts)
+  - [ ] **Future**: Use `Import["logger"]` instead of `warn` for retry callbacks
+- [x] `transfer/http.rb` - net/http wrapper with event publishing
+  - [x] Include `Dry::Events::Publisher[:transfer]`
+  - [x] Register events: `download.started`, `download.progress`, `download.completed`
+  - [x] Register events: `upload.started`, `upload.progress`, `upload.completed`
+  - [x] Resume support for downloads
+  - [x] Publish events during chunk read/write
+  - [x] Timeout configuration from Application.config
+- [ ] `transfer/downloader.rb` - File download with caching (deferred to Phase 5.1)
+  - [ ] Use Transfer::HTTP
+  - [ ] Cache::FileSystem integration (requires Phase 5.1)
+- [ ] `transfer/uploader.rb` - File upload (multipart/form-data) (deferred)
+  - [ ] Use Transfer::HTTP
+  - [ ] Build multipart/form-data format
+- [x] `progress/bar.rb` - Event listener for ruby-progressbar
+  - [x] Implement `on_download_started`, `on_download_progress`, `on_download_completed`
+  - [x] Implement `on_upload_started`, `on_upload_progress`, `on_upload_completed`
+- [x] Tests: `spec/factorix/transfer/**/*_spec.rb`
+- [x] Tests: Use WebMock for HTTP stubbing
+- [x] Tests: Verify event publishing
+- [x] RuboCop: All offenses corrected
 
-**Dependencies**: None (standalone)
+**Dependencies**: dry-events
+
+**References**:
+- [Design comparison](../design-comparison-progress-notification.md)
+- [Transfer components](components/transfer.md)
 
 ### 3.2 API Layer
 

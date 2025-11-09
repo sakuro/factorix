@@ -26,6 +26,11 @@ module Factorix
       Factorix::Runtime.detect
     end
 
+    # Register retry strategy for network operations
+    register(:retry_strategy) do
+      Factorix::Transfer::RetryStrategy.new
+    end
+
     # Cache directory path
     setting :cache_dir, constructor: ->(value) { Pathname(value) }
 
