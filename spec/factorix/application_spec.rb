@@ -54,6 +54,19 @@ RSpec.describe Factorix::Application do
     end
 
     describe "[:mod_download_api]" do
+      before do
+        # Use environment-based credentials to avoid NotImplementedError on plain Linux
+        Factorix::Application.config.credential.source = :env
+        ENV["FACTORIO_USERNAME"] = "test_user"
+        ENV["FACTORIO_TOKEN"] = "test_token"
+      end
+
+      after do
+        Factorix::Application.config.credential.source = :player_data
+        ENV.delete("FACTORIO_USERNAME")
+        ENV.delete("FACTORIO_TOKEN")
+      end
+
       it "resolves to an API::MODDownloadAPI instance" do
         mod_download_api = Factorix::Application[:mod_download_api]
         expect(mod_download_api).to be_a(Factorix::API::MODDownloadAPI)
@@ -61,6 +74,19 @@ RSpec.describe Factorix::Application do
     end
 
     describe "[:service_credential]" do
+      before do
+        # Use environment-based credentials to avoid NotImplementedError on plain Linux
+        Factorix::Application.config.credential.source = :env
+        ENV["FACTORIO_USERNAME"] = "test_user"
+        ENV["FACTORIO_TOKEN"] = "test_token"
+      end
+
+      after do
+        Factorix::Application.config.credential.source = :player_data
+        ENV.delete("FACTORIO_USERNAME")
+        ENV.delete("FACTORIO_TOKEN")
+      end
+
       it "resolves to a ServiceCredential instance" do
         service_credential = Factorix::Application[:service_credential]
         expect(service_credential).to be_a(Factorix::ServiceCredential)
