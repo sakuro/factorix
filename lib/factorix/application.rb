@@ -31,8 +31,23 @@ module Factorix
       Factorix::Transfer::RetryStrategy.new
     end
 
-    # Cache directory path
-    setting :cache_dir, constructor: ->(value) { Pathname(value) }
+    # Register download cache
+    register(:download_cache) do
+      Factorix::Cache::FileSystem.new(
+        config.cache.download.dir,
+        ttl: config.cache.download.ttl,
+        max_file_size: config.cache.download.max_file_size
+      )
+    end
+
+    # Register API cache
+    register(:api_cache) do
+      Factorix::Cache::FileSystem.new(
+        config.cache.api.dir,
+        ttl: config.cache.api.ttl,
+        max_file_size: config.cache.api.max_file_size
+      )
+    end
 
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
@@ -42,6 +57,23 @@ module Factorix
       setting :connect_timeout, default: 5
       setting :read_timeout, default: 30
       setting :write_timeout, default: 30
+    end
+
+    # Cache settings
+    setting :cache do
+      # Download cache settings (for MOD files)
+      setting :download do
+        setting :dir, constructor: ->(value) { Pathname(value) }
+        setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
+        setting :max_file_size, default: nil # nil for unlimited
+      end
+
+      # API cache settings (for API responses)
+      setting :api do
+        setting :dir, constructor: ->(value) { Pathname(value) }
+        setting :ttl, default: 3600 # 1 hour (API responses may change)
+        setting :max_file_size, default: 1024 * 1024 # 1MB (JSON responses)
+      end
     end
 
     # Load configuration from file
@@ -64,6 +96,8 @@ module Factorix
     end
 
     # Set default values that depend on runtime
-    config.cache_dir = resolve(:runtime).factorix_cache_dir
+    runtime = resolve(:runtime)
+    config.cache.download.dir = runtime.factorix_cache_dir / "download"
+    config.cache.api.dir = runtime.factorix_cache_dir / "api"
   end
 end

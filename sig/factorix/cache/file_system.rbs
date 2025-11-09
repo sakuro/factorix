@@ -1,0 +1,29 @@
+module Factorix
+  module Cache
+    class FileSystem
+      LOCK_FILE_LIFETIME: Integer
+
+      def initialize: (Pathname | String cache_dir, ?ttl: Integer?, ?max_file_size: Integer?) -> void
+
+      def key_for: (String url_string) -> String
+
+      def exist?: (String key) -> bool
+
+      def fetch: (String key, Pathname output) -> bool
+
+      def read: (String key, ?encoding: Encoding | String) -> String?
+
+      def store: (String key, Pathname | String src) -> bool
+
+      def delete: (String key) -> bool
+
+      def clear: () -> void
+
+      def age: (String key) -> Float?
+
+      def expired?: (String key) -> bool
+
+      def with_lock: [T] (String key) { () -> T } -> T
+    end
+  end
+end

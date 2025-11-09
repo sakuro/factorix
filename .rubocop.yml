@@ -54,6 +54,7 @@ Metrics/MethodLength:
 
 Naming/PredicateMethod:
   Exclude:
+    - lib/factorix/cache/file_system.rb
     - lib/factorix/ser_des/deserializer.rb
 
 Naming/VariableNumber:

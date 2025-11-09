@@ -263,15 +263,36 @@ High-level API wrapper converting Hash to Types.
 
 Local file and cache management.
 
-### 5.1 Cache
+### 5.1 Cache ✅ COMPLETED
 
-File-based caching for downloads.
+File-based caching for downloads and API responses.
 
-- [ ] `cache/file_system.rb` - Initial implementation
-  - [ ] Key-value storage in `Runtime#xdg_cache_home_dir`
-  - [ ] TTL support
-  - [ ] Size limits
-- [ ] Tests: `spec/factorix/cache/**/*_spec.rb`
+- [x] `cache/file_system.rb` - File system based cache implementation
+  - [x] Key-value storage with SHA1 hashing
+  - [x] Two-level directory structure (first 2 chars as prefix)
+  - [x] TTL support with age tracking
+  - [x] Individual file size limits
+  - [x] File locking for concurrent access (flock)
+  - [x] `#key_for` - Generate cache key from URL
+  - [x] `#exist?` - Check if cache entry exists and is not expired
+  - [x] `#fetch` - Copy cached file to output path
+  - [x] `#read` - Read cached content as string with encoding support
+  - [x] `#store` - Store file in cache (returns false if size exceeds limit)
+  - [x] `#delete` - Delete specific cache entry
+  - [x] `#clear` - Clear all cache entries
+  - [x] `#age` - Get cache entry age in seconds
+  - [x] `#expired?` - Check if cache entry has expired
+  - [x] `#with_lock` - Execute block with file lock
+- [x] Application configuration
+  - [x] Separate `download_cache` and `api_cache` registrations
+  - [x] Download cache: no TTL, no size limit (MOD files are immutable)
+  - [x] API cache: 1 hour TTL, 1MB size limit (JSON responses)
+- [x] Tests: `spec/factorix/cache/file_system_spec.rb`
+  - [x] 33 examples, 0 failures
+  - [x] TTL expiration tests
+  - [x] File size limit tests
+  - [x] Lock file lifecycle tests
+  - [x] Encoding support tests
 
 **Dependencies**: Runtime
 

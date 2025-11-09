@@ -16,15 +16,13 @@ module Factorix
     def self.load_config: (?String? path) -> void
 
     class Config
-      def cache_dir: () -> Pathname
-
-      def cache_dir=: (Pathname | String) -> void
-
       def log_level: () -> Symbol
 
       def log_level=: (Symbol) -> void
 
       def http: () -> HttpConfig
+
+      def cache: () -> CacheConfig
     end
 
     class HttpConfig
@@ -39,6 +37,26 @@ module Factorix
       def write_timeout: () -> Integer
 
       def write_timeout=: (Integer) -> void
+    end
+
+    class CacheConfig
+      def download: () -> CacheInstanceConfig
+
+      def api: () -> CacheInstanceConfig
+    end
+
+    class CacheInstanceConfig
+      def dir: () -> Pathname
+
+      def dir=: (Pathname | String) -> void
+
+      def ttl: () -> Integer?
+
+      def ttl=: (Integer?) -> void
+
+      def max_file_size: () -> Integer?
+
+      def max_file_size=: (Integer?) -> void
     end
   end
 end

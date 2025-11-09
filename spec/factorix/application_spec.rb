@@ -10,6 +10,20 @@ RSpec.describe Factorix::Application do
         expect(runtime).to be_a(Factorix::Runtime::Base)
       end
     end
+
+    describe "[:download_cache]" do
+      it "resolves to a Cache::FileSystem instance" do
+        download_cache = Factorix::Application[:download_cache]
+        expect(download_cache).to be_a(Factorix::Cache::FileSystem)
+      end
+    end
+
+    describe "[:api_cache]" do
+      it "resolves to a Cache::FileSystem instance" do
+        api_cache = Factorix::Application[:api_cache]
+        expect(api_cache).to be_a(Factorix::Cache::FileSystem)
+      end
+    end
   end
 
   describe "configuration" do
@@ -24,20 +38,43 @@ RSpec.describe Factorix::Application do
     describe ".config" do
       it "provides access to configuration" do
         expect(Factorix::Application.config).to respond_to(:log_level)
-        expect(Factorix::Application.config).to respond_to(:cache_dir)
+        expect(Factorix::Application.config).to respond_to(:cache)
       end
     end
 
-    describe "cache_dir" do
-      it "defaults to runtime.factorix_cache_dir" do
+    describe "cache.download" do
+      it "defaults dir to runtime.factorix_cache_dir/download" do
         runtime = Factorix::Application[:runtime]
-        expect(Factorix::Application.config.cache_dir).to eq(runtime.factorix_cache_dir)
+        expect(Factorix::Application.config.cache.download.dir).to eq(runtime.factorix_cache_dir / "download")
+      end
+
+      it "has default ttl of nil" do
+        expect(Factorix::Application.config.cache.download.ttl).to be_nil
+      end
+
+      it "has default max_file_size of nil" do
+        expect(Factorix::Application.config.cache.download.max_file_size).to be_nil
       end
 
       it "can be overridden" do
-        custom_path = Pathname("/custom/cache")
-        Factorix::Application.config.cache_dir = custom_path
-        expect(Factorix::Application.config.cache_dir).to eq(custom_path)
+        custom_path = Pathname("/custom/cache/download")
+        Factorix::Application.config.cache.download.dir = custom_path
+        expect(Factorix::Application.config.cache.download.dir).to eq(custom_path)
+      end
+    end
+
+    describe "cache.api" do
+      it "defaults dir to runtime.factorix_cache_dir/api" do
+        runtime = Factorix::Application[:runtime]
+        expect(Factorix::Application.config.cache.api.dir).to eq(runtime.factorix_cache_dir / "api")
+      end
+
+      it "has default ttl of 3600 seconds" do
+        expect(Factorix::Application.config.cache.api.ttl).to eq(3600)
+      end
+
+      it "has default max_file_size of 1MB" do
+        expect(Factorix::Application.config.cache.api.max_file_size).to eq(1024 * 1024)
       end
     end
 
