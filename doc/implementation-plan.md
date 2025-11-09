@@ -185,7 +185,7 @@ File transfer with retry and progress notification using dry-events.
 
 Low-level API wrappers returning Hash (parsed JSON).
 
-- [x] `api/mod_list_api.rb` - Mod list endpoints (no auth)
+- [x] `api/mod_list_api.rb` - MOD list endpoints (no auth)
   - [x] `GET /api/mods` - List MODs with pagination
   - [x] `GET /api/mods/{name}` - Basic MOD info
   - [x] `GET /api/mods/{name}/full` - Full MOD info with dependencies
