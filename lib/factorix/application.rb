@@ -59,13 +59,35 @@ module Factorix
       Factorix::Transfer::Downloader.new
     end
 
+    # Register service credential
+    register(:service_credential) do
+      case config.credential.source
+      when :env
+        Factorix::ServiceCredential.from_env
+      when :player_data
+        Factorix::ServiceCredential.from_player_data
+      else
+        raise ArgumentError, "Invalid credential source: #{config.credential.source}"
+      end
+    end
+
     # Register mod list API client
     register(:mod_list_api) do
       Factorix::API::MODListAPI.new
     end
 
+    # Register mod download API client
+    register(:mod_download_api) do
+      Factorix::API::MODDownloadAPI.new
+    end
+
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
+
+    # Credential settings
+    setting :credential do
+      setting :source, default: :player_data # :player_data or :env
+    end
 
     # HTTP timeout settings
     setting :http do

@@ -20,9 +20,17 @@ module Factorix
 
       def log_level=: (Symbol) -> void
 
+      def credential: () -> CredentialConfig
+
       def http: () -> HttpConfig
 
       def cache: () -> CacheConfig
+    end
+
+    class CredentialConfig
+      def source: () -> Symbol
+
+      def source=: (Symbol) -> void
     end
 
     class HttpConfig

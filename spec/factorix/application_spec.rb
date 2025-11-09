@@ -45,6 +45,20 @@ RSpec.describe Factorix::Application do
         expect(mod_list_api).to be_a(Factorix::API::MODListAPI)
       end
     end
+
+    describe "[:mod_download_api]" do
+      it "resolves to an API::MODDownloadAPI instance" do
+        mod_download_api = Factorix::Application[:mod_download_api]
+        expect(mod_download_api).to be_a(Factorix::API::MODDownloadAPI)
+      end
+    end
+
+    describe "[:service_credential]" do
+      it "resolves to a ServiceCredential instance" do
+        service_credential = Factorix::Application[:service_credential]
+        expect(service_credential).to be_a(Factorix::ServiceCredential)
+      end
+    end
   end
 
   describe "configuration" do

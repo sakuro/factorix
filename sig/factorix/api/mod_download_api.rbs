@@ -1,0 +1,13 @@
+module Factorix
+  module API
+    class MODDownloadAPI
+      include Factorix::Import["service_credential", "downloader"]
+
+      BASE_URL: String
+
+      def initialize: (?service_credential: ServiceCredential, ?downloader: Transfer::Downloader) -> void
+
+      def download: (String download_url, Pathname output) -> void
+    end
+  end
+end
