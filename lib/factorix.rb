@@ -13,9 +13,12 @@ module Factorix
   loader.ignore("#{__dir__}/factorix/version.rb")
   loader.ignore("#{__dir__}/factorix/errors.rb")
   loader.inflector.inflect(
+    "api" => "API",
     "api_credential" => "APICredential",
     "http" => "HTTP",
     "mac_os" => "MacOS",
+    "mod_download_api" => "MODDownloadAPI",
+    "mod_list_api" => "MODListAPI",
     "mod_version" => "MODVersion",
     "wsl" => "WSL"
   )

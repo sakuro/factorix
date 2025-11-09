@@ -175,25 +175,32 @@ File transfer with retry and progress notification using dry-events.
 - [Design comparison](../design-comparison-progress-notification.md)
 - [Transfer components](components/transfer.md)
 
-### 3.2 API Layer
+### 3.2 API Layer (Partial)
 
 Low-level API wrappers returning Hash (parsed JSON).
 
-- [ ] `api/public_api.rb` - Public endpoints (no auth)
-  - [ ] `GET /api/mods` - List MODs with pagination
-  - [ ] `GET /api/mods/{name}` - Basic MOD info
-  - [ ] `GET /api/mods/{name}/full` - Full MOD info with dependencies
-- [ ] `api/download_api.rb` - Download endpoints (ServiceCredential)
+- [x] `api/mod_list_api.rb` - Mod list endpoints (no auth)
+  - [x] `GET /api/mods` - List MODs with pagination
+  - [x] `GET /api/mods/{name}` - Basic MOD info
+  - [x] `GET /api/mods/{name}/full` - Full MOD info with dependencies
+  - [x] Query parameter normalization for cache efficiency
+  - [x] Cache support via `api_cache`
+- [ ] `api/mod_download_api.rb` - Download endpoints (ServiceCredential)
   - [ ] Download MOD files with username + token parameters
-- [ ] `api/portal_api.rb` - Portal management endpoints (APICredential)
+- [ ] `api/mod_management_api.rb` - Portal management endpoints (APICredential)
   - [ ] `POST /v2/mods/releases/init_upload` - Initialize upload
   - [ ] `POST /v2/mods/releases/init_publish` - Initialize publish
   - [ ] `POST /v2/mods/edit_details` - Edit MOD details
   - [ ] `POST /v2/mods/images/add` - Add images
   - [ ] `POST /v2/mods/images/edit` - Edit image order
-- [ ] Tests: `spec/factorix/api/**/*_spec.rb`
-- [ ] Tests: Use WebMock to stub API responses
-- [ ] Error handling (4xx, 5xx, network, SSL, JSON parsing)
+- [x] Tests: `spec/factorix/api/mod_list_api_spec.rb`
+  - [x] 13 examples, 0 failures
+  - [x] Cache hit/miss tests
+  - [x] Query parameter tests
+  - [x] Error handling tests (4xx, 5xx)
+- [x] Error handling (HTTPClientError, HTTPServerError)
+- [x] Application container registration (`:mod_list_api`)
+- [x] RBS type signatures
 
 **Reference**: Test actual API responses to inform Types design
 - https://wiki.factorio.com/Mod_portal_API

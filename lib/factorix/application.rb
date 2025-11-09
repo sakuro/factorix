@@ -59,6 +59,11 @@ module Factorix
       Factorix::Transfer::Downloader.new
     end
 
+    # Register mod list API client
+    register(:mod_list_api) do
+      Factorix::API::MODListAPI.new
+    end
+
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
 

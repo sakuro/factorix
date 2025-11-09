@@ -38,6 +38,13 @@ RSpec.describe Factorix::Application do
         expect(downloader).to be_a(Factorix::Transfer::Downloader)
       end
     end
+
+    describe "[:mod_list_api]" do
+      it "resolves to an API::MODListAPI instance" do
+        mod_list_api = Factorix::Application[:mod_list_api]
+        expect(mod_list_api).to be_a(Factorix::API::MODListAPI)
+      end
+    end
   end
 
   describe "configuration" do

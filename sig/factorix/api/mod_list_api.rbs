@@ -1,0 +1,17 @@
+module Factorix
+  module API
+    class MODListAPI
+      include Factorix::Import["api_cache"]
+
+      BASE_URL: String
+
+      def initialize: (?api_cache: Cache::FileSystem) -> void
+
+      def get_mods: (**untyped params) -> Hash[String, untyped]
+
+      def get_mod: (String name) -> Hash[String, untyped]
+
+      def get_mod_full: (String name) -> Hash[String, untyped]
+    end
+  end
+end

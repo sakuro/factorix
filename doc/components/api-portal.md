@@ -12,24 +12,26 @@ Classes that wrap the Mod Portal API.
 
 Split into three classes based on authentication method.
 
-#### 1. PublicAPI - API without authentication
+#### 1. MODListAPI - API without authentication
 
 - Retrieve MOD list
 - Retrieve MOD details
 - Return value example: `{"results" => [...], "pagination" => {...}}`
+- Corresponds to: [Mod portal API](https://wiki.factorio.com/Mod_portal_API)
 
-#### 2. DownloadAPI - username + token authentication
+#### 2. ModDownloadAPI - username + token authentication
 
 - Download MOD files
-- Initialization: `DownloadAPI.new(username:, token:)`
+- Initialization: `ModDownloadAPI.new(username:, token:)`
 
-#### 3. PortalAPI - API key authentication
+#### 3. ModManagementAPI - API key authentication
 
 - Upload MODs
 - Publish MODs
 - Edit MOD details
 - Manage MOD images
-- Initialization: `PortalAPI.new(api_key:)`
+- Initialization: `ModManagementAPI.new(api_key:)`
+- Corresponds to: [Mod upload API](https://wiki.factorio.com/Mod_upload_API)
 
 ### Benefits
 
