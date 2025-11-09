@@ -1,0 +1,13 @@
+module Dry
+  module Events
+    module Publisher
+      def self.[]: (Symbol id) -> Module
+
+      def subscribe: (untyped listener) -> void
+
+      def publish: (String event_id, **untyped payload) -> void
+
+      def self.register_event: (String event_id) -> void
+    end
+  end
+end

@@ -1,0 +1,16 @@
+module Factorix
+  module Transfer
+    class RetryStrategy
+      type retry_callback = ^(Exception exception, Integer try, Float elapsed_time, Float next_interval) -> void
+
+      def initialize: (
+        ?tries: Integer,
+        ?base_interval: Float,
+        ?multiplier: Float,
+        ?on_retry: retry_callback?
+      ) -> void
+
+      def with_retry: [T] () { () -> T } -> T
+    end
+  end
+end

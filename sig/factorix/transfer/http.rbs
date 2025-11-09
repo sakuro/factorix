@@ -1,0 +1,13 @@
+module Factorix
+  module Transfer
+    class HTTP
+      include Dry::Events::Publisher[:transfer]
+
+      CHUNK_SIZE: Integer
+
+      def initialize: (?retry_strategy: RetryStrategy) -> void
+
+      def download: (URI::HTTPS url, Pathname | String output) -> void
+    end
+  end
+end
