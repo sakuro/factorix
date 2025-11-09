@@ -1,0 +1,13 @@
+module Factorix
+  module Types
+    class License
+      attr_reader id: String
+      attr_reader name: String
+      attr_reader title: String
+      attr_reader description: String
+      attr_reader url: URI::HTTPS
+
+      def initialize: (id: String, name: String, title: String, description: String, url: String) -> void
+    end
+  end
+end

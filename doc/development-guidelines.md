@@ -77,14 +77,15 @@ Follow the order specified in `doc/implementation-plan.md`:
 #### MOD Notation
 - **Always uppercase**: `MOD` (not `Mod` or `mod`)
 - **Zeitwerk configuration**: Specify all class names containing MOD individually in inflector
-- **Important**: `"mod" => "MOD"` alone is insufficient. Compound words containing MOD also require individual configuration
+- **Important**: Compound words containing MOD require individual configuration
 - **File names**: `mod_list.rb` → `Factorix::MODList`
 - **Examples**:
-  - `mod.rb` → `Factorix::MOD`
-  - `mod_list.rb` → `Factorix::MODList` (requires individual configuration)
-  - `mod_dependency.rb` → `Factorix::MODDependency` (requires individual configuration)
-  - `mod_info.rb` → `Factorix::MODInfo` (requires individual configuration)
-  - `types/mod_list_entry.rb` → `Factorix::Types::MODListEntry` (requires individual configuration)
+  - `mod_list.rb` → `Factorix::MODList`
+  - `mod_dependency.rb` → `Factorix::MODDependency`
+  - `mod_info.rb` → `Factorix::MODInfo`
+  - `mod_version.rb` → `Factorix::MODVersion`
+  - `mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
+  - `mod_list_api.rb` → `Factorix::API::MODListAPI`
 
 #### Other Abbreviations
 - `API` → Uppercase (`api.rb` → `Factorix::API`)
@@ -95,31 +96,24 @@ Follow the order specified in `doc/implementation-plan.md`:
 
 ### Zeitwerk Configuration
 
+Current configuration in `lib/factorix.rb`:
+
 ```ruby
 loader = Zeitwerk::Loader.for_gem
+loader.ignore("#{__dir__}/factorix/version.rb")
+loader.ignore("#{__dir__}/factorix/errors.rb")
 loader.inflector.inflect(
-  # Configure all class names containing MOD individually
-  "mod" => "MOD",
-  "mod_list" => "MODList",
-  "mod_dependency" => "MODDependency",
-  "mod_dependency_parser" => "MODDependencyParser",
-  "mod_dependencies" => "MODDependencies",
-  "mod_settings" => "MODSettings",
-  "mod_state" => "MODState",
-  "mod_info" => "MODInfo",
-  "mod_info_with_deps" => "MODInfoWithDeps",
-  "mod_list_entry" => "MODListEntry",
-  # Other abbreviations
   "api" => "API",
-  "cli" => "CLI",
+  "api_credential" => "APICredential",
   "http" => "HTTP",
   "mac_os" => "MacOS",
+  "mod_download_api" => "MODDownloadAPI",
+  "mod_info" => "MODInfo",
+  "mod_list_api" => "MODListAPI",
+  "mod_version" => "MODVersion",
   "wsl" => "WSL"
 )
-loader.ignore("#{__dir__}/factorix/errors.rb")
-loader.ignore("#{__dir__}/factorix/version.rb")
 loader.setup
-loader.eager_load
 ```
 
 ### Dependency Injection (DI)

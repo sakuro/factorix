@@ -46,14 +46,17 @@ Factorix/
 ├── Portal                     # Object-oriented wrapper for API
 │
 ├── Types/                     # Value objects using Data.define
-│   ├── MODListEntry           # List entry from /api/mods
-│   ├── MODInfo                # Basic info from /api/mods/{name}
-│   ├── MODInfoWithDeps        # With dependencies from /api/mods/{name}/full
-│   ├── MODList                # List with pagination
-│   ├── Release
-│   ├── Pagination
-│   ├── PaginationLinks
-│   └── License
+│   ├── MODInfo                # Unified info for all API endpoints (list/Short/Full)
+│   │   └── Detail             # Nested class for Full API-specific fields
+│   ├── Release                # MOD release info (with URI conversion)
+│   ├── Image                  # MOD screenshot/image (used in Detail)
+│   ├── License                # License info (used in Detail)
+│   ├── Category               # MOD category (flyweight pattern)
+│   ├── MODVersion             # MOD version (major.minor.patch)
+│   ├── GameVersion            # Game version (major.minor.patch-build)
+│   ├── MODList                # List container (deferred)
+│   ├── Pagination             # (not implemented - API returns all results)
+│   └── PaginationLinks        # (not implemented - API returns all results)
 │
 ├── Transfer/                  # File transfer
 │   ├── RetryStrategy          # Wrapper for retriable gem
@@ -118,10 +121,15 @@ loader.eager_load
 
 - `mod.rb` → `Factorix::MOD`
 - `mod_list.rb` → `Factorix::MODList`
-- `types/mod_list_entry.rb` → `Factorix::Types::MODListEntry`
-- `types/mod_info.rb` → `Factorix::Types::MODInfo`
-- `types/mod_info_with_deps.rb` → `Factorix::Types::MODInfoWithDeps`
-- `api/public_api.rb` → `Factorix::API::PublicAPI`
+- `types/mod_info.rb` → `Factorix::Types::MODInfo` (with nested `MODInfo::Detail`)
+- `types/mod_version.rb` → `Factorix::Types::MODVersion`
+- `types/game_version.rb` → `Factorix::Types::GameVersion`
+- `types/category.rb` → `Factorix::Types::Category`
+- `types/release.rb` → `Factorix::Types::Release`
+- `types/image.rb` → `Factorix::Types::Image`
+- `types/license.rb` → `Factorix::Types::License`
+- `api/mod_list_api.rb` → `Factorix::API::MODListAPI`
+- `api/mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
 - `portal.rb` → `Factorix::Portal`
 - `transfer/retry_strategy.rb` → `Factorix::Transfer::RetryStrategy`
 - `transfer/http.rb` → `Factorix::Transfer::HTTP`

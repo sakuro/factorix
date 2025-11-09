@@ -1,0 +1,11 @@
+module Factorix
+  module Types
+    class Image
+      attr_reader id: String
+      attr_reader thumbnail: URI::HTTPS
+      attr_reader url: URI::HTTPS
+
+      def initialize: (id: String, thumbnail: String, url: String) -> void
+    end
+  end
+end

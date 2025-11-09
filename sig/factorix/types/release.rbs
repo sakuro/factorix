@@ -1,7 +1,7 @@
 module Factorix
   module Types
     class Release
-      attr_reader download_url: String
+      attr_reader download_url: URI::HTTPS
       attr_reader file_name: String
       attr_reader info_json: Hash[String, untyped]
       attr_reader released_at: Time

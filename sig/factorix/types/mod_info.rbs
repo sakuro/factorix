@@ -1,0 +1,73 @@
+module Factorix
+  module Types
+    class MODInfo
+      attr_reader name: String
+      attr_reader title: String
+      attr_reader owner: String
+      attr_reader summary: String
+      attr_reader downloads_count: Integer
+      attr_reader category: Category
+      attr_reader score: Float
+      attr_reader thumbnail: URI::HTTPS?
+      attr_reader latest_release: Release?
+      attr_reader releases: Array[Release]
+      attr_reader detail: MODInfo::Detail?
+
+      def initialize: (
+        name: String,
+        title: String,
+        owner: String,
+        ?summary: String?,
+        downloads_count: Integer,
+        ?category: String?,
+        ?score: Float?,
+        ?thumbnail: String?,
+        ?latest_release: Hash[Symbol, untyped]?,
+        ?releases: Array[Hash[Symbol, untyped]]?,
+        **untyped
+      ) -> void
+
+      private
+
+      def build_thumbnail_uri: (String path) -> URI::HTTPS
+
+      def all_required_detail_fields?: (Hash[Symbol, untyped] detail_fields) -> bool
+
+      class Detail
+        attr_reader changelog: String
+        attr_reader created_at: Time
+        attr_reader updated_at: Time
+        attr_reader last_highlighted_at: Time?
+        attr_reader description: String
+        attr_reader source_url: URI::HTTPS?
+        attr_reader homepage: URI | String
+        attr_reader faq: String
+        attr_reader tags: Array[String]
+        attr_reader license: License?
+        attr_reader images: Array[Image]
+        attr_reader deprecated: bool
+
+        def initialize: (
+          ?changelog: String?,
+          created_at: String,
+          updated_at: String,
+          ?last_highlighted_at: String?,
+          ?description: String?,
+          ?source_url: String?,
+          homepage: String,
+          ?faq: String?,
+          ?tags: Array[String]?,
+          ?license: Hash[Symbol, untyped]?,
+          ?images: Array[Hash[Symbol, untyped]]?,
+          ?deprecated: bool?
+        ) -> void
+
+        def deprecated?: () -> bool
+
+        private
+
+        def parse_homepage: (String value) -> (URI | String)
+      end
+    end
+  end
+end

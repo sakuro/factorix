@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "time"
+require "uri"
 
 module Factorix
   module Types
@@ -20,7 +21,7 @@ module Factorix
     # @see https://wiki.factorio.com/Mod_portal_API#Releases
     class Release
       # @!attribute [r] download_url
-      #   @return [String] relative URL path for downloading this release
+      #   @return [URI::HTTPS] absolute URL for downloading this release
       # @!attribute [r] file_name
       #   @return [String] file name of the release archive
       # @!attribute [r] info_json
@@ -34,7 +35,7 @@ module Factorix
 
       # Create Release from API response hash
       #
-      # @param download_url [String] download URL path
+      # @param download_url [String] relative download URL path
       # @param file_name [String] release file name
       # @param info_json [Hash] info.json metadata
       # @param released_at [String] ISO 8601 timestamp
@@ -42,6 +43,7 @@ module Factorix
       # @param sha1 [String] SHA1 checksum
       # @return [Release] new Release instance
       def initialize(download_url:, file_name:, info_json:, released_at:, version:, sha1:)
+        download_url = URI("https://mods.factorio.com#{download_url}")
         released_at = Time.parse(released_at).utc
         version = MODVersion.from_string(version)
         super

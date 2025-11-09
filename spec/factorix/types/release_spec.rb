@@ -20,7 +20,8 @@ RSpec.describe Factorix::Types::Release do
     it "creates Release from hash with keyword arguments" do
       release = Factorix::Types::Release.new(**release_hash)
 
-      expect(release.download_url).to eq("/download/example-mod/1.0.0")
+      expect(release.download_url).to be_a(URI::HTTPS)
+      expect(release.download_url.to_s).to eq("https://mods.factorio.com/download/example-mod/1.0.0")
       expect(release.file_name).to eq("example-mod_1.0.0.zip")
       expect(release.info_json).to eq({"factorio_version" => "2.0", "dependencies" => ["base >= 2.0"]})
       expect(release.version).to be_a(Factorix::Types::MODVersion)

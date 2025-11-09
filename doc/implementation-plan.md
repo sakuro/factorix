@@ -225,28 +225,61 @@ Value objects using Data.define (Ruby 3.2+).
   - [x] Validation: uint16 (0-65535) for each component
   - [x] Comparable support, to_s, to_a methods
 - [x] `types/category.rb` - MOD category (content, overhaul, tweaks, utilities, scenarios, mod-packs, localizations, internal)
-  - [x] Flyweight pattern for instances
-  - [x] From/to string conversion
-  - [x] Zeitwerk inflection: `"mod_packs" => "MODPacks"`
+  - [x] Flyweight pattern for predefined category instances
+  - [x] NO_CATEGORY constant for missing/unassigned category
+  - [x] From/to string conversion via `.for(value)` class method
+  - [x] Private constants: NO_CATEGORY, CONTENT, OVERHAUL, TWEAKS, UTILITIES, SCENARIOS, MOD_PACKS, LOCALIZATIONS, INTERNAL
 - [x] `types/release.rb` - MOD release information
   - [x] Uses MODVersion type (not String) for version field
-  - [x] Converts released_at to Time object
+  - [x] Converts released_at to Time object (UTC)
+  - [x] Converts download_url to URI::HTTPS (prepends `https://mods.factorio.com`)
   - [x] Handles info_json metadata
-- [x] `types/mod_list_entry.rb` - Entry from `/api/mods`
-  - [x] Handles latest_release (without namelist) OR releases (with namelist)
-  - [x] Converts category string to Category object
-  - [x] Converts release hashes to Release objects
-- ~~`types/pagination.rb` - Pagination metadata~~ (not implemented - API returns all results)
-- ~~`types/pagination_links.rb` - Pagination links~~ (not implemented - API returns all results)
-- [ ] `types/license.rb` - License information (deferred)
-- [ ] `types/mod_info.rb` - Basic info from `/api/mods/{name}` (deferred)
-- [ ] `types/mod_info_with_deps.rb` - Full info from `/api/mods/{name}/full` (deferred)
+  - [x] SHA1 checksum validation support
+- [x] `types/image.rb` - MOD screenshot/image data
+  - [x] Converts thumbnail URL to URI::HTTPS
+  - [x] Converts full image URL to URI::HTTPS
+  - [x] Used in MODInfo::Detail for Full API responses
+- [x] `types/license.rb` - License information
+  - [x] id, name, title, description attributes
+  - [x] Converts url to URI::HTTPS
+  - [x] Used in MODInfo::Detail for Full API responses
+- [x] `types/mod_info.rb` - Unified MOD information for all API endpoints
+  - [x] **Single type for list/Short/Full APIs**: Instead of separate types, uses optional Detail
+  - [x] **List API** (`/api/mods`) support: basic fields + latest_release
+  - [x] **Short API** (`/api/mods/{name}`) support: same as list
+  - [x] **Full API** (`/api/mods/{name}/full`) support: includes nested Detail
+  - [x] Nested `MODInfo::Detail` class for Full API-specific fields:
+    - changelog, created_at, updated_at, last_highlighted_at
+    - description, source_url, homepage, faq
+    - tags, license, images, deprecated
+  - [x] **Default value strategy** to minimize nil checks:
+    - Empty strings: `summary`, `changelog`, `description`, `faq`
+    - Empty arrays: `releases`, `tags`, `images`
+    - Special constants: `Category.NO_CATEGORY`, `score: 0.0`, `deprecated: false`
+  - [x] **URI conversions**:
+    - `thumbnail`: prepends `https://assets-mod.factorio.com` + path
+    - `homepage`: URI | String union type (attempts parse, falls back to String)
+  - [x] **Detail detection**: Checks for required fields (`created_at`, `updated_at`, `homepage`)
+  - [x] `MODInfo::Detail#deprecated?` predicate method
+  - [x] Replaces deprecated `MODListEntry` type
+- ~~`types/mod_list_entry.rb`~~ - **Deleted** (replaced by unified MODInfo)
+- ~~`types/pagination.rb`~~ - Not implemented (API returns all results)
+- ~~`types/pagination_links.rb`~~ - Not implemented (API returns all results)
 - [ ] `types/mod_list.rb` - List container (deferred)
 - [x] Tests: `spec/factorix/types/**/*_spec.rb`
-  - [x] 74 examples, 0 failures
-  - [x] Line Coverage: 96.73%
-- [x] RBS type signatures for all implemented types
-- [x] Zeitwerk inflection: `"mod_version" => "MODVersion"`
+  - [x] 344 examples, 0 failures
+  - [x] Line Coverage: 96.91%, Branch Coverage: 84.17%
+  - [x] Tests for Image, License, Release (URI conversion)
+  - [x] Tests for MODInfo (list/Short/Full scenarios)
+  - [x] Tests for default values and Detail detection
+  - [x] Real API integration tests with space-exploration MOD
+- [x] RBS type signatures for all types
+  - [x] `sig/factorix/types/image.rbs`
+  - [x] `sig/factorix/types/license.rbs`
+  - [x] `sig/factorix/types/mod_info.rbs` (including Detail nested class)
+  - [x] `sig/factorix/types/release.rbs` (updated for URI)
+  - [x] Steep type check: No errors 🫖
+- [x] Zeitwerk inflection: `"mod_version" => "MODVersion"`, `"mod_info" => "MODInfo"`
 
 **Dependencies**: None (pure data structures)
 
@@ -416,22 +449,24 @@ Command-line interface using dry-cli.
 
 ## Zeitwerk Configuration
 
-Configure at the start of Phase 1:
+Current configuration in `lib/factorix.rb`:
 
 ```ruby
 loader = Zeitwerk::Loader.for_gem
+loader.ignore("#{__dir__}/factorix/version.rb")
+loader.ignore("#{__dir__}/factorix/errors.rb")
 loader.inflector.inflect(
-  "mod" => "MOD",
   "api" => "API",
-  "cli" => "CLI",
+  "api_credential" => "APICredential",
   "http" => "HTTP",
   "mac_os" => "MacOS",
+  "mod_download_api" => "MODDownloadAPI",
+  "mod_info" => "MODInfo",
+  "mod_list_api" => "MODListAPI",
+  "mod_version" => "MODVersion",
   "wsl" => "WSL"
 )
-loader.ignore("#{__dir__}/factorix/errors.rb")
-loader.ignore("#{__dir__}/factorix/version.rb")
 loader.setup
-loader.eager_load
 ```
 
 ## Related Documentation

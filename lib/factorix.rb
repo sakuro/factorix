@@ -18,8 +18,8 @@ module Factorix
     "http" => "HTTP",
     "mac_os" => "MacOS",
     "mod_download_api" => "MODDownloadAPI",
+    "mod_info" => "MODInfo",
     "mod_list_api" => "MODListAPI",
-    "mod_list_entry" => "MODListEntry",
     "mod_version" => "MODVersion",
     "wsl" => "WSL"
   )
