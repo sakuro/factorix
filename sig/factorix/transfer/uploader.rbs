@@ -1,0 +1,11 @@
+module Factorix
+  module Transfer
+    class Uploader
+      include Dry::Monads::Result::Mixin
+
+      def initialize: (?http: HTTP) -> void
+
+      def upload: (URI::HTTPS | String url, Pathname | String file_path, ?field_name: String) -> void
+    end
+  end
+end

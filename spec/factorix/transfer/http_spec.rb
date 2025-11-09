@@ -184,4 +184,84 @@ RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
       end
     end
   end
+
+  describe "#upload" do
+    let(:upload_url) { URI("https://example.com/upload") }
+    let(:file_path) { tmpdir / "upload.zip" }
+
+    before do
+      file_path.write("test file content")
+    end
+
+    context "with successful upload" do
+      it "uploads a file" do
+        stub_request(:post, upload_url)
+          .to_return(status: 200, body: "OK")
+
+        result = http_client.upload(upload_url, file_path)
+        expect(result).to be_a(Dry::Monads::Result::Success)
+        expect(result.value!).to eq(:ok)
+      end
+
+      it "publishes upload events" do
+        stub_request(:post, upload_url)
+          .to_return(status: 200, body: "OK")
+
+        events = []
+        listener = Object.new
+        listener.define_singleton_method(:on_upload_started) {|event| events << {id: "upload.started", payload: event.payload} }
+        listener.define_singleton_method(:on_upload_progress) {|event| events << {id: "upload.progress", payload: event.payload} }
+        listener.define_singleton_method(:on_upload_completed) {|event| events << {id: "upload.completed", payload: event.payload} }
+
+        http_client.subscribe(listener)
+        http_client.upload(upload_url, file_path)
+
+        expect(events.size).to be >= 2
+        expect(events.first[:id]).to eq("upload.started")
+        expect(events.last[:id]).to eq("upload.completed")
+      end
+    end
+
+    context "with HTTP errors" do
+      it "returns Failure with HTTPClientError for 4xx errors" do
+        stub_request(:post, upload_url)
+          .to_return(status: [400, "Bad Request"], body: "Bad Request")
+
+        result = http_client.upload(upload_url, file_path)
+        expect(result).to be_a(Dry::Monads::Result::Failure)
+        expect(result.failure).to be_a(Factorix::HTTPClientError)
+        expect(result.failure.message).to match(/400/)
+      end
+
+      it "returns Failure with HTTPServerError for 5xx errors" do
+        stub_request(:post, upload_url)
+          .to_return(status: [500, "Internal Server Error"], body: "Internal Server Error")
+
+        result = http_client.upload(upload_url, file_path)
+        expect(result).to be_a(Dry::Monads::Result::Failure)
+        expect(result.failure).to be_a(Factorix::HTTPServerError)
+        expect(result.failure.message).to match(/500/)
+      end
+    end
+
+    context "with invalid URL" do
+      it "raises ArgumentError for HTTP URL" do
+        http_url = URI("http://example.com/upload")
+
+        expect {
+          http_client.upload(http_url, file_path)
+        }.to raise_error(ArgumentError, /must be HTTPS/)
+      end
+    end
+
+    context "with non-existent file" do
+      it "raises ArgumentError" do
+        non_existent = tmpdir / "nonexistent.zip"
+
+        expect {
+          http_client.upload(upload_url, non_existent)
+        }.to raise_error(ArgumentError, /does not exist/)
+      end
+    end
+  end
 end

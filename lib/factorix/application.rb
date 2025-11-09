@@ -59,6 +59,11 @@ module Factorix
       Factorix::Transfer::Downloader.new
     end
 
+    # Register uploader
+    register(:uploader) do
+      Factorix::Transfer::Uploader.new
+    end
+
     # Register service credential
     register(:service_credential) do
       case config.credential.source

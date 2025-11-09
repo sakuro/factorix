@@ -39,6 +39,13 @@ RSpec.describe Factorix::Application do
       end
     end
 
+    describe "[:uploader]" do
+      it "resolves to a Transfer::Uploader instance" do
+        uploader = Factorix::Application[:uploader]
+        expect(uploader).to be_a(Factorix::Transfer::Uploader)
+      end
+    end
+
     describe "[:mod_list_api]" do
       it "resolves to an API::MODListAPI instance" do
         mod_list_api = Factorix::Application[:mod_list_api]

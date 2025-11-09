@@ -9,6 +9,26 @@ module Factorix
       def initialize: (?retry_strategy: RetryStrategy) -> void
 
       def download: (URI::HTTPS url, Pathname | String output) -> Dry::Monads::Result[untyped, Exception]
+
+      def upload: (URI::HTTPS url, Pathname | String file_path, ?field_name: String) -> Dry::Monads::Result[untyped, Exception]
+    end
+
+    class ProgressIO
+      def initialize: (IO io, Integer total_size) { (Integer uploaded) -> void } -> void
+
+      def read: (?Integer? length, ?String? outbuf) -> String?
+
+      def size: () -> Integer
+
+      def rewind: () -> void
+    end
+
+    class MultipartStream
+      def initialize: (Array[IO] parts) -> void
+
+      def read: (?Integer? length, ?String? outbuf) -> String?
+
+      def rewind: () -> void
     end
   end
 end

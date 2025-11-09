@@ -136,7 +136,7 @@ DI container and configuration management.
 
 HTTP communication layer that works with raw Hash data.
 
-### 3.1 Transfer (Partial - Uploader deferred to Phase 3.2)
+### 3.1 Transfer ✅ COMPLETED
 
 File transfer with retry and progress notification using dry-events.
 
@@ -152,19 +152,25 @@ File transfer with retry and progress notification using dry-events.
   - [x] Resume support for downloads
   - [x] Publish events during chunk read/write
   - [x] Timeout configuration from Application.config
+  - [x] Exception-based error handling (HTTPClientError, HTTPServerError)
+  - [x] Internal redirect handling (up to MAX_REDIRECTS=10)
 - [x] `transfer/downloader.rb` - File download with caching
   - [x] Use Transfer::HTTP
   - [x] Cache::FileSystem integration
   - [x] File locking for concurrent downloads
   - [x] Automatic cache-or-download logic
   - [x] Temporary file cleanup
-- [ ] `transfer/uploader.rb` - File upload (multipart/form-data) (deferred)
-  - [ ] Use Transfer::HTTP
-  - [ ] Build multipart/form-data format
+  - [x] Exception-based error handling
+- [x] `transfer/uploader.rb` - File upload (multipart/form-data)
+  - [x] Use Transfer::HTTP
+  - [x] Build multipart/form-data format
+  - [x] Exception-based error handling
 - [x] `progress/bar.rb` - Event listener for ruby-progressbar
   - [x] Implement `on_download_started`, `on_download_progress`, `on_download_completed`
   - [x] Implement `on_upload_started`, `on_upload_progress`, `on_upload_completed`
 - [x] Tests: `spec/factorix/transfer/**/*_spec.rb`
+  - [x] 315 examples, 0 failures
+  - [x] Line Coverage: 96.48%, Branch Coverage: 83.78%
 - [x] Tests: Use WebMock for HTTP stubbing
 - [x] Tests: Verify event publishing
 - [x] RuboCop: All offenses corrected
