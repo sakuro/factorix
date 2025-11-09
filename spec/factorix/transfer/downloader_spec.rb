@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require "dry/monads"
 require "pathname"
 require "tmpdir"
 
 RSpec.describe Factorix::Transfer::Downloader do
+  include Dry::Monads[:result]
+
   let(:download_cache) { instance_double(Factorix::Cache::FileSystem) }
   let(:http) { instance_double(Factorix::Transfer::HTTP) }
   let(:downloader) { Factorix::Transfer::Downloader.new(download_cache:, http:) }
@@ -30,7 +33,7 @@ RSpec.describe Factorix::Transfer::Downloader do
 
   before do
     allow(download_cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
-    allow(http).to receive(:download)
+    allow(http).to receive(:download).and_return(Success(:ok))
   end
 
   after do
@@ -108,7 +111,7 @@ RSpec.describe Factorix::Transfer::Downloader do
       before do
         allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(false)
         allow(download_cache).to receive(:with_lock).with(cache_key).and_yield
-        allow(http).to receive(:download).and_raise(Factorix::HTTPClientError)
+        allow(http).to receive(:download).and_return(Failure(Factorix::HTTPClientError.new("404 Not Found")))
       end
 
       it "raises HTTPClientError" do
@@ -124,6 +127,35 @@ RSpec.describe Factorix::Transfer::Downloader do
 
         temp_dirs = Dir.glob(File.join(Dir.tmpdir, "factorix*"))
         expect(temp_dirs).to be_empty
+      end
+    end
+
+    context "when download redirects" do
+      let(:redirect_url) { "https://cdn.example.com/file.zip" }
+      let(:redirect_uri) { URI(redirect_url) }
+      let(:redirect_cache_key) { "redirect_cache_key" }
+
+      before do
+        allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(download_cache).to receive(:with_lock).with(cache_key).and_yield
+        allow(http).to receive(:download).with(uri, kind_of(Pathname)).and_return(Success(redirect: redirect_url))
+
+        allow(download_cache).to receive(:key_for).with(redirect_url).and_return(redirect_cache_key)
+        allow(download_cache).to receive(:fetch).with(redirect_cache_key, output).and_return(false)
+        allow(download_cache).to receive(:with_lock).with(redirect_cache_key).and_yield
+        allow(http).to receive(:download).with(redirect_uri, kind_of(Pathname)).and_return(Success(:ok))
+        allow(download_cache).to receive(:store)
+      end
+
+      it "follows the redirect and downloads from new URL" do
+        downloader.download(uri, output)
+        expect(http).to have_received(:download).with(uri, kind_of(Pathname))
+        expect(http).to have_received(:download).with(redirect_uri, kind_of(Pathname))
+      end
+
+      it "stores the file with redirect URL key" do
+        downloader.download(uri, output)
+        expect(download_cache).to have_received(:store).with(redirect_cache_key, kind_of(Pathname))
       end
     end
   end

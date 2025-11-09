@@ -2,12 +2,13 @@ module Factorix
   module Transfer
     class HTTP
       include Dry::Events::Publisher[:transfer]
+      include Dry::Monads::Result::Mixin
 
       CHUNK_SIZE: Integer
 
       def initialize: (?retry_strategy: RetryStrategy) -> void
 
-      def download: (URI::HTTPS url, Pathname | String output) -> void
+      def download: (URI::HTTPS url, Pathname | String output) -> Dry::Monads::Result[untyped, Exception]
     end
   end
 end

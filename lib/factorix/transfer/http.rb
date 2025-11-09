@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/events/publisher"
+require "dry/monads"
 require "net/http"
 require "openssl"
 
@@ -14,6 +15,7 @@ module Factorix
     class HTTP
       include Factorix::Import["retry_strategy"]
       include Dry::Events::Publisher[:transfer]
+      include Dry::Monads[:result]
 
       register_event("download.started")
       register_event("download.progress")
@@ -30,20 +32,23 @@ module Factorix
       #
       # @param url [URI::HTTPS] URL to download from (HTTPS only)
       # @param output [Pathname, String] path to save the downloaded file
-      # @return [void]
-      # @raise [HTTPError] if the download fails after all retries
+      # @return [Dry::Monads::Result] Success(:ok), Success(redirect: String), or Failure(Exception)
       # @raise [ArgumentError] if the URL is not HTTPS
       def download(url, output)
         raise ArgumentError, "URL must be HTTPS" unless url.is_a?(URI::HTTPS)
 
         output = Pathname(output)
 
-        retry_strategy.with_retry do
-          if output.exist?
-            download_with_resume(url, output)
-          else
-            download_full(url, output)
+        begin
+          retry_strategy.with_retry do
+            if output.exist?
+              download_with_resume(url, output)
+            else
+              download_full(url, output)
+            end
           end
+        rescue => e
+          Failure(e)
         end
       end
 
@@ -56,19 +61,20 @@ module Factorix
       #
       # @param uri [URI::HTTP] URL to download from
       # @param output [Pathname] path to save the downloaded file
-      # @return [void]
+      # @return [Dry::Monads::Result] Success(:ok), Success(redirect: String), or Failure(Exception)
       private def download_with_resume(uri, output)
         request = Net::HTTP::Get.new(uri)
         request["Range"] = "bytes=#{output.size}-"
 
-        begin
-          perform_download(uri, request, output, mode: "ab")
-        rescue HTTPClientError => e
-          # 416 Range Not Satisfiable - File might have changed, retry full download
-          raise unless e.message.include?("416")
+        result = perform_download(uri, request, output, mode: "ab")
 
+        case result
+        in Failure(HTTPClientError => e) if e.message.include?("416")
+          # 416 Range Not Satisfiable - File might have changed, retry full download
           output.delete if output.exist?
           download_full(uri, output)
+        else
+          result
         end
       end
 
@@ -78,27 +84,42 @@ module Factorix
       # @param request [Net::HTTPRequest] HTTP request object
       # @param output [Pathname] path to save the downloaded file
       # @param mode [String] file open mode ("wb" or "ab")
-      # @return [void]
+      # @return [Dry::Monads::Result] Success(:ok), Success(redirect: String), or Failure(Exception)
       private def perform_download(uri, request, output, mode:)
         http = create_http(uri)
 
         http.request(request) do |response|
-          handle_http_errors(response)
+          case response
+          when Net::HTTPSuccess, Net::HTTPPartialContent
+            total_size = extract_content_length(response)
+            current_size = mode == "ab" ? output.size : 0
 
-          total_size = extract_content_length(response)
-          current_size = mode == "ab" ? output.size : 0
+            publish("download.started", total_size:)
 
-          publish("download.started", total_size:)
-
-          output.open(mode) do |file|
-            response.read_body do |chunk|
-              file.write(chunk)
-              current_size += chunk.bytesize
-              publish("download.progress", current_size:, total_size:)
+            output.open(mode) do |file|
+              response.read_body do |chunk|
+                file.write(chunk)
+                current_size += chunk.bytesize
+                publish("download.progress", current_size:, total_size:)
+              end
             end
-          end
 
-          publish("download.completed", total_size:)
+            publish("download.completed", total_size:)
+            return Success(:ok)
+
+          when Net::HTTPRedirection
+            location = response["Location"]
+            return Success(redirect: location)
+
+          when Net::HTTPClientError
+            return Failure(HTTPClientError.new("#{response.code} #{response.message}"))
+
+          when Net::HTTPServerError
+            return Failure(HTTPServerError.new("#{response.code} #{response.message}"))
+
+          else
+            return Failure(HTTPError.new("#{response.code} #{response.message}"))
+          end
         end
       end
 
@@ -123,25 +144,6 @@ module Factorix
       private def extract_content_length(response)
         content_length = response["Content-Length"]
         content_length ? Integer(content_length, 10) : nil
-      end
-
-      # Handle HTTP error responses
-      #
-      # @param response [Net::HTTPResponse] HTTP response
-      # @return [void]
-      # @raise [HTTPClientError] for 4xx errors
-      # @raise [HTTPServerError] for 5xx errors
-      private def handle_http_errors(response)
-        case response
-        when Net::HTTPSuccess, Net::HTTPPartialContent
-          # OK
-        when Net::HTTPClientError
-          raise HTTPClientError, "#{response.code} #{response.message}"
-        when Net::HTTPServerError
-          raise HTTPServerError, "#{response.code} #{response.message}"
-        else
-          raise HTTPError, "#{response.code} #{response.message}"
-        end
       end
     end
   end

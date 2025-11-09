@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require "dry/monads"
 require "tmpdir"
 
 RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
+  include Dry::Monads[:result]
+
   let(:retry_strategy) { Factorix::Transfer::RetryStrategy.new }
   let(:http_client) { Factorix::Transfer::HTTP.new(retry_strategy:) }
   let(:url) { URI("https://example.com/file.zip") }
@@ -117,20 +120,32 @@ RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
     end
 
     context "with HTTP errors" do
-      it "raises HTTPClientError for 4xx errors" do
-        stub_request(:get, url).to_return(status: 404, body: "Not Found")
+      it "returns Failure with HTTPClientError for 4xx errors" do
+        stub_request(:get, url).to_return(status: [404, "Not Found"], body: "Not Found")
 
-        expect {
-          http_client.download(url, output)
-        }.to raise_error(Factorix::HTTPClientError, /404/)
+        result = http_client.download(url, output)
+        expect(result).to be_a(Dry::Monads::Result::Failure)
+        expect(result.failure).to be_a(Factorix::HTTPClientError)
+        expect(result.failure.message).to match(/404/)
       end
 
-      it "raises HTTPServerError for 5xx errors" do
-        stub_request(:get, url).to_return(status: 500, body: "Internal Server Error")
+      it "returns Failure with HTTPServerError for 5xx errors" do
+        stub_request(:get, url).to_return(status: [500, "Internal Server Error"], body: "Internal Server Error")
 
-        expect {
-          http_client.download(url, output)
-        }.to raise_error(Factorix::HTTPServerError, /500/)
+        result = http_client.download(url, output)
+        expect(result).to be_a(Dry::Monads::Result::Failure)
+        expect(result.failure).to be_a(Factorix::HTTPServerError)
+        expect(result.failure.message).to match(/500/)
+      end
+    end
+
+    context "with redirects" do
+      it "returns Success with redirect location for 302" do
+        stub_request(:get, url).to_return(status: [302, "Found"], headers: {"Location" => "https://cdn.example.com/file.zip"})
+
+        result = http_client.download(url, output)
+        expect(result).to be_a(Dry::Monads::Result::Success)
+        expect(result.value!).to eq({redirect: "https://cdn.example.com/file.zip"})
       end
     end
 

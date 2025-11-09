@@ -1,9 +1,13 @@
 module Factorix
   module Transfer
     class Downloader
+      include Dry::Monads::Result::Mixin
+
+      MAX_REDIRECTS: Integer
+
       def initialize: (?download_cache: Cache::FileSystem, ?http: HTTP) -> void
 
-      def download: (URI::HTTPS url, Pathname output) -> void
+      def download: (URI::HTTPS url, Pathname output, ?redirect_count: Integer) -> void
     end
   end
 end
