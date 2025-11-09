@@ -37,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-container", "~> 0.11"
   spec.add_dependency "dry-events", "~> 1.1"
-  spec.add_dependency "dry-monads", "~> 1.6"
   spec.add_dependency "retriable", "~> 3.1"
   spec.add_dependency "ruby-progressbar", "~> 1.13"
   spec.add_dependency "zeitwerk", "~> 2.7"

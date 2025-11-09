@@ -2,15 +2,15 @@ module Factorix
   module Transfer
     class HTTP
       include Dry::Events::Publisher[:transfer]
-      include Dry::Monads::Result::Mixin
 
       CHUNK_SIZE: Integer
+      MAX_REDIRECTS: Integer
 
       def initialize: (?retry_strategy: RetryStrategy) -> void
 
-      def download: (URI::HTTPS url, Pathname | String output) -> Dry::Monads::Result[untyped, Exception]
+      def download: (URI::HTTPS url, Pathname | String output, ?redirect_count: Integer) -> void
 
-      def upload: (URI::HTTPS url, Pathname | String file_path, ?field_name: String) -> Dry::Monads::Result[untyped, Exception]
+      def upload: (URI::HTTPS url, Pathname | String file_path, ?field_name: String) -> void
     end
 
     class ProgressIO

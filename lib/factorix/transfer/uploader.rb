@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/monads"
 require "uri"
 
 module Factorix
@@ -11,7 +10,6 @@ module Factorix
     # Uses Transfer::HTTP for the actual upload with event-driven progress notification.
     class Uploader
       include Factorix::Import["http"]
-      include Dry::Monads[:result]
 
       # Upload a file to the given URL
       #
@@ -29,17 +27,7 @@ module Factorix
 
         file_path = Pathname(file_path)
 
-        result = http.upload(url, file_path, field_name:)
-
-        case result
-        in Success(:ok)
-          # Upload completed successfully
-          nil
-
-        in Failure(error)
-          # HTTP error - re-raise as exception
-          raise error
-        end
+        http.upload(url, file_path, field_name:)
       end
     end
   end

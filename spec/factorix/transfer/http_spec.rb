@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-require "dry/monads"
 require "tmpdir"
 
 RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
-  include Dry::Monads[:result]
-
   let(:retry_strategy) { Factorix::Transfer::RetryStrategy.new }
   let(:http_client) { Factorix::Transfer::HTTP.new(retry_strategy:) }
   let(:url) { URI("https://example.com/file.zip") }
@@ -120,32 +117,49 @@ RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
     end
 
     context "with HTTP errors" do
-      it "returns Failure with HTTPClientError for 4xx errors" do
+      it "raises HTTPClientError for 4xx errors" do
         stub_request(:get, url).to_return(status: [404, "Not Found"], body: "Not Found")
 
-        result = http_client.download(url, output)
-        expect(result).to be_a(Dry::Monads::Result::Failure)
-        expect(result.failure).to be_a(Factorix::HTTPClientError)
-        expect(result.failure.message).to match(/404/)
+        expect {
+          http_client.download(url, output)
+        }.to raise_error(Factorix::HTTPClientError, /404/)
       end
 
-      it "returns Failure with HTTPServerError for 5xx errors" do
+      it "raises HTTPServerError for 5xx errors" do
         stub_request(:get, url).to_return(status: [500, "Internal Server Error"], body: "Internal Server Error")
 
-        result = http_client.download(url, output)
-        expect(result).to be_a(Dry::Monads::Result::Failure)
-        expect(result.failure).to be_a(Factorix::HTTPServerError)
-        expect(result.failure.message).to match(/500/)
+        expect {
+          http_client.download(url, output)
+        }.to raise_error(Factorix::HTTPServerError, /500/)
       end
     end
 
     context "with redirects" do
-      it "returns Success with redirect location for 302" do
-        stub_request(:get, url).to_return(status: [302, "Found"], headers: {"Location" => "https://cdn.example.com/file.zip"})
+      it "follows redirects automatically" do
+        redirect_url = "https://cdn.example.com/file.zip"
+        stub_request(:get, url).to_return(status: [302, "Found"], headers: {"Location" => redirect_url})
+        stub_request(:get, redirect_url).to_return(
+          status: 200,
+          body: "file content",
+          headers: {"Content-Length" => "12"}
+        )
 
-        result = http_client.download(url, output)
-        expect(result).to be_a(Dry::Monads::Result::Success)
-        expect(result.value!).to eq({redirect: "https://cdn.example.com/file.zip"})
+        http_client.download(url, output)
+
+        expect(output).to exist
+        expect(output.read).to eq("file content")
+      end
+
+      it "raises error after too many redirects" do
+        redirect_chain = (1..12).map {|i| "https://example.com/redirect#{i}" }
+        redirect_chain.each_cons(2) do |from, to|
+          stub_request(:get, from).to_return(status: [302, "Found"], headers: {"Location" => to})
+        end
+        stub_request(:get, url).to_return(status: [302, "Found"], headers: {"Location" => redirect_chain.first})
+
+        expect {
+          http_client.download(url, output)
+        }.to raise_error(ArgumentError, /Too many redirects/)
       end
     end
 
@@ -198,9 +212,9 @@ RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
         stub_request(:post, upload_url)
           .to_return(status: 200, body: "OK")
 
-        result = http_client.upload(upload_url, file_path)
-        expect(result).to be_a(Dry::Monads::Result::Success)
-        expect(result.value!).to eq(:ok)
+        expect {
+          http_client.upload(upload_url, file_path)
+        }.not_to raise_error
       end
 
       it "publishes upload events" do
@@ -223,24 +237,22 @@ RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
     end
 
     context "with HTTP errors" do
-      it "returns Failure with HTTPClientError for 4xx errors" do
+      it "raises HTTPClientError for 4xx errors" do
         stub_request(:post, upload_url)
           .to_return(status: [400, "Bad Request"], body: "Bad Request")
 
-        result = http_client.upload(upload_url, file_path)
-        expect(result).to be_a(Dry::Monads::Result::Failure)
-        expect(result.failure).to be_a(Factorix::HTTPClientError)
-        expect(result.failure.message).to match(/400/)
+        expect {
+          http_client.upload(upload_url, file_path)
+        }.to raise_error(Factorix::HTTPClientError, /400/)
       end
 
-      it "returns Failure with HTTPServerError for 5xx errors" do
+      it "raises HTTPServerError for 5xx errors" do
         stub_request(:post, upload_url)
           .to_return(status: [500, "Internal Server Error"], body: "Internal Server Error")
 
-        result = http_client.upload(upload_url, file_path)
-        expect(result).to be_a(Dry::Monads::Result::Failure)
-        expect(result.failure).to be_a(Factorix::HTTPServerError)
-        expect(result.failure.message).to match(/500/)
+        expect {
+          http_client.upload(upload_url, file_path)
+        }.to raise_error(Factorix::HTTPServerError, /500/)
       end
     end
 
