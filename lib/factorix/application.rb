@@ -49,6 +49,16 @@ module Factorix
       )
     end
 
+    # Register HTTP client
+    register(:http) do
+      Factorix::Transfer::HTTP.new
+    end
+
+    # Register downloader
+    register(:downloader) do
+      Factorix::Transfer::Downloader.new
+    end
+
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
 

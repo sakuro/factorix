@@ -24,6 +24,20 @@ RSpec.describe Factorix::Application do
         expect(api_cache).to be_a(Factorix::Cache::FileSystem)
       end
     end
+
+    describe "[:http]" do
+      it "resolves to a Transfer::HTTP instance" do
+        http = Factorix::Application[:http]
+        expect(http).to be_a(Factorix::Transfer::HTTP)
+      end
+    end
+
+    describe "[:downloader]" do
+      it "resolves to a Transfer::Downloader instance" do
+        downloader = Factorix::Application[:downloader]
+        expect(downloader).to be_a(Factorix::Transfer::Downloader)
+      end
+    end
   end
 
   describe "configuration" do

@@ -73,12 +73,27 @@ Class for downloading files from the portal.
 
 ## Transfer::Uploader
 
-Class for uploading files to the portal.
+Class for uploading MOD files to the portal.
+
+### Upload Flow (2-step process)
+
+1. **Init Upload**: POST to `/api/v2/mods/releases/init_upload` with API key authentication
+   - Returns upload URL
+2. **Finish Upload**: POST multipart/form-data with ZIP file to the upload URL
 
 ### HTTP Implementation
 
 - **Use net/http**
 - Build multipart/form-data format requests
+- API key authentication via `Authorization: Bearer $APIKey` header
+- Handle JSON responses
+
+### Dependencies
+
+- Requires Phase 3.2 API Layer (Portal API endpoints)
+- Requires APICredential for authentication
+
+**Status**: Deferred until Phase 3.2 API Layer implementation
 
 ## Common: Progress Notification Functionality
 

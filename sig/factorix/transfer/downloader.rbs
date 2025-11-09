@@ -1,0 +1,9 @@
+module Factorix
+  module Transfer
+    class Downloader
+      def initialize: (?download_cache: Cache::FileSystem, ?http: HTTP) -> void
+
+      def download: (URI::HTTPS url, Pathname output) -> void
+    end
+  end
+end

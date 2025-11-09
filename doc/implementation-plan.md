@@ -136,7 +136,7 @@ DI container and configuration management.
 
 HTTP communication layer that works with raw Hash data.
 
-### 3.1 Transfer ✅ COMPLETED
+### 3.1 Transfer (Partial - Uploader deferred to Phase 3.2)
 
 File transfer with retry and progress notification using dry-events.
 
@@ -152,9 +152,12 @@ File transfer with retry and progress notification using dry-events.
   - [x] Resume support for downloads
   - [x] Publish events during chunk read/write
   - [x] Timeout configuration from Application.config
-- [ ] `transfer/downloader.rb` - File download with caching (deferred to Phase 5.1)
-  - [ ] Use Transfer::HTTP
-  - [ ] Cache::FileSystem integration (requires Phase 5.1)
+- [x] `transfer/downloader.rb` - File download with caching
+  - [x] Use Transfer::HTTP
+  - [x] Cache::FileSystem integration
+  - [x] File locking for concurrent downloads
+  - [x] Automatic cache-or-download logic
+  - [x] Temporary file cleanup
 - [ ] `transfer/uploader.rb` - File upload (multipart/form-data) (deferred)
   - [ ] Use Transfer::HTTP
   - [ ] Build multipart/form-data format
