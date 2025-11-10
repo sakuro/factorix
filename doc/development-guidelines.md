@@ -47,7 +47,7 @@ factorix/
 │       ├── types/            # Phase 4: Data models
 │       ├── cli/              # Phase 6: CLI layer
 │       └── ...
-├── sig/                      # RBS type definitions
+├── sig/                      # Type definitions
 │   └── factorix/             # Mirrors lib/ structure
 ├── spec/                     # Test code
 └── ...
@@ -253,38 +253,13 @@ module Factorix
 end
 ```
 
-### Using rbs Commands
-
-#### Validating Type Definitions
-
-```bash
-# Validate all type definitions (syntax and consistency)
-bundle exec rbs validate
-
-# Check syntax of specific file
-bundle exec rbs parse sig/factorix/runtime.rbs
-
-# Display type definition environment
-bundle exec rbs environment
-```
-
-#### Debugging
-
-```bash
-# Validate with detailed logging
-bundle exec rbs validate --log-level=debug
-
-# Display type definitions for specific class
-bundle exec rbs prototype rb lib/factorix/runtime/base.rb
-```
-
 ### Type Definition Maintenance
 
-1. **Add type definitions with implementation**: When adding new classes/methods, add RBS at the same time
-2. **Validate at Phase completion**: Verify type definition consistency with `bundle exec rbs validate`
-3. **Pre-commit check**: Validate RBS along with RSpec and RuboCop
+1. **Add type definitions with implementation**: When adding new classes/methods, add type signatures at the same time
+2. **Validate at Phase completion**: Verify type definition consistency with Steep
+3. **Pre-commit check**: Run type checking along with RSpec and RuboCop
 
-### Pre-commit Checklist (with RBS)
+### Pre-commit Checklist
 
 ```bash
 # 1. Run tests
@@ -293,10 +268,7 @@ bundle exec rspec
 # 2. Style check
 bundle exec rubocop
 
-# 3. Validate type definitions
-bundle exec rbs validate
-
-# 4. Commit if all succeed
+# 3. Commit if all succeed
 git add lib/factorix/runtime/base.rb
 git add sig/factorix/runtime/base.rbs
 git add spec/factorix/runtime/base_spec.rb
@@ -433,10 +405,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 1. **Run tests**: `bundle exec rspec`
 2. **Run RuboCop**: `bundle exec rubocop`
-3. **Validate RBS**: `bundle exec rbs validate`
-4. **Check changes**: `git status` and `git diff`
-5. **Add files explicitly**: `git add path/to/file.rb` (never `git add .`)
-6. **Verify staging**: `git diff --cached`
+3. **Check changes**: `git status` and `git diff`
+4. **Add files explicitly**: `git add path/to/file.rb` (never `git add .`)
+5. **Verify staging**: `git diff --cached`
 
 ### File Addition Principles
 
@@ -517,7 +488,7 @@ git add README.md
 git commit -m "$(cat <<'EOF'
 :memo: Update installation instructions
 
-Add Ruby 3.2+ requirement and RBS setup steps.
+Add Ruby 3.2+ requirement and dependency setup steps.
 EOF
 )"
 ```
@@ -541,7 +512,7 @@ EOF
 
 - [ ] All tests pass (`bundle exec rspec`)
 - [ ] No RuboCop violations (`bundle exec rubocop`)
-- [ ] RBS type definitions correct (`bundle exec rbs validate`)
+- [ ] Type definitions correct (`bundle exec steep check`)
 - [ ] Commit messages follow conventions
 - [ ] Related documentation updated
 
@@ -598,7 +569,7 @@ Implement Runtime abstraction layer for cross-platform support.
 
 1. **Check checklist**: Verify items in `doc/implementation-plan.md`
 2. **Verify test coverage**: Confirm critical features are tested
-3. **Validate RBS**: Check type definitions with `bundle exec rbs validate`
+3. **Validate type definitions**: Check type definitions with `bundle exec steep check`
 4. **Update documentation**: Update design documents as needed
 5. **Move to next Phase**: Verify dependencies before proceeding
 
@@ -630,8 +601,8 @@ Implement Runtime abstraction layer for cross-platform support.
 
 - [ ] No RuboCop violations
 - [ ] Tests added
-- [ ] RBS type definitions added
-- [ ] `bundle exec rbs validate` succeeds
+- [ ] Type definitions added
+- [ ] `bundle exec steep check` succeeds
 - [ ] Commit messages follow conventions
 - [ ] Naming conventions (MOD, etc.) followed
 - [ ] Zeitwerk autoload works correctly
@@ -660,18 +631,6 @@ bundle exec rubocop -A
 **Manual review required**:
 ```bash
 bundle exec rubocop --only Layout/LineLength
-```
-
-### RBS Validation Errors
-
-**Syntax errors**:
-```bash
-bundle exec rbs parse sig/factorix/runtime.rbs
-```
-
-**Type inconsistencies**:
-```bash
-bundle exec rbs validate --log-level=debug
 ```
 
 ### Test Failures

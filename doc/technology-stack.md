@@ -61,8 +61,8 @@
   - Purpose: Code style enforcement
   - Assessment: ✅ Already integrated (docquet configuration)
 
-- **RBS**
-  - Purpose: Type signatures
+- **Steep**
+  - Purpose: Static type checking
   - Assessment: ✅ Already integrated
 
 - **YARD**

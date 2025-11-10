@@ -23,7 +23,6 @@ group :development do
   gem "rubocop-rspec", require: false
 
   # Type checking
-  gem "rbs", require: false
   gem "steep", require: false
 
   # YARD

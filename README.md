@@ -37,7 +37,6 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 This project uses:
 - **RSpec** for testing
 - **RuboCop** for style checking
-- **RBS** for type signatures (in `sig/` directory)
 - **Steep** for static type checking
 
 ## Contributing
