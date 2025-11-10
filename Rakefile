@@ -15,4 +15,7 @@ RSpec::Core::RakeTask.new(:spec)
 require "yard"
 YARD::Rake::YardocTask.new(:doc)
 
-task default: %i[spec rubocop]
+require "steep/rake_task"
+Steep::RakeTask.new
+
+task default: %i[spec rubocop steep]

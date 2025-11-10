@@ -22,6 +22,10 @@ group :development do
   gem "rubocop-rake", require: false
   gem "rubocop-rspec", require: false
 
+  # Type checking
+  gem "rbs", require: false
+  gem "steep", require: false
+
   # YARD
   gem "redcarpet", require: false
   gem "yard", github: "lsegal/yard", require: false # Version with Data.define support

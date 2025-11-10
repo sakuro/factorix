@@ -32,7 +32,13 @@ require 'factorix'
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake` to run the tests, RuboCop, and Steep type checking. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+This project uses:
+- **RSpec** for testing
+- **RuboCop** for style checking
+- **RBS** for type signatures (in `sig/` directory)
+- **Steep** for static type checking
 
 ## Contributing
 

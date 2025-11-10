@@ -177,7 +177,7 @@ end
 - **sig/ directory**: Mirrors lib/ structure
 - **Type definitions for each class/module**: Always define types for public APIs
 - **Incremental adoption**: Add type definitions per Phase
-- **Use rbs validate only**: Do not use type checkers like steep (too many dependencies)
+- **Type checking with Steep**: Use `steep check` for static type checking (included in default rake task)
 
 ### Directory Structure
 
