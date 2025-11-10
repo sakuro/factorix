@@ -10,7 +10,7 @@ module Factorix
       #
       # @return [Pathname] the Factorio user directory
       def user_dir
-        Pathname(Dir.home).join("Library/Application Support/Factorio")
+        Pathname(Dir.home).join("Library/Application Support/factorio")
       end
 
       # Get the default cache home directory for macOS

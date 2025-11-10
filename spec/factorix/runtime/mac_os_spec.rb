@@ -8,20 +8,20 @@ RSpec.describe Factorix::Runtime::MacOS do
   end
 
   describe "#user_dir" do
-    it "returns ~/Library/Application Support/Factorio" do
-      expect(runtime.user_dir).to eq(Pathname("/Users/wube/Library/Application Support/Factorio"))
+    it "returns ~/Library/Application Support/factorio" do
+      expect(runtime.user_dir).to eq(Pathname("/Users/wube/Library/Application Support/factorio"))
     end
   end
 
   describe "#mods_dir" do
     it "returns user_dir/mods" do
-      expect(runtime.mods_dir).to eq(Pathname("/Users/wube/Library/Application Support/Factorio/mods"))
+      expect(runtime.mods_dir).to eq(Pathname("/Users/wube/Library/Application Support/factorio/mods"))
     end
   end
 
   describe "#player_data_path" do
     it "returns user_dir/player-data.json" do
-      expect(runtime.player_data_path).to eq(Pathname("/Users/wube/Library/Application Support/Factorio/player-data.json"))
+      expect(runtime.player_data_path).to eq(Pathname("/Users/wube/Library/Application Support/factorio/player-data.json"))
     end
   end
 
