@@ -23,9 +23,9 @@ module Factorix
 
       def write_double: (Float dbl) -> void
 
-      def write_game_version: (GameVersion game_version) -> void
+      def write_game_version: (Types::GameVersion game_version) -> void
 
-      def write_mod_version: (MODVersion mod_version) -> void
+      def write_mod_version: (Types::MODVersion mod_version) -> void
 
       def write_list: (Array[untyped] list) -> void
 

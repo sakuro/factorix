@@ -1,7 +1,11 @@
 module Dry
   module AutoInject
-    def self.new: (untyped container) -> untyped
+    interface _Builder
+      def []: (*String dependencies) -> Module
+    end
+
+    def self.new: (untyped container) -> _Builder
   end
 
-  def self.AutoInject: (untyped container) -> untyped
+  def self.AutoInject: (untyped container) -> AutoInject::_Builder
 end

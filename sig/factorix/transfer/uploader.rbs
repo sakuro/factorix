@@ -1,6 +1,8 @@
 module Factorix
   module Transfer
     class Uploader
+      attr_reader http: HTTP
+
       def initialize: (?http: HTTP) -> void
 
       def upload: (URI::HTTPS | String url, Pathname | String file_path, ?field_name: String) -> void

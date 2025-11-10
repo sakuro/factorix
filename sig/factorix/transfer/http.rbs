@@ -6,6 +6,8 @@ module Factorix
       CHUNK_SIZE: Integer
       MAX_REDIRECTS: Integer
 
+      attr_reader retry_strategy: RetryStrategy
+
       def initialize: (?retry_strategy: RetryStrategy) -> void
 
       def download: (URI::HTTPS url, Pathname | String output, ?redirect_count: Integer) -> void

@@ -1,5 +1,5 @@
 module Factorix
   VERSION: String
 
-  Import: untyped
+  Import: Dry::AutoInject::_Builder
 end

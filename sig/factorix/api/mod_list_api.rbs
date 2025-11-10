@@ -1,9 +1,9 @@
 module Factorix
   module API
     class MODListAPI
-      include Factorix::Import["api_cache"]
-
       BASE_URL: String
+
+      attr_reader api_cache: Cache::FileSystem
 
       def initialize: (?api_cache: Cache::FileSystem) -> void
 
