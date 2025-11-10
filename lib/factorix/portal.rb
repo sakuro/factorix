@@ -24,7 +24,7 @@ module Factorix
   #   release = mod.releases.max_by(&:released_at)  # Get latest by release date
   #   portal.download_mod(release, Pathname("downloads/mod.zip")) if release
   class Portal
-    include Factorix::Import["mod_list_api", "mod_download_api"]
+    include Factorix::Import["mod_portal_api", "mod_download_api"]
 
     # List mods from the Mod Portal
     #
@@ -37,7 +37,7 @@ module Factorix
     # @param version [String, nil] Factorio version filter
     # @return [Array<Types::MODInfo>] array of MODInfo objects
     def list_mods(...)
-      response = mod_list_api.get_mods(...)
+      response = mod_portal_api.get_mods(...)
       response[:results].map {|mod_data| Types::MODInfo.new(**mod_data) }
     end
 
@@ -46,7 +46,7 @@ module Factorix
     # @param name [String] mod name
     # @return [Types::MODInfo] MODInfo object (without Detail)
     def get_mod(name)
-      data = mod_list_api.get_mod(name)
+      data = mod_portal_api.get_mod(name)
       Types::MODInfo.new(**data)
     end
 
@@ -55,7 +55,7 @@ module Factorix
     # @param name [String] mod name
     # @return [Types::MODInfo] MODInfo object (with Detail if available)
     def get_mod_full(name)
-      data = mod_list_api.get_mod_full(name)
+      data = mod_portal_api.get_mod_full(name)
       Types::MODInfo.new(**data)
     end
 

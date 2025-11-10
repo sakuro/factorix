@@ -128,7 +128,7 @@ loader.eager_load
 - `types/release.rb` → `Factorix::Types::Release`
 - `types/image.rb` → `Factorix::Types::Image`
 - `types/license.rb` → `Factorix::Types::License`
-- `api/mod_list_api.rb` → `Factorix::API::MODListAPI`
+- `api/mod_portal_api.rb` → `Factorix::API::MODPortalAPI`
 - `api/mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
 - `portal.rb` → `Factorix::Portal`
 - `transfer/retry_strategy.rb` → `Factorix::Transfer::RetryStrategy`

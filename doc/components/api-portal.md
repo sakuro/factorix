@@ -12,7 +12,7 @@ Classes that wrap the Mod Portal API.
 
 Split into three classes based on authentication method.
 
-#### 1. MODListAPI - API without authentication
+#### 1. MODPortalAPI - API without authentication
 
 - Retrieve MOD list
 - Retrieve MOD details
@@ -208,7 +208,7 @@ Class that wraps the API for more object-oriented handling.
 
 #### `Portal#list_mods(...)`
 
-Forwards all arguments to `MODListAPI#get_mods` and converts results to `Types::MODInfo` array.
+Forwards all arguments to `MODPortalAPI#get_mods` and converts results to `Types::MODInfo` array.
 
 **Usage**:
 ```ruby

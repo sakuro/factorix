@@ -11,7 +11,7 @@ module Factorix
     # API client for retrieving mod list and details without authentication
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
-    class MODListAPI
+    class MODPortalAPI
       include Factorix::Import["api_cache"]
 
       BASE_URL = "https://mods.factorio.com"

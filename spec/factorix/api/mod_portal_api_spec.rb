@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::API::MODListAPI do
+RSpec.describe Factorix::API::MODPortalAPI do
   let(:api_cache) { instance_double(Factorix::Cache::FileSystem) }
-  let(:api) { Factorix::API::MODListAPI.new(api_cache:) }
+  let(:api) { Factorix::API::MODPortalAPI.new(api_cache:) }
 
   before do
     allow(api_cache).to receive(:key_for).and_return("cache_key")

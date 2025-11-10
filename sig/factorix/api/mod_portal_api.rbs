@@ -1,6 +1,6 @@
 module Factorix
   module API
-    class MODListAPI
+    class MODPortalAPI
       BASE_URL: String
 
       attr_reader api_cache: Cache::FileSystem

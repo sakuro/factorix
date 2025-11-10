@@ -46,10 +46,10 @@ RSpec.describe Factorix::Application do
       end
     end
 
-    describe "[:mod_list_api]" do
-      it "resolves to an API::MODListAPI instance" do
-        mod_list_api = Factorix::Application[:mod_list_api]
-        expect(mod_list_api).to be_a(Factorix::API::MODListAPI)
+    describe "[:mod_portal_api]" do
+      it "resolves to an API::MODPortalAPI instance" do
+        mod_portal_api = Factorix::Application[:mod_portal_api]
+        expect(mod_portal_api).to be_a(Factorix::API::MODPortalAPI)
       end
     end
 

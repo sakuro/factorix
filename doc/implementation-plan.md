@@ -175,7 +175,7 @@ File transfer with retry and progress notification using dry-events.
 
 Low-level API wrappers returning Hash (parsed JSON).
 
-- [x] `api/mod_list_api.rb` - MOD list endpoints (no auth)
+- [x] `api/mod_portal_api.rb` - MOD portal endpoints (no auth)
   - [x] `GET /api/mods` - List MODs with pagination
   - [x] `GET /api/mods/{name}` - Basic MOD info
   - [x] `GET /api/mods/{name}/full` - Full MOD info with dependencies
@@ -191,10 +191,10 @@ Low-level API wrappers returning Hash (parsed JSON).
   - [ ] `POST /v2/mods/edit_details` - Edit MOD details
   - [ ] `POST /v2/mods/images/add` - Add images
   - [ ] `POST /v2/mods/images/edit` - Edit image order
-- [x] Tests: `spec/factorix/api/mod_list_api_spec.rb` (13 examples)
+- [x] Tests: `spec/factorix/api/mod_portal_api_spec.rb` (13 examples)
 - [x] Tests: `spec/factorix/api/mod_download_api_spec.rb` (4 examples)
 - [x] Error handling (HTTPClientError, HTTPServerError)
-- [x] Application container registration (`:mod_list_api`, `:mod_download_api`, `:service_credential`)
+- [x] Application container registration (`:mod_portal_api`, `:mod_download_api`, `:service_credential`)
 - [x] RBS type signatures
 - [x] Configuration: `config.credential.source` (:player_data or :env)
 
@@ -311,7 +311,7 @@ High-level API wrapper converting Hash to Types.
   - [x] `#get_mod(name)` → `Types::MODInfo` (Short API)
   - [x] `#get_mod_full(name)` → `Types::MODInfo` (Full API with Detail)
   - [x] `#download_mod(release, output)` → void
-  - [x] Uses dry-auto_inject for dependency injection (mod_list_api, mod_download_api)
+  - [x] Uses dry-auto_inject for dependency injection (mod_portal_api, mod_download_api)
   - [ ] Upload/Publish/Edit endpoints (deferred until MODManagementAPI)
 - [x] Hash → Types conversion logic
   - [x] Converts API response hashes to MODInfo objects
@@ -468,7 +468,7 @@ loader.inflector.inflect(
   "mac_os" => "MacOS",
   "mod_download_api" => "MODDownloadAPI",
   "mod_info" => "MODInfo",
-  "mod_list_api" => "MODListAPI",
+  "mod_portal_api" => "MODPortalAPI",
   "mod_version" => "MODVersion",
   "wsl" => "WSL"
 )

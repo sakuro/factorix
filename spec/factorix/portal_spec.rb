@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Portal do
-  let(:mod_list_api) { instance_double(Factorix::API::MODListAPI) }
+  let(:mod_portal_api) { instance_double(Factorix::API::MODPortalAPI) }
   let(:mod_download_api) { instance_double(Factorix::API::MODDownloadAPI) }
-  let(:portal) { Factorix::Portal.new(mod_list_api:, mod_download_api:) }
+  let(:portal) { Factorix::Portal.new(mod_portal_api:, mod_download_api:) }
 
   describe "#list_mods" do
     it "returns an array of MODInfo objects" do
@@ -36,7 +36,7 @@ RSpec.describe Factorix::Portal do
           }
         ]
       }
-      allow(mod_list_api).to receive(:get_mods).with(page_size: 2).and_return(api_response)
+      allow(mod_portal_api).to receive(:get_mods).with(page_size: 2).and_return(api_response)
 
       mods = portal.list_mods(page_size: 2)
 
@@ -70,7 +70,7 @@ RSpec.describe Factorix::Portal do
           }
         ]
       }
-      allow(mod_list_api).to receive(:get_mod).with("test-mod").and_return(api_response)
+      allow(mod_portal_api).to receive(:get_mod).with("test-mod").and_return(api_response)
 
       mod = portal.get_mod("test-mod")
 
@@ -101,7 +101,7 @@ RSpec.describe Factorix::Portal do
         faq: "Q: How?\nA: Easy.",
         tags: %w[combat logistics]
       }
-      allow(mod_list_api).to receive(:get_mod_full).with("full-mod").and_return(api_response)
+      allow(mod_portal_api).to receive(:get_mod_full).with("full-mod").and_return(api_response)
 
       mod = portal.get_mod_full("full-mod")
 

@@ -85,7 +85,7 @@ Follow the order specified in `doc/implementation-plan.md`:
   - `mod_info.rb` → `Factorix::MODInfo`
   - `mod_version.rb` → `Factorix::MODVersion`
   - `mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
-  - `mod_list_api.rb` → `Factorix::API::MODListAPI`
+  - `mod_portal_api.rb` → `Factorix::API::MODPortalAPI`
 
 #### Other Abbreviations
 - `API` → Uppercase (`api.rb` → `Factorix::API`)
@@ -109,7 +109,7 @@ loader.inflector.inflect(
   "mac_os" => "MacOS",
   "mod_download_api" => "MODDownloadAPI",
   "mod_info" => "MODInfo",
-  "mod_list_api" => "MODListAPI",
+  "mod_portal_api" => "MODPortalAPI",
   "mod_version" => "MODVersion",
   "wsl" => "WSL"
 )

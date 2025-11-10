@@ -76,9 +76,9 @@ module Factorix
       end
     end
 
-    # Register mod list API client
-    register(:mod_list_api) do
-      Factorix::API::MODListAPI.new
+    # Register mod portal API client
+    register(:mod_portal_api) do
+      Factorix::API::MODPortalAPI.new
     end
 
     # Register mod download API client

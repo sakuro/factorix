@@ -19,7 +19,7 @@ module Factorix
     "mac_os" => "MacOS",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
-    "mod_list_api" => "MODListAPI",
+    "mod_portal_api" => "MODPortalAPI",
     "mod_version" => "MODVersion",
     "wsl" => "WSL"
   )
