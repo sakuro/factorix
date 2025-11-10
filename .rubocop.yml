@@ -75,6 +75,9 @@ RSpec/IndexedLet:
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 RSpec/RepeatedExampleGroupBody:
   Exclude:
     - spec/factorix/ser_des/deserializer_spec.rb

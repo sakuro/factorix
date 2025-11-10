@@ -10,4 +10,13 @@ module Factorix
 
   class UnknownPropertyType < FileFormatError
   end
+
+  class InvalidMODListError < FileFormatError
+  end
+
+  class DomainError < Error
+  end
+
+  class MODNotFoundError < DomainError
+  end
 end

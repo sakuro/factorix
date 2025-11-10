@@ -17,9 +17,12 @@ module Factorix
     "api_credential" => "APICredential",
     "http" => "HTTP",
     "mac_os" => "MacOS",
+    "mod" => "MOD",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
+    "mod_list" => "MODList",
     "mod_portal_api" => "MODPortalAPI",
+    "mod_state" => "MODState",
     "mod_version" => "MODVersion",
     "wsl" => "WSL"
   )

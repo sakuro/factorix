@@ -1,0 +1,40 @@
+module Factorix
+  # Represents a list of MODs and their enabled status
+  class MODList
+    include Enumerable[[MOD, MODState]]
+
+    # Raised when a MOD is not found in the list
+    class MODNotInListError < Factorix::MODNotFoundError
+    end
+
+    @mods: Hash[MOD, MODState]
+
+    def self.load: (?from: Pathname) -> MODList
+
+    def initialize: (?Hash[MOD, MODState] mods) -> void
+
+    def save: (?to: Pathname) -> void
+
+    def each: () -> Enumerator[[MOD, MODState], self]
+            | () { ([MOD, MODState]) -> void } -> self
+
+    def each_mod: () -> Enumerator[MOD, self]
+                | () { (MOD) -> void } -> self
+
+    alias each_key each_mod
+
+    def add: (MOD mod, ?enabled: bool, ?version: Types::MODVersion?) -> void
+
+    def remove: (MOD mod) -> void
+
+    def exist?: (MOD mod) -> bool
+
+    def enabled?: (MOD mod) -> bool
+
+    def version: (MOD mod) -> Types::MODVersion?
+
+    def enable: (MOD mod) -> void
+
+    def disable: (MOD mod) -> void
+  end
+end

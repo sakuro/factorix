@@ -31,6 +31,15 @@ module Factorix
         user_dir + "mods"
       end
 
+      # Get the path of the mod-list.json file
+      #
+      # This file contains the list of installed MODs and their enabled/disabled states.
+      #
+      # @return [Pathname] the path of the mod-list.json file
+      def mod_list_path
+        mods_dir + "mod-list.json"
+      end
+
       # Get the path of the player-data.json file
       #
       # This file contains player-specific data including authentication credentials,

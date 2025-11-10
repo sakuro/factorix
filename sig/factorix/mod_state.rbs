@@ -1,0 +1,14 @@
+module Factorix
+  # Represents the state of a MOD in a MOD list
+  class MODState < Data
+    attr_reader enabled: bool
+
+    attr_reader version: Types::MODVersion?
+
+    def initialize: (enabled: bool, ?version: Types::MODVersion?) -> void
+
+    def self.[]: (enabled: bool, ?version: Types::MODVersion?) -> MODState
+
+    def enabled?: () -> bool
+  end
+end

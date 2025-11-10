@@ -1,0 +1,14 @@
+
+{
+  "mods":
+  [
+    {
+      "name": "base",
+      "enabled": false
+    },
+    {
+      "name": "example-mod",
+      "enabled": true
+    }
+  ]
+}

@@ -17,4 +17,15 @@ module Factorix
   # File format related errors
   class FileFormatError < InfrastructureError; end
   class UnknownPropertyType < FileFormatError; end
+
+  # MOD list file errors
+  class InvalidMODListError < FileFormatError; end
+
+  # =====================================
+  # Domain layer errors
+  # =====================================
+  class DomainError < Error; end
+
+  # MOD errors
+  class MODNotFoundError < DomainError; end
 end

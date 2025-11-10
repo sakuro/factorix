@@ -21,6 +21,18 @@ RSpec.describe Factorix::Runtime::Base do
     end
   end
 
+  describe "#mod_list_path" do
+    context "when user_dir is implemented" do
+      before do
+        allow(runtime).to receive(:user_dir).and_return(Pathname("/home/wube/.factorio"))
+      end
+
+      it "returns mods_dir + mod-list.json" do
+        expect(runtime.mod_list_path).to eq(Pathname("/home/wube/.factorio/mods/mod-list.json"))
+      end
+    end
+  end
+
   describe "#player_data_path" do
     context "when user_dir is implemented" do
       before do

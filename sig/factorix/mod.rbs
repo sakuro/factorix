@@ -1,0 +1,14 @@
+module Factorix
+  # Represents a local MOD
+  class MOD < Data
+    include Comparable
+
+    attr_reader name: String
+
+    def base?: () -> bool
+
+    def to_s: () -> String
+
+    def <=>: (untyped other) -> Integer?
+  end
+end
