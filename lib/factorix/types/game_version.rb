@@ -61,10 +61,10 @@ module Factorix
       # @param major [Integer] major version number (0-65535)
       # @param minor [Integer] minor version number (0-65535)
       # @param patch [Integer] patch version number (0-65535)
-      # @param build [Integer] build version number (0-65535)
+      # @param build [Integer] build version number (0-65535, defaults to 0)
       # @return [GameVersion]
       # @raise [ArgumentError] if any component is out of range
-      def self.from_numbers(major, minor, patch, build)
+      def self.from_numbers(major, minor, patch, build=0)
         validate_component(major, :major)
         validate_component(minor, :minor)
         validate_component(patch, :patch)
@@ -77,9 +77,13 @@ module Factorix
 
       # Convert to string representation
       #
-      # @return [String] Version string in format "X.Y.Z-B"
+      # @return [String] Version string in format "X.Y.Z-B" or "X.Y.Z" if build is 0
       def to_s
-        "#{major}.#{minor}.#{patch}-#{build}"
+        if build.zero?
+          "#{major}.#{minor}.#{patch}"
+        else
+          "#{major}.#{minor}.#{patch}-#{build}"
+        end
       end
 
       # Convert to array of integers

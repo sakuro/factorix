@@ -10,7 +10,7 @@ module Factorix
 
       def self.from_string: (String str) -> GameVersion
 
-      def self.from_numbers: (Integer major, Integer minor, Integer patch, Integer build) -> GameVersion
+      def self.from_numbers: (Integer major, Integer minor, Integer patch, ?Integer build) -> GameVersion
 
       def to_s: () -> String
 

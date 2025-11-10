@@ -73,8 +73,8 @@ RSpec.describe Factorix::Types::GameVersion do
       expect(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4).to_s).to eq("1.2.3-4")
     end
 
-    it "includes build number 0 in string representation" do
-      expect(Factorix::Types::GameVersion.from_string("1.2.3").to_s).to eq("1.2.3-0")
+    it "omits build number when it is 0" do
+      expect(Factorix::Types::GameVersion.from_string("1.2.3").to_s).to eq("1.2.3")
     end
   end
 
