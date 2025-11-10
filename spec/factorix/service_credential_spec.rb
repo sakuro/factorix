@@ -47,7 +47,7 @@ RSpec.describe Factorix::ServiceCredential do
     let(:player_data_path) { instance_double(Pathname) }
 
     before do
-      allow(Factorix::Runtime).to receive(:detect).and_return(runtime)
+      allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
     end
 
     it "loads credentials from player-data.json" do
