@@ -18,7 +18,7 @@ module Factorix
     # @param from [Pathname] the path to the file to load the MOD list from
     # @return [Factorix::MODList] the loaded MOD list
     # @raise [Factorix::InvalidMODListError] if the base MOD is disabled
-    def self.load(from: Factorix::Runtime.runtime.mod_list_path)
+    def self.load(from: Factorix::Application[:runtime].mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
         mod = Factorix::MOD.new(name: entry[:name])
@@ -50,7 +50,7 @@ module Factorix
     #
     # @param to [Pathname] the path to the file to save the MOD list to
     # @return [void]
-    def save(to: Factorix::Runtime.runtime.mod_list_path)
+    def save(to: Factorix::Application[:runtime].mod_list_path)
       mods_data = @mods.map {|mod, state|
         data = {name: mod.name, enabled: state.enabled}
         # Only include version in the output if it exists

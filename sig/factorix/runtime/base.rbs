@@ -7,6 +7,8 @@ module Factorix
 
       def mod_list_path: () -> Pathname
 
+      def mod_settings_path: () -> Pathname
+
       def player_data_path: () -> Pathname
 
       def xdg_cache_home_dir: () -> Pathname

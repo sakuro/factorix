@@ -197,12 +197,12 @@ module Factorix
           # Handle type 6 - Signed integer
           #
           # @see https://wiki.factorio.com/Property_tree
-          read_long
+          Factorix::Types::SignedInteger.new(read_long)
         when 7
           # Handle type 7 - Unsigned integer
           #
           # @see https://wiki.factorio.com/Property_tree
-          read_unsigned_long
+          Factorix::Types::UnsignedInteger.new(read_unsigned_long)
         else
           raise Factorix::UnknownPropertyType, "Unknown property type: #{type}"
         end

@@ -40,6 +40,15 @@ module Factorix
         mods_dir + "mod-list.json"
       end
 
+      # Get the path of the mod-settings.dat file
+      #
+      # This file contains the MOD settings for startup, runtime-global, and runtime-per-user.
+      #
+      # @return [Pathname] the path of the mod-settings.dat file
+      def mod_settings_path
+        mods_dir + "mod-settings.dat"
+      end
+
       # Get the path of the player-data.json file
       #
       # This file contains player-specific data including authentication credentials,

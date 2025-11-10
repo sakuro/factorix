@@ -5,13 +5,31 @@ module Factorix
   class InfrastructureError < Error
   end
 
+  class HTTPError < InfrastructureError
+  end
+
+  class HTTPClientError < HTTPError
+  end
+
+  class HTTPServerError < HTTPError
+  end
+
   class FileFormatError < InfrastructureError
   end
 
   class UnknownPropertyType < FileFormatError
   end
 
+  class ExtraDataError < FileFormatError
+  end
+
   class InvalidMODListError < FileFormatError
+  end
+
+  class InvalidMODSectionError < FileFormatError
+  end
+
+  class MODSectionNotFoundError < FileFormatError
   end
 
   class DomainError < Error

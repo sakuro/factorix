@@ -1,0 +1,33 @@
+module Factorix
+  module Types
+    class SignedInteger
+      def initialize: (Integer value) -> void
+
+      def value: () -> Integer
+
+      def ==: (untyped other) -> bool
+
+      def hash: () -> Integer
+
+      def eql?: (untyped other) -> bool
+
+      def inspect: () -> String
+
+      # Delegated Integer methods
+      def +: (Numeric other) -> Numeric
+      def -: (Numeric other) -> Numeric
+      def *: (Numeric other) -> Numeric
+      def /: (Numeric other) -> Numeric
+      def %: (Numeric other) -> Numeric
+      def **: (Numeric other) -> Numeric
+      def <=>: (untyped other) -> Integer?
+      def <: (Numeric other) -> bool
+      def <=: (Numeric other) -> bool
+      def >: (Numeric other) -> bool
+      def >=: (Numeric other) -> bool
+      def to_s: () -> String
+      def to_i: () -> Integer
+      def to_f: () -> Float
+    end
+  end
+end

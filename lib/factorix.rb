@@ -22,6 +22,7 @@ module Factorix
     "mod_info" => "MODInfo",
     "mod_list" => "MODList",
     "mod_portal_api" => "MODPortalAPI",
+    "mod_settings" => "MODSettings",
     "mod_state" => "MODState",
     "mod_version" => "MODVersion",
     "wsl" => "WSL"

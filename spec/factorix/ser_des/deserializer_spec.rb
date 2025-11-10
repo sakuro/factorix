@@ -425,6 +425,34 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
     end
 
+    context "when reading signed integer (Type 6)" do
+      let(:type_byte) { "\x06" }
+
+      before do
+        allow(deserializer).to receive_messages(read_long: -42, read_bool: false)
+      end
+
+      it "returns a SignedInteger" do
+        result = deserializer.read_property_tree
+        expect(result).to be_a(Factorix::Types::SignedInteger)
+        expect(result.value).to eq(-42)
+      end
+    end
+
+    context "when reading unsigned integer (Type 7)" do
+      let(:type_byte) { "\x07" }
+
+      before do
+        allow(deserializer).to receive_messages(read_unsigned_long: 42, read_bool: false)
+      end
+
+      it "returns an UnsignedInteger" do
+        result = deserializer.read_property_tree
+        expect(result).to be_a(Factorix::Types::UnsignedInteger)
+        expect(result.value).to eq(42)
+      end
+    end
+
     context "when reading unknown type" do
       let(:type_byte) { "\x08" }
 

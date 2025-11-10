@@ -376,10 +376,29 @@ Local MOD file and configuration management.
 - [ ] `mod_list.rb` - mod-list.json management
   - [ ] Read/write `Runtime#mods_dir / "mod-list.json"`
   - [ ] Enable/disable MODs
-- [ ] `mod_settings.rb` - mod-settings.dat management
-  - [ ] Read/write binary format using SerDes
+- [x] `mod_settings.rb` - mod-settings.dat management ✅ COMPLETED
+  - [x] Read/write binary format using SerDes
+  - [x] MODSettings class with load/save support
+  - [x] MODSettings::Section with Hash-like interface
+    - [x] Basic methods: `[]`, `[]=`, `each`, `empty?`
+    - [x] Hash-like methods: `key?`, `keys`, `values`, `size`, `fetch`, `to_h`
+  - [x] SignedInteger/UnsignedInteger types for Property Tree type preservation
+    - [x] SimpleDelegator-based wrappers for Integer
+    - [x] Preserve Type 6 (signed) vs Type 7 (unsigned) from Property Tree
+    - [x] Used in Deserializer/Serializer for mod-settings.dat
+  - [x] Deserializer/Serializer integer type support
+    - [x] Type 6 → SignedInteger, Type 7 → UnsignedInteger
+    - [x] Removed plain Integer support (no backward compatibility)
+  - [x] Runtime::Base#mod_settings_path method
+  - [x] Error classes: InvalidMODSectionError, MODSectionNotFoundError, ExtraDataError
+  - [x] Roundtrip compatibility verified (load → save → load preserves all data)
   - [ ] TOML conversion for human editing
-- [ ] Tests: `spec/factorix/mod*_spec.rb`
+- [x] Tests: `spec/factorix/mod_settings_spec.rb` (39 examples)
+- [x] Tests: `spec/factorix/types/signed_integer_spec.rb` (12 examples)
+- [x] Tests: `spec/factorix/types/unsigned_integer_spec.rb` (9 examples)
+- [x] RBS: `sig/factorix/mod_settings.rbs`
+- [x] RBS: `sig/factorix/types/signed_integer.rbs`
+- [x] RBS: `sig/factorix/types/unsigned_integer.rbs`
 
 **Dependencies**: Runtime, SerDes
 
@@ -469,6 +488,7 @@ loader.inflector.inflect(
   "mod_download_api" => "MODDownloadAPI",
   "mod_info" => "MODInfo",
   "mod_portal_api" => "MODPortalAPI",
+  "mod_settings" => "MODSettings",
   "mod_version" => "MODVersion",
   "wsl" => "WSL"
 )

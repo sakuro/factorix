@@ -1,0 +1,53 @@
+module Factorix
+  class MODSettings
+    VALID_SECTIONS: Array[String]
+
+    class Section
+      include Enumerable[[ String, untyped ]]
+
+      @name: String
+      @settings: Hash[String, untyped]
+
+      def initialize: (String name) -> void
+      def name: () -> String
+      def []=: (String key, untyped value) -> untyped
+      def []: (String key) -> untyped
+      def each: () -> Enumerator[[String, untyped], self]
+              | () { ([String, untyped]) -> void } -> self
+      def empty?: () -> bool
+      def key?: (String key) -> bool
+      def has_key?: (String key) -> bool
+      def include?: (String key) -> bool
+      def keys: () -> Array[String]
+      def values: () -> Array[untyped]
+      def size: () -> Integer
+      def length: () -> Integer
+      def fetch: (String key) -> untyped
+               | (String key, untyped default) -> untyped
+               | (String key) { (String) -> untyped } -> untyped
+      def to_h: () -> Hash[String, untyped]
+    end
+
+    @sections: Hash[String, Section]
+    @game_version: Types::GameVersion
+
+    def self.load: (?from: Pathname) -> MODSettings
+
+    def initialize: (Types::GameVersion game_version, Hash[String, Section] sections) -> void
+    def game_version: () -> Types::GameVersion
+    def []: (String name) -> Section
+    def each_section: () -> Enumerator[Section, self]
+                    | () { (Section) -> void } -> self
+    def save: (?to: Pathname) -> void
+
+    private
+
+    def self.load_settings_from_io: (IO io) -> [Types::GameVersion, Hash[String, Section]]
+    def self.organize_into_sections: (Hash[String, untyped] raw_settings) -> Hash[String, Section]
+    def self.process_raw_settings: (Hash[String, untyped] raw_settings, Hash[String, Section] sections) -> void
+    def self.add_settings_to_section: (Section section, Hash[String, untyped] section_settings) -> void
+    def self.ensure_all_sections_exist: (Hash[String, Section] sections) -> void
+
+    def build_settings_hash: () -> Hash[String, Hash[String, Hash[String, untyped]]]
+  end
+end

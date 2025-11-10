@@ -60,7 +60,7 @@ RSpec.describe Factorix::MODList do
 
     context "when from: is not specified" do
       before do
-        allow(Factorix::Runtime).to receive(:runtime).and_return(
+        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
           instance_double(Factorix::Runtime::Base, mod_list_path: list_path)
         )
       end
@@ -99,7 +99,7 @@ RSpec.describe Factorix::MODList do
         let(:invalid_list_path) { Pathname("spec/fixtures/mod-list/invalid_base_disabled.json") }
 
         before do
-          allow(Factorix::Runtime).to receive(:runtime).and_return(
+          allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
             instance_double(Factorix::Runtime::Base, mod_list_path: invalid_list_path)
           )
         end
@@ -129,7 +129,7 @@ RSpec.describe Factorix::MODList do
 
     context "when to: is not specified" do
       before do
-        allow(Factorix::Runtime).to receive(:runtime).and_return(
+        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
           instance_double(Factorix::Runtime::Base, mod_list_path: temp_path)
         )
       end

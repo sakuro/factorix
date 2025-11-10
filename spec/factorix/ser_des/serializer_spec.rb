@@ -323,6 +323,46 @@ RSpec.describe Factorix::SerDes::Serializer do
       end
     end
 
+    context "when writing SignedInteger" do
+      before do
+        allow(serializer).to receive(:write_long)
+      end
+
+      it "writes as Type 6" do
+        signed_int = Factorix::Types::SignedInteger.new(-42)
+        serializer.write_property_tree(signed_int)
+
+        aggregate_failures "writing SignedInteger" do
+          expect(serializer).to have_received(:write_u8).with(6).ordered
+          expect(serializer).to have_received(:write_bool).with(false).ordered
+          expect(serializer).to have_received(:write_long).with(-42).ordered
+        end
+      end
+    end
+
+    context "when writing UnsignedInteger" do
+      before do
+        allow(serializer).to receive(:write_unsigned_long)
+      end
+
+      it "writes as Type 7" do
+        unsigned_int = Factorix::Types::UnsignedInteger.new(42)
+        serializer.write_property_tree(unsigned_int)
+
+        aggregate_failures "writing UnsignedInteger" do
+          expect(serializer).to have_received(:write_u8).with(7).ordered
+          expect(serializer).to have_received(:write_bool).with(false).ordered
+          expect(serializer).to have_received(:write_unsigned_long).with(42).ordered
+        end
+      end
+    end
+
+    context "when writing plain Integer" do
+      it "raises Factorix::UnknownPropertyType" do
+        expect { serializer.write_property_tree(42) }.to raise_error(Factorix::UnknownPropertyType)
+      end
+    end
+
     context "when writing unknown object type" do
       it "raises Factorix::UnknownPropertyType" do
         expect { serializer.write_property_tree(Object.new) }.to raise_error(Factorix::UnknownPropertyType)

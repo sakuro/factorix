@@ -33,6 +33,18 @@ RSpec.describe Factorix::Runtime::Base do
     end
   end
 
+  describe "#mod_settings_path" do
+    context "when mods_dir is implemented" do
+      before do
+        allow(runtime).to receive(:mods_dir).and_return(Pathname("/home/wube/.factorio/mods"))
+      end
+
+      it "returns mods_dir + mod-settings.dat" do
+        expect(runtime.mod_settings_path).to eq(Pathname("/home/wube/.factorio/mods/mod-settings.dat"))
+      end
+    end
+  end
+
   describe "#player_data_path" do
     context "when user_dir is implemented" do
       before do
