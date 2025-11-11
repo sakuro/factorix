@@ -9,11 +9,11 @@ module Factorix
 
     @mods: Hash[MOD, MODState]
 
-    def self.load: (?from: Pathname) -> MODList
+    def self.load: (from: Pathname) -> MODList
 
     def initialize: (?Hash[MOD, MODState] mods) -> void
 
-    def save: (?to: Pathname) -> void
+    def save: (to: Pathname) -> void
 
     def each: () -> Enumerator[[MOD, MODState], self]
             | () { ([MOD, MODState]) -> void } -> self

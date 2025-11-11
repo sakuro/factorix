@@ -57,58 +57,6 @@ RSpec.describe Factorix::MODList do
         end
       end
     end
-
-    context "when from: is not specified" do
-      before do
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
-          instance_double(Factorix::Runtime::Base, mod_list_path: list_path)
-        )
-      end
-
-      let(:loaded_list) { Factorix::MODList.load }
-
-      it "loads base MOD" do
-        expect(loaded_list).to exist(base_mod)
-      end
-
-      it "loads enabled MOD" do
-        expect(loaded_list).to exist(enabled_mod)
-      end
-
-      it "loads disabled MOD" do
-        expect(loaded_list).to exist(disabled_mod)
-      end
-
-      it "does not load non-listed MOD" do
-        expect(loaded_list).not_to exist(non_listed_mod)
-      end
-
-      it "loads version information" do
-        expect(loaded_list.version(enabled_mod)).to eq(Factorix::Types::MODVersion.from_string("1.0.0"))
-      end
-
-      it "returns nil for version when not specified for base MOD" do
-        expect(loaded_list.version(base_mod)).to be_nil
-      end
-
-      it "returns nil for version when not specified for disabled MOD" do
-        expect(loaded_list.version(disabled_mod)).to be_nil
-      end
-
-      context "when base MOD is disabled" do
-        let(:invalid_list_path) { Pathname("spec/fixtures/mod-list/invalid_base_disabled.json") }
-
-        before do
-          allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
-            instance_double(Factorix::Runtime::Base, mod_list_path: invalid_list_path)
-          )
-        end
-
-        it "raises InvalidMODListError" do
-          expect { Factorix::MODList.load }.to raise_error(Factorix::InvalidMODListError)
-        end
-      end
-    end
   end
 
   describe "#save" do
@@ -123,19 +71,6 @@ RSpec.describe Factorix::MODList do
     context "when to: is specified" do
       it "saves current MOD list" do
         list.save(to: temp_path)
-        expect(JSON.load_file(temp_path)).to eq(JSON.load_file(list_path))
-      end
-    end
-
-    context "when to: is not specified" do
-      before do
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
-          instance_double(Factorix::Runtime::Base, mod_list_path: temp_path)
-        )
-      end
-
-      it "saves to default path" do
-        list.save
         expect(JSON.load_file(temp_path)).to eq(JSON.load_file(list_path))
       end
     end
