@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/factorix"
+
+begin
+  Dry::CLI.new(Factorix::CLI).call
+  exit 0
+rescue => e
+  warn e.message
+  exit 1
+end

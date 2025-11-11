@@ -1,0 +1,15 @@
+module Dry
+  class CLI
+    def initialize: (Class registry) -> void
+
+    def call: (?Array[String]? arguments) -> void
+  end
+
+  module CLI::Registry
+    def register: (String command_name, Class command_class, **untyped options) -> void
+  end
+
+  class CLI::Command
+    def call: (**untyped) -> void
+  end
+end

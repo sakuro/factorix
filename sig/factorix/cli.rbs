@@ -1,0 +1,7 @@
+module Factorix
+  class CLI
+    extend Dry::CLI::Registry
+
+    def self.register: (String command_name, Class command_class, ?aliases: Array[String]) -> void
+  end
+end

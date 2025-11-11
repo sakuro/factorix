@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry-auto_inject"
+require "dry/cli"
 require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"
@@ -15,6 +16,7 @@ module Factorix
   loader.inflector.inflect(
     "api" => "API",
     "api_credential" => "APICredential",
+    "cli" => "CLI",
     "http" => "HTTP",
     "mac_os" => "MacOS",
     "mod" => "MOD",

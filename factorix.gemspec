@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "dry-auto_inject", "~> 1.0"
+  spec.add_dependency "dry-cli", "~> 1.0"
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-container", "~> 0.11"
   spec.add_dependency "dry-events", "~> 1.1"
