@@ -283,24 +283,39 @@ Value objects using Data.define (Ruby 3.2+).
 
 **Dependencies**: None (pure data structures)
 
-### 4.2 MOD Dependencies
+### 4.2 MOD Dependencies (Partial)
 
 Dependency parsing and validation.
 
-- [ ] `mod_dependency.rb` - Single dependency (Data.define)
-  - [ ] Type: required, optional, incompatible, hidden, load-neutral
-  - [ ] Version constraints parsing
-- [ ] `mod_dependency_parser.rb` - Parse dependency strings
-  - [ ] Parse `! name`, `? name`, `(?) name`, `~name`, `name >= 1.0.0`
+- [x] `types/mod_version_requirement.rb` - Version requirement (Data.define)
+  - [x] Operators: `<`, `<=`, `=`, `>=`, `>`
+  - [x] Validation with MODVersion
+  - [x] `#satisfied_by?` method
+- [x] `mod_dependency.rb` - Single dependency (Data.define)
+  - [x] Type: required, optional, hidden_optional, incompatible, load_neutral
+  - [x] Optional version requirement
+  - [x] Type checking methods: `#required?`, `#optional?`, `#incompatible?`, `#load_neutral?`
+  - [x] `#satisfied_by?` method
+  - [x] String representation with prefix symbols
+- [x] `mod_dependency_parser.rb` - Parse dependency strings
+  - [x] Parse `! name`, `? name`, `(?) name`, `~name`, `name >= 1.0.0`
+  - [x] Parse version requirements with all operators
+  - [x] Edge case validation (empty mod name, empty version)
 - [ ] `mod_dependencies.rb` - Dependency collection management
   - [ ] List required/optional/incompatible dependencies
   - [ ] Validate compatibility
   - [ ] Circular dependency detection
-- [ ] Tests: `spec/factorix/mod_dependency*_spec.rb`
+- [x] Tests: `spec/factorix/mod_dependency*_spec.rb`
+  - [x] 24 examples for MODVersionRequirement
+  - [x] 27 examples for MODDependency
+  - [x] 26 examples for MODDependencyParser
+  - [x] Total: 77 examples, 0 failures
+- [x] RBS: `sig/factorix/types/mod_version_requirement.rbs`, `sig/factorix/mod_dependency.rbs`, `sig/factorix/mod_dependency_parser.rbs`
+- [x] Zeitwerk inflections: `"mod_dependency"`, `"mod_dependency_parser"`, `"mod_version_requirement"`
 
 **Reference**: `factorix.old/lib/factorix/mod_dependency*.rb`
 
-**Dependencies**: Types
+**Dependencies**: Types (MODVersion)
 
 ### 4.3 Portal ✅ COMPLETED
 
@@ -365,17 +380,23 @@ File-based caching for downloads and API responses.
 
 **Dependencies**: Runtime
 
-### 5.2 MOD Management
+### 5.2 MOD Management ✅ COMPLETED
 
 Local MOD file and configuration management.
 
-- [ ] `mod.rb` - Local MOD representation (Data.define)
-  - [ ] info.json parsing
-  - [ ] File path, name, version
-- [ ] `mod_state.rb` - MOD enabled/disabled state
-- [ ] `mod_list.rb` - mod-list.json management
-  - [ ] Read/write `Runtime#mods_dir / "mod-list.json"`
-  - [ ] Enable/disable MODs
+- [x] `mod.rb` - Local MOD representation (Data.define) ✅ COMPLETED
+  - [x] MOD class with name attribute
+  - [x] base? method for base MOD detection
+  - [x] Comparable support (base MOD always comes first)
+- [x] `mod_state.rb` - MOD enabled/disabled state ✅ COMPLETED
+  - [x] MODState class with enabled and version attributes
+- [x] `mod_list.rb` - mod-list.json management ✅ COMPLETED
+  - [x] Read/write `Runtime#mods_dir / "mod-list.json"`
+  - [x] Enable/disable MODs
+  - [x] Enumerable support (each, each_mod)
+  - [x] add, remove, exist?, enabled?, version methods
+  - [x] Base MOD protection (cannot disable or remove)
+  - [x] MODNotInListError for missing MODs
 - [x] `mod_settings.rb` - mod-settings.dat management ✅ COMPLETED
   - [x] Read/write binary format using SerDes
   - [x] MODSettings class with load/save support
@@ -393,9 +414,15 @@ Local MOD file and configuration management.
   - [x] Error classes: InvalidMODSectionError, MODSectionNotFoundError, ExtraDataError
   - [x] Roundtrip compatibility verified (load → save → load preserves all data)
   - [ ] TOML conversion for human editing
+- [x] Tests: `spec/factorix/mod_spec.rb`
+- [x] Tests: `spec/factorix/mod_state_spec.rb`
+- [x] Tests: `spec/factorix/mod_list_spec.rb`
 - [x] Tests: `spec/factorix/mod_settings_spec.rb` (39 examples)
 - [x] Tests: `spec/factorix/types/signed_integer_spec.rb` (12 examples)
 - [x] Tests: `spec/factorix/types/unsigned_integer_spec.rb` (9 examples)
+- [x] RBS: `sig/factorix/mod.rbs`
+- [x] RBS: `sig/factorix/mod_state.rbs`
+- [x] RBS: `sig/factorix/mod_list.rbs`
 - [x] RBS: `sig/factorix/mod_settings.rbs`
 - [x] RBS: `sig/factorix/types/signed_integer.rbs`
 - [x] RBS: `sig/factorix/types/unsigned_integer.rbs`

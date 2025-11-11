@@ -55,6 +55,7 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Exclude:
     - lib/factorix/types/mod_info.rb
+    - lib/factorix/mod_dependency_parser.rb
 
 Naming/PredicateMethod:
   Exclude:
@@ -66,6 +67,8 @@ Naming/VariableNumber:
     - spec/factorix/ser_des/deserializer_spec.rb
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
+    - spec/factorix/mod_dependency_spec.rb
+    - spec/factorix/types/mod_version_requirement_spec.rb
 
 RSpec/ExampleLength:
   Enabled: false
@@ -74,6 +77,8 @@ RSpec/IndexedLet:
   Exclude:
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
+    - spec/factorix/mod_dependency_spec.rb
+    - spec/factorix/types/mod_version_requirement_spec.rb
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false

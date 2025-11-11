@@ -18,6 +18,8 @@ module Factorix
     "http" => "HTTP",
     "mac_os" => "MacOS",
     "mod" => "MOD",
+    "mod_dependency" => "MODDependency",
+    "mod_dependency_parser" => "MODDependencyParser",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
     "mod_list" => "MODList",
@@ -25,6 +27,7 @@ module Factorix
     "mod_settings" => "MODSettings",
     "mod_state" => "MODState",
     "mod_version" => "MODVersion",
+    "mod_version_requirement" => "MODVersionRequirement",
     "wsl" => "WSL"
   )
   loader.setup

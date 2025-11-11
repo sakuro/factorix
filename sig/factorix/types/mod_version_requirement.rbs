@@ -1,0 +1,14 @@
+module Factorix
+  module Types
+    class MODVersionRequirement
+      attr_reader operator: String
+      attr_reader version: MODVersion
+
+      def initialize: (operator: String, version: MODVersion) -> void
+
+      def satisfied_by?: (MODVersion mod_version) -> bool
+
+      def to_s: () -> String
+    end
+  end
+end
