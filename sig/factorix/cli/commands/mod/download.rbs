@@ -1,0 +1,36 @@
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        class Download < Dry::CLI::Command
+          class ProgressHandler
+            def initialize: (Progress::MultiBar multi_bar, String mod_name, String file_name) -> void
+
+            def on_download_started: (untyped event) -> void
+
+            def on_download_progress: (untyped event) -> void
+
+            def on_download_completed: (untyped _event) -> void
+          end
+
+          @portal: Portal
+          @http: Transfer::HTTP
+
+          def call: (mod_specs: Array[String], ?directory: String, ?jobs: Integer) -> void
+
+          private
+
+          def download_with_multi_progress: (Array[String] mod_specs, Pathname download_dir, Integer jobs) -> void
+
+          def create_multi_progress_handler: (Progress::MultiBar multi_bar, String mod_name, String file_name) -> ProgressHandler
+
+          def parse_mod_spec: (String mod_spec) -> [String, String]
+
+          def find_release: (Types::MODInfo mod_info, String version) -> Types::Release?
+
+          def validate_filename: (String filename) -> void
+        end
+      end
+    end
+  end
+end

@@ -22,6 +22,13 @@ module Factorix
     extend Dry::Container::Mixin
     extend Dry::Configurable
 
+    # Some items are registered with memoize: false to support parallel downloads.
+    # Items registered with memoize: false:
+    # - :http
+    # - :downloader
+    # - :mod_download_api
+    # - :portal
+
     # Register runtime detector
     register(:runtime) do
       Factorix::Runtime.detect
@@ -67,12 +74,12 @@ module Factorix
     end
 
     # Register HTTP client
-    register(:http) do
+    register(:http, memoize: false) do
       Factorix::Transfer::HTTP.new
     end
 
     # Register downloader
-    register(:downloader) do
+    register(:downloader, memoize: false) do
       Factorix::Transfer::Downloader.new
     end
 
@@ -100,12 +107,12 @@ module Factorix
     end
 
     # Register mod download API client
-    register(:mod_download_api) do
+    register(:mod_download_api, memoize: false) do
       Factorix::API::MODDownloadAPI.new
     end
 
     # Register portal (high-level API wrapper)
-    register(:portal) do
+    register(:portal, memoize: false) do
       Factorix::Portal.new
     end
 
