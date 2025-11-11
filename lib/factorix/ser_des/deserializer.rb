@@ -158,11 +158,6 @@ module Factorix
       # @see https://wiki.factorio.com/Property_tree#List
       alias read_list read_dictionary
 
-      RGBA = %w[r g b a].freeze
-      private_constant :RGBA
-      RGBA_SORTED = RGBA.sort.freeze
-      private_constant :RGBA_SORTED
-
       # Read a property tree
       #
       # @raise [Factorix::UnknownPropertyType] If the property type is not supported
@@ -186,13 +181,7 @@ module Factorix
         when 4
           read_list
         when 5
-          dict = read_dictionary
-          if dict.keys.sort == RGBA_SORTED
-            # convert {"r": RR, "g": GG, "b": BB, "a": AA } to "rgba:RRGGBBAA"
-            "rgba:%02x%02x%02x%02x" % RGBA.map {|k| dict[k] * 255 }
-          else
-            dict
-          end
+          read_dictionary
         when 6
           # Handle type 6 - Signed integer
           #

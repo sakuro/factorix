@@ -17,13 +17,13 @@ RSpec.describe Factorix::MODSettings do
       },
       "runtime-global" => {
         "mod-c-setting-1" => {"value" => "value"},
-        "mod-c-setting-2" => {"value" => "rgba:ff0000ff"},
+        "mod-c-setting-2" => {"value" => {"r" => 1.0, "g" => 0.0, "b" => 0.0, "a" => 1.0}},
         "mod-c-setting-3" => {"value" => Factorix::Types::UnsignedInteger.new(100)}
       },
       "runtime-per-user" => {
         "mod-d-setting-1" => {"value" => Factorix::Types::UnsignedInteger.new(50)},
-        "mod-d-setting-2" => {"value" => "rgba:ef6666ff"},
-        "mod-e-setting-1" => {"value" => "rgba:00ef00ff"},
+        "mod-d-setting-2" => {"value" => {"r" => 239 / 255.0, "g" => 102 / 255.0, "b" => 102 / 255.0, "a" => 1.0}},
+        "mod-e-setting-1" => {"value" => {"r" => 0.0, "g" => 239 / 255.0, "b" => 0.0, "a" => 1.0}},
         "mod-e-setting-2" => {"value" => false},
         "mod-e-setting-3" => {"value" => 2.5}
       }

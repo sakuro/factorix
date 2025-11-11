@@ -203,18 +203,10 @@ module Factorix
           write_bool(false)
           write_double(obj)
         when String
-          case obj
-          when /\Argba:(?<r>\h{2})(?<g>\h{2})(?<b>\h{2})(?<a>\h{2})\z/
-            # convert "rgba:RRGGBBAA" to {"r": RR, "g": GG, "b": BB, "a": AA }"
-            write_u8(5)
-            write_bool(false)
-            write_dictionary(%w[r g b a].each_with_object({}) {|k, dict| dict[k] = $~[k].to_i(16) / 255.0 })
-          else
-            # Type 3 - String
-            write_u8(3)
-            write_bool(false)
-            write_str_property(obj)
-          end
+          # Type 3 - String
+          write_u8(3)
+          write_bool(false)
+          write_str_property(obj)
         when Array
           # Type 4 - List
           write_u8(4)
