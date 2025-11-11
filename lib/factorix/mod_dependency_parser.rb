@@ -105,15 +105,15 @@ module Factorix
 
         # Extract values from parsed data
         mod_name = data[:mod_name]
-        mod = MOD.new(name: mod_name)
+        mod = MOD[name: mod_name]
         type = data.dig(:prefix, :type) || MODDependency::REQUIRED
         version_requirement = build_version_requirement(data[:requirement])
 
-        MODDependency.new(
+        MODDependency[
           mod:,
           type:,
           version_requirement:
-        )
+        ]
       rescue Parslet::ParseFailed => e
         raise ArgumentError, parse_error_message(dependency_string, e)
       end
@@ -126,7 +126,7 @@ module Factorix
       version_string = requirement_data[:version]
 
       version = Types::MODVersion.from_string(version_string)
-      Types::MODVersionRequirement.new(operator:, version:)
+      Types::MODVersionRequirement[operator:, version:]
     rescue ArgumentError => e
       raise ArgumentError, "Invalid version requirement: #{e.message}"
     end

@@ -21,9 +21,9 @@ module Factorix
     def self.load(from: Factorix::Application[:runtime].mod_list_path)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
-        mod = Factorix::MOD.new(name: entry[:name])
+        mod = Factorix::MOD[name: entry[:name]]
         version = entry[:version] ? Factorix::Types::MODVersion.from_string(entry[:version]) : nil
-        state = Factorix::MODState.new(enabled: entry[:enabled], version:)
+        state = Factorix::MODState[enabled: entry[:enabled], version:]
 
         # Validate that base MOD is not disabled
         if mod.base? && !entry[:enabled]
@@ -102,7 +102,7 @@ module Factorix
     def add(mod, enabled: true, version: nil)
       raise ArgumentError, "can't disable the base MOD" if mod.base? && enabled == false
 
-      @mods[mod] = MODState.new(enabled:, version:)
+      @mods[mod] = MODState[enabled:, version:]
     end
 
     # Remove the MOD from the list
@@ -156,7 +156,7 @@ module Factorix
 
       # Create a new MODState with enabled=true and the same version
       current_state = @mods[mod]
-      @mods[mod] = MODState.new(enabled: true, version: current_state.version)
+      @mods[mod] = MODState[enabled: true, version: current_state.version]
     end
 
     # Disable the MOD
@@ -171,7 +171,7 @@ module Factorix
 
       # Create a new MODState with enabled=false and the same version
       current_state = @mods[mod]
-      @mods[mod] = MODState.new(enabled: false, version: current_state.version)
+      @mods[mod] = MODState[enabled: false, version: current_state.version]
     end
   end
 end

@@ -15,9 +15,9 @@ module Factorix
     # @return [void]
     #
     # @example Creating a MODState
-    #   state = Factorix::MODState.new(enabled: true)
+    #   state = Factorix::MODState[enabled: true]
     #   version = Factorix::Types::MODVersion.from_string("1.2.3")
-    #   state = Factorix::MODState.new(enabled: false, version: version)
+    #   state = Factorix::MODState[enabled: false, version: version]
     def initialize(enabled:, version: nil)
       super
     end

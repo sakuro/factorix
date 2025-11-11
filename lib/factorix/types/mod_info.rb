@@ -133,8 +133,8 @@ module Factorix
           homepage = parse_homepage(homepage)
           faq ||= ""
           tags = (tags || []).map {|tag_value| Tag.for(tag_value) }
-          license = license ? License.new(**license) : nil
-          images = (images || []).map {|img| Image.new(**img) }
+          license = license ? License[**license] : nil
+          images = (images || []).map {|img| Image[**img] }
           deprecated ||= false
 
           super
@@ -185,8 +185,8 @@ module Factorix
         category = Category.for(category || "")
         score ||= 0.0
         thumbnail = thumbnail ? build_thumbnail_uri(thumbnail) : nil
-        latest_release = latest_release ? Release.new(**latest_release) : nil
-        releases = (releases || []).map {|r| Release.new(**r) }
+        latest_release = latest_release ? Release[**latest_release] : nil
+        releases = (releases || []).map {|r| Release[**r] }
 
         # Filter detail_fields to only include keys that Detail.new accepts
         # Exclude deprecated fields like github_path

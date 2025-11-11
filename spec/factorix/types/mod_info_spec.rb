@@ -4,7 +4,7 @@ RSpec.describe Factorix::Types::MODInfo do
   describe "#initialize" do
     context "with list API response (basic fields + latest_release)" do
       it "creates MODInfo with default values for missing fields" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "test-mod",
           title: "Test Mod",
           owner: "testuser",
@@ -17,7 +17,7 @@ RSpec.describe Factorix::Types::MODInfo do
             version: "1.0.0",
             sha1: "abc123"
           }
-        )
+        ]
 
         expect(mod_info.name).to eq("test-mod")
         expect(mod_info.title).to eq("Test Mod")
@@ -36,7 +36,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with list API response including optional fields" do
       it "creates MODInfo with provided values" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "test-mod",
           title: "Test Mod",
           owner: "testuser",
@@ -55,7 +55,7 @@ RSpec.describe Factorix::Types::MODInfo do
               sha1: "abc123"
             }
           ]
-        )
+        ]
 
         expect(mod_info.summary).to eq("A test mod")
         expect(mod_info.category.value).to eq("content")
@@ -70,7 +70,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with Short API response" do
       it "creates MODInfo without detail" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "short-mod",
           title: "Short Mod",
           owner: "owner",
@@ -80,7 +80,7 @@ RSpec.describe Factorix::Types::MODInfo do
           score: 0.9,
           thumbnail: "/assets/short.png",
           releases: []
-        )
+        ]
 
         expect(mod_info.name).to eq("short-mod")
         expect(mod_info.detail).to be_nil
@@ -88,14 +88,14 @@ RSpec.describe Factorix::Types::MODInfo do
       end
 
       it "does not create detail when only some detail fields are present" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "partial-mod",
           title: "Partial Mod",
           owner: "owner",
           downloads_count: 100,
           created_at: "2024-01-01T00:00:00.000000Z"
           # Missing updated_at and homepage
-        )
+        ]
 
         expect(mod_info.detail).to be_nil
       end
@@ -103,7 +103,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with Full API response" do
       it "creates MODInfo with Detail" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "full-mod",
           title: "Full Mod",
           owner: "owner",
@@ -137,7 +137,7 @@ RSpec.describe Factorix::Types::MODInfo do
             }
           ],
           deprecated: true
-        )
+        ]
 
         expect(mod_info.detail).to be_a(Factorix::Types::MODInfo::Detail)
         expect(mod_info.detail.changelog).to eq("Version 1.0.0:\n  - Initial release")
@@ -162,7 +162,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with Full API response and missing optional Detail fields" do
       it "uses default values for missing fields" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "minimal-full",
           title: "Minimal Full",
           owner: "owner",
@@ -170,7 +170,7 @@ RSpec.describe Factorix::Types::MODInfo do
           created_at: "2024-01-01T00:00:00.000000Z",
           updated_at: "2025-01-01T00:00:00.000000Z",
           homepage: "https://example.com"
-        )
+        ]
 
         expect(mod_info.detail).to be_a(Factorix::Types::MODInfo::Detail)
         expect(mod_info.detail.changelog).to eq("") # Default
@@ -188,7 +188,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with invalid homepage URL" do
       it "falls back to String for invalid URI" do
-        mod_info = Factorix::Types::MODInfo.new(
+        mod_info = Factorix::Types::MODInfo[
           name: "test-mod",
           title: "Test",
           owner: "owner",
@@ -196,7 +196,7 @@ RSpec.describe Factorix::Types::MODInfo do
           created_at: "2024-01-01T00:00:00.000000Z",
           updated_at: "2025-01-01T00:00:00.000000Z",
           homepage: "not a valid url but some text"
-        )
+        ]
 
         expect(mod_info.detail.homepage).to be_a(String)
         expect(mod_info.detail.homepage).to eq("not a valid url but some text")
@@ -206,33 +206,33 @@ RSpec.describe Factorix::Types::MODInfo do
 
   describe "Detail#deprecated?" do
     it "returns true when deprecated is true" do
-      detail = described_class::Detail.new(
+      detail = described_class::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
         deprecated: true
-      )
+      ]
 
       expect(detail.deprecated?).to be(true)
     end
 
     it "returns false when deprecated is false" do
-      detail = described_class::Detail.new(
+      detail = described_class::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
         deprecated: false
-      )
+      ]
 
       expect(detail.deprecated?).to be(false)
     end
 
     it "returns false when deprecated is nil (default)" do
-      detail = described_class::Detail.new(
+      detail = described_class::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com"
-      )
+      ]
 
       expect(detail.deprecated?).to be(false)
     end

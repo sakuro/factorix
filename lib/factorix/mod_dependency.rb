@@ -11,17 +11,17 @@ module Factorix
   #
   # @example Creating dependencies
   #   # Required dependency on base MOD
-  #   base_mod = MOD.new(name: "base")
-  #   dep1 = MODDependency.new(mod: base_mod, type: :required, version_requirement: nil)
+  #   base_mod = MOD[name: "base"]
+  #   dep1 = MODDependency[mod: base_mod, type: :required, version_requirement: nil]
   #
   #   # Optional dependency with version requirement
-  #   some_mod = MOD.new(name: "some-mod")
-  #   requirement = Types::MODVersionRequirement.new(operator: ">=", version: Types::MODVersion.from_string("1.2.0"))
-  #   dep2 = MODDependency.new(mod: some_mod, type: :optional, version_requirement: requirement)
+  #   some_mod = MOD[name: "some-mod"]
+  #   requirement = Types::MODVersionRequirement[operator: ">=", version: Types::MODVersion.from_string("1.2.0")]
+  #   dep2 = MODDependency[mod: some_mod, type: :optional, version_requirement: requirement]
   #
   #   # Incompatible MOD
-  #   bad_mod = MOD.new(name: "bad-mod")
-  #   dep3 = MODDependency.new(mod: bad_mod, type: :incompatible, version_requirement: nil)
+  #   bad_mod = MOD[name: "bad-mod"]
+  #   dep3 = MODDependency[mod: bad_mod, type: :incompatible, version_requirement: nil]
   class MODDependency
     # Dependency type constants
     REQUIRED = :required

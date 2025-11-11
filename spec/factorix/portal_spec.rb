@@ -115,14 +115,14 @@ RSpec.describe Factorix::Portal do
 
   describe "#download_mod" do
     let(:release) do
-      Factorix::Types::Release.new(
+      Factorix::Types::Release[
         download_url: "/download/test-mod/1.0.0",
         file_name: "test-mod_1.0.0.zip",
         info_json: {},
         released_at: "2025-01-01T00:00:00Z",
         version: "1.0.0",
         sha1: "abc123"
-      )
+      ]
     end
 
     it "downloads the mod file to the specified path" do

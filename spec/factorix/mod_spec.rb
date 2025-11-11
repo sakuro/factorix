@@ -3,42 +3,42 @@
 RSpec.describe Factorix::MOD do
   describe "#initialize" do
     it "creates a MOD with a name" do
-      mod = Factorix::MOD.new(name: "example-mod")
+      mod = Factorix::MOD[name: "example-mod"]
       expect(mod.name).to eq("example-mod")
     end
   end
 
   describe "#base?" do
     it "returns true for the base MOD" do
-      mod = Factorix::MOD.new(name: "base")
+      mod = Factorix::MOD[name: "base"]
       expect(mod.base?).to be(true)
     end
 
     it "returns false for non-base MODs" do
-      mod = Factorix::MOD.new(name: "example-mod")
+      mod = Factorix::MOD[name: "example-mod"]
       expect(mod.base?).to be(false)
     end
 
     it "is case-sensitive" do
       aggregate_failures "case-sensitive base check" do
-        expect(Factorix::MOD.new(name: "BASE").base?).to be(false)
-        expect(Factorix::MOD.new(name: "Base").base?).to be(false)
+        expect(Factorix::MOD[name: "BASE"].base?).to be(false)
+        expect(Factorix::MOD[name: "Base"].base?).to be(false)
       end
     end
   end
 
   describe "#to_s" do
     it "returns the name of the MOD" do
-      mod = Factorix::MOD.new(name: "example-mod")
+      mod = Factorix::MOD[name: "example-mod"]
       expect(mod.to_s).to eq("example-mod")
     end
   end
 
   describe "#<=>" do
-    let(:base_mod) { Factorix::MOD.new(name: "base") }
-    let(:mod_a) { Factorix::MOD.new(name: "a-mod") }
-    let(:mod_b) { Factorix::MOD.new(name: "b-mod") }
-    let(:mod_a_dup) { Factorix::MOD.new(name: "a-mod") }
+    let(:base_mod) { Factorix::MOD[name: "base"] }
+    let(:mod_a) { Factorix::MOD[name: "a-mod"] }
+    let(:mod_b) { Factorix::MOD[name: "b-mod"] }
+    let(:mod_a_dup) { Factorix::MOD[name: "a-mod"] }
 
     it "considers equal MODs as equal" do
       expect(mod_a <=> mod_a_dup).to eq(0)
@@ -55,7 +55,7 @@ RSpec.describe Factorix::MOD do
     end
 
     it "considers two base MODs as equal" do
-      other_base = Factorix::MOD.new(name: "base")
+      other_base = Factorix::MOD[name: "base"]
       expect(base_mod <=> other_base).to eq(0)
     end
 
@@ -73,10 +73,10 @@ RSpec.describe Factorix::MOD do
   describe "sorting" do
     it "sorts MODs with base first" do
       mods = [
-        Factorix::MOD.new(name: "z-mod"),
-        Factorix::MOD.new(name: "base"),
-        Factorix::MOD.new(name: "a-mod"),
-        Factorix::MOD.new(name: "m-mod")
+        Factorix::MOD[name: "z-mod"],
+        Factorix::MOD[name: "base"],
+        Factorix::MOD[name: "a-mod"],
+        Factorix::MOD[name: "m-mod"]
       ]
 
       sorted = mods.sort
@@ -86,7 +86,7 @@ RSpec.describe Factorix::MOD do
 
   describe "immutability" do
     it "is frozen after creation" do
-      mod = Factorix::MOD.new(name: "example-mod")
+      mod = Factorix::MOD[name: "example-mod"]
       expect(mod).to be_frozen
     end
   end

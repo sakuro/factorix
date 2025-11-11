@@ -3,16 +3,16 @@
 require "tempfile"
 
 RSpec.describe Factorix::MODList do
-  let(:base_mod) { Factorix::MOD.new(name: "base") }
-  let(:enabled_mod) { Factorix::MOD.new(name: "enabled-mod") }
-  let(:disabled_mod) { Factorix::MOD.new(name: "disabled-mod") }
-  let(:non_listed_mod) { Factorix::MOD.new(name: "non-listed-mod") }
+  let(:base_mod) { Factorix::MOD[name: "base"] }
+  let(:enabled_mod) { Factorix::MOD[name: "enabled-mod"] }
+  let(:disabled_mod) { Factorix::MOD[name: "disabled-mod"] }
+  let(:non_listed_mod) { Factorix::MOD[name: "non-listed-mod"] }
 
-  let(:base_state) { Factorix::MODState.new(enabled: true) }
+  let(:base_state) { Factorix::MODState[enabled: true] }
   let(:enabled_state) do
-    Factorix::MODState.new(enabled: true, version: Factorix::Types::MODVersion.from_string("1.0.0"))
+    Factorix::MODState[enabled: true, version: Factorix::Types::MODVersion.from_string("1.0.0")]
   end
-  let(:disabled_state) { Factorix::MODState.new(enabled: false) }
+  let(:disabled_state) { Factorix::MODState[enabled: false] }
 
   let(:list_path) { Pathname("spec/fixtures/mod-list/list.json") }
   let(:list) { Factorix::MODList.load(from: list_path) }

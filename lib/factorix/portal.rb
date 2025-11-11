@@ -38,7 +38,7 @@ module Factorix
     # @return [Array<Types::MODInfo>] array of MODInfo objects
     def list_mods(...)
       response = mod_portal_api.get_mods(...)
-      response[:results].map {|mod_data| Types::MODInfo.new(**mod_data) }
+      response[:results].map {|mod_data| Types::MODInfo[**mod_data] }
     end
 
     # Get basic information for a specific mod (Short API)
@@ -47,7 +47,7 @@ module Factorix
     # @return [Types::MODInfo] MODInfo object (without Detail)
     def get_mod(name)
       data = mod_portal_api.get_mod(name)
-      Types::MODInfo.new(**data)
+      Types::MODInfo[**data]
     end
 
     # Get full information for a specific mod (Full API)
@@ -56,7 +56,7 @@ module Factorix
     # @return [Types::MODInfo] MODInfo object (with Detail if available)
     def get_mod_full(name)
       data = mod_portal_api.get_mod_full(name)
-      Types::MODInfo.new(**data)
+      Types::MODInfo[**data]
     end
 
     # Download a mod release file

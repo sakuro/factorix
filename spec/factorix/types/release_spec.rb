@@ -18,7 +18,7 @@ RSpec.describe Factorix::Types::Release do
     end
 
     it "creates Release from hash with keyword arguments" do
-      release = Factorix::Types::Release.new(**release_hash)
+      release = Factorix::Types::Release[**release_hash]
 
       expect(release.download_url).to be_a(URI::HTTPS)
       expect(release.download_url.to_s).to eq("https://mods.factorio.com/download/example-mod/1.0.0")
@@ -30,7 +30,7 @@ RSpec.describe Factorix::Types::Release do
     end
 
     it "converts released_at to UTC Time" do
-      release = Factorix::Types::Release.new(**release_hash)
+      release = Factorix::Types::Release[**release_hash]
 
       expect(release.released_at).to be_a(Time)
       expect(release.released_at.utc?).to be(true)
@@ -39,7 +39,7 @@ RSpec.describe Factorix::Types::Release do
 
     it "handles different time formats" do
       hash = release_hash.merge(released_at: "2024-10-21T12:34:56+09:00")
-      release = Factorix::Types::Release.new(**hash)
+      release = Factorix::Types::Release[**hash]
 
       expect(release.released_at).to be_a(Time)
       expect(release.released_at.utc?).to be(true)

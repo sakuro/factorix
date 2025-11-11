@@ -9,18 +9,18 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
   describe ".new" do
     context "with valid operator" do
       it "creates a requirement with '>=' operator" do
-        requirement = Factorix::Types::MODVersionRequirement.new(operator: ">=", version: version_1_2_0)
+        requirement = Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_2_0]
         expect(requirement.operator).to eq(">=")
         expect(requirement.version).to eq(version_1_2_0)
       end
 
       it "creates a requirement with '=' operator" do
-        requirement = Factorix::Types::MODVersionRequirement.new(operator: "=", version: version_1_2_0)
+        requirement = Factorix::Types::MODVersionRequirement[operator: "=", version: version_1_2_0]
         expect(requirement.operator).to eq("=")
       end
 
       it "creates a requirement with '<' operator" do
-        requirement = Factorix::Types::MODVersionRequirement.new(operator: "<", version: version_1_2_0)
+        requirement = Factorix::Types::MODVersionRequirement[operator: "<", version: version_1_2_0]
         expect(requirement.operator).to eq("<")
       end
     end
@@ -28,13 +28,13 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     context "with invalid operator" do
       it "raises ArgumentError for invalid operator" do
         expect {
-          Factorix::Types::MODVersionRequirement.new(operator: "!=", version: version_1_2_0)
+          Factorix::Types::MODVersionRequirement[operator: "!=", version: version_1_2_0]
         }.to raise_error(ArgumentError, /Invalid operator: !=/)
       end
 
       it "raises ArgumentError for empty operator" do
         expect {
-          Factorix::Types::MODVersionRequirement.new(operator: "", version: version_1_2_0)
+          Factorix::Types::MODVersionRequirement[operator: "", version: version_1_2_0]
         }.to raise_error(ArgumentError, /Invalid operator/)
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     context "with invalid version" do
       it "raises ArgumentError when version is not a MODVersion" do
         expect {
-          Factorix::Types::MODVersionRequirement.new(operator: ">=", version: "1.2.0")
+          Factorix::Types::MODVersionRequirement[operator: ">=", version: "1.2.0"]
         }.to raise_error(ArgumentError, /version must be a MODVersion/)
       end
     end
@@ -50,7 +50,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
 
   describe "#satisfied_by?" do
     context "with '=' operator" do
-      let(:requirement) { Factorix::Types::MODVersionRequirement.new(operator: "=", version: version_1_2_0) }
+      let(:requirement) { Factorix::Types::MODVersionRequirement[operator: "=", version: version_1_2_0] }
 
       it "returns true for equal version" do
         expect(requirement.satisfied_by?(version_1_2_0)).to be(true)
@@ -66,7 +66,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     end
 
     context "with '>=' operator" do
-      let(:requirement) { Factorix::Types::MODVersionRequirement.new(operator: ">=", version: version_1_2_0) }
+      let(:requirement) { Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_2_0] }
 
       it "returns true for equal version" do
         expect(requirement.satisfied_by?(version_1_2_0)).to be(true)
@@ -83,7 +83,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     end
 
     context "with '>' operator" do
-      let(:requirement) { Factorix::Types::MODVersionRequirement.new(operator: ">", version: version_1_2_0) }
+      let(:requirement) { Factorix::Types::MODVersionRequirement[operator: ">", version: version_1_2_0] }
 
       it "returns false for equal version" do
         expect(requirement.satisfied_by?(version_1_2_0)).to be(false)
@@ -100,7 +100,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     end
 
     context "with '<=' operator" do
-      let(:requirement) { Factorix::Types::MODVersionRequirement.new(operator: "<=", version: version_1_2_0) }
+      let(:requirement) { Factorix::Types::MODVersionRequirement[operator: "<=", version: version_1_2_0] }
 
       it "returns true for equal version" do
         expect(requirement.satisfied_by?(version_1_2_0)).to be(true)
@@ -117,7 +117,7 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
     end
 
     context "with '<' operator" do
-      let(:requirement) { Factorix::Types::MODVersionRequirement.new(operator: "<", version: version_1_2_0) }
+      let(:requirement) { Factorix::Types::MODVersionRequirement[operator: "<", version: version_1_2_0] }
 
       it "returns false for equal version" do
         expect(requirement.satisfied_by?(version_1_2_0)).to be(false)
@@ -136,17 +136,17 @@ RSpec.describe Factorix::Types::MODVersionRequirement do
 
   describe "#to_s" do
     it "returns string representation with >= operator" do
-      requirement = Factorix::Types::MODVersionRequirement.new(operator: ">=", version: version_1_2_0)
+      requirement = Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_2_0]
       expect(requirement.to_s).to eq(">= 1.2.0")
     end
 
     it "returns string representation with = operator" do
-      requirement = Factorix::Types::MODVersionRequirement.new(operator: "=", version: version_1_2_0)
+      requirement = Factorix::Types::MODVersionRequirement[operator: "=", version: version_1_2_0]
       expect(requirement.to_s).to eq("= 1.2.0")
     end
 
     it "returns string representation with < operator" do
-      requirement = Factorix::Types::MODVersionRequirement.new(operator: "<", version: version_2_0_0)
+      requirement = Factorix::Types::MODVersionRequirement[operator: "<", version: version_2_0_0]
       expect(requirement.to_s).to eq("< 2.0.0")
     end
   end

@@ -3,13 +3,13 @@
 RSpec.describe Factorix::Types::License do
   describe "#initialize" do
     it "creates a License with URI object for url" do
-      license = Factorix::Types::License.new(
+      license = Factorix::Types::License[
         id: "mit",
         name: "MIT",
         title: "MIT License",
         description: "A permissive license",
         url: "https://opensource.org/licenses/MIT"
-      )
+      ]
 
       expect(license.id).to eq("mit")
       expect(license.name).to eq("MIT")

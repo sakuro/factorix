@@ -11,7 +11,7 @@ module Factorix
     # It supports the following comparison operators: <, <=, =, >=, >
     #
     # @example Creating a version requirement
-    #   requirement = MODVersionRequirement.new(operator: ">=", version: MODVersion.from_string("1.2.0"))
+    #   requirement = MODVersionRequirement[operator: ">=", version: MODVersion.from_string("1.2.0")]
     #   requirement.satisfied_by?(MODVersion.from_string("1.3.0")) # => true
     #   requirement.satisfied_by?(MODVersion.from_string("1.1.0")) # => false
     class MODVersionRequirement
