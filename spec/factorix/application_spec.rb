@@ -11,6 +11,40 @@ RSpec.describe Factorix::Application do
       end
     end
 
+    describe "[:logger]" do
+      it "resolves to a Logger instance" do
+        logger = Factorix::Application[:logger]
+        expect(logger).to be_a(Logger)
+      end
+
+      it "uses log level from configuration" do
+        original_level = Factorix::Application.config.log_level
+
+        Factorix::Application.config.log_level = :debug
+        # Force re-registration by calling resolve directly
+        logger = Factorix::Application.resolve(:logger)
+        expect(logger.level).to eq(Logger::DEBUG)
+
+        Factorix::Application.config.log_level = :warn
+        logger = Factorix::Application.resolve(:logger)
+        expect(logger.level).to eq(Logger::WARN)
+
+        Factorix::Application.config.log_level = original_level
+      end
+
+      it "formats messages with timestamp and severity" do
+        logger = Factorix::Application[:logger]
+        output = StringIO.new
+        logger.instance_variable_set(:@logdev, Logger::LogDevice.new(output))
+
+        logger.info("test message")
+        output.rewind
+        log_output = output.read
+
+        expect(log_output).to match(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] INFO: test message/)
+      end
+    end
+
     describe "[:download_cache]" do
       it "resolves to a Cache::FileSystem instance" do
         download_cache = Factorix::Application[:download_cache]

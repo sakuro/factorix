@@ -106,17 +106,17 @@ Authentication credentials for API access.
 
 **Dependencies**: Runtime
 
-### 2.2 Application
+### 2.2 Application ✅ COMPLETED
 
 DI container and configuration management.
 
 - [x] `application.rb` - dry-container + dry-configurable
   - [x] Configuration settings (cache_dir, log_level, http timeouts)
-  - [x] Container registration (runtime)
-  - [ ] Container registration (cache, logger, retry_strategy, credentials) - deferred
+  - [x] Container registration (runtime, logger, retry_strategy, cache, credentials)
+  - [x] Logger with configurable log level and timestamp formatting
   - [x] Load configuration from `Runtime#factorix_config_path`
 - [x] `Import = Dry::AutoInject(Factorix::Application)` for DI
-- [x] Tests: `spec/factorix/application_spec.rb`
+- [x] Tests: `spec/factorix/application_spec.rb` (30 examples)
 - [x] RBS: `sig/factorix/application.rbs`
 - [x] RBS: Minimal dry-rb type definitions
 

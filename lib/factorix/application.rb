@@ -2,6 +2,7 @@
 
 require "dry-configurable"
 require "dry-container"
+require "logger"
 
 module Factorix
   # Application container and configuration
@@ -24,6 +25,16 @@ module Factorix
     # Register runtime detector
     register(:runtime) do
       Factorix::Runtime.detect
+    end
+
+    # Register logger
+    register(:logger) do
+      logger = Logger.new($stderr)
+      logger.level = Logger.const_get(config.log_level.to_s.upcase)
+      logger.formatter = proc do |severity, datetime, _progname, msg|
+        "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity}: #{msg}\n"
+      end
+      logger
     end
 
     # Register retry strategy for network operations
