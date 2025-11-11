@@ -83,11 +83,12 @@ module Factorix
 
     # Register service credential
     register(:service_credential) do
+      runtime = resolve(:runtime)
       case config.credential.source
       when :env
         Factorix::ServiceCredential.from_env
       when :player_data
-        Factorix::ServiceCredential.from_player_data
+        Factorix::ServiceCredential.from_player_data(runtime:)
       else
         raise ArgumentError, "Invalid credential source: #{config.credential.source}"
       end

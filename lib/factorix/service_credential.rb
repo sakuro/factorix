@@ -35,11 +35,11 @@ module Factorix
 
     # Create a new ServiceCredential instance from player-data.json
     #
+    # @param runtime [Factorix::Runtime::Base] runtime instance
     # @return [ServiceCredential] new instance with credentials from player-data.json
     # @raise [Errno::ENOENT] if player-data.json does not exist
     # @raise [ArgumentError] if username or token is missing in player-data.json
-    def self.from_player_data
-      runtime = Factorix::Application[:runtime]
+    def self.from_player_data(runtime:)
       player_data_path = runtime.player_data_path
       data = JSON.parse(player_data_path.read)
 

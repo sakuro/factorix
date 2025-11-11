@@ -59,7 +59,7 @@ RSpec.describe Factorix::ServiceCredential do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      credential = Factorix::ServiceCredential.from_player_data
+      credential = Factorix::ServiceCredential.from_player_data(runtime:)
       expect(credential.username).to eq("json_user")
       expect(credential.token).to eq("json_token")
     end
@@ -72,7 +72,7 @@ RSpec.describe Factorix::ServiceCredential do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      expect { Factorix::ServiceCredential.from_player_data }.to raise_error(ArgumentError, "service-username is missing in player-data.json")
+      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-username is missing in player-data.json")
     end
 
     it "raises ArgumentError when service-username is empty" do
@@ -84,7 +84,7 @@ RSpec.describe Factorix::ServiceCredential do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      expect { Factorix::ServiceCredential.from_player_data }.to raise_error(ArgumentError, "service-username is empty in player-data.json")
+      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-username is empty in player-data.json")
     end
 
     it "raises ArgumentError when service-token is missing" do
@@ -95,7 +95,7 @@ RSpec.describe Factorix::ServiceCredential do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      expect { Factorix::ServiceCredential.from_player_data }.to raise_error(ArgumentError, "service-token is missing in player-data.json")
+      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-token is missing in player-data.json")
     end
 
     it "raises ArgumentError when service-token is empty" do
@@ -107,14 +107,14 @@ RSpec.describe Factorix::ServiceCredential do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      expect { Factorix::ServiceCredential.from_player_data }.to raise_error(ArgumentError, "service-token is empty in player-data.json")
+      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-token is empty in player-data.json")
     end
 
     it "raises Errno::ENOENT when player-data.json does not exist" do
       allow(runtime).to receive(:player_data_path).and_return(player_data_path)
       allow(player_data_path).to receive(:read).and_raise(Errno::ENOENT)
 
-      expect { Factorix::ServiceCredential.from_player_data }.to raise_error(Errno::ENOENT)
+      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(Errno::ENOENT)
     end
   end
 end
