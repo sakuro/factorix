@@ -4,6 +4,8 @@ require "simplecov"
 SimpleCov.start
 
 require "factorix"
+require "fileutils"
+require "tmpdir"
 require "webmock/rspec"
 
 # Load support files
@@ -18,5 +20,45 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  # Isolate XDG directories for tests to prevent reading user's config files
+  # and polluting user's cache/data/state directories
+  config.before(:suite) do
+    # Save original environment variables
+    @original_xdg_env = {
+      "XDG_CONFIG_HOME" => ENV.fetch("XDG_CONFIG_HOME", nil),
+      "XDG_CACHE_HOME" => ENV.fetch("XDG_CACHE_HOME", nil),
+      "XDG_DATA_HOME" => ENV.fetch("XDG_DATA_HOME", nil),
+      "XDG_STATE_HOME" => ENV.fetch("XDG_STATE_HOME", nil)
+    }
+
+    # Create temporary directory for test suite
+    @test_tmpdir = Dir.mktmpdir("factorix-test-")
+
+    # Set test-specific XDG directories
+    ENV["XDG_CONFIG_HOME"] = File.join(@test_tmpdir, "config")
+    ENV["XDG_CACHE_HOME"] = File.join(@test_tmpdir, "cache")
+    ENV["XDG_DATA_HOME"] = File.join(@test_tmpdir, "data")
+    ENV["XDG_STATE_HOME"] = File.join(@test_tmpdir, "state")
+
+    # Reset Application cache directory configuration
+    runtime = Factorix::Application.resolve(:runtime)
+    Factorix::Application.config.cache.download.dir = runtime.factorix_cache_dir / "download"
+    Factorix::Application.config.cache.api.dir = runtime.factorix_cache_dir / "api"
+  end
+
+  config.after(:suite) do
+    # Restore original environment variables
+    @original_xdg_env&.each do |key, value|
+      if value.nil?
+        ENV.delete(key)
+      else
+        ENV[key] = value
+      end
+    end
+
+    # Clean up temporary directory
+    FileUtils.rm_rf(@test_tmpdir) if @test_tmpdir && File.exist?(@test_tmpdir)
   end
 end
