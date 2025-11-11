@@ -283,7 +283,7 @@ Value objects using Data.define (Ruby 3.2+).
 
 **Dependencies**: None (pure data structures)
 
-### 4.2 MOD Dependencies (Partial)
+### 4.2 MOD Dependencies ✅ COMPLETED
 
 Dependency parsing and validation.
 
@@ -301,17 +301,24 @@ Dependency parsing and validation.
   - [x] Parse `! name`, `? name`, `(?) name`, `~name`, `name >= 1.0.0`
   - [x] Parse version requirements with all operators
   - [x] Edge case validation (empty mod name, empty version)
-- [ ] `mod_dependencies.rb` - Dependency collection management
-  - [ ] List required/optional/incompatible dependencies
-  - [ ] Validate compatibility
-  - [ ] Circular dependency detection
+  - [x] Fix Parslet::Slice to String conversion for hash key matching
+- [x] `mod_dependency_list.rb` - Dependency collection management
+  - [x] Enumerable support with filter methods (required, optional, incompatible, load_neutral)
+  - [x] Query methods (depends_on?, incompatible_with?, empty?, size)
+  - [x] Validation methods (satisfied_by?, conflicts_with?, missing_required, unsatisfied_versions)
+  - [x] Circular dependency detection using TSort
+  - [x] Self-dependency detection
+  - [x] Conversion methods (to_a, to_h)
+  - [x] Internal DependencyGraph class for TSort protocol
 - [x] Tests: `spec/factorix/mod_dependency*_spec.rb`
   - [x] 24 examples for MODVersionRequirement
   - [x] 27 examples for MODDependency
   - [x] 26 examples for MODDependencyParser
-  - [x] Total: 77 examples, 0 failures
-- [x] RBS: `sig/factorix/types/mod_version_requirement.rbs`, `sig/factorix/mod_dependency.rbs`, `sig/factorix/mod_dependency_parser.rbs`
-- [x] Zeitwerk inflections: `"mod_dependency"`, `"mod_dependency_parser"`, `"mod_version_requirement"`
+  - [x] 60 examples for MODDependencyList
+  - [x] Total: 137 examples, 0 failures
+  - [x] Line Coverage: 98.04%, Branch Coverage: 89.18%
+- [x] RBS: `sig/factorix/types/mod_version_requirement.rbs`, `sig/factorix/mod_dependency.rbs`, `sig/factorix/mod_dependency_parser.rbs`, `sig/factorix/mod_dependency_list.rbs`
+- [x] Zeitwerk inflections: `"mod_dependency"`, `"mod_dependency_list"`, `"mod_dependency_parser"`, `"mod_version_requirement"`
 
 **Reference**: `factorix.old/lib/factorix/mod_dependency*.rb`
 

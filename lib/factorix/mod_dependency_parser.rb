@@ -104,7 +104,7 @@ module Factorix
         data = @transform.apply(tree)
 
         # Extract values from parsed data
-        mod_name = data[:mod_name]
+        mod_name = data[:mod_name].to_s
         mod = MOD[name: mod_name]
         type = data.dig(:prefix, :type) || MODDependency::REQUIRED
         version_requirement = build_version_requirement(data[:requirement])

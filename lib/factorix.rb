@@ -19,6 +19,7 @@ module Factorix
     "mac_os" => "MacOS",
     "mod" => "MOD",
     "mod_dependency" => "MODDependency",
+    "mod_dependency_list" => "MODDependencyList",
     "mod_dependency_parser" => "MODDependencyParser",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
