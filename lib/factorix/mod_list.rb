@@ -52,7 +52,7 @@ module Factorix
     # @return [void]
     def save(to: Factorix::Application[:runtime].mod_list_path)
       mods_data = @mods.map {|mod, state|
-        data = {name: mod.name, enabled: state.enabled}
+        data = {name: mod.name, enabled: state.enabled?}
         # Only include version in the output if it exists
         data[:version] = state.version.to_s if state.version
         data
@@ -132,7 +132,7 @@ module Factorix
     def enabled?(mod)
       raise MODNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
-      @mods[mod].enabled
+      @mods[mod].enabled?
     end
 
     # Get the version of the MOD
