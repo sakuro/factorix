@@ -1,0 +1,18 @@
+module Factorix
+  module Progress
+    class MultiBar
+      @multi: untyped
+      @bars: Hash[String, untyped]
+
+      def initialize: (?title: String, ?output: IO) -> void
+
+      def register: (String name, title: String, total_size: Integer) -> untyped
+
+      def update: (String name, Integer current_size) -> void
+
+      def finish: (String name) -> void
+
+      def exist?: (String name) -> bool
+    end
+  end
+end

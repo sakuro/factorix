@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "ruby-progressbar"
+require "tty-progressbar"
 
 module Factorix
   module Progress
     # Progress bar implementation for file transfers
     #
     # This class acts as an event listener for Transfer events,
-    # displaying download/upload progress using ruby-progressbar.
+    # displaying download/upload progress using tty-progressbar.
     class Bar
       # Create a new progress bar for file transfers
       #
@@ -32,7 +32,7 @@ module Factorix
       # @param event [Dry::Events::Event] event with current_size payload
       # @return [void]
       def on_download_progress(event)
-        @bar&.progress = event[:current_size]
+        @bar&.current = event[:current_size]
       end
 
       # Handle download completed event
@@ -56,7 +56,7 @@ module Factorix
       # @param event [Dry::Events::Event] event with current_size payload
       # @return [void]
       def on_upload_progress(event)
-        @bar&.progress = event[:current_size]
+        @bar&.current = event[:current_size]
       end
 
       # Handle upload completed event
@@ -68,11 +68,12 @@ module Factorix
       end
 
       private def create_bar(title, total_size)
-        @bar = ProgressBar.create(
-          title:,
+        @bar = TTY::ProgressBar.new(
+          "#{title} [:bar] :percent :byte/:total_byte",
           total: total_size,
-          format: "%t: |%B| %p%% %e",
-          output: @output
+          output: @output,
+          frequency: 1, # Always update (important for testing with StringIO)
+          force: true   # Force output even when not a TTY
         )
       end
     end
