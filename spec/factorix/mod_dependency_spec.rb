@@ -10,31 +10,31 @@ RSpec.describe Factorix::MODDependency do
   describe ".new" do
     context "with valid parameters" do
       it "creates a required dependency without version requirement" do
-        dep = Factorix::MODDependency.new(mod_name: "base", type: :required)
-        expect(dep.mod_name).to eq("base")
+        dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "base"), type: :required)
+        expect(dep.mod.name).to eq("base")
         expect(dep.type).to eq(:required)
         expect(dep.version_requirement).to be_nil
       end
 
       it "creates an optional dependency with version requirement" do
-        dep = Factorix::MODDependency.new(mod_name: "some-mod", type: :optional, version_requirement: requirement)
-        expect(dep.mod_name).to eq("some-mod")
+        dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "some-mod"), type: :optional, version_requirement: requirement)
+        expect(dep.mod.name).to eq("some-mod")
         expect(dep.type).to eq(:optional)
         expect(dep.version_requirement).to eq(requirement)
       end
 
       it "creates an incompatible dependency" do
-        dep = Factorix::MODDependency.new(mod_name: "bad-mod", type: :incompatible)
+        dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "bad-mod"), type: :incompatible)
         expect(dep.type).to eq(:incompatible)
       end
 
       it "creates a hidden optional dependency" do
-        dep = Factorix::MODDependency.new(mod_name: "hidden-mod", type: :hidden)
+        dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "hidden-mod"), type: :hidden)
         expect(dep.type).to eq(:hidden)
       end
 
       it "creates a load-neutral dependency" do
-        dep = Factorix::MODDependency.new(mod_name: "neutral-mod", type: :load_neutral)
+        dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "neutral-mod"), type: :load_neutral)
         expect(dep.type).to eq(:load_neutral)
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe Factorix::MODDependency do
     context "with invalid type" do
       it "raises ArgumentError" do
         expect {
-          Factorix::MODDependency.new(mod_name: "some-mod", type: :invalid)
+          Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "some-mod"), type: :invalid)
         }.to raise_error(ArgumentError, /Invalid dependency type/)
       end
     end
@@ -50,7 +50,7 @@ RSpec.describe Factorix::MODDependency do
     context "with invalid version_requirement" do
       it "raises ArgumentError when not a MODVersionRequirement" do
         expect {
-          Factorix::MODDependency.new(mod_name: "some-mod", type: :required, version_requirement: ">= 1.2.0")
+          Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "some-mod"), type: :required, version_requirement: ">= 1.2.0")
         }.to raise_error(ArgumentError, /version_requirement must be a MODVersionRequirement/)
       end
     end
@@ -58,65 +58,65 @@ RSpec.describe Factorix::MODDependency do
 
   describe "#required?" do
     it "returns true for required dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "base", type: :required)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "base"), type: :required)
       expect(dep.required?).to be(true)
     end
 
     it "returns false for optional dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :optional)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :optional)
       expect(dep.required?).to be(false)
     end
 
     it "returns false for incompatible dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :incompatible)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :incompatible)
       expect(dep.required?).to be(false)
     end
   end
 
   describe "#optional?" do
     it "returns true for optional dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :optional)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :optional)
       expect(dep.optional?).to be(true)
     end
 
     it "returns true for hidden optional dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :hidden)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :hidden)
       expect(dep.optional?).to be(true)
     end
 
     it "returns false for required dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :required)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :required)
       expect(dep.optional?).to be(false)
     end
   end
 
   describe "#incompatible?" do
     it "returns true for incompatible dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "bad-mod", type: :incompatible)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "bad-mod"), type: :incompatible)
       expect(dep.incompatible?).to be(true)
     end
 
     it "returns false for required dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :required)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :required)
       expect(dep.incompatible?).to be(false)
     end
   end
 
   describe "#load_neutral?" do
     it "returns true for load-neutral dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :load_neutral)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :load_neutral)
       expect(dep.load_neutral?).to be(true)
     end
 
     it "returns false for required dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "mod", type: :required)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "mod"), type: :required)
       expect(dep.load_neutral?).to be(false)
     end
   end
 
   describe "#satisfied_by?" do
     context "without version requirement" do
-      let(:dep) { Factorix::MODDependency.new(mod_name: "base", type: :required) }
+      let(:dep) { Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "base"), type: :required) }
 
       it "returns true for any version" do
         expect(dep.satisfied_by?(version_1_2_0)).to be(true)
@@ -126,7 +126,7 @@ RSpec.describe Factorix::MODDependency do
 
     context "with version requirement" do
       let(:dep) do
-        Factorix::MODDependency.new(mod_name: "some-mod", type: :required, version_requirement: requirement)
+        Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "some-mod"), type: :required, version_requirement: requirement)
       end
 
       it "returns true when version satisfies requirement" do
@@ -143,37 +143,37 @@ RSpec.describe Factorix::MODDependency do
 
   describe "#to_s" do
     it "returns mod name for required dependency without version" do
-      dep = Factorix::MODDependency.new(mod_name: "base", type: :required)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "base"), type: :required)
       expect(dep.to_s).to eq("base")
     end
 
     it "returns mod name with requirement for required dependency with version" do
-      dep = Factorix::MODDependency.new(mod_name: "some-mod", type: :required, version_requirement: requirement)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "some-mod"), type: :required, version_requirement: requirement)
       expect(dep.to_s).to eq("some-mod >= 1.2.0")
     end
 
     it "returns '? mod-name' for optional dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "opt-mod", type: :optional)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "opt-mod"), type: :optional)
       expect(dep.to_s).to eq("? opt-mod")
     end
 
     it "returns '(?) mod-name' for hidden optional dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "hidden-mod", type: :hidden)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "hidden-mod"), type: :hidden)
       expect(dep.to_s).to eq("(?) hidden-mod")
     end
 
     it "returns '! mod-name' for incompatible dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "bad-mod", type: :incompatible)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "bad-mod"), type: :incompatible)
       expect(dep.to_s).to eq("! bad-mod")
     end
 
     it "returns '~ mod-name' for load-neutral dependency" do
-      dep = Factorix::MODDependency.new(mod_name: "neutral-mod", type: :load_neutral)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "neutral-mod"), type: :load_neutral)
       expect(dep.to_s).to eq("~ neutral-mod")
     end
 
     it "includes version requirement when present" do
-      dep = Factorix::MODDependency.new(mod_name: "opt-mod", type: :optional, version_requirement: requirement)
+      dep = Factorix::MODDependency.new(mod: Factorix::MOD.new(name: "opt-mod"), type: :optional, version_requirement: requirement)
       expect(dep.to_s).to eq("? opt-mod >= 1.2.0")
     end
   end

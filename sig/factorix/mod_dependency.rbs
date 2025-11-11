@@ -6,11 +6,11 @@ module Factorix
     INCOMPATIBLE: Symbol
     LOAD_NEUTRAL: Symbol
 
-    attr_reader mod_name: String
+    attr_reader mod: MOD
     attr_reader type: Symbol
     attr_reader version_requirement: Types::MODVersionRequirement?
 
-    def initialize: (mod_name: String, type: Symbol, ?version_requirement: Types::MODVersionRequirement?) -> void
+    def initialize: (mod: MOD, type: Symbol, ?version_requirement: Types::MODVersionRequirement?) -> void
 
     def required?: () -> bool
     def optional?: () -> bool

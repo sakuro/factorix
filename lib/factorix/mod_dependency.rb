@@ -2,7 +2,7 @@
 
 module Factorix
   # Define MODDependency as an immutable data class
-  MODDependency = Data.define(:mod_name, :type, :version_requirement)
+  MODDependency = Data.define(:mod, :type, :version_requirement)
 
   # Represents a single MOD dependency
   #
@@ -11,14 +11,17 @@ module Factorix
   #
   # @example Creating dependencies
   #   # Required dependency on base MOD
-  #   dep1 = MODDependency.new(mod_name: "base", type: :required, version_requirement: nil)
+  #   base_mod = MOD.new(name: "base")
+  #   dep1 = MODDependency.new(mod: base_mod, type: :required, version_requirement: nil)
   #
   #   # Optional dependency with version requirement
+  #   some_mod = MOD.new(name: "some-mod")
   #   requirement = Types::MODVersionRequirement.new(operator: ">=", version: Types::MODVersion.from_string("1.2.0"))
-  #   dep2 = MODDependency.new(mod_name: "some-mod", type: :optional, version_requirement: requirement)
+  #   dep2 = MODDependency.new(mod: some_mod, type: :optional, version_requirement: requirement)
   #
   #   # Incompatible MOD
-  #   dep3 = MODDependency.new(mod_name: "bad-mod", type: :incompatible, version_requirement: nil)
+  #   bad_mod = MOD.new(name: "bad-mod")
+  #   dep3 = MODDependency.new(mod: bad_mod, type: :incompatible, version_requirement: nil)
   class MODDependency
     # Dependency type constants
     REQUIRED = :required
@@ -37,13 +40,18 @@ module Factorix
 
     # Create a new MODDependency
     #
-    # @param mod_name [String] Name of the dependent MOD
+    # @param mod [MOD] The dependent MOD
     # @param type [Symbol] Type of dependency (:required, :optional, :hidden, :incompatible, :load_neutral)
     # @param version_requirement [Types::MODVersionRequirement, nil] Version requirement (nil if no requirement)
     # @return [MODDependency]
+    # @raise [ArgumentError] if mod is not a MOD instance
     # @raise [ArgumentError] if type is not valid
     # @raise [ArgumentError] if version_requirement is not nil or MODVersionRequirement
-    def initialize(mod_name:, type:, version_requirement: nil)
+    def initialize(mod:, type:, version_requirement: nil)
+      unless mod.is_a?(MOD)
+        raise ArgumentError, "mod must be a MOD instance, got #{mod.class}"
+      end
+
       unless VALID_TYPES.include?(type)
         raise ArgumentError, "Invalid dependency type: #{type}. Must be one of: #{VALID_TYPES.join(", ")}"
       end
@@ -107,7 +115,7 @@ module Factorix
                  raise ArgumentError, "Unexpected dependency type: #{type}"
                end
 
-      result += mod_name
+      result += mod.name
       result += " #{version_requirement}" if version_requirement
       result
     end

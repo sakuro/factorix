@@ -105,11 +105,12 @@ module Factorix
 
         # Extract values from parsed data
         mod_name = data[:mod_name]
+        mod = MOD.new(name: mod_name)
         type = data.dig(:prefix, :type) || MODDependency::REQUIRED
         version_requirement = build_version_requirement(data[:requirement])
 
         MODDependency.new(
-          mod_name:,
+          mod:,
           type:,
           version_requirement:
         )
