@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require "parslet"
+
 module Factorix
-  # Parser for MOD dependency strings
+  # Parser for MOD dependency strings using Parslet
   #
   # This class parses dependency strings from info.json files and converts them
-  # into MODDependency objects.
+  # into MODDependency objects using a PEG-based parser.
   #
   # @example Parsing various dependency formats
   #   parser = MODDependencyParser.new
@@ -24,6 +26,71 @@ module Factorix
   #   # Load-neutral
   #   dep5 = parser.parse("~ neutral-mod")
   class MODDependencyParser
+    # Parslet grammar for dependency strings
+    class Grammar < Parslet::Parser
+      rule(:space) { match['\s'].repeat(1) }
+      rule(:space?) { space.maybe }
+
+      # Prefix rules (longest first to avoid partial matches)
+      rule(:prefix) do
+        str("(?)").as(:hidden_optional) |
+          str("!").as(:incompatible) |
+          str("?").as(:optional) |
+          str("~").as(:load_neutral)
+      end
+
+      # Mod name: alphanumeric, dash, underscore
+      rule(:mod_name) { match["a-zA-Z0-9_-"].repeat(1).as(:mod_name) }
+
+      # Version operators (longest first)
+      rule(:operator) do
+        (str(">=") | str("<=") | str(">") | str("<") | str("=")).as(:operator)
+      end
+
+      # Version: X.Y.Z format
+      rule(:version) do
+        (match["0-9"].repeat(1) >> str(".") >> match["0-9"].repeat(1) >> str(".") >> match["0-9"].repeat(1)).as(:version)
+      end
+
+      # Version requirement: operator space version
+      rule(:version_requirement) do
+        space >> operator >> space >> version
+      end
+
+      # Complete dependency: [prefix] [space] mod_name [version_requirement]
+      rule(:dependency) do
+        space? >>
+          prefix.maybe.as(:prefix) >>
+          space? >>
+          mod_name >>
+          version_requirement.maybe.as(:requirement) >>
+          space?
+      end
+
+      root(:dependency)
+    end
+
+    # Transform parsed tree into structured data
+    class Transform < Parslet::Transform
+      rule(mod_name: simple(:name)) { {mod_name: name.to_s} }
+
+      rule(version: simple(:ver)) { {version: ver.to_s} }
+
+      rule(operator: simple(:op), version: simple(:ver)) do
+        {operator: op.to_s, version: ver.to_s}
+      end
+
+      rule(optional: simple(:_)) { {type: MODDependency::OPTIONAL} }
+      rule(hidden_optional: simple(:_)) { {type: MODDependency::HIDDEN_OPTIONAL} }
+      rule(incompatible: simple(:_)) { {type: MODDependency::INCOMPATIBLE} }
+      rule(load_neutral: simple(:_)) { {type: MODDependency::LOAD_NEUTRAL} }
+    end
+
+    def initialize
+      @grammar = Grammar.new
+      @transform = Transform.new
+    end
+
     # Parse a dependency string into a MODDependency object
     #
     # @param dependency_string [String] Dependency string to parse
@@ -32,98 +99,47 @@ module Factorix
     def parse(dependency_string)
       raise ArgumentError, "dependency_string cannot be nil or empty" if dependency_string.nil? || dependency_string.empty?
 
-      type = determine_type(dependency_string)
-      clean_string = remove_prefix(dependency_string, type)
-      mod_name, version_requirement = parse_mod_name_and_version(clean_string)
+      begin
+        tree = @grammar.parse(dependency_string)
+        data = @transform.apply(tree)
 
-      MODDependency.new(
-        mod_name:,
-        type:,
-        version_requirement:
-      )
-    end
+        # Extract values from parsed data
+        mod_name = data[:mod_name]
+        type = data.dig(:prefix, :type) || MODDependency::REQUIRED
+        version_requirement = build_version_requirement(data[:requirement])
 
-    private def determine_type(dependency_string)
-      if dependency_string.start_with?("!")
-        MODDependency::INCOMPATIBLE
-      elsif dependency_string.start_with?("(?)")
-        MODDependency::HIDDEN_OPTIONAL
-      elsif dependency_string.start_with?("?")
-        MODDependency::OPTIONAL
-      elsif dependency_string.start_with?("~")
-        MODDependency::LOAD_NEUTRAL
-      else
-        MODDependency::REQUIRED
+        MODDependency.new(
+          mod_name:,
+          type:,
+          version_requirement:
+        )
+      rescue Parslet::ParseFailed => e
+        raise ArgumentError, parse_error_message(dependency_string, e)
       end
     end
 
-    # Remove the prefix from the dependency string
-    #
-    # @param dependency_string [String] Dependency string
-    # @param type [Symbol] Dependency type
-    # @return [String] String with prefix removed and whitespace trimmed
-    private def remove_prefix(dependency_string, type)
-      case type
-      when MODDependency::HIDDEN_OPTIONAL
-        dependency_string[3..].strip
-      when MODDependency::INCOMPATIBLE, MODDependency::OPTIONAL, MODDependency::LOAD_NEUTRAL
-        dependency_string[1..].strip
-      else
-        dependency_string.strip
-      end
+    private def build_version_requirement(requirement_data)
+      return nil if requirement_data.nil? || requirement_data.empty?
+
+      operator = requirement_data[:operator]
+      version_string = requirement_data[:version]
+
+      version = Types::MODVersion.from_string(version_string)
+      Types::MODVersionRequirement.new(operator:, version:)
+    rescue ArgumentError => e
+      raise ArgumentError, "Invalid version requirement: #{e.message}"
     end
 
-    # Parse mod name and optional version requirement
-    #
-    # @param clean_string [String] String with prefix removed
-    # @return [Array<String, Types::MODVersionRequirement, nil>] Mod name and optional version requirement
-    # @raise [ArgumentError] if the string format is invalid
-    private def parse_mod_name_and_version(clean_string)
-      # Valid operators in order of length (longest first to avoid partial matches)
-      operators = [">=", "<=", ">", "<", "="]
-
-      # Find the first operator in the string
-      operator_match = nil
-      operator_index = nil
-
-      operators.each do |op|
-        index = clean_string.index(" #{op} ")
-        if index && (operator_index.nil? || index < operator_index)
-          operator_match = op
-          operator_index = index
-        end
-      end
-
-      if operator_index.nil?
-        # No version requirement
-        mod_name = clean_string.strip
-
-        # Check if string starts with an operator (invalid format)
-        operators.each do |op|
-          raise ArgumentError, "Invalid dependency format: empty mod name" if clean_string.strip.start_with?(op)
-
-          # Check if string ends with an operator followed by whitespace (invalid format)
-          if clean_string.rstrip.end_with?(op)
-            raise ArgumentError, "Invalid dependency format: empty version"
-          end
-        end
-
-        [mod_name, nil]
+    private def parse_error_message(input, error)
+      # Check for common error patterns
+      if input.strip.match?(/^[><=]+/)
+        "Invalid dependency format: empty mod name"
+      elsif input.match?(/[><=]\s*$/)
+        "Invalid dependency format: empty version"
+      elsif input.match?(/[><=]\s+\S+$/) && !input.match?(/[><=]\s+\d+\.\d+\.\d+/)
+        "Invalid version requirement: invalid version format"
       else
-        # Extract mod name and version
-        mod_name = clean_string[0...operator_index].strip
-        version_string = clean_string[(operator_index + operator_match.length + 2)..].strip
-
-        raise ArgumentError, "Invalid dependency format: empty mod name" if mod_name.empty?
-        raise ArgumentError, "Invalid dependency format: empty version" if version_string.empty?
-
-        begin
-          version = Types::MODVersion.from_string(version_string)
-          requirement = Types::MODVersionRequirement.new(operator: operator_match, version:)
-          [mod_name, requirement]
-        rescue ArgumentError => e
-          raise ArgumentError, "Invalid version requirement: #{e.message}"
-        end
+        "Invalid dependency format: #{error.parse_failure_cause.ascii_tree}"
       end
     end
   end
