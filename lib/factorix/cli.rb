@@ -14,5 +14,7 @@ module Factorix
     extend Dry::CLI::Registry
 
     register "version", Commands::Version, aliases: ["-v", "--version"]
+    register "mod settings dump", Commands::MOD::Settings::Dump
+    register "mod settings restore", Commands::MOD::Settings::Restore
   end
 end

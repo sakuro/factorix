@@ -63,22 +63,6 @@ RSpec.describe Factorix::MODSettings do
         expect { Factorix::MODSettings.load(from: settings_path) }.to raise_error(Factorix::ExtraDataError)
       end
     end
-
-    context "when from: is not specified" do
-      before do
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
-          instance_double(Factorix::Runtime::Base, mod_settings_path: settings_path)
-        )
-      end
-
-      let(:loaded_settings) { Factorix::MODSettings.load }
-
-      it "loads settings from the default path" do
-        expect(loaded_settings["startup"]).to be_a(Factorix::MODSettings::Section)
-        expect(loaded_settings["runtime-global"]).to be_a(Factorix::MODSettings::Section)
-        expect(loaded_settings["runtime-per-user"]).to be_a(Factorix::MODSettings::Section)
-      end
-    end
   end
 
   describe "#[]" do
@@ -145,22 +129,6 @@ RSpec.describe Factorix::MODSettings do
     context "when to: is specified" do
       it "saves settings to the specified path" do
         settings.save(to: temp_path)
-
-        expect(serializer).to have_received(:write_game_version).with(game_version)
-        expect(serializer).to have_received(:write_bool).with(false)
-        expect(serializer).to have_received(:write_property_tree)
-      end
-    end
-
-    context "when to: is not specified" do
-      before do
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
-          instance_double(Factorix::Runtime::Base, mod_settings_path: temp_path)
-        )
-      end
-
-      it "saves settings to the default path" do
-        settings.save
 
         expect(serializer).to have_received(:write_game_version).with(game_version)
         expect(serializer).to have_received(:write_bool).with(false)

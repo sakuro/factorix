@@ -1,0 +1,17 @@
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        module Settings
+          class Dump < Dry::CLI::Command
+            def call: (?settings_file: String?, ?format: String, ?output: String?, **untyped) -> void
+
+            private
+
+            def converter_for_format: (String format) -> (MODSettings::CSVConverter | MODSettings::JSONConverter | MODSettings::TOMLConverter)
+          end
+        end
+      end
+    end
+  end
+end

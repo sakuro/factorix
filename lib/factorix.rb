@@ -17,7 +17,9 @@ module Factorix
     "api" => "API",
     "api_credential" => "APICredential",
     "cli" => "CLI",
+    "csv_converter" => "CSVConverter",
     "http" => "HTTP",
+    "json_converter" => "JSONConverter",
     "mac_os" => "MacOS",
     "mod" => "MOD",
     "mod_dependency" => "MODDependency",
@@ -31,6 +33,7 @@ module Factorix
     "mod_state" => "MODState",
     "mod_version" => "MODVersion",
     "mod_version_requirement" => "MODVersionRequirement",
+    "toml_converter" => "TOMLConverter",
     "wsl" => "WSL"
   )
   loader.setup

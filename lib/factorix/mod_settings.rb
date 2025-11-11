@@ -8,7 +8,7 @@ module Factorix
   class MODSettings
     # Valid section names
     VALID_SECTIONS = %w[startup runtime-global runtime-per-user].freeze
-    private_constant :VALID_SECTIONS
+    public_constant :VALID_SECTIONS
 
     # Represents a section in MOD settings
     class Section
@@ -124,7 +124,7 @@ module Factorix
     #
     # @param from [Pathname] Path to the MOD settings file
     # @return [MODSettings] New MODSettings instance
-    def self.load(from: Factorix::Application[:runtime].mod_settings_path)
+    def self.load(from:)
       from.open("rb") do |io|
         game_version, sections = load_settings_from_io(io)
         new(game_version, sections)
@@ -260,7 +260,7 @@ module Factorix
     #
     # @param to [Pathname] Path to save the MOD settings file
     # @return [void]
-    def save(to: Factorix::Application[:runtime].mod_settings_path)
+    def save(to:)
       to.open("wb") do |file|
         serializer = Factorix::SerDes::Serializer.new(file)
 

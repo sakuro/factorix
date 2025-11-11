@@ -108,6 +108,19 @@ module Factorix
       Factorix::Portal.new
     end
 
+    # Register MOD settings converters
+    register("mod_settings_converters.csv") do
+      Factorix::MODSettings::CSVConverter.new
+    end
+
+    register("mod_settings_converters.json") do
+      Factorix::MODSettings::JSONConverter.new
+    end
+
+    register("mod_settings_converters.toml") do
+      Factorix::MODSettings::TOMLConverter.new
+    end
+
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
 
