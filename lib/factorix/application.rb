@@ -29,7 +29,13 @@ module Factorix
 
     # Register logger
     register(:logger) do
-      logger = Logger.new($stderr)
+      runtime = resolve(:runtime)
+      log_path = runtime.factorix_log_path
+
+      # Ensure log directory exists
+      log_path.dirname.mkpath unless log_path.dirname.exist?
+
+      logger = Logger.new(log_path)
       logger.level = Logger.const_get(config.log_level.to_s.upcase)
       logger.formatter = proc do |severity, datetime, _progname, msg|
         "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity}: #{msg}\n"

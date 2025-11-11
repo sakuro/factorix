@@ -129,6 +129,30 @@ RSpec.describe Factorix::Runtime::Base do
     end
   end
 
+  describe "#xdg_state_home_dir" do
+    context "when XDG_STATE_HOME is set" do
+      before do
+        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(true)
+        allow(ENV).to receive(:fetch).with("XDG_STATE_HOME").and_return("/custom/state")
+      end
+
+      it "returns the value from environment variable" do
+        expect(runtime.xdg_state_home_dir).to eq(Pathname("/custom/state"))
+      end
+    end
+
+    context "when XDG_STATE_HOME is not set" do
+      before do
+        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(false)
+        allow(Dir).to receive(:home).and_return("/home/wube")
+      end
+
+      it "returns default state directory" do
+        expect(runtime.xdg_state_home_dir).to eq(Pathname("/home/wube/.local/state"))
+      end
+    end
+  end
+
   describe "#factorix_cache_dir" do
     before do
       allow(runtime).to receive(:xdg_cache_home_dir).and_return(Pathname("/home/wube/.cache"))
@@ -146,6 +170,16 @@ RSpec.describe Factorix::Runtime::Base do
 
     it "returns xdg_config_home_dir / factorix / config.rb" do
       expect(runtime.factorix_config_path).to eq(Pathname("/home/wube/.config/factorix/config.rb"))
+    end
+  end
+
+  describe "#factorix_log_path" do
+    before do
+      allow(runtime).to receive(:xdg_state_home_dir).and_return(Pathname("/home/wube/.local/state"))
+    end
+
+    it "returns xdg_state_home_dir / factorix / factorix.log" do
+      expect(runtime.factorix_log_path).to eq(Pathname("/home/wube/.local/state/factorix/factorix.log"))
     end
   end
 end

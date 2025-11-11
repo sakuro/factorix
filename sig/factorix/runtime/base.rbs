@@ -17,9 +17,13 @@ module Factorix
 
       def xdg_data_home_dir: () -> Pathname
 
+      def xdg_state_home_dir: () -> Pathname
+
       def factorix_cache_dir: () -> Pathname
 
       def factorix_config_path: () -> Pathname
+
+      def factorix_log_path: () -> Pathname
     end
   end
 end

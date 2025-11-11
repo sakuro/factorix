@@ -17,6 +17,17 @@ RSpec.describe Factorix::Application do
         expect(logger).to be_a(Logger)
       end
 
+      it "creates log file in XDG_STATE_HOME" do
+        runtime = Factorix::Application[:runtime]
+        log_path = runtime.factorix_log_path
+
+        # Logger is created lazily, so resolve it
+        Factorix::Application[:logger]
+
+        # Log directory should be created
+        expect(log_path.dirname).to exist
+      end
+
       it "uses log level from configuration" do
         original_level = Factorix::Application.config.log_level
 
@@ -33,15 +44,17 @@ RSpec.describe Factorix::Application do
       end
 
       it "formats messages with timestamp and severity" do
+        runtime = Factorix::Application[:runtime]
+        log_path = runtime.factorix_log_path
+
         logger = Factorix::Application[:logger]
-        output = StringIO.new
-        logger.instance_variable_set(:@logdev, Logger::LogDevice.new(output))
-
         logger.info("test message")
-        output.rewind
-        log_output = output.read
+        logger.close
 
-        expect(log_output).to match(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] INFO: test message/)
+        # Read log file
+        log_content = log_path.read
+
+        expect(log_content).to match(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] INFO: test message/)
       end
     end
 

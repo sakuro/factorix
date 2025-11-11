@@ -104,6 +104,21 @@ module Factorix
         end
       end
 
+      # Get the XDG state home directory
+      #
+      # Returns the base directory for user-specific state files (logs, history, etc.)
+      # according to the XDG Base Directory Specification. On platforms that don't follow
+      # XDG conventions, this returns the platform-appropriate equivalent.
+      #
+      # @return [Pathname] the XDG state home directory
+      def xdg_state_home_dir
+        if ENV.key?("XDG_STATE_HOME")
+          Pathname(ENV.fetch("XDG_STATE_HOME"))
+        else
+          default_state_home_dir
+        end
+      end
+
       # Get the Factorix cache directory
       #
       # Returns the directory where Factorix stores its cache data.
@@ -120,6 +135,15 @@ module Factorix
       # @return [Pathname] the Factorix configuration file path
       def factorix_config_path
         xdg_config_home_dir / "factorix" / "config.rb"
+      end
+
+      # Get the Factorix log file path
+      #
+      # Returns the path to the Factorix log file.
+      #
+      # @return [Pathname] the Factorix log file path
+      def factorix_log_path
+        xdg_state_home_dir / "factorix" / "factorix.log"
       end
 
       # Get the default cache home directory for this platform
@@ -150,6 +174,16 @@ module Factorix
       # @return [Pathname] the default data home directory
       private def default_data_home_dir
         Pathname(Dir.home).join(".local/share")
+      end
+
+      # Get the default state home directory for this platform
+      #
+      # This method should be overridden by platform-specific subclasses
+      # to provide appropriate defaults.
+      #
+      # @return [Pathname] the default state home directory
+      private def default_state_home_dir
+        Pathname(Dir.home).join(".local/state")
       end
     end
   end
