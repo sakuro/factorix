@@ -7,6 +7,8 @@ module Factorix
 
     def base?: () -> bool
 
+    def expansion?: () -> bool
+
     def to_s: () -> String
 
     def <=>: (untyped other) -> Integer?

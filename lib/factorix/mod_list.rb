@@ -109,9 +109,10 @@ module Factorix
     #
     # @param mod [Factorix::MOD] the MOD to remove
     # @return [void]
-    # @raise [ArgumentError] if the MOD is the base MOD
+    # @raise [ArgumentError] if the MOD is the base MOD or an expansion MOD
     def remove(mod)
       raise ArgumentError, "can't remove the base MOD" if mod.base?
+      raise ArgumentError, "can't remove expansion MOD: #{mod.name}" if mod.expansion?
 
       @mods.delete(mod)
     end

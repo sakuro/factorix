@@ -13,12 +13,24 @@ module Factorix
     # @!attribute [r] name
     #   @return [String] the name of the MOD
 
+    # Expansion MOD names
+    EXPANSION_MODS = %w[space-age quality elevated-rails].freeze
+    private_constant :EXPANSION_MODS
+
     # Check if this MOD is the base MOD
     #
     # @return [Boolean] true if this MOD is the base MOD
     # @note The check is case-sensitive, only "base" (not "BASE" or "Base") is considered the base MOD
     def base?
       name == "base"
+    end
+
+    # Check if this MOD is an expansion MOD
+    #
+    # @return [Boolean] true if this MOD is an expansion MOD (space-age, quality, or elevated-rails)
+    # @note The check is case-sensitive
+    def expansion?
+      EXPANSION_MODS.include?(name)
     end
 
     # Return the name of the MOD

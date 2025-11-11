@@ -234,7 +234,39 @@ RSpec.describe Factorix::MODList do
 
     context "when removing the base MOD" do
       it "raises ArgumentError" do
-        expect { list.remove(base_mod) }.to raise_error(ArgumentError)
+        expect { list.remove(base_mod) }.to raise_error(ArgumentError, "can't remove the base MOD")
+      end
+    end
+
+    context "when removing expansion MODs" do
+      let(:space_age_mod) { Factorix::MOD[name: "space-age"] }
+      let(:quality_mod) { Factorix::MOD[name: "quality"] }
+      let(:elevated_rails_mod) { Factorix::MOD[name: "elevated-rails"] }
+      let(:list_with_expansions) do
+        Factorix::MODList.new(
+          base_mod => base_state,
+          space_age_mod => enabled_state,
+          quality_mod => enabled_state,
+          elevated_rails_mod => disabled_state
+        )
+      end
+
+      it "raises ArgumentError for space-age" do
+        expect {
+          list_with_expansions.remove(space_age_mod)
+        }.to raise_error(ArgumentError, "can't remove expansion MOD: space-age")
+      end
+
+      it "raises ArgumentError for quality" do
+        expect {
+          list_with_expansions.remove(quality_mod)
+        }.to raise_error(ArgumentError, "can't remove expansion MOD: quality")
+      end
+
+      it "raises ArgumentError for elevated-rails" do
+        expect {
+          list_with_expansions.remove(elevated_rails_mod)
+        }.to raise_error(ArgumentError, "can't remove expansion MOD: elevated-rails")
       end
     end
   end
@@ -301,6 +333,22 @@ RSpec.describe Factorix::MODList do
 
     it "raises ArgumentError on disabling base MOD" do
       expect { list.disable(base_mod) }.to raise_error(ArgumentError)
+    end
+
+    context "when disabling expansion MODs" do
+      let(:space_age_mod) { Factorix::MOD[name: "space-age"] }
+      let(:list_with_expansion) do
+        Factorix::MODList.new(
+          base_mod => base_state,
+          space_age_mod => enabled_state
+        )
+      end
+
+      it "can disable expansion MODs" do
+        expect {
+          list_with_expansion.disable(space_age_mod)
+        }.to change { list_with_expansion.enabled?(space_age_mod) }.from(true).to(false)
+      end
     end
 
     context "when preserving version information for enabled mod" do

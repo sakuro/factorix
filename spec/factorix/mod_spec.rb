@@ -27,6 +27,38 @@ RSpec.describe Factorix::MOD do
     end
   end
 
+  describe "#expansion?" do
+    it "returns true for space-age" do
+      mod = Factorix::MOD[name: "space-age"]
+      expect(mod.expansion?).to be(true)
+    end
+
+    it "returns true for quality" do
+      mod = Factorix::MOD[name: "quality"]
+      expect(mod.expansion?).to be(true)
+    end
+
+    it "returns true for elevated-rails" do
+      mod = Factorix::MOD[name: "elevated-rails"]
+      expect(mod.expansion?).to be(true)
+    end
+
+    it "returns false for base MOD" do
+      mod = Factorix::MOD[name: "base"]
+      expect(mod.expansion?).to be(false)
+    end
+
+    it "returns false for other MODs" do
+      mod = Factorix::MOD[name: "example-mod"]
+      expect(mod.expansion?).to be(false)
+    end
+
+    it "is case-sensitive" do
+      mod = Factorix::MOD[name: "Space-Age"]
+      expect(mod.expansion?).to be(false)
+    end
+  end
+
   describe "#to_s" do
     it "returns the name of the MOD" do
       mod = Factorix::MOD[name: "example-mod"]
