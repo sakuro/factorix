@@ -8,6 +8,8 @@ module Factorix
   module Transfer
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
+      include Factorix::Import["logger"]
+
       DEFAULT_OPTIONS = {
         tries: 3,                 # Number of attempts (including the initial try)
         base_interval: 1.0,       # Start with 1 second
@@ -35,7 +37,8 @@ module Factorix
       # @option options [Float] :rand_factor Randomization factor
       # @option options [Array<Class>] :on Exception classes to retry on
       # @option options [Proc] :on_retry Callback called on each retry
-      def initialize(**options)
+      def initialize(logger: nil, **options)
+        super(logger:)
         @options = configure_options(options)
       end
 
@@ -68,11 +71,8 @@ module Factorix
       # @param elapsed_time [Float] Time elapsed since first attempt
       # @param next_interval [Float] Time until next retry attempt
       # @return [void]
-      #
-      # @note Future improvement: Use Import["logger"] for structured logging
-      #   instead of warn. This will allow consistent logging across the application.
       private def default_retry_callback(exception, try, elapsed_time, next_interval)
-        warn "Retry #{try} after #{elapsed_time}s, next in #{next_interval}s: #{exception.class} - #{exception.message}"
+        logger.warn "Retry #{try} after #{elapsed_time}s, next in #{next_interval}s: #{exception.class} - #{exception.message}"
       end
     end
   end

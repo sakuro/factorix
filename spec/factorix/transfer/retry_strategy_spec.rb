@@ -23,6 +23,23 @@ RSpec.describe Factorix::Transfer::RetryStrategy, warn: :silence do
       expect(attempt).to eq(3)
     end
 
+    it "logs warnings on retry" do
+      strategy = Factorix::Transfer::RetryStrategy.new(tries: 3)
+      attempt = 0
+
+      logger_spy = instance_double(Logger, warn: nil)
+      allow(strategy).to receive(:logger).and_return(logger_spy)
+
+      strategy.with_retry do
+        attempt += 1
+        raise Errno::ECONNRESET if attempt < 3
+
+        "success"
+      end
+
+      expect(logger_spy).to have_received(:warn).with(/Retry.*Errno::ECONNRESET/).twice
+    end
+
     it "retries on timeout errors" do
       strategy = Factorix::Transfer::RetryStrategy.new(tries: 2)
       attempt = 0

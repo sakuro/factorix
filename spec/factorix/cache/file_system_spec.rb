@@ -207,6 +207,19 @@ RSpec.describe Factorix::Cache::FileSystem do
 
         FileUtils.remove_entry(large_file.dirname)
       end
+
+      it "logs a warning when skipping files exceeding the limit" do
+        large_file = Pathname(Dir.mktmpdir("large")).join("large.txt")
+        File.write(large_file, "a" * 100)
+
+        logger_spy = instance_double(Logger, warn: nil)
+        allow(cache).to receive(:logger).and_return(logger_spy)
+
+        cache.store(key, large_file)
+
+        expect(logger_spy).to have_received(:warn).with(/File size.*exceeds cache limit/)
+        FileUtils.remove_entry(large_file.dirname)
+      end
     end
   end
 

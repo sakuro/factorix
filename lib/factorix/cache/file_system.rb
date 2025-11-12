@@ -12,6 +12,8 @@ module Factorix
     # with file locking to handle concurrent access and TTL support
     # for cache expiration.
     class FileSystem
+      include Factorix::Import["logger"]
+
       # Maximum lifetime of lock files in seconds.
       # Lock files older than this will be considered stale and removed
       LOCK_FILE_LIFETIME = 3600 # 1 hour in seconds
@@ -23,7 +25,8 @@ module Factorix
       # @param cache_dir [Pathname, String] path to the cache directory
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
       # @param max_file_size [Integer, nil] maximum file size in bytes (nil for unlimited)
-      def initialize(cache_dir, ttl: nil, max_file_size: nil)
+      def initialize(cache_dir, ttl: nil, max_file_size: nil, logger: nil)
+        super(logger:)
         @cache_dir = Pathname(cache_dir)
         @ttl = ttl
         @max_file_size = max_file_size
@@ -92,7 +95,7 @@ module Factorix
 
         # Skip caching if file exceeds size limit
         if @max_file_size && file_size > @max_file_size
-          warn "File size (#{file_size} bytes) exceeds cache limit (#{@max_file_size} bytes), skipping cache"
+          logger.warn "File size (#{file_size} bytes) exceeds cache limit (#{@max_file_size} bytes), skipping cache"
           return false
         end
 
