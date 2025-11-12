@@ -17,7 +17,9 @@ module Factorix
       # @!parse
       #   # @return [RetryStrategy]
       #   attr_reader :retry_strategy
-      include Factorix::Import["retry_strategy"]
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["retry_strategy", "logger"]
       include Dry::Events::Publisher[:transfer]
 
       register_event("download.started")
@@ -45,12 +47,17 @@ module Factorix
       # @raise [HTTPServerError] for 5xx HTTP errors
       def download(url, output, redirect_count: 0)
         raise ArgumentError, "URL must be HTTPS" unless url.is_a?(URI::HTTPS)
-        raise ArgumentError, "Too many redirects (#{redirect_count})" if redirect_count > MAX_REDIRECTS
+
+        if redirect_count > MAX_REDIRECTS
+          logger.error("Too many redirects", redirect_count:)
+          raise ArgumentError, "Too many redirects (#{redirect_count})"
+        end
 
         output = Pathname(output)
 
         retry_strategy.with_retry do
-          if output.exist?
+          if output.exist? && output.size > 0
+            logger.info("Resuming download", from_byte: output.size)
             download_with_resume(url, output, redirect_count:)
           else
             download_full(url, output, redirect_count:)
@@ -98,6 +105,7 @@ module Factorix
           raise unless e.message.include?("416")
 
           # 416 Range Not Satisfiable - File might have changed, retry full download
+          logger.warn("Range not satisfiable (416), retrying full download")
           output.delete if output.exist?
           download_full(uri, output, redirect_count:)
         end
@@ -146,13 +154,16 @@ module Factorix
         when Net::HTTPRedirection
           location = response["Location"]
           redirect_url = URI(location)
+          logger.info("Following redirect", location:)
           # Follow redirect recursively
           download(redirect_url, output, redirect_count: redirect_count + 1)
 
         when Net::HTTPClientError
+          logger.error("HTTP client error", code: response.code, message: response.message)
           raise HTTPClientError, "#{response.code} #{response.message}"
 
         when Net::HTTPServerError
+          logger.error("HTTP server error", code: response.code, message: response.message)
           raise HTTPServerError, "#{response.code} #{response.message}"
 
         else
@@ -213,9 +224,11 @@ module Factorix
           nil
 
         when Net::HTTPClientError
+          logger.error("Upload failed (client error)", code: response.code, message: response.message)
           raise HTTPClientError, "#{response.code} #{response.message}"
 
         when Net::HTTPServerError
+          logger.error("Upload failed (server error)", code: response.code, message: response.message)
           raise HTTPServerError, "#{response.code} #{response.message}"
 
         else

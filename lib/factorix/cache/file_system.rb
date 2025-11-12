@@ -34,6 +34,7 @@ module Factorix
         @ttl = ttl
         @max_file_size = max_file_size
         @cache_dir.mkpath
+        logger.info("Initializing cache", dir: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size)
       end
 
       # Generate a cache key for the given URL string.
@@ -65,10 +66,18 @@ module Factorix
       # @return [Boolean] true if the cache entry was found and copied, false otherwise
       def fetch(key, output)
         path = cache_path_for(key)
-        return false unless path.exist?
-        return false if expired?(key)
+        unless path.exist?
+          logger.debug("Cache miss", key:)
+          return false
+        end
+
+        if expired?(key)
+          logger.debug("Cache expired", key:, age_seconds: age(key))
+          return false
+        end
 
         FileUtils.cp(path, output)
+        logger.debug("Cache hit", key:)
         true
       end
 
@@ -98,13 +107,14 @@ module Factorix
 
         # Skip caching if file exceeds size limit
         if @max_file_size && file_size > @max_file_size
-          logger.warn "File size (#{file_size} bytes) exceeds cache limit (#{@max_file_size} bytes), skipping cache"
+          logger.warn("File size exceeds cache limit, skipping", size_bytes: file_size, limit_bytes: @max_file_size)
           return false
         end
 
         path = cache_path_for(key)
         path.dirname.mkpath
         FileUtils.cp(src, path)
+        logger.debug("Stored in cache", key:, size_bytes: file_size)
         true
       end
 
@@ -117,6 +127,7 @@ module Factorix
         return false unless path.exist?
 
         path.delete
+        logger.debug("Deleted from cache", key:)
         true
       end
 
@@ -125,9 +136,15 @@ module Factorix
       #
       # @return [void]
       def clear
+        logger.info("Clearing cache directory", dir: @cache_dir.to_s)
+        count = 0
         @cache_dir.glob("**/*").each do |path|
-          path.delete if path.file?
+          if path.file?
+            path.delete
+            count += 1
+          end
         end
+        logger.info("Cache cleared", files_removed: count)
       end
 
       # Get the age of a cache entry in seconds.
@@ -169,10 +186,12 @@ module Factorix
         lock_path.dirname.mkpath
         lock_path.open(File::RDWR | File::CREAT) do |lock|
           if lock.flock(File::LOCK_EX)
+            logger.debug("Acquired lock", key:)
             begin
               yield
             ensure
               lock.flock(File::LOCK_UN)
+              logger.debug("Released lock", key:)
               begin
                 lock_path.unlink
               rescue
@@ -209,10 +228,13 @@ module Factorix
       # @return [void]
       private def cleanup_stale_lock(lock_path)
         return unless lock_path.exist?
-        return if (Time.now - lock_path.mtime) <= LOCK_FILE_LIFETIME
+
+        age = Time.now - lock_path.mtime
+        return if age <= LOCK_FILE_LIFETIME
 
         begin
           lock_path.unlink
+          logger.warn("Removed stale lock", path: lock_path.to_s, age_seconds: age)
         rescue
           nil
         end

@@ -7,14 +7,22 @@ module Factorix
     # This class provides methods to serialize various data types to Factorio's
     # binary file format, following the specifications documented in the Factorio wiki.
     class Serializer
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["logger"]
+
       # Create a new Serializer instance
       #
       # @param stream [IO] An IO-like object that responds to #write
+      # @param logger [Dry::Logger::Dispatcher] optional logger
       # @raise [ArgumentError] If the stream doesn't respond to #write
-      def initialize(stream)
+      def initialize(stream, logger: nil)
+        super(logger:)
         raise ArgumentError, "can't write to the given argument" unless stream.respond_to?(:write)
 
         @stream = stream
+        logger.debug "Initializing Serializer"
       end
 
       # Write raw bytes to the stream
@@ -96,6 +104,7 @@ module Factorix
       # @return [void]
       def write_str(str)
         if str.encoding != Encoding::UTF_8 && !(str.encoding == Encoding::ASCII_8BIT && str.force_encoding(Encoding::UTF_8).valid_encoding?)
+          logger.debug("String encoding error", expected: "UTF-8", got: str.encoding.name)
           raise ArgumentError, "String must be UTF-8 encoded, got #{str.encoding}"
         end
 
@@ -148,6 +157,7 @@ module Factorix
       # @param list [Array] List of objects
       # @return [void]
       def write_list(list)
+        logger.debug("Writing list", size: list.size)
         write_optim_u32(list.size)
         list.each {|e| write_property_tree(e) }
       end
@@ -158,6 +168,7 @@ module Factorix
       # @param dict [Hash] Dictionary of key-value pairs
       # @return [void]
       def write_dictionary(dict)
+        logger.debug("Writing dictionary", size: dict.size)
         write_u32(dict.size)
         dict.each do |(key, value)|
           write_str_property(key)
@@ -187,6 +198,7 @@ module Factorix
       # @raise [Factorix::UnknownPropertyType] If the object type is not supported
       # @return [void]
       def write_property_tree(obj)
+        logger.debug("Writing property tree", type: obj.class.name)
         case obj
         when nil
           # Type 0 - None (null value)
@@ -228,6 +240,7 @@ module Factorix
           write_bool(false)
           write_unsigned_long(obj.__getobj__)
         else
+          logger.debug("Unknown property type", type: obj.class.name)
           raise Factorix::UnknownPropertyType, "Unknown property type: #{obj.class}"
         end
       end

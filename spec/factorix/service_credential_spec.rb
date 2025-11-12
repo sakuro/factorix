@@ -48,6 +48,7 @@ RSpec.describe Factorix::ServiceCredential do
 
     before do
       allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
+      allow(Factorix::Application).to receive(:[]).with("logger").and_call_original
     end
 
     it "loads credentials from player-data.json" do

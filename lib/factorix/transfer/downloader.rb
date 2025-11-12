@@ -17,7 +17,9 @@ module Factorix
       #   attr_reader :download_cache
       #   # @return [HTTP]
       #   attr_reader :http
-      include Factorix::Import["download_cache", "http"]
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["download_cache", "http", "logger"]
 
       # Download a file from the given URL with caching support.
       #
@@ -33,14 +35,26 @@ module Factorix
       # @raise [HTTPClientError] for 4xx HTTP errors
       # @raise [HTTPServerError] for 5xx HTTP errors
       def download(url, output)
-        raise ArgumentError, "URL must be HTTPS" unless url.is_a?(URI::HTTPS)
+        unless url.is_a?(URI::HTTPS)
+          logger.error "Invalid URL: must be HTTPS"
+          raise ArgumentError, "URL must be HTTPS"
+        end
 
+        masked_url = mask_credentials(url)
+        logger.info("Starting download", url: masked_url, output: output.to_s)
         key = download_cache.key_for(url.to_s)
 
-        return if download_cache.fetch(key, output)
+        if download_cache.fetch(key, output)
+          logger.info("Cache hit", url: masked_url)
+          return
+        end
 
+        logger.debug("Cache miss, downloading", url: masked_url)
         download_cache.with_lock(key) do
-          return if download_cache.fetch(key, output)
+          if download_cache.fetch(key, output)
+            logger.info("Cache hit", url: masked_url)
+            return
+          end
 
           with_temporary_file do |temp_file|
             # HTTP layer handles redirects automatically
@@ -51,6 +65,17 @@ module Factorix
             download_cache.fetch(key, output)
           end
         end
+      end
+
+      private def mask_credentials(url)
+        return url.to_s unless url.query
+
+        masked_url = url.dup
+        params = URI.decode_www_form(masked_url.query).to_h
+        params["username"] = "*****" if params.key?("username")
+        params["token"] = "*****" if params.key?("token")
+        masked_url.query = URI.encode_www_form(params)
+        masked_url.to_s
       end
 
       # Create a temporary file for downloading, ensuring cleanup after use.

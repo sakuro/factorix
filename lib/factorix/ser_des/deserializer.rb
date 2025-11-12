@@ -7,14 +7,22 @@ module Factorix
     # This class provides methods to deserialize various data types from Factorio's
     # binary file format, following the specifications documented in the Factorio wiki.
     class Deserializer
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["logger"]
+
       # Create a new Deserializer instance
       #
       # @param stream [IO] An IO-like object that responds to #read
+      # @param logger [Dry::Logger::Dispatcher] optional logger
       # @raise [ArgumentError] If the stream doesn't respond to #read
-      def initialize(stream)
+      def initialize(stream, logger: nil)
+        super(logger:)
         raise ArgumentError, "can't read from the given argument" unless stream.respond_to?(:read)
 
         @stream = stream
+        logger.debug "Initializing Deserializer"
       end
 
       # Read raw bytes from the stream
@@ -29,7 +37,10 @@ module Factorix
         return +"" if length.zero?
 
         bytes = @stream.read(length)
-        raise EOFError if bytes.nil? || bytes.size < length
+        if bytes.nil? || bytes.size < length
+          logger.debug("Unexpected EOF", requested_bytes: length)
+          raise EOFError
+        end
 
         bytes
       end
@@ -146,6 +157,7 @@ module Factorix
       # @return [Hash] Dictionary of key-value pairs
       def read_dictionary
         length = read_u32
+        logger.debug("Reading dictionary", length:)
         length.times.each_with_object({}) do |_i, dict|
           key = read_str_property
           dict[key] = read_property_tree
@@ -165,6 +177,7 @@ module Factorix
       def read_property_tree
         type = read_u8
         _any_type_flag = read_bool
+        logger.debug("Reading property tree", type:)
 
         case type
         when 0
@@ -193,6 +206,7 @@ module Factorix
           # @see https://wiki.factorio.com/Property_tree
           Factorix::Types::UnsignedInteger.new(read_unsigned_long)
         else
+          logger.debug("Unknown property type", type:)
           raise Factorix::UnknownPropertyType, "Unknown property type: #{type}"
         end
       end

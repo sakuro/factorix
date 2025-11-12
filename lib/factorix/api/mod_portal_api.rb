@@ -15,7 +15,9 @@ module Factorix
       # @!parse
       #   # @return [Cache::FileSystem]
       #   attr_reader :api_cache
-      include Factorix::Import["api_cache"]
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["api_cache", "logger"]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -55,6 +57,7 @@ module Factorix
         }
         params.reject! {|_k, v| v.is_a?(Array) && v.empty? }
         params.compact!
+        logger.debug "Fetching mod list: params=#{params.inspect}"
         uri = build_uri("/api/mods", **params)
         fetch_with_cache(uri)
       end
@@ -64,6 +67,7 @@ module Factorix
       # @param name [String] mod name
       # @return [Hash{Symbol => untyped}] parsed JSON response with mod metadata and releases
       def get_mod(name)
+        logger.debug "Fetching mod: name=#{name}"
         uri = build_uri("/api/mods/#{name}")
         fetch_with_cache(uri)
       end
@@ -73,6 +77,7 @@ module Factorix
       # @param name [String] mod name
       # @return [Hash{Symbol => untyped}] parsed JSON response with full mod details including dependencies
       def get_mod_full(name)
+        logger.debug "Fetching full mod info: name=#{name}"
         uri = build_uri("/api/mods/#{name}/full")
         fetch_with_cache(uri)
       end
@@ -92,9 +97,13 @@ module Factorix
 
         # Try cache first
         cached = api_cache.read(key, encoding: "UTF-8")
-        return JSON.parse(cached, symbolize_names: true) if cached
+        if cached
+          logger.debug("API cache hit", uri: uri.to_s)
+          return JSON.parse(cached, symbolize_names: true)
+        end
 
         # Cache miss - fetch from API
+        logger.debug("API cache miss", uri: uri.to_s)
         response_body = fetch_from_api(uri)
 
         # Store in cache
@@ -110,6 +119,7 @@ module Factorix
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       private def fetch_from_api(uri)
+        logger.info("Fetching from API", uri: uri.to_s)
         http = create_http(uri)
 
         request = Net::HTTP::Get.new(uri)
@@ -117,6 +127,7 @@ module Factorix
 
         handle_http_errors(response)
 
+        logger.info("API response", code: response.code, size_bytes: response.body.bytesize)
         response.body
       end
 
@@ -145,8 +156,10 @@ module Factorix
         when Net::HTTPSuccess
           # OK
         when Net::HTTPClientError
+          logger.error("API client error", code: response.code, message: response.message)
           raise HTTPClientError, "#{response.code} #{response.message}"
         when Net::HTTPServerError
+          logger.error("API server error", code: response.code, message: response.message)
           raise HTTPServerError, "#{response.code} #{response.message}"
         else
           raise HTTPError, "#{response.code} #{response.message}"
@@ -164,6 +177,7 @@ module Factorix
           temp_file.write(data)
           temp_file.close
           api_cache.store(key, temp_file.path)
+          logger.debug("Stored API response in cache", key:)
         ensure
           temp_file.unlink
         end

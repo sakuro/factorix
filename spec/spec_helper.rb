@@ -70,7 +70,7 @@ RSpec.configure do |config|
     # Stub logger to examine its output and to prevent writing to system log files during tests
     Factorix::Application.enable_stubs!
     config.log_stream = StringIO.new
-    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s"))
+    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s %<payload>s"))
   end
 
   config.after(:suite) do

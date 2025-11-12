@@ -30,12 +30,12 @@ module Factorix
     # - :portal
 
     # Register runtime detector
-    register(:runtime) do
+    register(:runtime, memoize: true) do
       Factorix::Runtime.detect
     end
 
     # Register logger
-    register(:logger) do
+    register(:logger, memoize: true) do
       runtime = resolve(:runtime)
       log_path = runtime.factorix_log_path
 
@@ -46,17 +46,17 @@ module Factorix
         :factorix,
         level: config.log_level,
         stream: log_path.to_s,
-        template: "[%<time>s] %<severity>s: %<message>s"
+        template: "[%<time>s] %<severity>s: %<message>s %<payload>s"
       )
     end
 
     # Register retry strategy for network operations
-    register(:retry_strategy) do
+    register(:retry_strategy, memoize: true) do
       Factorix::Transfer::RetryStrategy.new
     end
 
     # Register download cache
-    register(:download_cache) do
+    register(:download_cache, memoize: true) do
       Factorix::Cache::FileSystem.new(
         config.cache.download.dir,
         ttl: config.cache.download.ttl,
@@ -65,7 +65,7 @@ module Factorix
     end
 
     # Register API cache
-    register(:api_cache) do
+    register(:api_cache, memoize: true) do
       Factorix::Cache::FileSystem.new(
         config.cache.api.dir,
         ttl: config.cache.api.ttl,
@@ -84,12 +84,12 @@ module Factorix
     end
 
     # Register uploader
-    register(:uploader) do
+    register(:uploader, memoize: true) do
       Factorix::Transfer::Uploader.new
     end
 
     # Register service credential
-    register(:service_credential) do
+    register(:service_credential, memoize: true) do
       runtime = resolve(:runtime)
       case config.credential.source
       when :env
@@ -102,7 +102,7 @@ module Factorix
     end
 
     # Register mod portal API client
-    register(:mod_portal_api) do
+    register(:mod_portal_api, memoize: true) do
       Factorix::API::MODPortalAPI.new
     end
 
@@ -117,15 +117,15 @@ module Factorix
     end
 
     # Register MOD settings converters
-    register("mod_settings_converters.csv") do
+    register("mod_settings_converters.csv", memoize: true) do
       Factorix::MODSettings::CSVConverter.new
     end
 
-    register("mod_settings_converters.json") do
+    register("mod_settings_converters.json", memoize: true) do
       Factorix::MODSettings::JSONConverter.new
     end
 
-    register("mod_settings_converters.toml") do
+    register("mod_settings_converters.toml", memoize: true) do
       Factorix::MODSettings::TOMLConverter.new
     end
 

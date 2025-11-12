@@ -13,7 +13,9 @@ module Factorix
       #   attr_reader :service_credential
       #   # @return [Transfer::Downloader]
       #   attr_reader :downloader
-      include Factorix::Import["service_credential", "downloader"]
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["service_credential", "downloader", "logger"]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -25,7 +27,10 @@ module Factorix
       # @return [void]
       # @raise [ArgumentError] if download_url is not a relative path starting with "/"
       def download(download_url, output)
-        raise ArgumentError, "download_url must be a relative path starting with '/'" unless download_url.start_with?("/")
+        unless download_url.start_with?("/")
+          logger.error("Invalid download_url", url: download_url)
+          raise ArgumentError, "download_url must be a relative path starting with '/'"
+        end
 
         uri = build_download_uri(download_url)
         downloader.download(uri, output)

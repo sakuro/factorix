@@ -12,7 +12,9 @@ module Factorix
       # @!parse
       #   # @return [HTTP]
       #   attr_reader :http
-      include Factorix::Import["http"]
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import["http", "logger"]
 
       # Upload a file to the given URL
       #
@@ -26,10 +28,12 @@ module Factorix
       # @raise [HTTPError] for other HTTP errors
       def upload(url, file_path, field_name: "file")
         url = URI(url) if url.is_a?(String)
-        raise ArgumentError, "URL must be HTTPS" unless url.is_a?(URI::HTTPS)
+        unless url.is_a?(URI::HTTPS)
+          logger.error("Invalid URL: must be HTTPS", url: url.to_s)
+          raise ArgumentError, "URL must be HTTPS"
+        end
 
         file_path = Pathname(file_path)
-
         http.upload(url, file_path, field_name:)
       end
     end
