@@ -43,18 +43,11 @@ RSpec.describe Factorix::Application do
         Factorix::Application.config.log_level = original_level
       end
 
-      xit "formats messages with timestamp and severity" do
-        runtime = Factorix::Application[:runtime]
-        log_path = runtime.factorix_log_path
-
+      it "formats messages with timestamp and severity" do
         logger = Factorix::Application[:logger]
         logger.info("test message")
-        logger.close
 
-        # Read log file
-        log_content = log_path.read
-
-        expect(log_content).to match(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] INFO: test message/)
+        expect(log_content).to match(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4}\] INFO: test message/)
       end
     end
 

@@ -12,6 +12,20 @@ require "webmock/rspec"
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
 
+RSpec.shared_context "with testing log stream" do
+  let(:log_stream) { RSpec.configuration.log_stream }
+
+  def log_content
+    log_stream.string
+  end
+
+  after do
+    # Clear the log stream for the next test
+    log_stream.rewind
+    log_stream.truncate(0)
+  end
+end
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -22,6 +36,11 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.include_context "with testing log stream"
+
+  # Add log_stream setting for accessing test logger output
+  config.add_setting :log_stream
 
   # Isolate XDG directories for tests to prevent reading user's config files
   # and polluting user's cache/data/state directories
@@ -48,9 +67,10 @@ RSpec.configure do |config|
     Factorix::Application.config.cache.download.dir = runtime.factorix_cache_dir / "download"
     Factorix::Application.config.cache.api.dir = runtime.factorix_cache_dir / "api"
 
-    # Stub logger with null logger to prevent writing to system log files during tests
+    # Stub logger to examine its output and to prevent writing to system log files during tests
     Factorix::Application.enable_stubs!
-    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: StringIO.new))
+    config.log_stream = StringIO.new
+    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s"))
   end
 
   config.after(:suite) do
