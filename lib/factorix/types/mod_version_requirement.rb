@@ -10,6 +10,11 @@ module Factorix
     # This class is used in MOD dependencies to specify version constraints.
     # It supports the following comparison operators: <, <=, =, >=, >
     #
+    # @!attribute [r] operator
+    #   @return [String] Comparison operator (<, <=, =, >=, >)
+    # @!attribute [r] version
+    #   @return [MODVersion] Version to compare against
+    #
     # @example Creating a version requirement
     #   requirement = MODVersionRequirement[operator: ">=", version: MODVersion.from_string("1.2.0")]
     #   requirement.satisfied_by?(MODVersion.from_string("1.3.0")) # => true

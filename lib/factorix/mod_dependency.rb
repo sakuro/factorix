@@ -9,6 +9,13 @@ module Factorix
   # This class encapsulates a MOD dependency with its type (required, optional, etc.)
   # and optional version requirement.
   #
+  # @!attribute [r] mod
+  #   @return [MOD] The dependent MOD
+  # @!attribute [r] type
+  #   @return [Symbol] Type of dependency (:required, :optional, :hidden, :incompatible, :load_neutral)
+  # @!attribute [r] version_requirement
+  #   @return [Types::MODVersionRequirement, nil] Version requirement (nil if no requirement)
+  #
   # @example Creating dependencies
   #   # Required dependency on base MOD
   #   base_mod = MOD[name: "base"]
