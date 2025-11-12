@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Transfer::RetryStrategy, warn: :silence do
+RSpec.describe Factorix::Transfer::RetryStrategy do
   describe "#with_retry" do
     it "executes the block successfully without retry" do
       strategy = Factorix::Transfer::RetryStrategy.new

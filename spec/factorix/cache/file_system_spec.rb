@@ -185,7 +185,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       }.to change(cache_path.dirname, :exist?).from(false).to(true)
     end
 
-    context "with max_file_size limit", warn: :silence do
+    context "with max_file_size limit" do
       let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, max_file_size: 10) }
 
       it "stores files within the limit" do

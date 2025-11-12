@@ -2,7 +2,7 @@
 
 require "tmpdir"
 
-RSpec.describe Factorix::Transfer::HTTP, warn: :silence do
+RSpec.describe Factorix::Transfer::HTTP do
   let(:retry_strategy) { Factorix::Transfer::RetryStrategy.new }
   let(:http_client) { Factorix::Transfer::HTTP.new(retry_strategy:) }
   let(:url) { URI("https://example.com/file.zip") }
