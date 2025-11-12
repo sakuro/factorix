@@ -11,7 +11,8 @@ module Factorix
       :info_json,
       :released_at,
       :version,
-      :sha1
+      :sha1,
+      :feature_flags
     )
 
     # Release object from Mod Portal API
@@ -32,6 +33,8 @@ module Factorix
       #   @return [MODVersion] MOD version object
       # @!attribute [r] sha1
       #   @return [String] SHA1 checksum of the release file
+      # @!attribute [r] feature_flags
+      #   @return [Array<String>] list of enabled feature flags
 
       # Create Release from API response hash
       #
@@ -41,8 +44,9 @@ module Factorix
       # @param released_at [String] ISO 8601 timestamp
       # @param version [String] version string in "X.Y.Z" format
       # @param sha1 [String] SHA1 checksum
+      # @param feature_flags [Array<String>] list of enabled feature flags (defaults to empty array)
       # @return [Release] new Release instance
-      def initialize(download_url:, file_name:, info_json:, released_at:, version:, sha1:)
+      def initialize(download_url:, file_name:, info_json:, released_at:, version:, sha1:, feature_flags: [])
         download_url = URI("https://mods.factorio.com#{download_url}")
         released_at = Time.parse(released_at).utc
         version = MODVersion.from_string(version)

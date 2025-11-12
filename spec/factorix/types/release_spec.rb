@@ -45,5 +45,20 @@ RSpec.describe Factorix::Types::Release do
       expect(release.released_at.utc?).to be(true)
       expect(release.released_at.iso8601).to eq("2024-10-21T03:34:56Z")
     end
+
+    context "feature_flags" do
+      it "defaults to empty array when not provided" do
+        release = Factorix::Types::Release[**release_hash]
+
+        expect(release.feature_flags).to eq([])
+      end
+
+      it "accepts feature_flags parameter as array" do
+        hash = release_hash.merge(feature_flags: ["quality", "space-travel"])
+        release = Factorix::Types::Release[**hash]
+
+        expect(release.feature_flags).to eq(["quality", "space-travel"])
+      end
+    end
   end
 end

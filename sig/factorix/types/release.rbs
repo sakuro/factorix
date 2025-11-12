@@ -7,6 +7,7 @@ module Factorix
       attr_reader released_at: Time
       attr_reader version: MODVersion
       attr_reader sha1: String
+      attr_reader feature_flags: Array[String]
 
       def initialize: (
         download_url: String,
@@ -14,7 +15,8 @@ module Factorix
         info_json: Hash[String, untyped],
         released_at: String,
         version: String,
-        sha1: String
+        sha1: String,
+        ?feature_flags: Array[String]
       ) -> void
     end
   end
