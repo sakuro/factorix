@@ -71,4 +71,22 @@ RSpec.describe Factorix::Runtime::MacOS do
       end
     end
   end
+
+  describe "#factorix_cache_dir" do
+    context "when XDG_CACHE_HOME is not set" do
+      before do
+        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(false)
+      end
+
+      it "returns ~/Library/Caches/factorix" do
+        expect(runtime.factorix_cache_dir).to eq(Pathname("/Users/wube/Library/Caches/factorix"))
+      end
+    end
+  end
+
+  describe "#factorix_log_path" do
+    it "returns ~/Library/Logs/factorix/factorix.log" do
+      expect(runtime.factorix_log_path).to eq(Pathname("/Users/wube/Library/Logs/factorix/factorix.log"))
+    end
+  end
 end

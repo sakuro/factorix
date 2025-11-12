@@ -33,6 +33,15 @@ module Factorix
       private def default_data_home_dir
         Pathname(Dir.home).join("Library/Application Support")
       end
+
+      # Get the Factorix log file path
+      #
+      # Returns the path to the Factorix log file using macOS convention.
+      #
+      # @return [Pathname] the Factorix log file path
+      def factorix_log_path
+        Pathname(Dir.home).join("Library/Logs/factorix/factorix.log")
+      end
     end
   end
 end
