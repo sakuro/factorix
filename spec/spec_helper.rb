@@ -50,7 +50,7 @@ RSpec.configure do |config|
 
     # Stub logger with null logger to prevent writing to system log files during tests
     Factorix::Application.enable_stubs!
-    Factorix::Application.stub(:logger, Logger.new(IO::NULL))
+    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: StringIO.new))
   end
 
   config.after(:suite) do

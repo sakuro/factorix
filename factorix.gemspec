@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-container", "~> 0.11"
   spec.add_dependency "dry-events", "~> 1.1"
+  spec.add_dependency "dry-logger", "~> 1.2"
   spec.add_dependency "parslet", "~> 2.0"
   spec.add_dependency "perfect_toml", "~> 0.9"
   spec.add_dependency "retriable", "~> 3.1"

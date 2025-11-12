@@ -2,7 +2,7 @@
 
 require "dry-configurable"
 require "dry-container"
-require "logger"
+require "dry/logger"
 
 module Factorix
   # Application container and configuration
@@ -42,12 +42,12 @@ module Factorix
       # Ensure log directory exists
       log_path.dirname.mkpath unless log_path.dirname.exist?
 
-      logger = Logger.new(log_path)
-      logger.level = Logger.const_get(config.log_level.to_s.upcase)
-      logger.formatter = proc do |severity, datetime, _progname, msg|
-        "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity}: #{msg}\n"
-      end
-      logger
+      Dry.Logger(
+        :factorix,
+        level: config.log_level,
+        stream: log_path.to_s,
+        template: "[%<time>s] %<severity>s: %<message>s"
+      )
     end
 
     # Register retry strategy for network operations

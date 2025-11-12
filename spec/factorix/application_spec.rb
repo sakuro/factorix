@@ -12,9 +12,9 @@ RSpec.describe Factorix::Application do
     end
 
     describe "[:logger]" do
-      it "resolves to a Logger instance" do
+      it "resolves to a logger with standard logging interface" do
         logger = Factorix::Application[:logger]
-        expect(logger).to be_a(Logger)
+        expect(logger).to respond_to(:debug, :info, :warn, :error, :fatal)
       end
 
       it "creates log file in XDG_STATE_HOME" do
