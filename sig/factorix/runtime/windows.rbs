@@ -3,9 +3,13 @@ module Factorix
     class Windows < Base
       def initialize: (?path: WindowsPath) -> void
 
+      def executable_path: () -> Pathname
+
       def user_dir: () -> Pathname
 
       class WindowsPath
+        def program_files_x86: () -> Pathname
+
         def app_data: () -> Pathname
 
         def local_app_data: () -> Pathname

@@ -10,6 +10,17 @@ module Factorix
     # implementations must provide. It provides common implementations for
     # derived paths and XDG Base Directory specification support.
     class Base
+      # Get the Factorio executable path
+      #
+      # Returns the path to the Factorio executable file.
+      # The exact location varies by platform and installation method (Steam, GOG, etc.).
+      #
+      # @return [Pathname] the Factorio executable path
+      # @raise [NotImplementedError] if not implemented by the platform
+      def executable_path
+        raise NotImplementedError, "#{self.class}#executable_path is not implemented"
+      end
+
       # Get the Factorio user directory path
       #
       # This directory contains user-specific Factorio data including mods,
@@ -144,6 +155,43 @@ module Factorix
       # @return [Pathname] the Factorix log file path
       def factorix_log_path
         xdg_state_home_dir / "factorix" / "factorix.log"
+      end
+
+      # Get the Factorio lock file path
+      #
+      # The lock file is created by Factorio when the game is running
+      # and is used to detect if the game is already running.
+      #
+      # @return [Pathname] the lock file path
+      def lock_path
+        user_dir / ".lock"
+      end
+
+      # Check if Factorio is currently running
+      #
+      # Because the game becomes daemonized on launch, we cannot use the process ID
+      # or process groups to check if the game is running. Instead, we check the
+      # existence of the lock file.
+      #
+      # @return [Boolean] true if the game is running, false otherwise
+      def running?
+        lock_path.exist?
+      end
+
+      # Launch Factorio with the specified options
+      #
+      # @param args [Array<String>] command-line arguments to pass to Factorio
+      # @param async [Boolean] whether to launch asynchronously (default: true)
+      # @return [void]
+      # @raise [RuntimeError] if the game is already running
+      def launch(*, async: true)
+        raise RuntimeError, "The game is already running" if running?
+
+        if async
+          spawn([executable_path.to_s, "factorio"], *, out: IO::NULL)
+        else
+          system([executable_path.to_s, "factorio"], *, out: IO::NULL)
+        end
       end
 
       # Get the default cache home directory for this platform

@@ -14,6 +14,7 @@ module Factorix
     extend Dry::CLI::Registry
 
     register "version", Commands::Version
+    register "launch", Commands::Launch
     register "mod download", Commands::MOD::Download
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore

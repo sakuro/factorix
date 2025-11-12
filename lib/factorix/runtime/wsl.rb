@@ -17,6 +17,13 @@ module Factorix
 
       # WSL-specific path provider
       class WSLPath
+        # Get the Program Files (x86) directory path (WSL-converted)
+        #
+        # @return [Pathname] the Program Files (x86) directory
+        def program_files_x86
+          Pathname(wslpath(windows_env("ProgramFiles(x86)")))
+        end
+
         # Get the AppData directory path (WSL-converted)
         #
         # @return [Pathname] the AppData directory

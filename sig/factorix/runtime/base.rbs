@@ -1,6 +1,8 @@
 module Factorix
   class Runtime
     class Base
+      def executable_path: () -> Pathname
+
       def user_dir: () -> Pathname
 
       def mods_dir: () -> Pathname
@@ -24,6 +26,12 @@ module Factorix
       def factorix_config_path: () -> Pathname
 
       def factorix_log_path: () -> Pathname
+
+      def lock_path: () -> Pathname
+
+      def running?: () -> bool
+
+      def launch: (*String, async: bool) -> void
     end
   end
 end

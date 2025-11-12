@@ -1,6 +1,8 @@
 module Factorix
   class Runtime
     class MacOS < Base
+      def executable_path: () -> Pathname
+
       def user_dir: () -> Pathname
     end
   end

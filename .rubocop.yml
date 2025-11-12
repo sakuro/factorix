@@ -90,6 +90,10 @@ RSpec/RepeatedExampleGroupBody:
   Exclude:
     - spec/factorix/ser_des/deserializer_spec.rb
 
+RSpec/SubjectStub:
+  Exclude:
+    - spec/factorix/cli/commands/launch_spec.rb
+
 Style/IpAddresses:
   Exclude:
     - spec/factorix/types/game_version_spec.rb

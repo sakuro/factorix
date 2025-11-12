@@ -436,39 +436,55 @@ Local MOD file and configuration management.
 
 **Dependencies**: Runtime, SerDes
 
-## Phase 6: CLI Layer
+## Phase 6: CLI Layer (Partial)
 
 Command-line interface using dry-cli.
 
-### 6.1 CLI Framework
+### 6.1 CLI Framework ✅ COMPLETED
 
-- [ ] `cli.rb` - dry-cli Registry setup
+- [x] `cli.rb` - dry-cli Registry setup
+  - [x] Commands: version, mod download, mod settings dump, mod settings restore
 - [ ] `cli/commands.rb` - Command base classes
 - [ ] TIntMe style definitions (ERROR_STYLE, SUCCESS_STYLE, etc.)
 - [ ] Tests: `spec/factorix/cli_spec.rb`
 
 **Dependencies**: All lower layers
 
-### 6.2 Info & Launch Commands
+### 6.2 Info & Launch Commands (Partial)
 
 - [ ] `cli/commands/info.rb` - Display directory information
-- [ ] `cli/commands/launch.rb` - Launch Factorio
-  - [ ] Pass options to game
-  - [ ] Prevent multiple launches
-  - [ ] Wait for termination (certain commands)
+- [x] `cli/commands/launch.rb` - Launch Factorio ✅ COMPLETED
+  - [x] Pass optional arguments to game
+  - [x] Prevent multiple launches (check lock file)
+  - [x] `--wait` option to wait for game termination
+  - [x] Auto-detect synchronous options (--help, --dump-*)
+  - [x] Runtime layer: executable_path, lock_path, running?, launch methods
+  - [x] Platform-specific implementations (MacOS, Windows, WSL)
+  - [x] Comprehensive logging for launch lifecycle
+  - [x] Tests: `spec/factorix/cli/commands/launch_spec.rb` (8 examples)
+  - [x] RBS type signatures and Steep validation
 - [ ] Tests: `spec/factorix/cli/commands/info_spec.rb`
-- [ ] Tests: `spec/factorix/cli/commands/launch_spec.rb`
 
 **Dependencies**: Runtime
 
-### 6.3 MOD Commands
+**Notes**:
+- Current implementation assumes Steam installation paths
+- For GOG/itch.io/standalone, users should configure installation path in config file
+- See `future_cli_launch_implementation` memory for installation path detection details
+
+### 6.3 MOD Commands (Partial)
 
 - [ ] `cli/commands/mod/list.rb` - List MODs
 - [ ] `cli/commands/mod/enable.rb` - Enable MOD
 - [ ] `cli/commands/mod/disable.rb` - Disable MOD
-- [ ] `cli/commands/mod/download.rb` - Download MOD file
-  - [ ] `--output` option for destination
-  - [ ] Version specification support (`mod@version`)
+- [x] `cli/commands/mod/download.rb` - Download MOD file ✅ COMPLETED
+  - [x] `--directory` option for destination
+  - [x] `--jobs` option for parallel downloads (default: 4)
+  - [x] Version specification support (`mod@version`, `mod@latest`, `mod`)
+  - [x] Multi-progress bar with `concurrent-ruby`
+  - [x] Progress::MultiBar for parallel download visualization
+  - [x] Security: directory traversal validation
+  - [ ] Tests: `spec/factorix/cli/commands/mod/download_spec.rb`
 - [ ] `cli/commands/mod/install.rb` - Install MOD with dependencies
   - [ ] Three-phase workflow (gather, validate, execute)
   - [ ] Dependency resolution
@@ -477,7 +493,6 @@ Command-line interface using dry-cli.
   - [ ] Reverse dependency check
 - [ ] `cli/commands/mod/publish.rb` - Publish new MOD
 - [ ] `cli/commands/mod/edit.rb` - Edit MOD details on portal
-- [ ] Tests: `spec/factorix/cli/commands/mod/**/*_spec.rb`
 
 **Dependencies**: Portal, MODList, MODDependencies
 
@@ -490,13 +505,32 @@ Command-line interface using dry-cli.
 
 **Dependencies**: Portal
 
-### 6.5 MOD Settings Commands
+### 6.5 MOD Settings Commands ✅ COMPLETED
 
-- [ ] `cli/commands/mod/settings/load.rb` - Generate mod-settings.dat from TOML
-- [ ] `cli/commands/mod/settings/dump.rb` - Dump mod-settings.dat to TOML
-- [ ] Tests: `spec/factorix/cli/commands/mod/settings/**/*_spec.rb`
+- [x] `cli/commands/mod/settings/dump.rb` - Dump mod-settings.dat to TOML/JSON/CSV
+  - [x] `--format` option (toml, json, csv)
+  - [x] `--output` option for file output
+  - [x] Uses MODSettings::Converter classes
+  - [x] Tests: `spec/factorix/cli/commands/mod/settings/dump_spec.rb`
+- [x] `cli/commands/mod/settings/restore.rb` - Restore mod-settings.dat from TOML/JSON
+  - [x] `--format` option or auto-detection from file extension
+  - [x] `--input` option or read from stdin
+  - [x] `--backup-extension` option (default: .bak)
+  - [x] Automatic backup of existing file
+  - [x] Tests: `spec/factorix/cli/commands/mod/settings/restore_spec.rb`
+- [x] `cli/commands/version.rb` - Display Factorix version
+  - [x] Tests: `spec/factorix/cli/commands/version_spec.rb`
 
-**Dependencies**: MODSettings
+**Dependencies**: MODSettings, MODSettings converters
+
+### 6.6 Progress Bars ✅ COMPLETED
+
+- [x] `progress/bar.rb` - Single progress bar event listener
+  - [x] Implements dry-events subscriber for download/upload events
+  - [x] ruby-progressbar integration
+- [x] `progress/multi_bar.rb` - Multiple concurrent progress bars
+  - [x] Thread-safe progress bar management
+  - [x] Used by `mod download` command for parallel downloads
 
 ## Testing Strategy
 

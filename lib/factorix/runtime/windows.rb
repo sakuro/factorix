@@ -6,6 +6,8 @@ module Factorix
     #
     # This implementation uses Windows environment variables (APPDATA, LOCALAPPDATA)
     # to locate Factorio directories. It assumes Factorio is installed via Steam.
+    # For other installation methods (GOG, itch.io, standalone), users should
+    # configure the installation path in the Factorix configuration file.
     class Windows < Base
       # Initialize Windows runtime environment
       #
@@ -13,6 +15,15 @@ module Factorix
       def initialize(path: WindowsPath.new)
         super()
         @path = path
+      end
+
+      # Get the Factorio executable path
+      #
+      # Returns the default Steam installation path on Windows.
+      #
+      # @return [Pathname] the Factorio executable path
+      def executable_path
+        path.program_files_x86.join("Steam/steamapps/common/Factorio/bin/x64/factorio.exe")
       end
 
       # Get the Factorio user directory path
@@ -47,6 +58,15 @@ module Factorix
 
       # Windows-specific path provider
       class WindowsPath
+        # Get the Program Files (x86) directory path
+        #
+        # @return [Pathname] the Program Files (x86) directory
+        def program_files_x86
+          # ProgramFiles(x86) is the environment variable name, but Ruby doesn't allow
+          # parentheses in variable names, so we use fetch with a string key
+          Pathname(ENV.fetch("ProgramFiles(x86)"))
+        end
+
         # Get the AppData directory path
         #
         # @return [Pathname] the AppData directory

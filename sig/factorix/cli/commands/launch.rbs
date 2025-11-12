@@ -1,0 +1,15 @@
+module Factorix
+  class CLI
+    module Commands
+      class Launch < Dry::CLI::Command
+        @runtime: Runtime::Base
+
+        def call: (?wait: bool, ?args: Array[String]) -> void
+
+        private
+
+        def wait_while: () { () -> bool } -> void
+      end
+    end
+  end
+end

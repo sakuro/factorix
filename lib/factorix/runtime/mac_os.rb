@@ -5,7 +5,18 @@ module Factorix
     # macOS runtime environment
     #
     # This implementation assumes Factorio is installed via Steam.
+    # For other installation methods (GOG, itch.io, standalone), users should
+    # configure the installation path in the Factorix configuration file.
     class MacOS < Base
+      # Get the Factorio executable path
+      #
+      # Returns the default Steam installation path on macOS.
+      #
+      # @return [Pathname] the Factorio executable path
+      def executable_path
+        Pathname(Dir.home).join("Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/MacOS/factorio")
+      end
+
       # Get the Factorio user directory path
       #
       # @return [Pathname] the Factorio user directory

@@ -4,6 +4,8 @@ module Factorix
       def initialize: (?path: WSLPath) -> void
 
       class WSLPath
+        def program_files_x86: () -> Pathname
+
         def app_data: () -> Pathname
 
         def local_app_data: () -> Pathname
