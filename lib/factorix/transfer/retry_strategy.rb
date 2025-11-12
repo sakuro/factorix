@@ -8,6 +8,9 @@ module Factorix
   module Transfer
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
       include Factorix::Import["logger"]
 
       DEFAULT_OPTIONS = {

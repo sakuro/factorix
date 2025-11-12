@@ -9,6 +9,9 @@ module Factorix
     # Uploads files to given URLs using HTTP multipart/form-data.
     # Uses Transfer::HTTP for the actual upload with event-driven progress notification.
     class Uploader
+      # @!parse
+      #   # @return [HTTP]
+      #   attr_reader :http
       include Factorix::Import["http"]
 
       # Upload a file to the given URL

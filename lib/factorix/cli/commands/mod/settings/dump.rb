@@ -7,6 +7,15 @@ module Factorix
         module Settings
           # Dump MOD settings to TOML or JSON format
           class Dump < Dry::CLI::Command
+            # @!parse
+            #   # @return [MODSettings::CSVConverter]
+            #   attr_reader :csv_converter
+            #   # @return [MODSettings::JSONConverter]
+            #   attr_reader :json_converter
+            #   # @return [MODSettings::TOMLConverter]
+            #   attr_reader :toml_converter
+            #   # @return [Runtime::Base]
+            #   attr_reader :runtime
             include Factorix::Import[
               csv_converter: "mod_settings_converters.csv",
               json_converter: "mod_settings_converters.json",

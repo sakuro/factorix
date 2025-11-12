@@ -14,6 +14,9 @@ module Factorix
     # - download.started, download.progress, download.completed
     # - upload.started, upload.progress, upload.completed
     class HTTP
+      # @!parse
+      #   # @return [RetryStrategy]
+      #   attr_reader :retry_strategy
       include Factorix::Import["retry_strategy"]
       include Dry::Events::Publisher[:transfer]
 

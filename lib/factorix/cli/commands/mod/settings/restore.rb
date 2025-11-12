@@ -7,6 +7,13 @@ module Factorix
         module Settings
           # Restore MOD settings from TOML or JSON format
           class Restore < Dry::CLI::Command
+            # @!parse
+            #   # @return [MODSettings::JSONConverter]
+            #   attr_reader :json_converter
+            #   # @return [MODSettings::TOMLConverter]
+            #   attr_reader :toml_converter
+            #   # @return [Runtime::Base]
+            #   attr_reader :runtime
             include Factorix::Import[
               json_converter: "mod_settings_converters.json",
               toml_converter: "mod_settings_converters.toml",

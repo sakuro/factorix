@@ -12,6 +12,11 @@ module Factorix
     # Uses file locking to prevent concurrent downloads of the same file.
     # HTTP redirects are handled automatically by the HTTP layer.
     class Downloader
+      # @!parse
+      #   # @return [Cache::FileSystem]
+      #   attr_reader :download_cache
+      #   # @return [HTTP]
+      #   attr_reader :http
       include Factorix::Import["download_cache", "http"]
 
       # Download a file from the given URL with caching support.

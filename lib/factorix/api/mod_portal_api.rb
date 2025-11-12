@@ -12,6 +12,9 @@ module Factorix
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
+      # @!parse
+      #   # @return [Cache::FileSystem]
+      #   attr_reader :api_cache
       include Factorix::Import["api_cache"]
 
       BASE_URL = "https://mods.factorio.com"

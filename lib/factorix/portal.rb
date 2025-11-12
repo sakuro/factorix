@@ -24,6 +24,11 @@ module Factorix
   #   release = mod.releases.max_by(&:released_at)  # Get latest by release date
   #   portal.download_mod(release, Pathname("downloads/mod.zip")) if release
   class Portal
+    # @!parse
+    #   # @return [API::MODPortalAPI]
+    #   attr_reader :mod_portal_api
+    #   # @return [API::MODDownloadAPI]
+    #   attr_reader :mod_download_api
     include Factorix::Import["mod_portal_api", "mod_download_api"]
 
     # List mods from the Mod Portal

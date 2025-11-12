@@ -42,6 +42,11 @@ module Factorix
               @multi_bar.finish(@mod_name)
             end
           end
+          # @!parse
+          #   # @return [Portal]
+          #   attr_reader :portal
+          #   # @return [Transfer::HTTP]
+          #   attr_reader :http
           include Factorix::Import[
             portal: "portal",
             http: "http"

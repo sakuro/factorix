@@ -12,6 +12,9 @@ module Factorix
     # with file locking to handle concurrent access and TTL support
     # for cache expiration.
     class FileSystem
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
       include Factorix::Import["logger"]
 
       # Maximum lifetime of lock files in seconds.
