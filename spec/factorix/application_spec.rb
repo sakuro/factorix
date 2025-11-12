@@ -28,7 +28,9 @@ RSpec.describe Factorix::Application do
         expect(log_path.dirname).to exist
       end
 
-      xit "uses log level from configuration" do
+      it "uses log level from configuration" do
+        pending "Difficult to change log level of registered logger and recreate it"
+
         original_level = Factorix::Application.config.log_level
 
         Factorix::Application.config.log_level = :debug
