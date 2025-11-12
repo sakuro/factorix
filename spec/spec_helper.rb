@@ -3,6 +3,7 @@
 require "simplecov"
 SimpleCov.start
 
+require "dry/container/stub"
 require "factorix"
 require "fileutils"
 require "tmpdir"
@@ -46,6 +47,10 @@ RSpec.configure do |config|
     runtime = Factorix::Application.resolve(:runtime)
     Factorix::Application.config.cache.download.dir = runtime.factorix_cache_dir / "download"
     Factorix::Application.config.cache.api.dir = runtime.factorix_cache_dir / "api"
+
+    # Stub logger with null logger to prevent writing to system log files during tests
+    Factorix::Application.enable_stubs!
+    Factorix::Application.stub(:logger, Logger.new(IO::NULL))
   end
 
   config.after(:suite) do
