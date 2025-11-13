@@ -7,9 +7,48 @@
 
 ## Command List
 
-### Info
+### Path
 
-Retrieve directory information related to the game.
+Display Factorio and Factorix paths.
+
+```bash
+# Display all paths
+factorix path
+
+# Display specific paths
+factorix path mods-dir user-dir
+
+# Underscore notation is also accepted (automatically normalized to hyphens)
+factorix path mods_dir user_dir
+```
+
+**Output**: JSON format with path types as keys and path values as values
+
+**Available path types**:
+- `executable-path` - Factorio executable file
+- `user-dir` - Factorio user directory
+- `mods-dir` - MODs directory
+- `saves-dir` - Saves directory
+- `script-output-dir` - Script output directory
+- `mod-list-path` - mod-list.json file
+- `mod-settings-path` - mod-settings.dat file
+- `player-data-path` - player-data.json file
+- `lock-path` - Lock file (indicates if game is running)
+- `factorix-cache-dir` - Factorix cache directory
+- `factorix-config-path` - Factorix configuration file
+- `factorix-log-path` - Factorix log file
+
+**Error handling**: When unknown path types are specified, displays available path types in bulleted list format:
+```
+Unknown path types:
+- invalid-type
+
+Available path types:
+- executable-path
+- factorix-cache-dir
+- factorix-config-path
+...
+```
 
 ### Launch
 

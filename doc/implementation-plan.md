@@ -443,16 +443,25 @@ Command-line interface using dry-cli.
 ### 6.1 CLI Framework ✅ COMPLETED
 
 - [x] `cli.rb` - dry-cli Registry setup
-  - [x] Commands: version, mod download, mod settings dump, mod settings restore
+  - [x] Commands: version, launch, path, mod download, mod settings dump, mod settings restore
 - [ ] `cli/commands.rb` - Command base classes
 - [ ] TIntMe style definitions (ERROR_STYLE, SUCCESS_STYLE, etc.)
 - [ ] Tests: `spec/factorix/cli_spec.rb`
 
 **Dependencies**: All lower layers
 
-### 6.2 Info & Launch Commands (Partial)
+### 6.2 Path & Launch Commands ✅ COMPLETED
 
-- [ ] `cli/commands/info.rb` - Display directory information
+- [x] `cli/commands/path.rb` - Display Factorio and Factorix paths ✅ COMPLETED
+  - [x] Display all paths when no arguments provided
+  - [x] Display specific paths by path type arguments
+  - [x] JSON output with pretty formatting
+  - [x] Path type normalization (underscore to hyphen)
+  - [x] Supported path types: executable-path, user-dir, mods-dir, saves-dir, script-output-dir, mod-list-path, mod-settings-path, player-data-path, lock-path, factorix-cache-dir, factorix-config-path, factorix-log-path
+  - [x] Error handling with bulleted list of available path types
+  - [x] Tests: `spec/factorix/cli/commands/path_spec.rb` (8 examples)
+  - [x] RBS type signatures: `sig/factorix/cli/commands/path.rbs`
+  - [x] Support helper: `spec/support/output_helpers.rb` (capture_stdout)
 - [x] `cli/commands/launch.rb` - Launch Factorio ✅ COMPLETED
   - [x] Pass optional arguments to game
   - [x] Prevent multiple launches (check lock file)
@@ -463,7 +472,6 @@ Command-line interface using dry-cli.
   - [x] Comprehensive logging for launch lifecycle
   - [x] Tests: `spec/factorix/cli/commands/launch_spec.rb` (8 examples)
   - [x] RBS type signatures and Steep validation
-- [ ] Tests: `spec/factorix/cli/commands/info_spec.rb`
 
 **Dependencies**: Runtime
 

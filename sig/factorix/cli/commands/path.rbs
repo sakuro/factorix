@@ -1,0 +1,13 @@
+module Factorix
+  class CLI
+    module Commands
+      class Path < Dry::CLI::Command
+        PATH_TYPES: Hash[String, Symbol]
+
+        @runtime: Runtime::Base
+
+        def call: (?path_types: Array[String]) -> void
+      end
+    end
+  end
+end
