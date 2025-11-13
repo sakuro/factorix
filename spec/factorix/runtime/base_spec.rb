@@ -9,14 +9,14 @@ RSpec.describe Factorix::Runtime::Base do
     end
   end
 
-  describe "#mods_dir" do
+  describe "#mod_dir" do
     context "when user_dir is implemented" do
       before do
         allow(runtime).to receive(:user_dir).and_return(Pathname("/home/wube/.factorio"))
       end
 
       it "returns user_dir + mods" do
-        expect(runtime.mods_dir).to eq(Pathname("/home/wube/.factorio/mods"))
+        expect(runtime.mod_dir).to eq(Pathname("/home/wube/.factorio/mods"))
       end
     end
   end
@@ -27,19 +27,19 @@ RSpec.describe Factorix::Runtime::Base do
         allow(runtime).to receive(:user_dir).and_return(Pathname("/home/wube/.factorio"))
       end
 
-      it "returns mods_dir + mod-list.json" do
+      it "returns mod_dir + mod-list.json" do
         expect(runtime.mod_list_path).to eq(Pathname("/home/wube/.factorio/mods/mod-list.json"))
       end
     end
   end
 
   describe "#mod_settings_path" do
-    context "when mods_dir is implemented" do
+    context "when mod_dir is implemented" do
       before do
-        allow(runtime).to receive(:mods_dir).and_return(Pathname("/home/wube/.factorio/mods"))
+        allow(runtime).to receive(:mod_dir).and_return(Pathname("/home/wube/.factorio/mods"))
       end
 
-      it "returns mods_dir + mod-settings.dat" do
+      it "returns mod_dir + mod-settings.dat" do
         expect(runtime.mod_settings_path).to eq(Pathname("/home/wube/.factorio/mods/mod-settings.dat"))
       end
     end

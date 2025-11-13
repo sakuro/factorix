@@ -32,22 +32,22 @@ module Factorix
         raise NotImplementedError, "#{self.class}#user_dir is not implemented"
       end
 
-      # Get the MODs directory path of Factorio
+      # Get the MOD directory path of Factorio
       #
       # This directory contains all installed MODs and MOD configuration files
       # such as mod-list.json and mod-settings.dat.
       #
-      # @return [Pathname] the MODs directory of Factorio
-      def mods_dir
+      # @return [Pathname] the MOD directory of Factorio
+      def mod_dir
         user_dir + "mods"
       end
 
-      # Get the saves directory path of Factorio
+      # Get the save directory path of Factorio
       #
       # This directory contains all save game files.
       #
-      # @return [Pathname] the saves directory of Factorio
-      def saves_dir
+      # @return [Pathname] the save directory of Factorio
+      def save_dir
         user_dir + "saves"
       end
 
@@ -66,7 +66,7 @@ module Factorix
       #
       # @return [Pathname] the path of the mod-list.json file
       def mod_list_path
-        mods_dir + "mod-list.json"
+        mod_dir + "mod-list.json"
       end
 
       # Get the path of the mod-settings.dat file
@@ -75,7 +75,7 @@ module Factorix
       #
       # @return [Pathname] the path of the mod-settings.dat file
       def mod_settings_path
-        mods_dir + "mod-settings.dat"
+        mod_dir + "mod-settings.dat"
       end
 
       # Get the path of the player-data.json file

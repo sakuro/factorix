@@ -19,8 +19,8 @@ module Factorix
         PATH_TYPES = {
           "executable-path" => :executable_path,
           "user-dir" => :user_dir,
-          "mods-dir" => :mods_dir,
-          "saves-dir" => :saves_dir,
+          "mod-dir" => :mod_dir,
+          "save-dir" => :save_dir,
           "script-output-dir" => :script_output_dir,
           "mod-list-path" => :mod_list_path,
           "mod-settings-path" => :mod_settings_path,

@@ -17,9 +17,9 @@ RSpec.describe Factorix::Runtime::WSL do
     end
   end
 
-  describe "#mods_dir" do
+  describe "#mod_dir" do
     it "returns user_dir/mods" do
-      expect(runtime.mods_dir).to eq(Pathname("/mnt/c/Users/wube/AppData/Roaming/Factorio/mods"))
+      expect(runtime.mod_dir).to eq(Pathname("/mnt/c/Users/wube/AppData/Roaming/Factorio/mods"))
     end
   end
 

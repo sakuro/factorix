@@ -13,9 +13,9 @@ RSpec.describe Factorix::Runtime::MacOS do
     end
   end
 
-  describe "#mods_dir" do
+  describe "#mod_dir" do
     it "returns user_dir/mods" do
-      expect(runtime.mods_dir).to eq(Pathname("/Users/wube/Library/Application Support/factorio/mods"))
+      expect(runtime.mod_dir).to eq(Pathname("/Users/wube/Library/Application Support/factorio/mods"))
     end
   end
 

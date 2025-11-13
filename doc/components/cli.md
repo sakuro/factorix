@@ -16,10 +16,10 @@ Display Factorio and Factorix paths.
 factorix path
 
 # Display specific paths
-factorix path mods-dir user-dir
+factorix path mod-dir user-dir
 
 # Underscore notation is also accepted (automatically normalized to hyphens)
-factorix path mods_dir user_dir
+factorix path mod_dir user_dir
 ```
 
 **Output**: JSON format with path types as keys and path values as values
@@ -27,8 +27,8 @@ factorix path mods_dir user_dir
 **Available path types**:
 - `executable-path` - Factorio executable file
 - `user-dir` - Factorio user directory
-- `mods-dir` - MODs directory
-- `saves-dir` - Saves directory
+- `mod-dir` - MODs directory
+- `save-dir` - Saves directory
 - `script-output-dir` - Script output directory
 - `mod-list-path` - mod-list.json file
 - `mod-settings-path` - mod-settings.dat file
@@ -115,7 +115,7 @@ factorix mod install some-mod@1.2.0         # Specify version
 ##### 3. Execution Phase (only after successful validation)
 
 - Recursively download required dependency MODs
-- Place in `Runtime#mods_dir`
+- Place in `Runtime#mod_dir`
 - Add to `mod-list.json` (in enabled state)
 
 **Error Example**:
@@ -141,7 +141,7 @@ factorix mod uninstall some-mod
 ##### 2. Deletion Execution
 
 - Remove from `mod-list.json`
-- Delete files from `Runtime#mods_dir`
+- Delete files from `Runtime#mod_dir`
 
 **Error Example**:
 ```

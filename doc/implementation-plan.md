@@ -19,7 +19,7 @@ Platform abstraction layer for cross-platform compatibility.
 
 - [x] `runtime/base.rb` - Abstract base class
   - [x] `#user_dir` - Abstract method (NotImplementedError)
-  - [x] `#mods_dir` - Derived from user_dir (user_dir + "mods")
+  - [x] `#mod_dir` - Derived from user_dir (user_dir + "mods")
   - [x] `#player_data_path` - Derived from user_dir (user_dir + "player-data.json")
   - [x] `#xdg_cache_home_dir` - XDG cache directory (platform-aware defaults)
   - [x] `#xdg_config_home_dir` - XDG config directory (platform-aware defaults)
@@ -398,7 +398,7 @@ Local MOD file and configuration management.
 - [x] `mod_state.rb` - MOD enabled/disabled state ✅ COMPLETED
   - [x] MODState class with enabled and version attributes
 - [x] `mod_list.rb` - mod-list.json management ✅ COMPLETED
-  - [x] Read/write `Runtime#mods_dir / "mod-list.json"`
+  - [x] Read/write `Runtime#mod_dir / "mod-list.json"`
   - [x] Enable/disable MODs
   - [x] Enumerable support (each, each_mod)
   - [x] add, remove, exist?, enabled?, version methods
@@ -457,7 +457,7 @@ Command-line interface using dry-cli.
   - [x] Display specific paths by path type arguments
   - [x] JSON output with pretty formatting
   - [x] Path type normalization (underscore to hyphen)
-  - [x] Supported path types: executable-path, user-dir, mods-dir, saves-dir, script-output-dir, mod-list-path, mod-settings-path, player-data-path, lock-path, factorix-cache-dir, factorix-config-path, factorix-log-path
+  - [x] Supported path types: executable-path, user-dir, mod-dir, save-dir, script-output-dir, mod-list-path, mod-settings-path, player-data-path, lock-path, factorix-cache-dir, factorix-config-path, factorix-log-path
   - [x] Error handling with bulleted list of available path types
   - [x] Tests: `spec/factorix/cli/commands/path_spec.rb` (8 examples)
   - [x] RBS type signatures: `sig/factorix/cli/commands/path.rbs`
