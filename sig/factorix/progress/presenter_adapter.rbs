@@ -1,7 +1,7 @@
 module Factorix
   module Progress
     class PresenterAdapter
-      def initialize: (TTY::ProgressBar tty_bar) -> void
+      def initialize: (TTY::ProgressBar tty_bar, Mutex mutex) -> void
 
       def start: (total: Integer, ?format: String?) -> void
 

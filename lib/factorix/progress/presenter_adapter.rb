@@ -10,8 +10,10 @@ module Factorix
       # Create a new presenter adapter
       #
       # @param tty_bar [TTY::ProgressBar] the progress bar to adapt
-      def initialize(tty_bar)
+      # @param mutex [Mutex] mutex for thread-safe operations
+      def initialize(tty_bar, mutex)
         @tty_bar = tty_bar
+        @mutex = mutex
         @started = false
       end
 
@@ -22,9 +24,11 @@ module Factorix
       # @return [void]
       def start(total:, format: nil)
         _ = format # Acknowledge unused parameter
-        @tty_bar.update(total:) if total
-        @tty_bar.start unless @started
-        @started = true
+        @mutex.synchronize do
+          @tty_bar.update(total:) if total
+          @tty_bar.start unless @started
+          @started = true
+        end
       end
 
       # Update the progress to a specific value
@@ -32,14 +36,14 @@ module Factorix
       # @param current [Integer] current progress value
       # @return [void]
       def update(current)
-        @tty_bar.current = current
+        @mutex.synchronize { @tty_bar.current = current }
       end
 
       # Mark the progress as finished
       #
       # @return [void]
       def finish
-        @tty_bar.finish
+        @mutex.synchronize { @tty_bar.finish }
       end
     end
   end

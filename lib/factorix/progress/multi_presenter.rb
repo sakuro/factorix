@@ -26,6 +26,7 @@ module Factorix
           }
         )
         @presenters = {}
+        @mutex = Mutex.new
       end
 
       # Register a new progress presenter
@@ -34,10 +35,12 @@ module Factorix
       # @param title [String] title for this specific progress presenter
       # @return [PresenterAdapter] adapter wrapping the TTY::ProgressBar
       def register(name, title:)
-        tty_bar = @multi.register("#{title} [:bar] :percent :byte/:total_byte")
-        adapter = PresenterAdapter.new(tty_bar)
-        @presenters[name] = adapter
-        adapter
+        @mutex.synchronize do
+          tty_bar = @multi.register("#{title} [:bar] :percent :byte/:total_byte")
+          adapter = PresenterAdapter.new(tty_bar, @mutex)
+          @presenters[name] = adapter
+          adapter
+        end
       end
 
       # Get a registered presenter by name
