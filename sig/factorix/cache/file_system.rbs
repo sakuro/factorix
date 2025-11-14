@@ -23,6 +23,8 @@ module Factorix
 
       def expired?: (String key) -> bool
 
+      def size: (String key) -> Integer?
+
       def with_lock: [T] (String key) { () -> T } -> T
     end
   end

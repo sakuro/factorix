@@ -39,6 +39,22 @@ module Factorix
       def on_download_completed(_event)
         @presenter.finish
       end
+
+      # Handle cache hit event
+      #
+      # @param event [Dry::Events::Event] event with url, output, and total_size payload
+      # @return [void]
+      def on_cache_hit(event)
+        total_size = event.payload.fetch(:total_size, 1)
+
+        # Start and complete immediately for cache hits
+        @presenter.start(
+          total: total_size,
+          format: "[:bar] :percent :byte/:total_byte"
+        )
+        @presenter.update(total_size)
+        @presenter.finish
+      end
     end
   end
 end

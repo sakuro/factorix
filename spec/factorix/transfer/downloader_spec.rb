@@ -30,7 +30,8 @@ RSpec.describe Factorix::Transfer::Downloader do
 
   before do
     allow(download_cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
-    allow(http).to receive(:download).and_return(nil)
+    allow(download_cache).to receive(:size).and_return(1024)
+    allow(http).to receive_messages(download: nil, publish: nil)
   end
 
   after do

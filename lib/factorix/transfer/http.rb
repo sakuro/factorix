@@ -28,6 +28,8 @@ module Factorix
       register_event("upload.started")
       register_event("upload.progress")
       register_event("upload.completed")
+      register_event("cache.hit")
+      register_event("cache.miss")
 
       # Chunk size for reading/writing (16KB)
       CHUNK_SIZE = 16 * 1024

@@ -304,6 +304,43 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
   end
 
+  describe "#size" do
+    context "when the cache file exists" do
+      before do
+        cache_path.dirname.mkpath
+        File.write(cache_path, "cached content")
+      end
+
+      it "returns the file size in bytes" do
+        expect(cache.size(key)).to eq(14) # "cached content" is 14 bytes
+      end
+    end
+
+    context "when the cache file does not exist" do
+      it "returns nil" do
+        expect(cache.size(key)).to be_nil
+      end
+    end
+
+    context "with TTL" do
+      let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, ttl: 10) }
+
+      before do
+        cache_path.dirname.mkpath
+        File.write(cache_path, "cached content")
+      end
+
+      it "returns the size for non-expired cache" do
+        expect(cache.size(key)).to eq(14)
+      end
+
+      it "returns nil for expired cache" do
+        FileUtils.touch(cache_path, mtime: Time.now - 20)
+        expect(cache.size(key)).to be_nil
+      end
+    end
+  end
+
   describe "#with_lock" do
     before do
       lock_path.dirname.mkpath

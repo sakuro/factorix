@@ -67,6 +67,8 @@ module Factorix
                   title: "\u{1F9E9} #{download[:release].file_name}"
                 )
                 handler = Progress::DownloadHandler.new(presenter)
+
+                # Subscribe to HTTP events (includes both cache and download events)
                 thread_http.subscribe(handler)
 
                 thread_portal.download_mod(download[:release], download[:output_path])

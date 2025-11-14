@@ -46,13 +46,18 @@ module Factorix
 
         if download_cache.fetch(key, output)
           logger.info("Cache hit", url: masked_url)
+          total_size = download_cache.size(key)
+          http.publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
           return
         end
 
         logger.debug("Cache miss, downloading", url: masked_url)
+        http.publish("cache.miss", url: masked_url)
         download_cache.with_lock(key) do
           if download_cache.fetch(key, output)
             logger.info("Cache hit", url: masked_url)
+            total_size = download_cache.size(key)
+            http.publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
             return
           end
 

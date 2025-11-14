@@ -173,6 +173,19 @@ module Factorix
         age_seconds > @ttl
       end
 
+      # Get the size of a cached file in bytes.
+      # Returns nil if the entry doesn't exist or is expired.
+      #
+      # @param key [String] cache key
+      # @return [Integer, nil] file size in bytes, or nil if entry doesn't exist/expired
+      def size(key)
+        path = cache_path_for(key)
+        return nil unless path.exist?
+        return nil if expired?(key)
+
+        path.size
+      end
+
       # Executes the given block with a file lock.
       # Uses flock for process-safe file locking and automatically removes stale locks
       #

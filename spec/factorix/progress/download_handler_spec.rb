@@ -63,4 +63,49 @@ RSpec.describe Factorix::Progress::DownloadHandler do
       expect(presenter).to have_received(:finish).once
     end
   end
+
+  describe "#on_cache_hit" do
+    it "shows cached status with file size" do
+      event = Dry::Events::Event.new(
+        "cache.hit",
+        url: "https://example.com/file.zip",
+        output: "/tmp/file.zip",
+        total_size: 1024
+      )
+
+      allow(presenter).to receive(:start)
+      allow(presenter).to receive(:update)
+      allow(presenter).to receive(:finish)
+
+      handler.on_cache_hit(event)
+
+      expect(presenter).to have_received(:start).with(
+        total: 1024,
+        format: "[:bar] :percent :byte/:total_byte"
+      )
+      expect(presenter).to have_received(:update).with(1024)
+      expect(presenter).to have_received(:finish)
+    end
+
+    it "uses fallback size when total_size is nil" do
+      event = Dry::Events::Event.new(
+        "cache.hit",
+        url: "https://example.com/file.zip",
+        output: "/tmp/file.zip"
+      )
+
+      allow(presenter).to receive(:start)
+      allow(presenter).to receive(:update)
+      allow(presenter).to receive(:finish)
+
+      handler.on_cache_hit(event)
+
+      expect(presenter).to have_received(:start).with(
+        total: 1,
+        format: "[:bar] :percent :byte/:total_byte"
+      )
+      expect(presenter).to have_received(:update).with(1)
+      expect(presenter).to have_received(:finish)
+    end
+  end
 end
