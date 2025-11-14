@@ -88,6 +88,24 @@ module Factorix
         user_dir + "player-data.json"
       end
 
+      # Get the path of the current Factorio log file
+      #
+      # This file contains the log output from the current Factorio session.
+      #
+      # @return [Pathname] the path of the current log file
+      def current_log_path
+        user_dir + "factorio-current.log"
+      end
+
+      # Get the path of the previous Factorio log file
+      #
+      # This file contains the log output from the previous Factorio session.
+      #
+      # @return [Pathname] the path of the previous log file
+      def previous_log_path
+        user_dir + "factorio-previous.log"
+      end
+
       # Get the XDG cache home directory
       #
       # Returns the base directory for user-specific cache data according to

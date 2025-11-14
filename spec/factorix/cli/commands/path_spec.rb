@@ -19,6 +19,8 @@ RSpec.describe Factorix::CLI::Commands::Path do
       mod_settings_path: Pathname("/path/to/mods/mod-settings.dat"),
       player_data_path: Pathname("/path/to/user/player-data.json"),
       lock_path: Pathname("/path/to/user/.lock"),
+      current_log_path: Pathname("/path/to/user/factorio-current.log"),
+      previous_log_path: Pathname("/path/to/user/factorio-previous.log"),
       factorix_cache_dir: Pathname("/path/to/cache/factorix"),
       factorix_config_path: Pathname("/path/to/config/factorix/config.rb"),
       factorix_log_path: Pathname("/path/to/state/factorix/factorix.log")
@@ -42,6 +44,8 @@ RSpec.describe Factorix::CLI::Commands::Path do
             mod-settings-path
             player-data-path
             lock-path
+            current-log-path
+            previous-log-path
             factorix-cache-dir
             factorix-config-path
             factorix-log-path
@@ -96,6 +100,8 @@ RSpec.describe Factorix::CLI::Commands::Path do
           mod-settings-path
           player-data-path
           lock-path
+          current-log-path
+          previous-log-path
           factorix-cache-dir
           factorix-config-path
           factorix-log-path
@@ -114,6 +120,8 @@ RSpec.describe Factorix::CLI::Commands::Path do
           "mod-settings-path" => "/path/to/mods/mod-settings.dat",
           "player-data-path" => "/path/to/user/player-data.json",
           "lock-path" => "/path/to/user/.lock",
+          "current-log-path" => "/path/to/user/factorio-current.log",
+          "previous-log-path" => "/path/to/user/factorio-previous.log",
           "factorix-cache-dir" => "/path/to/cache/factorix",
           "factorix-config-path" => "/path/to/config/factorix/config.rb",
           "factorix-log-path" => "/path/to/state/factorix/factorix.log"

@@ -57,6 +57,30 @@ RSpec.describe Factorix::Runtime::Base do
     end
   end
 
+  describe "#current_log_path" do
+    context "when user_dir is implemented" do
+      before do
+        allow(runtime).to receive(:user_dir).and_return(Pathname("/home/wube/.factorio"))
+      end
+
+      it "returns user_dir + factorio-current.log" do
+        expect(runtime.current_log_path).to eq(Pathname("/home/wube/.factorio/factorio-current.log"))
+      end
+    end
+  end
+
+  describe "#previous_log_path" do
+    context "when user_dir is implemented" do
+      before do
+        allow(runtime).to receive(:user_dir).and_return(Pathname("/home/wube/.factorio"))
+      end
+
+      it "returns user_dir + factorio-previous.log" do
+        expect(runtime.previous_log_path).to eq(Pathname("/home/wube/.factorio/factorio-previous.log"))
+      end
+    end
+  end
+
   describe "#xdg_cache_home_dir" do
     context "when XDG_CACHE_HOME is set" do
       before do

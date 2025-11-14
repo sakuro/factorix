@@ -26,6 +26,8 @@ module Factorix
           "mod-settings-path" => :mod_settings_path,
           "player-data-path" => :player_data_path,
           "lock-path" => :lock_path,
+          "current-log-path" => :current_log_path,
+          "previous-log-path" => :previous_log_path,
           "factorix-cache-dir" => :factorix_cache_dir,
           "factorix-config-path" => :factorix_config_path,
           "factorix-log-path" => :factorix_log_path

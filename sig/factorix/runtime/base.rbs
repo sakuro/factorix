@@ -29,6 +29,10 @@ module Factorix
 
       def lock_path: () -> Pathname
 
+      def current_log_path: () -> Pathname
+
+      def previous_log_path: () -> Pathname
+
       def running?: () -> bool
 
       def launch: (*String, async: bool) -> void
