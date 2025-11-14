@@ -251,6 +251,62 @@ end
 
 No Progress::Base interface or adapter needed.
 
+### Implementation Update (2025-11-14)
+
+**Refactored to Presenter pattern** with separated concerns:
+
+```ruby
+# Progress presenters - display layer
+class Progress::Presenter
+  def initialize(title:, output:)
+  def start(total:, format: nil)
+  def update(current)
+  def finish
+end
+
+class Progress::MultiPresenter
+  def register(name, title:) -> PresenterAdapter
+end
+
+class Progress::PresenterAdapter
+  def initialize(tty_bar)
+  def start(total:, format: nil)
+  def update(current)
+  def finish
+end
+
+# Event handlers - application layer
+class Progress::DownloadHandler
+  def initialize(presenter)
+  def on_download_started(event)
+    @presenter.start(total: event[:total_size], format: "...")
+  end
+  def on_download_progress(event)
+    @presenter.update(event[:current_size])
+  end
+  def on_download_completed(event)
+    @presenter.finish
+  end
+end
+
+class Progress::UploadHandler
+  # Similar structure for upload events
+end
+
+# Usage in Download command
+multi_presenter = Progress::MultiPresenter.new(title: "Downloads")
+presenter = multi_presenter.register(mod_name, title: file_name)
+handler = Progress::DownloadHandler.new(presenter)
+http.subscribe(handler)
+```
+
+Key improvements:
+- **Separation of concerns**: Presenters handle display, handlers handle events
+- **Presenter pattern**: Abstract interface allows different implementations
+- **Adapter pattern**: PresenterAdapter bridges TTY::ProgressBar interface
+- **Reusability**: Handlers work with any presenter implementation
+- **Testability**: Easy to mock presenters in handler tests
+
 ## References
 
 - [dry-events documentation](https://dry-rb.org/gems/dry-events/1.0/)

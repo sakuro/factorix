@@ -1,0 +1,13 @@
+module Factorix
+  module Progress
+    class UploadHandler
+      def initialize: (Presenter | PresenterAdapter presenter) -> void
+
+      def on_upload_started: (Hash[Symbol, untyped] event) -> void
+
+      def on_upload_progress: (Hash[Symbol, untyped] event) -> void
+
+      def on_upload_completed: (Hash[Symbol, untyped] event) -> void
+    end
+  end
+end

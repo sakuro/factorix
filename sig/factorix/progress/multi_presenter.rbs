@@ -1,0 +1,11 @@
+module Factorix
+  module Progress
+    class MultiPresenter
+      def initialize: (?title: String, ?output: IO) -> void
+
+      def register: ((String | Symbol) name, title: String) -> PresenterAdapter
+
+      def []: ((String | Symbol) name) -> PresenterAdapter?
+    end
+  end
+end

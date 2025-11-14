@@ -3,16 +3,6 @@ module Factorix
     module Commands
       module MOD
         class Download < Dry::CLI::Command
-          class ProgressHandler
-            def initialize: (Progress::MultiBar multi_bar, String mod_name, String file_name) -> void
-
-            def on_download_started: (untyped event) -> void
-
-            def on_download_progress: (untyped event) -> void
-
-            def on_download_completed: (untyped _event) -> void
-          end
-
           @portal: Portal
           @http: Transfer::HTTP
 

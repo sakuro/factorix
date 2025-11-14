@@ -1,0 +1,13 @@
+module Factorix
+  module Progress
+    class PresenterAdapter
+      def initialize: (TTY::ProgressBar tty_bar) -> void
+
+      def start: (total: Integer, ?format: String?) -> void
+
+      def update: (Integer current) -> void
+
+      def finish: () -> void
+    end
+  end
+end

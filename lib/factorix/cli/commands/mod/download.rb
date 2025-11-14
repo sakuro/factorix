@@ -9,39 +9,6 @@ module Factorix
       module MOD
         # Download MOD files from Factorio MOD Portal
         class Download < Dry::CLI::Command
-          # Progress handler for multi-bar downloads
-          class ProgressHandler
-            def initialize(multi_bar, mod_name, file_name)
-              @multi_bar = multi_bar
-              @mod_name = mod_name
-              @file_name = file_name
-            end
-
-            # Handle download started event
-            #
-            # @param event [Dry::Events::Event] event with total_size payload
-            # @return [void]
-            def on_download_started(event)
-              # Register bar when download starts (now we know the total size)
-              @multi_bar.register(@mod_name, title: @file_name, total_size: event[:total_size])
-            end
-
-            # Handle download progress event
-            #
-            # @param event [Dry::Events::Event] event with current_size payload
-            # @return [void]
-            def on_download_progress(event)
-              @multi_bar.update(@mod_name, event[:current_size])
-            end
-
-            # Handle download completed event
-            #
-            # @param _event [Dry::Events::Event] event (unused)
-            # @return [void]
-            def on_download_completed(_event)
-              @multi_bar.finish(@mod_name)
-            end
-          end
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
@@ -73,30 +40,11 @@ module Factorix
           end
 
           private def download_with_multi_progress(mod_specs, download_dir, jobs)
-            # Prepare all downloads
-            downloads = mod_specs.map {|mod_spec|
-              mod_name, version = parse_mod_spec(mod_spec)
+            # Prepare all downloads with parallel info fetching
+            downloads = fetch_mod_info_parallel(mod_specs, download_dir, jobs)
 
-              puts "Fetching information for #{mod_name}..."
-              mod_info = portal.get_mod(mod_name)
-
-              release = find_release(mod_info, version)
-              raise ArgumentError, "Release not found for #{mod_name}@#{version}" unless release
-
-              # Security check: prevent directory traversal
-              validate_filename(release.file_name)
-
-              output_path = download_dir / release.file_name
-
-              {
-                release:,
-                output_path:,
-                mod_name:
-              }
-            }
-
-            # Set up multi-progress bar
-            multi_bar = Progress::MultiBar.new(title: "Downloads")
+            # Set up multi-progress presenter
+            multi_presenter = Progress::MultiPresenter.new(title: "Downloads")
 
             # Use thread pool for controlled parallelism
             pool = Concurrent::FixedThreadPool.new(jobs)
@@ -109,12 +57,9 @@ module Factorix
                 # Access the HTTP instance used by this portal
                 thread_http = thread_portal.mod_download_api.downloader.http
 
-                # Subscribe handler for this specific download
-                handler = create_multi_progress_handler(
-                  multi_bar,
-                  download[:mod_name],
-                  download[:release].file_name
-                )
+                # Register progress presenter and create handler
+                presenter = multi_presenter.register(download[:mod_name], title: download[:release].file_name)
+                handler = Progress::DownloadHandler.new(presenter)
                 thread_http.subscribe(handler)
 
                 thread_portal.download_mod(download[:release], download[:output_path])
@@ -130,8 +75,65 @@ module Factorix
             pool&.wait_for_termination
           end
 
-          private def create_multi_progress_handler(multi_bar, mod_name, file_name)
-            ProgressHandler.new(multi_bar, mod_name, file_name)
+          # Fetch MOD information in parallel with progress display
+          #
+          # @param mod_specs [Array<String>] MOD specifications
+          # @param download_dir [Pathname] Download directory
+          # @param jobs [Integer] Number of parallel jobs
+          # @return [Array<Hash>] Array of download information hashes
+          private def fetch_mod_info_parallel(mod_specs, download_dir, jobs)
+            # Create progress presenter for info fetching
+            presenter = Progress::Presenter.new(title: "Fetching MOD info", output: $stderr)
+            presenter.start(total: mod_specs.size)
+
+            # Use thread pool for parallel fetching
+            pool = Concurrent::FixedThreadPool.new(jobs)
+
+            # Submit fetch tasks to the pool
+            futures = mod_specs.map.with_index {|mod_spec, index|
+              Concurrent::Future.execute(executor: pool) do
+                result = fetch_mod_info(mod_spec, download_dir)
+                presenter.update(index + 1)
+                result
+              end
+            }
+
+            # Wait for all fetches to complete
+            results = futures.map(&:value!)
+
+            presenter.finish
+
+            results
+          ensure
+            pool&.shutdown
+            pool&.wait_for_termination
+          end
+
+          # Fetch MOD information for a single MOD specification
+          #
+          # @param mod_spec [String] MOD specification
+          # @param download_dir [Pathname] Download directory
+          # @return [Hash] Download information hash
+          private def fetch_mod_info(mod_spec, download_dir)
+            mod_name, version = parse_mod_spec(mod_spec)
+
+            # Get a new portal instance for this thread
+            thread_portal = Factorix::Application[:portal]
+            mod_info = thread_portal.get_mod(mod_name)
+
+            release = find_release(mod_info, version)
+            raise ArgumentError, "Release not found for #{mod_name}@#{version}" unless release
+
+            # Security check: prevent directory traversal
+            validate_filename(release.file_name)
+
+            output_path = download_dir / release.file_name
+
+            {
+              release:,
+              output_path:,
+              mod_name:
+            }
           end
 
           # Parse MOD specification

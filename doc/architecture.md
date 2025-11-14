@@ -81,8 +81,11 @@ Factorix/
 │   └── WSL
 │
 ├── Progress/
-│   ├── Base                   # Progress notification base class
-│   └── Bar                    # ruby-progressbar implementation (subclass of Progress::Base)
+│   ├── Presenter              # Single progress presenter (wraps TTY::ProgressBar)
+│   ├── PresenterAdapter       # Adapter for TTY::ProgressBar compatibility
+│   ├── MultiPresenter         # Multi-progress presenter (returns PresenterAdapter)
+│   ├── DownloadHandler        # Event handler for download progress
+│   └── UploadHandler          # Event handler for upload progress
 │
 ├── MOD                        # Data.define - local MOD
 ├── MODList                    # mod-list.json management
