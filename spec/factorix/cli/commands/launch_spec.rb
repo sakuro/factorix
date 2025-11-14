@@ -82,6 +82,30 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
     end
 
+    context "when the game is not running with --help option" do
+      before do
+        allow(runtime_double).to receive(:running?).and_return(false)
+      end
+
+      it "launches the game synchronously" do
+        command.call(args: %w[--help])
+
+        expect(runtime_double).to have_received(:launch).with("--help", async: false)
+      end
+    end
+
+    context "when the game is not running with --version option" do
+      before do
+        allow(runtime_double).to receive(:running?).and_return(false)
+      end
+
+      it "launches the game synchronously" do
+        command.call(args: %w[--version])
+
+        expect(runtime_double).to have_received(:launch).with("--version", async: false)
+      end
+    end
+
     context "when the game is not running with other args" do
       before do
         allow(runtime_double).to receive(:running?).and_return(false)

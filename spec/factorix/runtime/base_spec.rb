@@ -206,4 +206,89 @@ RSpec.describe Factorix::Runtime::Base do
       expect(runtime.factorix_log_path).to eq(Pathname("/home/wube/.local/state/factorix/factorix.log"))
     end
   end
+
+  describe "#launch" do
+    before do
+      allow(runtime).to receive_messages(executable_path: Pathname("/usr/games/factorio/bin/x64/factorio"), running?: false)
+    end
+
+    context "when launching asynchronously" do
+      it "launches with stdout discarded" do
+        allow(runtime).to receive(:spawn)
+
+        runtime.launch(async: true)
+
+        expect(runtime).to have_received(:spawn).with(
+          ["/usr/games/factorio/bin/x64/factorio", "factorio"],
+          out: IO::NULL
+        )
+      end
+
+      it "passes arguments to the executable" do
+        allow(runtime).to receive(:spawn)
+
+        runtime.launch("--start-server", "save.zip", async: true)
+
+        expect(runtime).to have_received(:spawn).with(
+          ["/usr/games/factorio/bin/x64/factorio", "factorio"],
+          "--start-server",
+          "save.zip",
+          out: IO::NULL
+        )
+      end
+    end
+
+    context "when launching synchronously" do
+      it "launches without discarding stdout" do
+        allow(runtime).to receive(:system) do |*_args|
+          $stdout.puts "Factorio output"
+          true
+        end
+
+        expect { runtime.launch(async: false) }.to output(/Factorio output/).to_stdout
+
+        expect(runtime).to have_received(:system).with(
+          ["/usr/games/factorio/bin/x64/factorio", "factorio"]
+        )
+      end
+
+      it "passes arguments to the executable" do
+        allow(runtime).to receive(:system) do |*_args|
+          $stdout.puts "Usage: factorio [OPTIONS]"
+          true
+        end
+
+        expect { runtime.launch("--help", async: false) }.to output(/Usage: factorio/).to_stdout
+
+        expect(runtime).to have_received(:system).with(
+          ["/usr/games/factorio/bin/x64/factorio", "factorio"],
+          "--help"
+        )
+      end
+
+      it "allows --version output to be displayed" do
+        allow(runtime).to receive(:system) do |*_args|
+          $stdout.puts "Factorio 1.1.100"
+          true
+        end
+
+        expect { runtime.launch("--version", async: false) }.to output(/Factorio 1\.1\.100/).to_stdout
+
+        expect(runtime).to have_received(:system).with(
+          ["/usr/games/factorio/bin/x64/factorio", "factorio"],
+          "--version"
+        )
+      end
+    end
+
+    context "when the game is already running" do
+      before do
+        allow(runtime).to receive(:running?).and_return(true)
+      end
+
+      it "raises RuntimeError" do
+        expect { runtime.launch }.to raise_error(RuntimeError, "The game is already running")
+      end
+    end
+  end
 end

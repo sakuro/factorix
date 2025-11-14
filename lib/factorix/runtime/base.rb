@@ -226,7 +226,7 @@ module Factorix
         if async
           spawn([executable_path.to_s, "factorio"], *, out: IO::NULL)
         else
-          system([executable_path.to_s, "factorio"], *, out: IO::NULL)
+          system([executable_path.to_s, "factorio"], *)
         end
       end
 

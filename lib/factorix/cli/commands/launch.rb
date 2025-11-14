@@ -18,6 +18,7 @@ module Factorix
           --dump-icon-sprites
           --dump-prototype-locale
           --help
+          --version
         ].freeze
         private_constant :SYNCHRONOUS_OPTIONS
 
