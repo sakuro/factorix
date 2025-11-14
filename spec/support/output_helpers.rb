@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "stringio"
+
 module OutputHelpers
   # Capture stdout output from a block
   #
