@@ -44,7 +44,10 @@ module Factorix
             downloads = fetch_mod_info_parallel(mod_specs, download_dir, jobs)
 
             # Set up multi-progress presenter
-            multi_presenter = Progress::MultiPresenter.new(title: "Downloads")
+            multi_presenter = Progress::MultiPresenter.new(
+              # INBOX TRAY
+              title: "\u{1F4E5} Downloads"
+            )
 
             # Use thread pool for controlled parallelism
             pool = Concurrent::FixedThreadPool.new(jobs)
@@ -58,7 +61,11 @@ module Factorix
                 thread_http = thread_portal.mod_download_api.downloader.http
 
                 # Register progress presenter and create handler
-                presenter = multi_presenter.register(download[:mod_name], title: download[:release].file_name)
+                presenter = multi_presenter.register(
+                  download[:mod_name],
+                  # PUZZLE PIECE
+                  title: "\u{1F9E9} #{download[:release].file_name}"
+                )
                 handler = Progress::DownloadHandler.new(presenter)
                 thread_http.subscribe(handler)
 
@@ -83,7 +90,11 @@ module Factorix
           # @return [Array<Hash>] Array of download information hashes
           private def fetch_mod_info_parallel(mod_specs, download_dir, jobs)
             # Create progress presenter for info fetching
-            presenter = Progress::Presenter.new(title: "Fetching MOD info", output: $stderr)
+            presenter = Progress::Presenter.new(
+              # LEFT-POINTING MAGNIFYING GLASS
+              title: "\u{1F50E} Fetching MOD info",
+              output: $stderr
+            )
             presenter.start(total: mod_specs.size)
 
             # Use thread pool for parallel fetching
