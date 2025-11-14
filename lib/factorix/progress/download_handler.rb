@@ -18,10 +18,7 @@ module Factorix
       # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
       def on_download_started(event)
-        @presenter.start(
-          total: event[:total_size],
-          format: "Downloading [:bar] :percent :byte/:total_byte"
-        )
+        @presenter.start(total: event[:total_size])
       end
 
       # Handle download progress event
@@ -48,10 +45,7 @@ module Factorix
         total_size = event.payload.fetch(:total_size, 1)
 
         # Start and complete immediately for cache hits
-        @presenter.start(
-          total: total_size,
-          format: "[:bar] :percent :byte/:total_byte"
-        )
+        @presenter.start(total: total_size)
         @presenter.update(total_size)
         @presenter.finish
       end

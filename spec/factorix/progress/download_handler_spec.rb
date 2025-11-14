@@ -14,10 +14,7 @@ RSpec.describe Factorix::Progress::DownloadHandler do
 
       handler.on_download_started(event)
 
-      expect(presenter).to have_received(:start).with(
-        total: 1000,
-        format: "Downloading [:bar] :percent :byte/:total_byte"
-      )
+      expect(presenter).to have_received(:start).with(total: 1000)
     end
   end
 
@@ -79,10 +76,7 @@ RSpec.describe Factorix::Progress::DownloadHandler do
 
       handler.on_cache_hit(event)
 
-      expect(presenter).to have_received(:start).with(
-        total: 1024,
-        format: "[:bar] :percent :byte/:total_byte"
-      )
+      expect(presenter).to have_received(:start).with(total: 1024)
       expect(presenter).to have_received(:update).with(1024)
       expect(presenter).to have_received(:finish)
     end
@@ -100,10 +94,7 @@ RSpec.describe Factorix::Progress::DownloadHandler do
 
       handler.on_cache_hit(event)
 
-      expect(presenter).to have_received(:start).with(
-        total: 1,
-        format: "[:bar] :percent :byte/:total_byte"
-      )
+      expect(presenter).to have_received(:start).with(total: 1)
       expect(presenter).to have_received(:update).with(1)
       expect(presenter).to have_received(:finish)
     end
