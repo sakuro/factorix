@@ -1,0 +1,15 @@
+# Minimal type definitions for tty-progressbar
+module TTY
+  class ProgressBar
+    def initialize: (String format, **untyped options) -> void
+    def start: () -> void
+    def update: (**untyped options) -> void
+    def current=: (Integer value) -> void
+    def finish: () -> void
+  end
+
+  class ProgressBar::Multi
+    def initialize: (String title, **untyped options) -> void
+    def register: (String format, **untyped options) -> ProgressBar
+  end
+end
