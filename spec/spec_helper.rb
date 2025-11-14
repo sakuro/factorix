@@ -26,14 +26,6 @@ RSpec.configure do |config|
   # Isolate XDG directories for tests to prevent reading user's config files
   # and polluting user's cache/data/state directories
   config.before(:suite) do
-    # Save original environment variables
-    @original_xdg_env = {
-      "XDG_CONFIG_HOME" => ENV.fetch("XDG_CONFIG_HOME", nil),
-      "XDG_CACHE_HOME" => ENV.fetch("XDG_CACHE_HOME", nil),
-      "XDG_DATA_HOME" => ENV.fetch("XDG_DATA_HOME", nil),
-      "XDG_STATE_HOME" => ENV.fetch("XDG_STATE_HOME", nil)
-    }
-
     # Create temporary directory for test suite
     @test_tmpdir = Dir.mktmpdir("factorix-test-")
 
@@ -50,15 +42,6 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    # Restore original environment variables
-    @original_xdg_env&.each do |key, value|
-      if value.nil?
-        ENV.delete(key)
-      else
-        ENV[key] = value
-      end
-    end
-
     # Clean up temporary directory
     FileUtils.rm_rf(@test_tmpdir) if @test_tmpdir && File.exist?(@test_tmpdir)
   end
