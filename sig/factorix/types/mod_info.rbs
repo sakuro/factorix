@@ -27,12 +27,6 @@ module Factorix
         **untyped
       ) -> void
 
-      private
-
-      def build_thumbnail_uri: (String path) -> URI::HTTPS
-
-      def all_required_detail_fields?: (Hash[Symbol, untyped] detail_fields) -> bool
-
       class Detail
         attr_reader changelog: String
         attr_reader created_at: Time
@@ -63,10 +57,6 @@ module Factorix
         ) -> void
 
         def deprecated?: () -> bool
-
-        private
-
-        def parse_homepage: (String value) -> (URI | String)
       end
     end
   end

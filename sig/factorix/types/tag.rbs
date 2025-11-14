@@ -6,11 +6,6 @@ module Factorix
       attr_reader description: String
 
       def self.for: (String value) -> Tag
-
-      private
-
-      def self.new: (value: String, name: String, description: String) -> Tag
-      def self.[]: (value: String, name: String, description: String) -> Tag
     end
   end
 end

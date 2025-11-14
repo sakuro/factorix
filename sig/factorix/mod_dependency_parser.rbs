@@ -1,13 +1,5 @@
 module Factorix
   class MODDependencyParser
     def parse: (String dependency_string) -> MODDependency
-
-    private
-
-    def determine_type: (String dependency_string) -> Symbol
-
-    def remove_prefix: (String dependency_string, Symbol type) -> String
-
-    def parse_mod_name_and_version: (String clean_string) -> [String, Types::MODVersionRequirement?]
   end
 end

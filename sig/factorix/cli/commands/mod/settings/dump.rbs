@@ -5,12 +5,6 @@ module Factorix
         module Settings
           class Dump < Dry::CLI::Command
             def call: (?settings_file: String?, ?output: String?, **untyped) -> void
-
-            private
-
-            def build_hash: (MODSettings settings) -> Hash[String, untyped]
-
-            def convert_value_for_output: (untyped value) -> untyped
           end
         end
       end

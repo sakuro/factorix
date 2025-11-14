@@ -16,10 +16,6 @@ module Factorix
       def to_a: () -> Array[Integer]
 
       def <=>: (MODVersion other) -> Integer?
-
-      private
-
-      def initialize: (major: Integer, minor: Integer, patch: Integer) -> void
     end
   end
 end
