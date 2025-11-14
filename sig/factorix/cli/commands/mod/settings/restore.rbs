@@ -4,13 +4,13 @@ module Factorix
       module MOD
         module Settings
           class Restore < Dry::CLI::Command
-            def call: (?input: String?, ?settings_file: String?, ?backup_extension: String, ?format: String?, **untyped) -> void
+            def call: (?input: String?, ?settings_file: String?, ?backup_extension: String, **untyped) -> void
 
             private
 
-            def converter_for_format: (String format) -> (MODSettings::JSONConverter | MODSettings::TOMLConverter)
+            def build_settings: (Hash[String, untyped] data) -> MODSettings
 
-            def detect_format: (Pathname path) -> String
+            def convert_value_for_input: (untyped value) -> untyped
 
             def backup_if_exists: (Pathname path, String extension) -> void
           end

@@ -1,48 +1,39 @@
 # frozen_string_literal: true
 
+require "json"
+
 module Factorix
   class CLI
     module Commands
       module MOD
         module Settings
-          # Dump MOD settings to TOML or JSON format
+          # Dump MOD settings to JSON format
           class Dump < Dry::CLI::Command
             # @!parse
-            #   # @return [MODSettings::CSVConverter]
-            #   attr_reader :csv_converter
-            #   # @return [MODSettings::JSONConverter]
-            #   attr_reader :json_converter
-            #   # @return [MODSettings::TOMLConverter]
-            #   attr_reader :toml_converter
             #   # @return [Runtime::Base]
             #   attr_reader :runtime
             include Factorix::Import[
-              csv_converter: "mod_settings_converters.csv",
-              json_converter: "mod_settings_converters.json",
-              toml_converter: "mod_settings_converters.toml",
               runtime: "runtime"
             ]
 
-            desc "Dump MOD settings to TOML or JSON format"
+            desc "Dump MOD settings to JSON format"
 
             argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file"
-            option :format, type: :string, default: "toml", values: %w[csv json toml], desc: "Output format"
             option :output, type: :string, aliases: ["-o"], desc: "Output file path"
 
             # Execute the dump command
             #
             # @param settings_file [String, nil] Path to mod-settings.dat file
-            # @param format [String] Output format (toml or json)
             # @param output [String, nil] Output file path
             # @return [void]
-            def call(settings_file: nil, format: "toml", output: nil, **)
+            def call(settings_file: nil, output: nil, **)
               # Load MOD settings
               settings_path = settings_file ? Pathname(settings_file) : runtime.mod_settings_path
               settings = Factorix::MODSettings.load(from: settings_path)
 
-              # Convert to specified format
-              converter = converter_for_format(format)
-              output_string = converter.convert_to(settings)
+              # Convert to JSON format
+              data = build_hash(settings)
+              output_string = JSON.pretty_generate(data)
 
               # Write to output
               if output
@@ -52,13 +43,37 @@ module Factorix
               end
             end
 
-            private def converter_for_format(format)
-              case format
-              when "csv" then csv_converter
-              when "json" then json_converter
-              when "toml" then toml_converter
+            # Build hash from MODSettings for JSON output
+            #
+            # @param settings [Factorix::MODSettings] The MOD settings to convert
+            # @return [Hash] Hash representation of the settings
+            private def build_hash(settings)
+              result = {
+                "game_version" => settings.game_version.to_s
+              }
+
+              settings.each_section do |section|
+                section_hash = {}
+                section.each do |key, value|
+                  section_hash[key] = convert_value_for_output(value)
+                end
+                result[section.name] = section_hash unless section_hash.empty?
+              end
+
+              result
+            end
+
+            # Convert value for JSON output (handle SignedInteger/UnsignedInteger)
+            #
+            # @param value [Object] The value to convert
+            # @return [Object] Converted value
+            private def convert_value_for_output(value)
+              case value
+              when Types::SignedInteger, Types::UnsignedInteger
+                # Integer(...) does not accept Integer instance
+                Integer(value.to_s, 10)
               else
-                raise ArgumentError, "Unknown format: #{format}"
+                value
               end
             end
           end

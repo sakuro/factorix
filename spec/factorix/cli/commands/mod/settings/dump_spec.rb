@@ -5,16 +5,10 @@ require "tempfile"
 RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
   subject(:command) do
     Factorix::CLI::Commands::MOD::Settings::Dump.new(
-      csv_converter: csv_converter_double,
-      json_converter: json_converter_double,
-      toml_converter: toml_converter_double,
       runtime: runtime_double
     )
   end
 
-  let(:csv_converter_double) { Factorix::MODSettings::CSVConverter.new }
-  let(:json_converter_double) { Factorix::MODSettings::JSONConverter.new }
-  let(:toml_converter_double) { Factorix::MODSettings::TOMLConverter.new }
   let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
   let(:default_settings_path) { Pathname("/default/mod-settings.dat") }
   let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.0-42") }
@@ -37,10 +31,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
 
   describe "#call" do
     context "with default options" do
-      it "dumps to TOML format to stdout" do
-        expect { command.call }.to output(/game_version = "1.1.0-42"/).to_stdout
-        expect { command.call }.to output(/\[startup\]/).to_stdout
-        expect { command.call }.to output(/string-value = "test"/).to_stdout
+      it "dumps to JSON format to stdout" do
+        expect { command.call }.to output(/"game_version": "1.1.0-42"/).to_stdout
+        expect { command.call }.to output(/"startup":/).to_stdout
+        expect { command.call }.to output(/"string-value": "test"/).to_stdout
       end
 
       it "loads from default path" do
@@ -61,16 +55,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
       end
     end
 
-    context "with JSON format" do
-      it "dumps to JSON format" do
-        expect { command.call(format: "json") }.to output(/"game_version": "1.1.0-42"/).to_stdout
-        expect { command.call(format: "json") }.to output(/"startup":/).to_stdout
-        expect { command.call(format: "json") }.to output(/"string-value": "test"/).to_stdout
-      end
-    end
-
     context "with output file" do
-      let(:output_file) { Tempfile.new(["test-output", ".toml"]) }
+      let(:output_file) { Tempfile.new(["test-output", ".json"]) }
 
       after do
         output_file.close
@@ -81,33 +67,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
         command.call(output: output_file.path)
 
         content = File.read(output_file.path)
-        expect(content).to match(/game_version = "1.1.0-42"/)
+        expect(content).to match(/"game_version": "1.1.0-42"/)
       end
 
       it "does not output to stdout" do
         expect { command.call(output: output_file.path) }.not_to output.to_stdout
-      end
-    end
-
-    context "with JSON format and output file" do
-      let(:output_file) { Tempfile.new(["test-output", ".json"]) }
-
-      after do
-        output_file.close
-        output_file.unlink
-      end
-
-      it "writes JSON to specified file" do
-        command.call(format: "json", output: output_file.path)
-
-        content = File.read(output_file.path)
-        expect(content).to match(/"game_version": "1.1.0-42"/)
-      end
-    end
-
-    context "with unknown format" do
-      it "raises ArgumentError" do
-        expect { command.call(format: "xml") }.to raise_error(ArgumentError, /Unknown format: xml/)
       end
     end
   end

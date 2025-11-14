@@ -230,13 +230,43 @@ factorix mod image edit some-mod <image-id-1>,<image-id-2>,<image-id-3>
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
-### MOD::Settings::Load
-
-Generate `mod-settings.dat` from TOML format configuration file.
-
 ### MOD::Settings::Dump
 
-Dump `mod-settings.dat` in TOML format.
+Export mod settings to JSON format.
+
+```bash
+# Dump to stdout
+factorix mod settings dump
+
+# Dump to file
+factorix mod settings dump -o settings.json
+
+# Dump from specific mod-settings.dat file
+factorix mod settings dump /path/to/mod-settings.dat -o settings.json
+```
+
+**Output**: JSON format with game version and settings organized by section (startup, runtime-global, runtime-per-user)
+
+**File format**: The binary `mod-settings.dat` file is converted to human-readable JSON with proper indentation.
+
+### MOD::Settings::Restore
+
+Restore mod settings from JSON format.
+
+```bash
+# Restore from file
+factorix mod settings restore -i settings.json
+
+# Restore from stdin
+cat settings.json | factorix mod settings restore
+
+# Restore to specific location
+factorix mod settings restore -i settings.json /path/to/mod-settings.dat
+```
+
+**Backup**: Automatically creates a backup with `.bak` extension before overwriting (customizable with `--backup-extension`)
+
+**File format**: Reads JSON file and converts it back to the binary `mod-settings.dat` format used by Factorio.
 
 ## Output Colorization
 
