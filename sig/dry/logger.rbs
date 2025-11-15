@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+module Dry
+  module Logger
+    # Minimal type definition for Dry::Logger::Dispatcher
+    class Dispatcher
+      def debug: (String message, **untyped metadata) -> void
+      def info: (String message, **untyped metadata) -> void
+      def warn: (String message, **untyped metadata) -> void
+      def error: (String message, **untyped metadata) -> void
+      def fatal: (String message, **untyped metadata) -> void
+    end
+  end
+end

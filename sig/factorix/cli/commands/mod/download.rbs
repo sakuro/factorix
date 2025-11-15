@@ -3,8 +3,7 @@ module Factorix
     module Commands
       module MOD
         class Download < Dry::CLI::Command
-          @portal: Portal
-          @http: Transfer::HTTP
+          attr_reader portal: Portal
 
           def call: (mod_specs: Array[String], ?directory: String, ?jobs: Integer) -> void
         end

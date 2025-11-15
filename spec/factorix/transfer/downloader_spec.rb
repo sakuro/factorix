@@ -4,9 +4,9 @@ require "pathname"
 require "tmpdir"
 
 RSpec.describe Factorix::Transfer::Downloader do
-  let(:download_cache) { instance_double(Factorix::Cache::FileSystem) }
-  let(:http) { instance_double(Factorix::Transfer::HTTP) }
-  let(:downloader) { Factorix::Transfer::Downloader.new(download_cache:, http:) }
+  let(:cache) { instance_double(Factorix::Cache::FileSystem) }
+  let(:client) { instance_double(Factorix::HTTP::Client) }
+  let(:downloader) { Factorix::Transfer::Downloader.new(cache:, client:) }
   let(:uri) { URI("https://example.com/file.zip") }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }
   let(:output) { output_dir.join("file.zip") }
@@ -29,9 +29,9 @@ RSpec.describe Factorix::Transfer::Downloader do
   end
 
   before do
-    allow(download_cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
-    allow(download_cache).to receive(:size).and_return(1024)
-    allow(http).to receive_messages(download: nil, publish: nil)
+    allow(cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
+    allow(cache).to receive(:size).and_return(1024)
+    allow(client).to receive(:get)
   end
 
   after do
@@ -41,54 +41,64 @@ RSpec.describe Factorix::Transfer::Downloader do
   describe "#download" do
     context "when the file is cached" do
       before do
-        allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(true)
+        allow(cache).to receive(:fetch).with(cache_key, output).and_return(true)
       end
 
       it "fetches the file from cache" do
         downloader.download(uri, output)
-        expect(download_cache).to have_received(:fetch).with(cache_key, output).once
+        expect(cache).to have_received(:fetch).with(cache_key, output).once
       end
 
       it "does not download the file" do
         downloader.download(uri, output)
-        expect(http).not_to have_received(:download)
+        expect(client).not_to have_received(:get)
       end
     end
 
     context "when the file is not cached" do
+      let(:response_body) { "file content" }
+
       before do
-        allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(false)
-        allow(download_cache).to receive(:with_lock).with(cache_key).and_yield
-        allow(download_cache).to receive(:store)
+        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:with_lock).with(cache_key).and_yield
+        allow(cache).to receive(:store)
+
+        # Mock client.get to yield a response with streaming
+        allow(client).to receive(:get) do |&block|
+          response = instance_double(Net::HTTPResponse)
+          allow(response).to receive(:[]).with("Content-Length").and_return(response_body.bytesize.to_s)
+          allow(response).to receive(:read_body).and_yield(response_body)
+          block&.call(response)
+        end
       end
 
       it "downloads the file" do
         downloader.download(uri, output)
-        expect(http).to have_received(:download).with(uri, kind_of(Pathname))
+        expect(client).to have_received(:get).with(uri)
       end
 
       it "stores the file in cache" do
         downloader.download(uri, output)
-        expect(download_cache).to have_received(:store).with(cache_key, kind_of(Pathname))
+        expect(cache).to have_received(:store).with(cache_key, kind_of(Pathname))
       end
 
       it "fetches the file from cache after download" do
-        allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
         downloader.download(uri, output)
-        expect(download_cache).to have_received(:fetch).with(cache_key, output).exactly(3).times
+        expect(cache).to have_received(:fetch).with(cache_key, output).exactly(3).times
       end
 
       context "when another process is downloading" do
         before do
           fetch_results = [false, true]
-          allow(download_cache).to receive(:fetch) do
+          allow(cache).to receive(:fetch) do
             fetch_results.shift
           end
         end
 
         it "does not download the file if it appears in cache" do
           downloader.download(uri, output)
-          expect(http).not_to have_received(:download)
+          expect(client).not_to have_received(:get)
         end
       end
     end
@@ -107,9 +117,9 @@ RSpec.describe Factorix::Transfer::Downloader do
 
     context "when download fails" do
       before do
-        allow(download_cache).to receive(:fetch).with(cache_key, output).and_return(false)
-        allow(download_cache).to receive(:with_lock).with(cache_key).and_yield
-        allow(http).to receive(:download).and_raise(Factorix::HTTPClientError.new("404 Not Found"))
+        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:with_lock).with(cache_key).and_yield
+        allow(client).to receive(:get).and_raise(Factorix::HTTPClientError.new("404 Not Found"))
       end
 
       it "raises HTTPClientError" do

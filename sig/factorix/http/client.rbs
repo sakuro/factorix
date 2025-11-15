@@ -1,0 +1,60 @@
+# frozen_string_literal: true
+
+module Factorix
+  module HTTP
+    # Low-level HTTP client using Net::HTTP
+    #
+    # Responsibilities:
+    # - Create and configure Net::HTTP instances
+    # - Execute HTTP methods (GET, POST)
+    # - Handle redirects (up to MAX_REDIRECTS)
+    # - Parse response codes and raise appropriate errors
+    # - Stream reading/writing for large files
+    #
+    # Does NOT handle:
+    # - Retry logic (delegated to RetryDecorator)
+    # - Progress events (delegated to EventDecorator)
+    # - Caching (delegated to CacheDecorator)
+    # - JSON parsing (handled by API clients)
+    class Client
+      attr_reader logger: Dry::Logger::Dispatcher
+
+      # Execute an HTTP request
+      #
+      # @param method [Symbol] HTTP method (:get, :post, :put, :delete)
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @param body [String, IO, nil] request body
+      # @yield [Net::HTTPResponse] for streaming responses
+      # @return [Response] response object
+      def request: (Symbol method, URI::HTTPS uri, ?headers: Hash[String, String], ?body: String | IO | nil) ?{ (Net::HTTPResponse) -> void } -> Response
+
+      # Execute a GET request
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @yield [Net::HTTPResponse] for streaming responses
+      # @return [Response] response object
+      def get: (URI::HTTPS uri, ?headers: Hash[String, String]) ?{ (Net::HTTPResponse) -> void } -> Response
+
+      # Execute a POST request
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param body [String, IO] request body
+      # @param headers [Hash<String, String>] request headers
+      # @param content_type [String, nil] Content-Type header
+      # @return [Response] response object
+      def post: (URI::HTTPS uri, body: String | IO, ?headers: Hash[String, String], ?content_type: String?) -> Response
+
+      private
+
+      def perform_request: (Symbol method, URI::HTTPS uri, redirect_count: Integer, headers: Hash[String, String], body: String | IO | nil) ?{ (Net::HTTPResponse) -> void } -> Response
+
+      def handle_response: (Net::HTTPResponse response, Symbol _method, URI::HTTPS _uri, Integer redirect_count) ?{ (Net::HTTPResponse) -> void } -> Response
+
+      def build_request: (Symbol method, URI::HTTPS uri, headers: Hash[String, String], body: String | IO | nil) -> Net::HTTPRequest
+
+      def create_http: (URI::HTTPS uri) -> Net::HTTP
+    end
+  end
+end

@@ -5,8 +5,7 @@ module Factorix
 
       attr_reader service_credential: ServiceCredential
       attr_reader downloader: Transfer::Downloader
-
-      def initialize: (?service_credential: ServiceCredential, ?downloader: Transfer::Downloader) -> void
+      attr_reader logger: Dry::Logger::Dispatcher
 
       def download: (String download_url, Pathname output) -> void
     end

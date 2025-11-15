@@ -3,9 +3,9 @@ module Factorix
     class MODPortalAPI
       BASE_URL: String
 
-      attr_reader api_cache: Cache::FileSystem
-
-      def initialize: (?api_cache: Cache::FileSystem) -> void
+      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader cache: Cache::FileSystem
+      attr_reader client: HTTP::Client
 
       def get_mods: (
                       *String namelist,

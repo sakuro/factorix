@@ -1,0 +1,26 @@
+# frozen_string_literal: true
+
+module Factorix
+  module HTTP
+    # Simple response wrapper for Net::HTTP responses
+    class Response
+      attr_reader code: Integer
+      attr_reader body: String
+      attr_reader headers: Hash[String, Array[String]]
+      attr_reader raw_response: Net::HTTPResponse
+
+      # @param net_http_response [Net::HTTPResponse] Raw Net::HTTP response
+      def initialize: (Net::HTTPResponse net_http_response) -> void
+
+      # Check if response is successful (2xx)
+      #
+      # @return [Boolean] true if 2xx response
+      def success?: () -> bool
+
+      # Get Content-Length from headers
+      #
+      # @return [Integer, nil] content length in bytes, or nil if not present
+      def content_length: () -> Integer?
+    end
+  end
+end

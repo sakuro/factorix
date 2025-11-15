@@ -24,7 +24,8 @@ module Factorix
 
     # Some items are registered with memoize: false to support parallel downloads.
     # Items registered with memoize: false:
-    # - :http
+    # - :download_http_client
+    # - :api_http_client
     # - :downloader
     # - :mod_download_api
     # - :portal
@@ -52,7 +53,7 @@ module Factorix
 
     # Register retry strategy for network operations
     register(:retry_strategy, memoize: true) do
-      Factorix::Transfer::RetryStrategy.new
+      Factorix::HTTP::RetryStrategy.new
     end
 
     # Register download cache
@@ -73,9 +74,31 @@ module Factorix
       )
     end
 
-    # Register HTTP client
-    register(:http, memoize: false) do
-      Factorix::Transfer::HTTP.new
+    # Register base HTTP client
+    register(:http_client, memoize: true) do
+      Factorix::HTTP::Client.new
+    end
+
+    # Register decorated HTTP client for downloads (with retry + cache)
+    register(:download_http_client, memoize: false) do
+      client = resolve(:http_client)
+      download_cache = resolve(:download_cache)
+      retry_strategy = resolve(:retry_strategy)
+
+      # Decorate: Client -> Cache -> Retry
+      cached = Factorix::HTTP::CacheDecorator.new(client:, cache: download_cache)
+      Factorix::HTTP::RetryDecorator.new(client: cached, retry_strategy:)
+    end
+
+    # Register decorated HTTP client for API calls (with retry + cache)
+    register(:api_http_client, memoize: false) do
+      client = resolve(:http_client)
+      api_cache = resolve(:api_cache)
+      retry_strategy = resolve(:retry_strategy)
+
+      # Decorate: Client -> Cache -> Retry
+      cached = Factorix::HTTP::CacheDecorator.new(client:, cache: api_cache)
+      Factorix::HTTP::RetryDecorator.new(client: cached, retry_strategy:)
     end
 
     # Register downloader

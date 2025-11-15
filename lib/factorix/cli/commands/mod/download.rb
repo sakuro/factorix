@@ -12,11 +12,8 @@ module Factorix
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
-          #   # @return [Transfer::HTTP]
-          #   attr_reader :http
           include Factorix::Import[
-            portal: "portal",
-            http: "http"
+            portal: "portal"
           ]
 
           desc "Download MOD files from Factorio MOD Portal"
@@ -57,8 +54,8 @@ module Factorix
               Concurrent::Future.execute(executor: pool) do
                 # Get a new portal instance (memoize: false)
                 thread_portal = Factorix::Application[:portal]
-                # Access the HTTP instance used by this portal
-                thread_http = thread_portal.mod_download_api.downloader.http
+                # Access the downloader instance used by this portal
+                thread_downloader = thread_portal.mod_download_api.downloader
 
                 # Register progress presenter and create handler
                 presenter = multi_presenter.register(
@@ -68,12 +65,12 @@ module Factorix
                 )
                 handler = Progress::DownloadHandler.new(presenter)
 
-                # Subscribe to HTTP events (includes both cache and download events)
-                thread_http.subscribe(handler)
+                # Subscribe to downloader events (includes both cache and download events)
+                thread_downloader.subscribe(handler)
 
                 thread_portal.download_mod(download[:release], download[:output_path])
 
-                thread_http.unsubscribe(handler)
+                thread_downloader.unsubscribe(handler)
               end
             }
 

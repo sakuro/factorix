@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "json"
-require "net/http"
-require "openssl"
 require "tempfile"
 require "uri"
 
@@ -12,12 +10,11 @@ module Factorix
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
-      # @!parse
-      #   # @return [Cache::FileSystem]
-      #   attr_reader :api_cache
-      #   # @return [Dry::Logger::Dispatcher]
-      #   attr_reader :logger
-      include Factorix::Import["api_cache", "logger"]
+      include Factorix::Import[
+        "logger",
+        cache: "api_cache",
+        client: "api_http_client"
+      ]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -93,10 +90,10 @@ module Factorix
       # @param uri [URI::HTTPS] URI to fetch
       # @return [Hash{Symbol => untyped}] parsed JSON response with symbolized keys
       private def fetch_with_cache(uri)
-        key = api_cache.key_for(uri.to_s)
+        key = cache.key_for(uri.to_s)
 
         # Try cache first
-        cached = api_cache.read(key, encoding: "UTF-8")
+        cached = cache.read(key, encoding: "UTF-8")
         if cached
           logger.debug("API cache hit", uri: uri.to_s)
           return JSON.parse(cached, symbolize_names: true)
@@ -120,50 +117,9 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       private def fetch_from_api(uri)
         logger.info("Fetching from API", uri: uri.to_s)
-        http = create_http(uri)
-
-        request = Net::HTTP::Get.new(uri)
-        response = http.request(request)
-
-        handle_http_errors(response)
-
+        response = client.get(uri)
         logger.info("API response", code: response.code, size_bytes: response.body.bytesize)
         response.body
-      end
-
-      # Create and configure Net::HTTP instance
-      #
-      # @param uri [URI::HTTPS] URI to connect to
-      # @return [Net::HTTP] configured HTTP client
-      private def create_http(uri)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = uri.scheme == "https"
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        http.open_timeout = Application.config.http.connect_timeout
-        http.read_timeout = Application.config.http.read_timeout
-        http.write_timeout = Application.config.http.write_timeout if http.respond_to?(:write_timeout=)
-        http
-      end
-
-      # Handle HTTP error responses
-      #
-      # @param response [Net::HTTPResponse] HTTP response
-      # @return [void]
-      # @raise [HTTPClientError] for 4xx errors
-      # @raise [HTTPServerError] for 5xx errors
-      private def handle_http_errors(response)
-        case response
-        when Net::HTTPSuccess
-          # OK
-        when Net::HTTPClientError
-          logger.error("API client error", code: response.code, message: response.message)
-          raise HTTPClientError, "#{response.code} #{response.message}"
-        when Net::HTTPServerError
-          logger.error("API server error", code: response.code, message: response.message)
-          raise HTTPServerError, "#{response.code} #{response.message}"
-        else
-          raise HTTPError, "#{response.code} #{response.message}"
-        end
       end
 
       # Store response body in cache via temporary file
@@ -172,11 +128,11 @@ module Factorix
       # @param data [String] response body
       # @return [void]
       private def store_in_cache(key, data)
-        temp_file = Tempfile.new("api_cache")
+        temp_file = Tempfile.new("cache")
         begin
           temp_file.write(data)
           temp_file.close
-          api_cache.store(key, temp_file.path)
+          cache.store(key, temp_file.path)
           logger.debug("Stored API response in cache", key:)
         ensure
           temp_file.unlink

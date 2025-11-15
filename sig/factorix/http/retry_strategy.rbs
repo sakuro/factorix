@@ -1,35 +1,21 @@
 # frozen_string_literal: true
 
-require "net/protocol"
-require "openssl"
-require "retriable"
-
 module Factorix
-  module Transfer
+  module HTTP
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
-      # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
-      #   attr_reader :logger
-      include Factorix::Import["logger"]
+      attr_reader logger: Dry::Logger::Dispatcher
 
-      DEFAULT_OPTIONS = {
-        tries: 3,                 # Number of attempts (including the initial try)
-        base_interval: 1.0,       # Start with 1 second
-        multiplier: 2.0,          # Double the interval each time
-        rand_factor: 0.25,        # Add randomization
-        on: [                     # Exceptions to retry on
-          Errno::ETIMEDOUT,
-          Errno::ECONNRESET,
-          Errno::ECONNREFUSED,
-          Net::OpenTimeout,
-          Net::ReadTimeout,
-          SocketError,
-          OpenSSL::SSL::SSLError,
-          EOFError
-        ]
-      }.freeze
-      private_constant :DEFAULT_OPTIONS
+      type retry_callback = ^(StandardError exception, Integer try, Float elapsed_time, Float next_interval) -> void
+
+      type retry_options = {
+        tries: Integer,
+        base_interval: Float,
+        multiplier: Float,
+        rand_factor: Float,
+        on: Array[Class],
+        on_retry: retry_callback
+      }
 
       # Initialize a new retry strategy with customizable options
       #
@@ -40,10 +26,7 @@ module Factorix
       # @option options [Float] :rand_factor Randomization factor
       # @option options [Array<Class>] :on Exception classes to retry on
       # @option options [Proc] :on_retry Callback called on each retry
-      def initialize(logger: nil, **options)
-        super(logger:)
-        @options = configure_options(options)
-      end
+      def initialize: (?logger: Dry::Logger::Dispatcher?, **untyped options) -> void
 
       # Execute the block with automatic retry on specified exceptions.
       # Uses exponential backoff with randomization for retry intervals
@@ -51,21 +34,15 @@ module Factorix
       # @yield Block to execute
       # @return [Object] Return value of the block
       # @raise [StandardError] If the block fails after all retries
-      def with_retry(&)
-        Retriable.retriable(**@options, &)
-      end
+      def with_retry: [T] () { () -> T } -> T
+
+      private
 
       # Configure retry options by merging with defaults and setting up callbacks
       #
       # @param options [Hash] User-provided options to merge with defaults
       # @return [Hash] Complete set of configured options
-      private def configure_options(options)
-        result = DEFAULT_OPTIONS.merge(options)
-        unless result.key?(:on_retry)
-          result[:on_retry] = method(:default_retry_callback).to_proc
-        end
-        result
-      end
+      def configure_options: (Hash[Symbol, untyped] options) -> retry_options
 
       # Default callback for retry attempts that logs retry information
       #
@@ -74,9 +51,7 @@ module Factorix
       # @param elapsed_time [Float] Time elapsed since first attempt
       # @param next_interval [Float] Time until next retry attempt
       # @return [void]
-      private def default_retry_callback(exception, try, elapsed_time, next_interval)
-        logger.warn "Retry #{try} after #{elapsed_time}s, next in #{next_interval}s: #{exception.class} - #{exception.message}"
-      end
+      def default_retry_callback: (StandardError exception, Integer try, Float elapsed_time, Float next_interval) -> void
     end
   end
 end

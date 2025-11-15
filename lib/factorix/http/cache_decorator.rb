@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require "dry/events"
-require "tempfile"
 require "pathname"
+require "tempfile"
 
 module Factorix
   module HTTP
@@ -11,50 +11,42 @@ module Factorix
     # Stores successful GET responses in FileSystem cache.
     # Only caches non-streaming requests (no block given).
     class CacheDecorator
-      include Factorix::Import["logger"]
+      include Factorix::Import["client", "cache", "logger"]
       include Dry::Events::Publisher[:http]
 
       register_event("cache.hit")
       register_event("cache.miss")
 
-      # @param client [#request, #get, #post] HTTP client to wrap
-      # @param cache [Cache::FileSystem] cache instance
-      # @param logger [Dry::Logger::Dispatcher, nil] logger instance
-      def initialize(client, cache:, logger: nil)
-        super(logger:)
-        @client = client
-        @cache = cache
-      end
-
       # Execute an HTTP request (only caches GET without block)
       #
       # @param method [Symbol] HTTP method
       # @param uri [URI::HTTPS] target URI
-      # @param options [Hash] request options
+      # @param headers [Hash<String, String>] request headers
+      # @param body [String, IO, nil] request body
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response, Object] response object or parsed data
-      def request(method, uri, **options, &block)
+      def request(method, uri, headers: {}, body: nil, &block)
         if method == :get && !block
-          get(uri, **options)
+          get(uri, headers:)
         else
-          @client.request(method, uri, **options, &block)
+          client.request(method, uri, headers:, body:, &block)
         end
       end
 
       # Execute a GET request with caching
       #
       # @param uri [URI::HTTPS] target URI
-      # @param options [Hash] request options
+      # @param headers [Hash<String, String>] request headers
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response, Object] response object or parsed data
-      def get(uri, **options, &block)
+      def get(uri, headers: {}, &block)
         # Don't cache streaming requests
-        return @client.get(uri, **options, &block) if block
+        return client.get(uri, headers:, &block) if block
 
-        key = @cache.key_for(uri.to_s)
+        key = cache.key_for(uri.to_s)
 
         # Try cache first
-        cached_body = @cache.read(key)
+        cached_body = cache.read(key)
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
           publish("cache.hit", url: uri.to_s)
@@ -65,22 +57,22 @@ module Factorix
         publish("cache.miss", url: uri.to_s)
 
         # Fetch with locking (prevents concurrent downloads)
-        @cache.with_lock(key) do
+        cache.with_lock(key) do
           # Double-check cache (another thread might have filled it)
-          cached_body = @cache.read(key)
+          cached_body = cache.read(key)
           if cached_body
             publish("cache.hit", url: uri.to_s)
             return CachedResponse.new(cached_body)
           end
 
-          response = @client.get(uri, **options)
+          response = client.get(uri, headers:)
 
           # Cache successful responses
           if response.success?
             with_temporary_file do |temp|
               temp.write(response.body)
               temp.close
-              @cache.store(key, temp.path)
+              cache.store(key, temp.path)
             end
           end
 
@@ -91,15 +83,15 @@ module Factorix
       # Execute a POST request (never cached)
       #
       # @param uri [URI::HTTPS] target URI
-      # @param options [Hash] request options
+      # @param body [String, IO] request body
+      # @param headers [Hash<String, String>] request headers
+      # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
-      def post(uri, **options)
-        @client.post(uri, **options)
+      def post(uri, body:, headers: {}, content_type: nil)
+        client.post(uri, body:, headers:, content_type:)
       end
 
-      private
-
-      def with_temporary_file
+      private def with_temporary_file
         temp_file = Tempfile.new("http_cache")
         yield temp_file
       ensure
@@ -110,7 +102,9 @@ module Factorix
 
     # Response wrapper for cached data
     class CachedResponse
-      attr_reader :body, :code, :headers
+      attr_reader :body
+      attr_reader :code
+      attr_reader :headers
 
       # @param body [String] cached response body
       def initialize(body)

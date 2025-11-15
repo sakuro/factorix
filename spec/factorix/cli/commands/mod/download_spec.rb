@@ -4,8 +4,8 @@ require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:http) { instance_double(Factorix::Transfer::HTTP) }
-  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, http:) }
+  let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
+  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:) }
   let(:mod_info) do
     Factorix::Types::MODInfo.new(
       name: "test-mod",
@@ -48,15 +48,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
     allow(portal).to receive(:get_mod).with("test-mod").and_return(mod_info)
     allow(portal).to receive(:download_mod)
-    allow(http).to receive(:subscribe)
-    allow(http).to receive(:unsubscribe)
+    allow(downloader).to receive(:subscribe)
+    allow(downloader).to receive(:unsubscribe)
 
-    # Mock the HTTP chain for download
+    # Mock the downloader chain for download
     mod_download_api = instance_double(Factorix::API::MODDownloadAPI)
-    downloader = instance_double(Factorix::Transfer::Downloader)
     allow(portal).to receive(:mod_download_api).and_return(mod_download_api)
     allow(mod_download_api).to receive(:downloader).and_return(downloader)
-    allow(downloader).to receive(:http).and_return(http)
   end
 
   describe "#call" do

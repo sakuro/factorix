@@ -69,10 +69,10 @@ RSpec.describe Factorix::Application do
       end
     end
 
-    describe "[:http]" do
-      it "resolves to a Transfer::HTTP instance" do
-        http = Factorix::Application[:http]
-        expect(http).to be_a(Factorix::Transfer::HTTP)
+    describe "[:http_client]" do
+      it "resolves to an HTTP::Client instance" do
+        http_client = Factorix::Application[:http_client]
+        expect(http_client).to be_a(Factorix::HTTP::Client)
       end
     end
 

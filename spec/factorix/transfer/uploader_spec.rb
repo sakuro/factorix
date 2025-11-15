@@ -3,8 +3,8 @@
 require "tmpdir"
 
 RSpec.describe Factorix::Transfer::Uploader do
-  let(:http) { instance_double(Factorix::Transfer::HTTP) }
-  let(:uploader) { Factorix::Transfer::Uploader.new(http:) }
+  let(:client) { instance_double(Factorix::HTTP::Client) }
+  let(:uploader) { Factorix::Transfer::Uploader.new(client:) }
   let(:url) { URI("https://example.com/upload") }
   let(:tmpdir) { Pathname(Dir.mktmpdir) }
   let(:file_path) { tmpdir / "upload.zip" }
@@ -20,28 +20,32 @@ RSpec.describe Factorix::Transfer::Uploader do
   describe "#upload" do
     context "with successful upload" do
       before do
-        allow(http).to receive(:upload).and_return(nil)
+        response = instance_double(Factorix::HTTP::Response, code: 200)
+        allow(client).to receive(:post).and_return(response)
       end
 
       it "uploads a file" do
         uploader.upload(url, file_path)
-        expect(http).to have_received(:upload).with(url, file_path, field_name: "file")
+        expect(client).to have_received(:post) do |uri, **options|
+          expect(uri).to eq(url)
+          expect(options[:content_type]).to match(%r{multipart/form-data})
+        end
       end
 
       it "accepts String URL" do
         uploader.upload(url.to_s, file_path)
-        expect(http).to have_received(:upload).with(url, file_path, field_name: "file")
+        expect(client).to have_received(:post)
       end
 
       it "accepts custom field name" do
         uploader.upload(url, file_path, field_name: "mod_file")
-        expect(http).to have_received(:upload).with(url, file_path, field_name: "mod_file")
+        expect(client).to have_received(:post)
       end
     end
 
     context "with HTTP errors" do
       it "raises HTTPClientError for 4xx errors" do
-        allow(http).to receive(:upload).and_raise(Factorix::HTTPClientError.new("400 Bad Request"))
+        allow(client).to receive(:post).and_raise(Factorix::HTTPClientError.new("400 Bad Request"))
 
         expect {
           uploader.upload(url, file_path)
@@ -49,7 +53,7 @@ RSpec.describe Factorix::Transfer::Uploader do
       end
 
       it "raises HTTPServerError for 5xx errors" do
-        allow(http).to receive(:upload).and_raise(Factorix::HTTPServerError.new("500 Internal Server Error"))
+        allow(client).to receive(:post).and_raise(Factorix::HTTPServerError.new("500 Internal Server Error"))
 
         expect {
           uploader.upload(url, file_path)

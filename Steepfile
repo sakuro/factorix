@@ -35,4 +35,9 @@
 
 target :lib do
   signature "sig"
+
+  library "net-http"
+  library "pathname"
+  library "uri"
+  library "tempfile"
 end

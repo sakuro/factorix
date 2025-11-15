@@ -2,14 +2,16 @@
 
 module Factorix
   module HTTP
-    # Adds automatic retry with exponential backoff to HTTP client
+    # Decorator that adds retry functionality to an HTTP client
     #
-    # Wraps any HTTP client and retries requests on network errors
-    # using the configured RetryStrategy.
+    # Automatically retries transient errors (timeouts, connection issues)
+    # using an exponential backoff strategy with randomization.
     class RetryDecorator
-      include Factorix::Import["client", "retry_strategy", "logger"]
+      attr_reader client: Client
+      attr_reader retry_strategy: RetryStrategy
+      attr_reader logger: Dry::Logger::Dispatcher
 
-      # Execute an HTTP request with retry
+      # Execute an HTTP request with retry logic
       #
       # @param method [Symbol] HTTP method
       # @param uri [URI::HTTPS] target URI
@@ -17,36 +19,24 @@ module Factorix
       # @param body [String, IO, nil] request body
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
-      def request(method, uri, headers: {}, body: nil, &block)
-        retry_strategy.with_retry do
-          client.request(method, uri, headers:, body:, &block)
-        end
-      end
+      def request: (Symbol method, URI::HTTPS uri, ?headers: Hash[String, String], ?body: String | IO | nil) ?{ (Net::HTTPResponse) -> void } -> Response
 
-      # Execute a GET request with retry
+      # Execute a GET request with retry logic
       #
       # @param uri [URI::HTTPS] target URI
       # @param headers [Hash<String, String>] request headers
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
-      def get(uri, headers: {}, &block)
-        retry_strategy.with_retry do
-          client.get(uri, headers:, &block)
-        end
-      end
+      def get: (URI::HTTPS uri, ?headers: Hash[String, String]) ?{ (Net::HTTPResponse) -> void } -> Response
 
-      # Execute a POST request with retry
+      # Execute a POST request with retry logic
       #
       # @param uri [URI::HTTPS] target URI
       # @param body [String, IO] request body
       # @param headers [Hash<String, String>] request headers
       # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
-      def post(uri, body:, headers: {}, content_type: nil)
-        retry_strategy.with_retry do
-          client.post(uri, body:, headers:, content_type:)
-        end
-      end
+      def post: (URI::HTTPS uri, body: String | IO, ?headers: Hash[String, String], ?content_type: String?) -> Response
     end
   end
 end

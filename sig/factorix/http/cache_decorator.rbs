@@ -1,0 +1,66 @@
+# frozen_string_literal: true
+
+module Factorix
+  module HTTP
+    # Adds caching for GET requests
+    #
+    # Stores successful GET responses in FileSystem cache.
+    # Only caches non-streaming requests (no block given).
+    class CacheDecorator
+      attr_reader client: Client
+      attr_reader cache: Cache::FileSystem
+      attr_reader logger: Dry::Logger::Dispatcher
+
+      # Execute an HTTP request (only caches GET without block)
+      #
+      # @param method [Symbol] HTTP method
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @param body [String, IO, nil] request body
+      # @yield [Net::HTTPResponse] for streaming responses
+      # @return [Response, Object] response object or parsed data
+      def request: (Symbol method, URI::HTTPS uri, ?headers: Hash[String, String], ?body: String | IO | nil) ?{ (Net::HTTPResponse) -> void } -> (Response | CachedResponse)
+
+      # Execute a GET request with caching
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @yield [Net::HTTPResponse] for streaming responses
+      # @return [Response, Object] response object or parsed data
+      def get: (URI::HTTPS uri, ?headers: Hash[String, String]) ?{ (Net::HTTPResponse) -> void } -> (Response | CachedResponse)
+
+      # Execute a POST request (never cached)
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param body [String, IO] request body
+      # @param headers [Hash<String, String>] request headers
+      # @param content_type [String, nil] Content-Type header
+      # @return [Response] response object
+      def post: (URI::HTTPS uri, body: String | IO, ?headers: Hash[String, String], ?content_type: String?) -> Response
+
+      private
+
+      def with_temporary_file: [T] () { (Tempfile) -> T } -> T
+    end
+
+    # Response wrapper for cached data
+    class CachedResponse
+      attr_reader body: String
+      attr_reader code: Integer
+      attr_reader headers: Hash[String, Array[String]]
+
+      # @param body [String] cached response body
+      def initialize: (String body) -> void
+
+      # Always returns true for cached responses
+      #
+      # @return [Boolean] true
+      def success?: () -> true
+
+      # Get content length from body size
+      #
+      # @return [Integer] body size in bytes
+      def content_length: () -> Integer
+    end
+  end
+end

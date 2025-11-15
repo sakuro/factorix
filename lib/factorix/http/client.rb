@@ -24,7 +24,7 @@ module Factorix
       include Factorix::Import["logger"]
 
       MAX_REDIRECTS = 10
-      CHUNK_SIZE = 16 * 1024
+      private_constant :MAX_REDIRECTS
 
       # Execute an HTTP request
       #
@@ -34,10 +34,10 @@ module Factorix
       # @param body [String, IO, nil] request body
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
-      def request(method, uri, headers: {}, body: nil, &block)
+      def request(method, uri, headers: {}, body: nil, &)
         raise ArgumentError, "URL must be HTTPS" unless uri.is_a?(URI::HTTPS)
 
-        perform_request(method, uri, redirect_count: 0, headers:, body:, &block)
+        perform_request(method, uri, redirect_count: 0, headers:, body:, &)
       end
 
       # Execute a GET request
@@ -46,8 +46,8 @@ module Factorix
       # @param headers [Hash<String, String>] request headers
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
-      def get(uri, headers: {}, &block)
-        request(:get, uri, headers:, &block)
+      def get(uri, headers: {}, &)
+        request(:get, uri, headers:, &)
       end
 
       # Execute a POST request
@@ -62,9 +62,7 @@ module Factorix
         request(:post, uri, body:, headers:)
       end
 
-      private
-
-      def perform_request(method, uri, redirect_count:, headers:, body:, &block)
+      private def perform_request(method, uri, redirect_count:, headers:, body:, &block)
         if redirect_count > MAX_REDIRECTS
           logger.error("Too many redirects", redirect_count:)
           raise ArgumentError, "Too many redirects (#{redirect_count})"
@@ -73,15 +71,18 @@ module Factorix
         http = create_http(uri)
         req = build_request(method, uri, headers:, body:)
 
+        result = nil
         http.request(req) do |response|
-          handle_response(response, method, uri, redirect_count, &block)
+          result = handle_response(response, method, uri, redirect_count, &block)
         end
+        result
       end
 
-      def handle_response(response, method, uri, redirect_count, &block)
+      private def handle_response(response, _method, _uri, redirect_count, &block)
         case response
         when Net::HTTPSuccess, Net::HTTPPartialContent
-          block ? block.call(response) : Response.new(response)
+          yield(response) if block
+          Response.new(response)
 
         when Net::HTTPRedirection
           location = response["Location"]
@@ -107,7 +108,7 @@ module Factorix
         raise HTTPError, "Invalid redirect URI: #{response["Location"]}"
       end
 
-      def build_request(method, uri, headers:, body:)
+      private def build_request(method, uri, headers:, body:)
         request = case method
                   when :get then Net::HTTP::Get.new(uri)
                   when :post then Net::HTTP::Post.new(uri)
@@ -116,7 +117,7 @@ module Factorix
                   else raise ArgumentError, "Unsupported method: #{method}"
                   end
 
-        headers.each { |k, v| request[k] = v }
+        headers.each {|k, v| request[k] = v }
 
         if body
           if body.respond_to?(:read)
@@ -129,7 +130,7 @@ module Factorix
         request
       end
 
-      def create_http(uri)
+      private def create_http(uri)
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = uri.scheme == "https"
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER

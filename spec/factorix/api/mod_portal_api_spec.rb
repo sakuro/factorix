@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::API::MODPortalAPI do
-  let(:api_cache) { instance_double(Factorix::Cache::FileSystem) }
-  let(:api) { Factorix::API::MODPortalAPI.new(api_cache:) }
+  let(:client) { instance_double(Factorix::HTTP::Client) }
+  let(:cache) { instance_double(Factorix::Cache::FileSystem) }
+  let(:api) { Factorix::API::MODPortalAPI.new(cache:, client:) }
 
   before do
-    allow(api_cache).to receive(:key_for).and_return("cache_key")
+    allow(cache).to receive(:key_for).and_return("cache_key")
   end
 
   describe "#get_mods" do
@@ -14,10 +15,10 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache miss" do
       before do
-        allow(api_cache).to receive(:read).and_return(nil)
-        allow(api_cache).to receive(:store)
-        stub_request(:get, "https://mods.factorio.com/api/mods")
-          .to_return(status: 200, body: response_body)
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
       end
 
       it "fetches from API and returns parsed JSON" do
@@ -27,13 +28,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       it "stores response in cache" do
         api.get_mods
-        expect(api_cache).to have_received(:store).with("cache_key", kind_of(String))
+        expect(cache).to have_received(:store).with("cache_key", kind_of(String))
       end
     end
 
     context "when cache hit" do
       before do
-        allow(api_cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data without making HTTP request" do
@@ -45,21 +46,21 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "with query parameters" do
       before do
-        allow(api_cache).to receive(:read).and_return(nil)
-        allow(api_cache).to receive(:store)
-        stub_request(:get, "https://mods.factorio.com/api/mods?page=2&page_size=10")
-          .to_return(status: 200, body: response_body)
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
       end
 
       it "includes query parameters in request" do
         api.get_mods(page: 2, page_size: 10)
-        expect(a_request(:get, "https://mods.factorio.com/api/mods?page=2&page_size=10")).to have_been_made
+        expect(client).to have_received(:get).with(URI("https://mods.factorio.com/api/mods?page=2&page_size=10"))
       end
 
       it "normalizes parameter order for cache efficiency" do
         # Different key order should result in same URL
         api.get_mods(page_size: 10, page: 2)
-        expect(a_request(:get, "https://mods.factorio.com/api/mods?page=2&page_size=10")).to have_been_made
+        expect(client).to have_received(:get).with(URI("https://mods.factorio.com/api/mods?page=2&page_size=10"))
       end
     end
   end
@@ -70,10 +71,10 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache miss" do
       before do
-        allow(api_cache).to receive(:read).and_return(nil)
-        allow(api_cache).to receive(:store)
-        stub_request(:get, "https://mods.factorio.com/api/mods/example-mod")
-          .to_return(status: 200, body: response_body)
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
       end
 
       it "fetches mod info from API" do
@@ -83,13 +84,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       it "stores response in cache" do
         api.get_mod("example-mod")
-        expect(api_cache).to have_received(:store)
+        expect(cache).to have_received(:store)
       end
     end
 
     context "when cache hit" do
       before do
-        allow(api_cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data" do
@@ -106,10 +107,10 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache miss" do
       before do
-        allow(api_cache).to receive(:read).and_return(nil)
-        allow(api_cache).to receive(:store)
-        stub_request(:get, "https://mods.factorio.com/api/mods/example-mod/full")
-          .to_return(status: 200, body: response_body)
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
       end
 
       it "fetches full mod info from API" do
@@ -119,13 +120,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       it "stores response in cache" do
         api.get_mod_full("example-mod")
-        expect(api_cache).to have_received(:store)
+        expect(cache).to have_received(:store)
       end
     end
 
     context "when cache hit" do
       before do
-        allow(api_cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data" do
@@ -138,14 +139,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
   describe "error handling" do
     before do
-      allow(api_cache).to receive(:read).and_return(nil)
-      allow(api_cache).to receive(:store)
+      allow(cache).to receive(:read).and_return(nil)
+      allow(cache).to receive(:store)
     end
 
     context "when API returns 404" do
       before do
-        stub_request(:get, "https://mods.factorio.com/api/mods/nonexistent")
-          .to_return(status: [404, "Not Found"], body: "Not Found")
+        allow(client).to receive(:get).and_raise(Factorix::HTTPClientError, "404 Not Found")
       end
 
       it "raises HTTPClientError" do
@@ -155,8 +155,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when API returns 500" do
       before do
-        stub_request(:get, "https://mods.factorio.com/api/mods")
-          .to_return(status: [500, "Internal Server Error"], body: "Internal Server Error")
+        allow(client).to receive(:get).and_raise(Factorix::HTTPServerError, "500 Internal Server Error")
       end
 
       it "raises HTTPServerError" do
@@ -170,43 +169,35 @@ RSpec.describe Factorix::API::MODPortalAPI do
       let(:response_body) { '{"pagination": {}, "results": []}' }
 
       before do
-        allow(api_cache).to receive(:read).and_return(nil)
-        allow(api_cache).to receive(:store)
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
       end
 
       context "with valid parameters" do
         it "accepts valid page_size as integer" do
-          stub_request(:get, "https://mods.factorio.com/api/mods?page_size=10")
-            .to_return(status: 200, body: response_body)
           expect { api.get_mods(page_size: 10) }.not_to raise_error
         end
 
         it "accepts valid page_size as 'max'" do
-          stub_request(:get, "https://mods.factorio.com/api/mods?page_size=max")
-            .to_return(status: 200, body: response_body)
           expect { api.get_mods(page_size: "max") }.not_to raise_error
         end
 
         it "accepts valid sort values" do
           %w[name created_at updated_at].each do |sort_value|
-            stub_request(:get, "https://mods.factorio.com/api/mods?sort=#{sort_value}")
-              .to_return(status: 200, body: response_body)
             expect { api.get_mods(sort: sort_value) }.not_to raise_error
           end
         end
 
         it "accepts valid sort_order values" do
           %w[asc desc].each do |order_value|
-            stub_request(:get, "https://mods.factorio.com/api/mods?sort_order=#{order_value}")
-              .to_return(status: 200, body: response_body)
             expect { api.get_mods(sort_order: order_value) }.not_to raise_error
           end
         end
 
         it "accepts valid version values" do
           %w[0.13 0.14 0.15 0.16 0.17 0.18 1.0 1.1 2.0].each do |version_value|
-            stub_request(:get, "https://mods.factorio.com/api/mods?version=#{version_value}")
-              .to_return(status: 200, body: response_body)
             expect { api.get_mods(version: version_value) }.not_to raise_error
           end
         end

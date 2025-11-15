@@ -1,25 +1,31 @@
 # frozen_string_literal: true
 
+require "dry/events"
 require "pathname"
 require "tmpdir"
 require "uri"
 
 module Factorix
   module Transfer
-    # File downloader with caching support
+    # File downloader with caching and progress tracking
     #
     # Downloads files from HTTPS URLs with automatic caching.
     # Uses file locking to prevent concurrent downloads of the same file.
     # HTTP redirects are handled automatically by the HTTP layer.
+    # Publishes progress events during download.
     class Downloader
-      # @!parse
-      #   # @return [Cache::FileSystem]
-      #   attr_reader :download_cache
-      #   # @return [HTTP]
-      #   attr_reader :http
-      #   # @return [Dry::Logger::Dispatcher]
-      #   attr_reader :logger
-      include Factorix::Import["download_cache", "http", "logger"]
+      include Factorix::Import[
+        "logger",
+        cache: "download_cache",
+        client: "download_http_client"
+      ]
+      include Dry::Events::Publisher[:downloader]
+
+      register_event("download.started")
+      register_event("download.progress")
+      register_event("download.completed")
+      register_event("cache.hit")
+      register_event("cache.miss")
 
       # Download a file from the given URL with caching support.
       #
@@ -42,34 +48,61 @@ module Factorix
 
         masked_url = mask_credentials(url)
         logger.info("Starting download", url: masked_url, output: output.to_s)
-        key = download_cache.key_for(url.to_s)
+        key = cache.key_for(url.to_s)
 
-        if download_cache.fetch(key, output)
+        if cache.fetch(key, output)
           logger.info("Cache hit", url: masked_url)
-          total_size = download_cache.size(key)
-          http.publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
+          total_size = cache.size(key)
+          publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
           return
         end
 
         logger.debug("Cache miss, downloading", url: masked_url)
-        http.publish("cache.miss", url: masked_url)
-        download_cache.with_lock(key) do
-          if download_cache.fetch(key, output)
+        publish("cache.miss", url: masked_url)
+        cache.with_lock(key) do
+          if cache.fetch(key, output)
             logger.info("Cache hit", url: masked_url)
-            total_size = download_cache.size(key)
-            http.publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
+            total_size = cache.size(key)
+            publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
             return
           end
 
           with_temporary_file do |temp_file|
-            # HTTP layer handles redirects automatically
-            http.download(url, temp_file)
+            # Download with progress tracking
+            download_file_with_progress(url, temp_file)
 
             # Download completed successfully - store in cache
-            download_cache.store(key, temp_file)
-            download_cache.fetch(key, output)
+            cache.store(key, temp_file)
+            cache.fetch(key, output)
           end
         end
+      end
+
+      # Download file with progress tracking
+      #
+      # @param url [URI::HTTPS] URL to download from
+      # @param output [Pathname] path to save the downloaded file
+      # @return [void]
+      private def download_file_with_progress(url, output)
+        total_size = nil
+        current_size = 0
+
+        client.get(url) do |response|
+          content_length = response["Content-Length"]
+          total_size = content_length ? Integer(content_length, 10) : nil
+
+          publish("download.started", total_size:)
+
+          output.open("wb") do |file|
+            response.read_body do |chunk|
+              file.write(chunk)
+              current_size += chunk.bytesize
+              publish("download.progress", current_size:, total_size:)
+            end
+          end
+        end
+
+        publish("download.completed", total_size: current_size)
       end
 
       private def mask_credentials(url)
