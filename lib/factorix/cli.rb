@@ -17,6 +17,7 @@ module Factorix
     register "launch", Commands::Launch
     register "path", Commands::Path
     register "mod download", Commands::MOD::Download
+    register "mod upload", Commands::MOD::Upload
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore
   end

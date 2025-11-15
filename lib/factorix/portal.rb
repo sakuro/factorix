@@ -29,9 +29,11 @@ module Factorix
     #   attr_reader :mod_portal_api
     #   # @return [API::MODDownloadAPI]
     #   attr_reader :mod_download_api
+    #   # @return [API::MODManagementAPI]
+    #   attr_reader :mod_management_api
     #   # @return [Dry::Logger::Dispatcher]
     #   attr_reader :logger
-    include Factorix::Import[:mod_portal_api, :mod_download_api, :logger]
+    include Factorix::Import[:mod_portal_api, :mod_download_api, :mod_management_api, :logger]
 
     # List mods from the Mod Portal
     #
@@ -78,6 +80,81 @@ module Factorix
       # Extract path from URI::HTTPS
       download_path = release.download_url.path
       mod_download_api.download(download_path, output)
+    end
+
+    # Upload a mod file to the portal
+    #
+    # Automatically detects if this is a new mod or update:
+    # - For new mods: uses init_publish and includes metadata in finish_upload
+    # - For existing mods: uses init_upload, then updates metadata via edit_details
+    #
+    # @param mod_name [String] the mod name
+    # @param file_path [Pathname] path to mod zip file
+    # @param metadata [Hash] optional metadata
+    # @option metadata [String] :description Markdown description
+    # @option metadata [String] :category Mod category
+    # @option metadata [String] :license License identifier
+    # @option metadata [String] :source_url Repository URL
+    # @return [void]
+    # @raise [HTTPClientError] for 4xx errors
+    # @raise [HTTPServerError] for 5xx errors
+    def upload_mod(mod_name, file_path, **metadata)
+      # Check if mod exists
+      mod_exists = begin
+        get_mod(mod_name)
+        logger.info("Uploading new release to existing mod", mod: mod_name)
+        true
+      rescue HTTPClientError => e
+        raise unless e.message.include?("404")
+
+        logger.info("Publishing new mod", mod: mod_name)
+        false
+      end
+
+      # Initialize upload with appropriate endpoint
+      upload_url = if mod_exists
+                     mod_management_api.init_upload(mod_name)
+                   else
+                     mod_management_api.init_publish(mod_name)
+                   end
+
+      # Complete upload
+      if mod_exists
+        # For existing mods: upload file, then edit metadata separately
+        mod_management_api.finish_upload(upload_url, file_path)
+        mod_management_api.edit_details(mod_name, **metadata) unless metadata.empty?
+      else
+        # For new mods: upload file with metadata
+        mod_management_api.finish_upload(upload_url, file_path, **metadata)
+      end
+
+      logger.info("Upload completed successfully", mod: mod_name)
+    end
+
+    # Edit mod metadata without uploading new file
+    #
+    # @param mod_name [String] the mod name
+    # @param metadata [Hash] metadata to update
+    # @option metadata [String] :description Markdown description
+    # @option metadata [String] :summary Brief description
+    # @option metadata [String] :title Mod title
+    # @option metadata [String] :category Mod category
+    # @option metadata [Array<String>] :tags Array of tags
+    # @option metadata [String] :license License identifier
+    # @option metadata [String] :homepage Homepage URL
+    # @option metadata [String] :source_url Repository URL
+    # @option metadata [String] :faq FAQ text
+    # @option metadata [Boolean] :deprecated Deprecation flag
+    # @return [void]
+    # @raise [ArgumentError] if no metadata provided
+    # @raise [HTTPClientError] for 4xx errors
+    # @raise [HTTPServerError] for 5xx errors
+    def edit_mod(mod_name, **metadata)
+      raise ArgumentError, "No metadata provided" if metadata.empty?
+
+      logger.info("Editing mod metadata", mod: mod_name, fields: metadata.keys)
+      mod_management_api.edit_details(mod_name, **metadata)
+      logger.info("Metadata updated successfully", mod: mod_name)
     end
   end
 end

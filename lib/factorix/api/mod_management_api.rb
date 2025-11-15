@@ -109,7 +109,7 @@ module Factorix
       # @option metadata [String] :summary Brief description
       # @option metadata [String] :title Mod title
       # @option metadata [String] :category Mod category
-      # @option metadata [String] :tags Comma-separated tags
+      # @option metadata [Array<String>, String] :tags Array of tags or comma-separated string
       # @option metadata [String] :license License identifier
       # @option metadata [String] :homepage Homepage URL
       # @option metadata [String] :source_url Repository URL
@@ -120,6 +120,10 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       def edit_details(mod_name, **metadata)
         validate_metadata!(metadata, ALLOWED_EDIT_METADATA, "edit_details")
+
+        # Convert tags array to comma-separated string if needed
+        metadata = metadata.dup
+        metadata[:tags] = metadata[:tags].join(",") if metadata[:tags].is_a?(Array)
 
         uri = URI.join(BASE_URL, "/api/v2/mods/edit_details")
         body = JSON.generate({mod: mod_name, **metadata})

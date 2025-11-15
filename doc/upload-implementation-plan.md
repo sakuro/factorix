@@ -423,50 +423,66 @@ end
 
 ## Implementation Steps
 
-### Phase 1: API Layer (Low-Level)
+### Phase 1: API Layer (Low-Level) ✅ COMPLETED
 1. ✅ Research API documentation (completed)
-2. Create MODManagementAPI class
-3. Implement init_publish method
-4. Implement init_upload method
-5. Implement finish_upload method
-6. Implement edit_details method
-7. Write comprehensive tests
-8. Create RBS signatures
+2. ✅ Create MODManagementAPI class
+3. ✅ Implement init_publish method (returns URI::HTTPS)
+4. ✅ Implement init_upload method (returns URI::HTTPS)
+5. ✅ Implement finish_upload method (accepts URI::HTTPS, optional metadata)
+6. ✅ Implement edit_details method (converts tags array to comma-separated string)
+7. ✅ Write comprehensive tests (15 examples, 0 failures)
+8. ✅ Create RBS signatures
 
-### Phase 2: Container Registration
-1. Add api_credential registration to Application
-   - Note: This registration will raise an error if FACTORIO_API_KEY is not set
-   - This is intentional - the error only occurs when api_credential is actually resolved
-2. Add mod_management_api registration to Application
-   - MODManagementAPI resolves api_credential in its initializer
-   - This delays the environment variable check until the API is actually used
+### Phase 2: Container Registration ✅ COMPLETED
+1. ✅ Add api_credential registration to Application
+   - Lazy loading via @api_credential ||= Application[:api_credential]
+   - Error only occurs when upload/edit commands are actually used
+2. ✅ Add mod_management_api registration to Application
+3. ✅ Add upload_http_client registration (retry only, no cache)
 
-### Phase 3: Portal Layer (Orchestration)
-1. Add mod_management_api to Portal imports
-2. Implement upload_mod with auto-detection logic
-3. Implement edit_mod method
-4. Handle metadata routing (publish vs edit)
-5. Update RBS signatures
-6. Write tests
+### Phase 3: Portal Layer (Orchestration) ✅ COMPLETED
+1. ✅ Add mod_management_api to Portal imports
+2. ✅ Implement upload_mod with auto-detection logic
+   - Checks mod existence via get_mod (404 = new, 200 = existing)
+   - New mods: init_publish → finish_upload(with metadata)
+   - Existing mods: init_upload → finish_upload → edit_details(metadata)
+3. ✅ Implement edit_mod method
+   - Validates metadata not empty
+   - Accepts tags as array
+4. ✅ Handle metadata routing (publish vs edit)
+5. ✅ Update RBS signatures
 
-### Phase 4: CLI Commands
-1. Create Upload command class
-   - Add file validation logic
-   - Implement mod name extraction from ZIP
-   - Implement progress display
-   - Handle metadata options
-   - Write tests
-2. Create Edit command class
-   - Add metadata validation logic
-   - Handle metadata options
-   - Write tests
+### Phase 4: Types Layer ✅ COMPLETED
+1. ✅ Create Types::InfoJSON class
+   - Parses info.json from zip files
+   - Validates required fields (name, version, title, author)
+   - Converts version to MODVersion
+   - Parses dependencies to Array[MODDependency]
+   - Factory methods: from_json, from_hash, from_zip
+2. ✅ Add rubyzip dependency to gemspec
+3. ✅ Add Zeitwerk inflection for info_json → InfoJSON
 
-### Phase 5: Integration Testing
-1. Test upload with mock mod files
-2. Test edit with various metadata combinations
-3. Verify auto-detection logic
-4. Test metadata handling in both scenarios
-5. Manual testing with real API (if API key available)
+### Phase 5: CLI Commands (Partial)
+1. ✅ Create Upload command class
+   - ✅ Add file validation logic (.zip extension check)
+   - ✅ Implement mod name extraction from ZIP via Types::InfoJSON.from_zip
+   - ✅ Implement progress display (UploadHandler with presenter)
+   - ✅ Handle metadata options (description, category, license, source_url)
+   - ✅ Use Portal#upload_mod for auto-detection
+   - ✅ Create RBS signatures
+   - [ ] Write tests
+2. [ ] Create Edit command class
+   - [ ] Add metadata validation logic
+   - [ ] Handle metadata options
+   - [ ] Write tests
+
+### Phase 6: Integration Testing
+1. [ ] Test upload with mock mod files
+2. [ ] Test edit with various metadata combinations
+3. [ ] Test Types::InfoJSON parsing
+4. [ ] Verify auto-detection logic
+5. [ ] Test metadata handling in both scenarios
+6. [ ] Manual testing with real API (if API key available)
 
 ## Key Technical Details
 
@@ -543,14 +559,14 @@ Body: {
 - Indicate operation type (publishing new mod vs updating existing mod)
 
 ## Success Criteria
-- ✅ Upload command handles both publish and update scenarios
-- ✅ Edit command allows metadata-only updates
-- ✅ Metadata always accepted and properly routed
-- ✅ Clear feedback about what operation was performed
-- ✅ Comprehensive test coverage
-- ✅ Type-safe RBS signatures
-- ✅ Proper error handling and user messages
-- ✅ Progress display during upload
+- [x] Upload command handles both publish and update scenarios
+- [ ] Edit command allows metadata-only updates (Portal layer done, CLI pending)
+- [x] Metadata always accepted and properly routed
+- [x] Clear feedback about what operation was performed
+- [ ] Comprehensive test coverage (API: 15 examples, Portal/CLI pending)
+- [x] Type-safe RBS signatures
+- [x] Proper error handling and user messages
+- [x] Progress display during upload
 
 ## References
 - Factorio Mod Portal API: https://wiki.factorio.com/Mod_portal_API

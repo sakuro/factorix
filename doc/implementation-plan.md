@@ -505,20 +505,21 @@ Command-line interface using dry-cli.
   - [ ] Version conflict detection
 - [ ] `cli/commands/mod/uninstall.rb` - Uninstall MOD
   - [ ] Reverse dependency check
-- [ ] `cli/commands/mod/upload.rb` - Upload new version of existing MOD
-  - [ ] `--file` option for MOD zip file path
-  - [ ] Optional metadata: `--description`, `--category`
+- [ ] `cli/commands/mod/upload.rb` - Upload MOD to portal (handles both new and update)
+  - [ ] File argument (MOD zip file path)
+  - [ ] Optional metadata: `--description`, `--category`, `--license`, `--source_url`
   - [ ] Progress bar for upload
-  - [ ] Use MODManagementAPI#init_upload and #finish_upload
-- [ ] `cli/commands/mod/publish.rb` - Publish new MOD (first version)
-  - [ ] `--file` option for MOD zip file path
-  - [ ] Optional metadata: `--description`, `--category`
-  - [ ] Progress bar for upload
-  - [ ] Use MODManagementAPI#init_publish and #finish_upload
-- [ ] `cli/commands/mod/edit.rb` - Edit MOD details on portal
+  - [ ] Auto-detect first upload vs update via Portal#upload_mod:
+    - [ ] Check if MOD exists via get_mod (404 = new, 200 = existing)
+    - [ ] For new MODs: init_publish → finish_upload(with metadata)
+    - [ ] For existing MODs: init_upload → finish_upload → edit_details(metadata)
+  - [ ] Extract MOD name from zip filename
+  - [ ] See doc/upload-implementation-plan.md for detailed design
+- [ ] `cli/commands/mod/edit.rb` - Edit MOD metadata on portal
   - [ ] MOD name argument
   - [ ] Metadata options: `--description`, `--summary`, `--title`, `--category`, `--homepage`, etc.
-  - [ ] Use MODManagementAPI#edit_details
+  - [ ] Validate at least one metadata option provided
+  - [ ] Use Portal#edit_mod → MODManagementAPI#edit_details
 
 **Dependencies**: Portal, MODList, MODDependencies
 

@@ -19,6 +19,7 @@ module Factorix
     "cli" => "CLI",
     "csv_converter" => "CSVConverter",
     "http" => "HTTP",
+    "info_json" => "InfoJSON",
     "json_converter" => "JSONConverter",
     "mac_os" => "MacOS",
     "mod" => "MOD",

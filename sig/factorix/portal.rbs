@@ -20,8 +20,14 @@ module Factorix
 
     def download_mod: (Types::Release release, Pathname | String output) -> void
 
+    def upload_mod: (String mod_name, Pathname file_path, **untyped metadata) -> void
+
+    def edit_mod: (String mod_name, **untyped metadata) -> void
+
     attr_reader mod_portal_api: API::MODPortalAPI
 
     attr_reader mod_download_api: API::MODDownloadAPI
+
+    attr_reader mod_management_api: API::MODManagementAPI
   end
 end
