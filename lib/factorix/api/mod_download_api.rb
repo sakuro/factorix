@@ -8,14 +8,15 @@ module Factorix
     #
     # Requires username and token authentication via ServiceCredential.
     class MODDownloadAPI
+      # NOTE: service_credential is NOT imported to avoid early evaluation errors
+      # when FACTORIO_USERNAME/FACTORIO_TOKEN environment variables are not set.
+      # It's resolved lazily via reader method instead.
       # @!parse
-      #   # @return [ServiceCredential]
-      #   attr_reader :service_credential
       #   # @return [Transfer::Downloader]
       #   attr_reader :downloader
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:service_credential, :downloader, :logger]
+      include Factorix::Import[:downloader, :logger]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -34,6 +35,10 @@ module Factorix
 
         uri = build_download_uri(download_url)
         downloader.download(uri, output)
+      end
+
+      private def service_credential
+        @service_credential ||= Application[:service_credential]
       end
 
       private def build_download_uri(download_url)

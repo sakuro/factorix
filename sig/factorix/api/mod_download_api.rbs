@@ -3,9 +3,10 @@ module Factorix
     class MODDownloadAPI
       BASE_URL: String
 
-      attr_reader service_credential: ServiceCredential
       attr_reader downloader: Transfer::Downloader
       attr_reader logger: Dry::Logger::Dispatcher
+
+      def initialize: (**untyped deps) -> void
 
       def download: (String download_url, Pathname output) -> void
     end
