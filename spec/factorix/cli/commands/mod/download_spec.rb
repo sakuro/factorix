@@ -13,7 +13,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       owner: "test-owner",
       summary: "Test mod",
       downloads_count: 0,
-      category: nil,
+      category: "utilities",
       score: 0.0,
       thumbnail: nil,
       latest_release: nil,
@@ -93,6 +93,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         owner: "test-owner",
         summary: "Test mod 1",
         downloads_count: 0,
+        category: "content",
         releases: [
           {
             download_url: "/download/mod1/abc1",
@@ -110,6 +111,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         owner: "test-owner",
         summary: "Test mod 2",
         downloads_count: 0,
+        category: "tweaks",
         releases: [
           {
             download_url: "/download/mod2/abc2",
@@ -148,6 +150,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
           owner: "test-owner",
           summary: "Evil mod",
           downloads_count: 0,
+          category: "internal",
           releases: [
             {
               download_url: "/download/evil-mod/abc123",

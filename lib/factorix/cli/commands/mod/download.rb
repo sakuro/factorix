@@ -14,6 +14,20 @@ module Factorix
           #   attr_reader :portal
           include Factorix::Import[:portal]
 
+          # Category emoji mapping
+          CATEGORY_EMOJIS = {
+            Types::Category.for("content") => "\u{1F9F1}",              # BRICK
+            Types::Category.for("overhaul") => "\u{1F9F0}",             # TOOLBOX
+            Types::Category.for("tweaks") => "\u{2699}\u{FE0F}",        # GEAR
+            Types::Category.for("utilities") => "\u{1F6E0}\u{FE0F}",    # HAMMER AND WRENCH
+            Types::Category.for("scenarios") => "\u{1F3AC}",            # CLAPPER BOARD
+            Types::Category.for("mod-packs") => "\u{1F4E6}",            # PACKAGE
+            Types::Category.for("localizations") => "\u{1F310}",        # GLOBE WITH MERIDIANS
+            Types::Category.for("internal") => "\u{1F4DD}",             # MEMO
+            Types::Category.for("") => "\u{2753}"                       # QUESTION MARK
+          }.freeze
+          private_constant :CATEGORY_EMOJIS
+
           desc "Download MOD files from Factorio MOD Portal"
 
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
@@ -56,10 +70,10 @@ module Factorix
                 thread_downloader = thread_portal.mod_download_api.downloader
 
                 # Register progress presenter and create handler
+                emoji = CATEGORY_EMOJIS[download[:category]]
                 presenter = multi_presenter.register(
                   download[:mod_name],
-                  # PUZZLE PIECE
-                  title: "\u{1F9E9} #{download[:release].file_name}"
+                  title: "#{emoji} #{download[:release].file_name}"
                 )
                 handler = Progress::DownloadHandler.new(presenter)
 
@@ -140,7 +154,8 @@ module Factorix
             {
               release:,
               output_path:,
-              mod_name:
+              mod_name:,
+              category: mod_info.category
             }
           end
 
