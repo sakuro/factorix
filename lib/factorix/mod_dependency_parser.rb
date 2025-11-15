@@ -39,8 +39,11 @@ module Factorix
           str("~").as(:load_neutral)
       end
 
-      # Mod name: alphanumeric, dash, underscore
-      rule(:mod_name) { match["a-zA-Z0-9_-"].repeat(1).as(:mod_name) }
+      # Mod name: starts with alphanumeric, can contain spaces
+      # Cannot start with operators or contain only operators
+      rule(:mod_name_start) { match["a-zA-Z0-9_-"] }
+      rule(:mod_name_char) { match["a-zA-Z0-9_-"] | (space >> match["a-zA-Z0-9_-"].repeat(1)) }
+      rule(:mod_name) { (mod_name_start >> mod_name_char.repeat).as(:mod_name) }
 
       # Version operators (longest first)
       rule(:operator) do
@@ -72,7 +75,7 @@ module Factorix
 
     # Transform parsed tree into structured data
     class Transform < Parslet::Transform
-      rule(mod_name: simple(:name)) { {mod_name: name.to_s} }
+      rule(mod_name: simple(:name)) { {mod_name: name.to_s.strip} }
 
       rule(version: simple(:ver)) { {version: ver.to_s} }
 

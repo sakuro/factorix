@@ -52,11 +52,16 @@ Metrics/CyclomaticComplexity:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/BlockLength:
+  Exclude:
+    - lib/factorix/mod_dependency_resolver.rb
+
 Metrics/PerceivedComplexity:
   Exclude:
     - lib/factorix/types/mod_info.rb
     - lib/factorix/mod_dependency_parser.rb
     - lib/factorix/mod_dependency_list.rb
+    - lib/factorix/mod_dependency_resolver.rb
 
 Naming/PredicateMethod:
   Exclude:

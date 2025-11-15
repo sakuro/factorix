@@ -22,8 +22,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
           download_url: "/download/test-mod/abc123",
           file_name: "test-mod_1.0.0.zip",
           info_json: {
-            "factorio_version" => "2.0",
-            "dependencies" => []
+            factorio_version: "2.0",
+            dependencies: []
           },
           released_at: "2024-01-01T00:00:00Z",
           version: "1.0.0",
@@ -46,7 +46,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
     # Mock the Application container to return the same instances
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
-    allow(portal).to receive(:get_mod).with("test-mod").and_return(mod_info)
+    allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(portal).to receive(:download_mod)
     allow(downloader).to receive(:subscribe)
     allow(downloader).to receive(:unsubscribe)
@@ -61,7 +61,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     it "downloads a single mod" do
       command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
 
-      expect(portal).to have_received(:get_mod).with("test-mod")
+      expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
@@ -75,14 +75,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     it "handles mod with version specification" do
       command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1)
 
-      expect(portal).to have_received(:get_mod).with("test-mod")
+      expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
     it "handles latest version specification" do
       command.call(mod_specs: ["test-mod@latest"], directory: tmpdir, jobs: 1)
 
-      expect(portal).to have_received(:get_mod).with("test-mod")
+      expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
@@ -124,13 +124,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         ]
       )
 
-      allow(portal).to receive(:get_mod).with("mod1").and_return(mod1_info)
-      allow(portal).to receive(:get_mod).with("mod2").and_return(mod2_info)
+      allow(portal).to receive(:get_mod_full).with("mod1").and_return(mod1_info)
+      allow(portal).to receive(:get_mod_full).with("mod2").and_return(mod2_info)
 
       command.call(mod_specs: %w[mod1 mod2], directory: tmpdir, jobs: 2)
 
-      expect(portal).to have_received(:get_mod).with("mod1")
-      expect(portal).to have_received(:get_mod).with("mod2")
+      expect(portal).to have_received(:get_mod_full).with("mod1")
+      expect(portal).to have_received(:get_mod_full).with("mod2")
       expect(portal).to have_received(:download_mod).twice
     end
 
@@ -165,7 +165,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       end
 
       it "raises error for path traversal attempt" do
-        allow(portal).to receive(:get_mod).with("evil-mod").and_return(mod_info_with_bad_filename)
+        allow(portal).to receive(:get_mod_full).with("evil-mod").and_return(mod_info_with_bad_filename)
 
         expect {
           command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1)
@@ -229,6 +229,114 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       expect {
         command.__send__(:validate_filename, "..evil.zip")
       }.to raise_error(ArgumentError, /parent directory/)
+    end
+  end
+
+  describe "with --recursive option" do
+    let(:mod_with_dep) do
+      Factorix::Types::MODInfo.new(
+        name: "mod-with-dep",
+        title: "Mod With Dependency",
+        owner: "test-owner",
+        summary: "Test mod with dependency",
+        downloads_count: 0,
+        category: "content",
+        score: 0.0,
+        thumbnail: nil,
+        latest_release: nil,
+        releases: [
+          {
+            download_url: "/download/mod-with-dep/1.0.0",
+            file_name: "mod-with-dep_1.0.0.zip",
+            info_json: {
+              factorio_version: "2.0",
+              dependencies: ["dep-mod >= 2.0.0"]
+            },
+            released_at: "2024-01-01T00:00:00Z",
+            version: "1.0.0",
+            sha1: "abc123"
+          }
+        ],
+        detail: nil
+      )
+    end
+
+    let(:dep_mod) do
+      Factorix::Types::MODInfo.new(
+        name: "dep-mod",
+        title: "Dependency Mod",
+        owner: "test-owner",
+        summary: "Dependency",
+        downloads_count: 1_000_000,
+        category: "content",
+        score: 1.0,
+        thumbnail: nil,
+        latest_release: nil,
+        releases: [
+          {
+            download_url: "/download/dep-mod/2.0.0",
+            file_name: "dep-mod_2.0.0.zip",
+            info_json: {
+              "factorio_version" => "2.0",
+              "dependencies" => []
+            },
+            released_at: "2024-01-01T00:00:00Z",
+            version: "2.0.0",
+            sha1: "def456"
+          }
+        ],
+        detail: nil
+      )
+    end
+
+    it "downloads dependencies when --recursive is true" do
+      Dir.mktmpdir do |tmpdir|
+        Pathname.new(tmpdir)
+
+        # Mock Application container
+        logger = instance_double(Logger, info: nil, warn: nil, error: nil)
+        allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+        allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+
+        # Mock portal responses
+        allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
+        allow(portal).to receive(:get_mod_full).with("dep-mod").and_return(dep_mod)
+
+        # Mock download method
+        allow(portal).to receive(:download_mod).and_return(true)
+
+        command.call(
+          mod_specs: ["mod-with-dep"],
+          directory: tmpdir,
+          jobs: 1,
+          recursive: true
+        )
+
+        # Verify both mods were downloaded
+        expect(portal).to have_received(:download_mod).exactly(2).times
+      end
+    end
+
+    it "does not download dependencies when --recursive is false" do
+      Dir.mktmpdir do |tmpdir|
+        Pathname.new(tmpdir)
+
+        # Mock portal response
+        allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
+
+        # Mock download method
+        allow(portal).to receive(:download_mod).and_return(true)
+
+        command.call(
+          mod_specs: ["mod-with-dep"],
+          directory: tmpdir,
+          jobs: 1,
+          recursive: false
+        )
+
+        # Verify only the specified mod was downloaded
+        expect(portal).to have_received(:download_mod).once
+      end
     end
   end
 end

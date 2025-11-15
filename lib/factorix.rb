@@ -25,6 +25,7 @@ module Factorix
     "mod_dependency" => "MODDependency",
     "mod_dependency_list" => "MODDependencyList",
     "mod_dependency_parser" => "MODDependencyParser",
+    "mod_dependency_resolver" => "MODDependencyResolver",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
     "mod_list" => "MODList",

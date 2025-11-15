@@ -23,8 +23,14 @@ module Factorix
       # @param total [Integer] total size/count for progress tracking
       # @param format [String] progress presenter format string (default: generic format)
       # @return [void]
-      def start(total:, format: nil)
-        format ||= "#{@title} [:bar] :percent :current/:total"
+      def start(total: nil, format: nil)
+        format ||= if total.nil?
+                     # Indeterminate progress bar (no total)
+                     "#{@title} [:bar] :current"
+                   else
+                     # Determinate progress bar (with total)
+                     "#{@title} [:bar] :percent :current/:total"
+                   end
         @tty_bar = TTY::ProgressBar.new(
           format,
           total:,
@@ -38,8 +44,13 @@ module Factorix
       #
       # @param current [Integer] current progress value
       # @return [void]
-      def update(current)
-        @tty_bar&.current = current
+      def update(current=nil)
+        if current
+          @tty_bar&.current = current
+        else
+          # For indeterminate progress, just advance
+          @tty_bar&.advance
+        end
       end
 
       # Mark the progress presenter as finished

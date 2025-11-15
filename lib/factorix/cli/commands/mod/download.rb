@@ -33,25 +33,41 @@ module Factorix
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
           option :directory, type: :string, aliases: ["-d"], default: ".", desc: "Download directory"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
+          option :recursive, type: :boolean, aliases: ["-r"], default: false, desc: "Include required dependencies recursively"
 
           # Execute the download command
           #
           # @param mod_specs [Array<String>] MOD specifications
           # @param directory [String] Download directory
+          # @param jobs [Integer] Number of parallel downloads
+          # @param recursive [Boolean] Include required dependencies recursively
           # @return [void]
-          def call(mod_specs:, directory: ".", jobs: 4, **)
+          def call(mod_specs:, directory: ".", jobs: 4, recursive: false, **)
             download_dir = Pathname(directory)
 
             # Ensure download directory exists
             download_dir.mkpath unless download_dir.exist?
 
-            download_with_multi_progress(mod_specs, download_dir, jobs)
+            # Create progress presenter for info fetching
+            presenter = Progress::Presenter.new(
+              title: "\u{1F50E} Fetching MOD info",
+              output: $stderr
+            )
+
+            # Fetch MOD info
+            downloads = fetch_mod_info_parallel(mod_specs, download_dir, jobs, presenter)
+
+            # Resolve dependencies if requested
+            if recursive
+              resolver = MODDependencyResolver.new
+              downloads = resolver.resolve_dependencies(downloads, download_dir, jobs, presenter)
+            end
+
+            # Download files
+            download_with_multi_progress(downloads, download_dir, jobs)
           end
 
-          private def download_with_multi_progress(mod_specs, download_dir, jobs)
-            # Prepare all downloads with parallel info fetching
-            downloads = fetch_mod_info_parallel(mod_specs, download_dir, jobs)
-
+          private def download_with_multi_progress(downloads, _download_dir, jobs)
             # Set up multi-progress presenter
             multi_presenter = Progress::MultiPresenter.new(
               # INBOX TRAY
@@ -98,32 +114,25 @@ module Factorix
           # @param mod_specs [Array<String>] MOD specifications
           # @param download_dir [Pathname] Download directory
           # @param jobs [Integer] Number of parallel jobs
+          # @param presenter [Progress::Presenter] Progress presenter to use
           # @return [Array<Hash>] Array of download information hashes
-          private def fetch_mod_info_parallel(mod_specs, download_dir, jobs)
-            # Create progress presenter for info fetching
-            presenter = Progress::Presenter.new(
-              # LEFT-POINTING MAGNIFYING GLASS
-              title: "\u{1F50E} Fetching MOD info",
-              output: $stderr
-            )
-            presenter.start(total: mod_specs.size)
+          private def fetch_mod_info_parallel(mod_specs, download_dir, jobs, presenter)
+            presenter.start(total: nil)
 
             # Use thread pool for parallel fetching
             pool = Concurrent::FixedThreadPool.new(jobs)
 
             # Submit fetch tasks to the pool
-            futures = mod_specs.map.with_index {|mod_spec, index|
+            futures = mod_specs.map {|mod_spec|
               Concurrent::Future.execute(executor: pool) do
                 result = fetch_mod_info(mod_spec, download_dir)
-                presenter.update(index + 1)
+                presenter.update
                 result
               end
             }
 
             # Wait for all fetches to complete
             results = futures.map(&:value!)
-
-            presenter.finish
 
             results
           ensure
@@ -141,7 +150,7 @@ module Factorix
 
             # Get a new portal instance for this thread
             thread_portal = Factorix::Application[:portal]
-            mod_info = thread_portal.get_mod(mod_name)
+            mod_info = thread_portal.get_mod_full(mod_name)
 
             release = find_release(mod_info, version)
             raise ArgumentError, "Release not found for #{mod_name}@#{version}" unless release
@@ -155,7 +164,10 @@ module Factorix
               release:,
               output_path:,
               mod_name:,
-              category: mod_info.category
+              category: mod_info.category,
+              version_requirement: nil,          # Set by dependency resolver
+              dependencies_resolved: false,      # Will be processed by resolver
+              source: :explicit                  # Explicitly specified by user
             }
           end
 
