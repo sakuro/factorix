@@ -27,6 +27,10 @@
 - `init_upload(mod_name)` - For existing mods only
 - `edit_details(mod_name, **metadata)` - For updating metadata
 - `finish_upload(upload_url, file_path, **optional_metadata)` - Complete upload
+- **Important**: `api_credential` is resolved in `initialize`, not via Import
+  - Prevents early environment variable evaluation errors
+  - Error only occurs when upload/edit commands are actually used
+  - Download commands work without FACTORIO_API_KEY being set
 
 ## API Differences
 
@@ -102,7 +106,11 @@ API Layer (MODManagementAPI)
 **lib/factorix/api/mod_management_api.rb**
 ```ruby
 class MODManagementAPI
-  include Factorix::Import["api_credential", "http", "logger"]
+  # NOTE: api_credential is NOT imported to avoid early evaluation errors
+  # when FACTORIO_API_KEY environment variable is not set.
+  # It's resolved lazily via reader method instead.
+  # IMPORTANT: Hash-based renames (client: :api_http_client) must come last in Import
+  include Factorix::Import[:logger, :uploader, client: :api_http_client]
 
   BASE_URL = "https://mods.factorio.com"
 
@@ -152,6 +160,12 @@ class MODManagementAPI
 
   private
 
+  # Lazy-load api_credential to avoid early environment variable evaluation
+  # Only raises error when actually needed (upload/edit commands)
+  def api_credential
+    @api_credential ||= Application[:api_credential]
+  end
+
   def build_auth_header
     { "Authorization" => "Bearer #{api_credential.api_key}" }
   end
@@ -171,14 +185,23 @@ end
 module Factorix
   module API
     class MODManagementAPI
-      @api_credential: APICredential
-      @http: Transfer::HTTP
-      @logger: Dry::Logger::Dispatcher
+      BASE_URL: String
+
+      attr_reader api_credential: APICredential
+      attr_reader client: HTTP::Client
+      attr_reader uploader: Transfer::Uploader
+      attr_reader logger: Dry::Logger::Dispatcher
+
+      def initialize: (**untyped deps) -> void
 
       def init_publish: (String mod_name) -> String
       def init_upload: (String mod_name) -> String
       def finish_upload: (String upload_url, Pathname | String file_path, **untyped metadata) -> void
       def edit_details: (String mod_name, **untyped metadata) -> void
+
+      private
+
+      def build_auth_header: () -> Hash[String, String]
     end
   end
 end
@@ -412,7 +435,11 @@ end
 
 ### Phase 2: Container Registration
 1. Add api_credential registration to Application
+   - Note: This registration will raise an error if FACTORIO_API_KEY is not set
+   - This is intentional - the error only occurs when api_credential is actually resolved
 2. Add mod_management_api registration to Application
+   - MODManagementAPI resolves api_credential in its initializer
+   - This delays the environment variable check until the API is actually used
 
 ### Phase 3: Portal Layer (Orchestration)
 1. Add mod_management_api to Portal imports
