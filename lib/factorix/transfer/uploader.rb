@@ -13,7 +13,7 @@ module Factorix
     class Uploader
       include Factorix::Import[
         :logger,
-        client: :download_http_client
+        client: :upload_http_client
       ]
       include Dry::Events::Publisher[:uploader]
 
@@ -21,17 +21,18 @@ module Factorix
       register_event("upload.progress")
       register_event("upload.completed")
 
-      # Upload a file to the given URL
+      # Upload a file to the given URL with optional form fields
       #
       # @param url [URI::HTTPS, String] URL to upload to (HTTPS only)
       # @param file_path [Pathname, String] path to the file to upload
       # @param field_name [String] form field name for the file (default: "file")
+      # @param fields [Hash<String, String>] additional form fields (e.g., metadata)
       # @return [void]
       # @raise [ArgumentError] if the URL is not HTTPS or file doesn't exist
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       # @raise [HTTPError] for other HTTP errors
-      def upload(url, file_path, field_name: "file")
+      def upload(url, file_path, field_name: "file", fields: {})
         url = URI(url) if url.is_a?(String)
         unless url.is_a?(URI::HTTPS)
           logger.error("Invalid URL: must be HTTPS", url: url.to_s)
@@ -44,10 +45,10 @@ module Factorix
           raise ArgumentError, "File does not exist: #{file_path}"
         end
 
-        upload_file_with_progress(url, file_path, field_name)
+        upload_file_with_progress(url, file_path, field_name, fields)
       end
 
-      private def upload_file_with_progress(url, file_path, field_name)
+      private def upload_file_with_progress(url, file_path, field_name, fields)
         boundary = generate_boundary
         file_size = file_path.size
 
@@ -55,6 +56,16 @@ module Factorix
 
         # Build multipart body parts
         body_parts = []
+
+        # Add additional form fields first
+        fields.each do |name, value|
+          body_parts << "--#{boundary}\r\n"
+          body_parts << "Content-Disposition: form-data; name=\"#{name}\"\r\n"
+          body_parts << "\r\n"
+          body_parts << "#{value}\r\n"
+        end
+
+        # Add file field
         body_parts << "--#{boundary}\r\n"
         body_parts << "Content-Disposition: form-data; name=\"#{field_name}\"; filename=\"#{file_path.basename}\"\r\n"
         body_parts << "Content-Type: application/zip\r\n"

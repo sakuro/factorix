@@ -1,0 +1,18 @@
+module Factorix
+  module API
+    class MODManagementAPI
+      BASE_URL: String
+
+      attr_reader client: HTTP::Client
+      attr_reader uploader: Transfer::Uploader
+      attr_reader logger: Dry::Logger::Dispatcher
+
+      def initialize: (**untyped deps) -> void
+
+      def init_publish: (String mod_name) -> String
+      def init_upload: (String mod_name) -> String
+      def finish_upload: (String upload_url, Pathname | String file_path, **untyped metadata) -> void
+      def edit_details: (String mod_name, **untyped metadata) -> void
+    end
+  end
+end

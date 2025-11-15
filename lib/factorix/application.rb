@@ -112,6 +112,15 @@ module Factorix
       Factorix::HTTP::RetryDecorator.new(client: cached, retry_strategy:)
     end
 
+    # Register decorated HTTP client for uploads (with retry only, no cache)
+    register(:upload_http_client, memoize: false) do
+      client = resolve(:http_client)
+      retry_strategy = resolve(:retry_strategy)
+
+      # Decorate: Client -> Retry (no cache for uploads)
+      Factorix::HTTP::RetryDecorator.new(client:, retry_strategy:)
+    end
+
     # Register downloader
     register(:downloader, memoize: false) do
       Factorix::Transfer::Downloader.new
@@ -143,6 +152,16 @@ module Factorix
     # Register mod download API client
     register(:mod_download_api, memoize: false) do
       Factorix::API::MODDownloadAPI.new
+    end
+
+    # Register API credential (for mod upload/management)
+    register(:api_credential, memoize: true) do
+      Factorix::APICredential.from_env
+    end
+
+    # Register mod management API client
+    register(:mod_management_api, memoize: true) do
+      Factorix::API::MODManagementAPI.new
     end
 
     # Register portal (high-level API wrapper)

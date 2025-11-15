@@ -41,6 +41,20 @@ RSpec.describe Factorix::Transfer::Uploader do
         uploader.upload(url, file_path, field_name: "mod_file")
         expect(client).to have_received(:post)
       end
+
+      it "accepts additional form fields" do
+        uploader.upload(url, file_path, fields: {description: "Test description", category: "content"})
+        expect(client).to have_received(:post) do |_uri, **options|
+          body = options[:body]
+          # Read the body stream to verify it contains the metadata
+          content = body.read
+          body.rewind
+          expect(content).to include('name="description"')
+          expect(content).to include("Test description")
+          expect(content).to include('name="category"')
+          expect(content).to include("content")
+        end
+      end
     end
 
     context "with HTTP errors" do

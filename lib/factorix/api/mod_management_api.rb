@@ -1,0 +1,162 @@
+# frozen_string_literal: true
+
+require "json"
+require "uri"
+
+module Factorix
+  module API
+    # API client for mod management operations (upload, publish, edit)
+    #
+    # Requires API key authentication via APICredential.
+    # Uses api_credential lazy loading to avoid early environment variable evaluation.
+    class MODManagementAPI
+      # NOTE: api_credential is NOT imported to avoid early evaluation errors
+      # when FACTORIO_API_KEY environment variable is not set.
+      # It's resolved lazily via reader method instead.
+      # @!parse
+      #   # @return [HTTP::Client]
+      #   attr_reader :client
+      #   # @return [Transfer::Uploader]
+      #   attr_reader :uploader
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      include Factorix::Import[:uploader, :logger, client: :http_client]
+
+      BASE_URL = "https://mods.factorio.com"
+      private_constant :BASE_URL
+
+      # Metadata fields allowed in finish_upload (only for init_publish scenario)
+      ALLOWED_UPLOAD_METADATA = %w[description category license source_url].freeze
+      private_constant :ALLOWED_UPLOAD_METADATA
+
+      # Metadata fields allowed in edit_details
+      ALLOWED_EDIT_METADATA = %w[
+        description
+        summary
+        title
+        category
+        tags
+        license
+        homepage
+        source_url
+        faq
+        deprecated
+      ].freeze
+      private_constant :ALLOWED_EDIT_METADATA
+
+      # Initialize new mod publication
+      #
+      # @param mod_name [String] the mod name
+      # @return [String] upload URL
+      # @raise [HTTPClientError] for 4xx errors (e.g., mod already exists)
+      # @raise [HTTPServerError] for 5xx errors
+      def init_publish(mod_name)
+        uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_publish")
+        body = JSON.generate({mod: mod_name})
+
+        logger.info("Initializing mod publication", mod: mod_name)
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+
+        parse_upload_url(response)
+      end
+
+      # Initialize update to existing mod
+      #
+      # @param mod_name [String] the mod name
+      # @return [String] upload URL
+      # @raise [HTTPClientError] for 4xx errors (e.g., mod doesn't exist)
+      # @raise [HTTPServerError] for 5xx errors
+      def init_upload(mod_name)
+        uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_upload")
+        body = JSON.generate({mod: mod_name})
+
+        logger.info("Initializing mod upload", mod: mod_name)
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+
+        parse_upload_url(response)
+      end
+
+      # Complete upload (works for both publish and update scenarios)
+      #
+      # @param upload_url [String] the upload URL from init_publish or init_upload
+      # @param file_path [Pathname, String] path to mod zip file
+      # @param metadata [Hash] optional metadata (only used for init_publish)
+      # @option metadata [String] :description Markdown description
+      # @option metadata [String] :category Mod category
+      # @option metadata [String] :license License identifier
+      # @option metadata [String] :source_url Repository URL
+      # @return [void]
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      def finish_upload(upload_url, file_path, **metadata)
+        validate_metadata!(metadata, ALLOWED_UPLOAD_METADATA, "finish_upload")
+
+        uri = URI(upload_url)
+        file_path = Pathname(file_path) unless file_path.is_a?(Pathname)
+
+        logger.info("Uploading mod file", file: file_path.to_s, metadata_count: metadata.size)
+
+        # Convert metadata keys to strings for form fields
+        fields = metadata.transform_keys(&:to_s)
+
+        uploader.upload(uri, file_path, fields:)
+        logger.info("Upload completed successfully")
+      end
+
+      # Edit mod details (for post-upload metadata changes)
+      #
+      # @param mod_name [String] the mod name
+      # @param metadata [Hash] metadata to update
+      # @option metadata [String] :description Markdown description
+      # @option metadata [String] :summary Brief description
+      # @option metadata [String] :title Mod title
+      # @option metadata [String] :category Mod category
+      # @option metadata [String] :tags Comma-separated tags
+      # @option metadata [String] :license License identifier
+      # @option metadata [String] :homepage Homepage URL
+      # @option metadata [String] :source_url Repository URL
+      # @option metadata [String] :faq FAQ text
+      # @option metadata [Boolean] :deprecated Deprecation flag
+      # @return [void]
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      def edit_details(mod_name, **metadata)
+        validate_metadata!(metadata, ALLOWED_EDIT_METADATA, "edit_details")
+
+        uri = URI.join(BASE_URL, "/api/v2/mods/edit_details")
+        body = JSON.generate({mod: mod_name, **metadata})
+
+        logger.info("Editing mod details", mod: mod_name, fields: metadata.keys)
+        client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+        logger.info("Edit completed successfully")
+      end
+
+      private def api_credential
+        @api_credential ||= Application[:api_credential]
+      end
+
+      private def build_auth_header
+        {"Authorization" => "Bearer #{api_credential.api_key}"}
+      end
+
+      private def validate_metadata!(metadata, allowed_keys, context)
+        return if metadata.empty?
+
+        invalid_keys = metadata.keys.map(&:to_s) - allowed_keys
+        return if invalid_keys.empty?
+
+        raise ArgumentError,
+          "Invalid metadata for #{context}: #{invalid_keys.join(", ")}. " \
+          "Allowed keys: #{allowed_keys.join(", ")}"
+      end
+
+      private def parse_upload_url(response)
+        data = JSON.parse(response.body)
+        data["upload_url"] or raise HTTPError, "Missing upload_url in response"
+      rescue JSON::ParserError => e
+        logger.error("Failed to parse JSON response", error: e.message)
+        raise HTTPError, "Invalid JSON response: #{e.message}"
+      end
+    end
+  end
+end

@@ -4,7 +4,14 @@ module Factorix
       attr_reader logger: Dry::Logger::Dispatcher
       attr_reader client: HTTP::Client
 
-      def upload: (URI::HTTPS | String url, Pathname | String file_path, ?field_name: String) -> void
+      def initialize: (**untyped deps) -> void
+
+      def upload: (
+        URI::HTTPS | String url,
+        Pathname | String file_path,
+        ?field_name: String,
+        ?fields: Hash[String | Symbol, String]
+      ) -> void
     end
   end
 end

@@ -28,6 +28,7 @@ module Factorix
     "mod_dependency_resolver" => "MODDependencyResolver",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
+    "mod_management_api" => "MODManagementAPI",
     "mod_list" => "MODList",
     "mod_portal_api" => "MODPortalAPI",
     "mod_settings" => "MODSettings",
