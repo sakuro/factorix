@@ -47,7 +47,7 @@ module Factorix
       # Initialize new mod publication
       #
       # @param mod_name [String] the mod name
-      # @return [String] upload URL
+      # @return [URI::HTTPS] upload URL
       # @raise [HTTPClientError] for 4xx errors (e.g., mod already exists)
       # @raise [HTTPServerError] for 5xx errors
       def init_publish(mod_name)
@@ -63,7 +63,7 @@ module Factorix
       # Initialize update to existing mod
       #
       # @param mod_name [String] the mod name
-      # @return [String] upload URL
+      # @return [URI::HTTPS] upload URL
       # @raise [HTTPClientError] for 4xx errors (e.g., mod doesn't exist)
       # @raise [HTTPServerError] for 5xx errors
       def init_upload(mod_name)
@@ -78,7 +78,7 @@ module Factorix
 
       # Complete upload (works for both publish and update scenarios)
       #
-      # @param upload_url [String] the upload URL from init_publish or init_upload
+      # @param upload_url [URI::HTTPS] the upload URL from init_publish or init_upload
       # @param file_path [Pathname, String] path to mod zip file
       # @param metadata [Hash] optional metadata (only used for init_publish)
       # @option metadata [String] :description Markdown description
@@ -90,8 +90,6 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       def finish_upload(upload_url, file_path, **metadata)
         validate_metadata!(metadata, ALLOWED_UPLOAD_METADATA, "finish_upload")
-
-        uri = URI(upload_url)
         file_path = Pathname(file_path) unless file_path.is_a?(Pathname)
 
         logger.info("Uploading mod file", file: file_path.to_s, metadata_count: metadata.size)
@@ -99,7 +97,7 @@ module Factorix
         # Convert metadata keys to strings for form fields
         fields = metadata.transform_keys(&:to_s)
 
-        uploader.upload(uri, file_path, fields:)
+        uploader.upload(upload_url, file_path, fields:)
         logger.info("Upload completed successfully")
       end
 
@@ -152,7 +150,8 @@ module Factorix
 
       private def parse_upload_url(response)
         data = JSON.parse(response.body)
-        data["upload_url"] or raise HTTPError, "Missing upload_url in response"
+        url_string = data["upload_url"] or raise HTTPError, "Missing upload_url in response"
+        URI(url_string)
       rescue JSON::ParserError => e
         logger.error("Failed to parse JSON response", error: e.message)
         raise HTTPError, "Invalid JSON response: #{e.message}"

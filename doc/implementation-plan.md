@@ -185,16 +185,22 @@ Low-level API wrappers returning Hash (parsed JSON).
   - [x] Download MOD files with username + token parameters
   - [x] Application container registration with configurable credential source
   - [x] Tests: 4 examples, 0 failures
-- [ ] `api/mod_management_api.rb` - Portal management endpoints (APICredential)
-  - [ ] `POST /v2/mods/releases/init_upload` - Initialize upload
-  - [ ] `POST /v2/mods/releases/init_publish` - Initialize publish
-  - [ ] `POST /v2/mods/edit_details` - Edit MOD details
-  - [ ] `POST /v2/mods/images/add` - Add images
-  - [ ] `POST /v2/mods/images/edit` - Edit image order
+- [x] `api/mod_management_api.rb` - Portal management endpoints (APICredential) ✅ COMPLETED
+  - [x] `POST /v2/mods/releases/init_upload` - Initialize upload
+  - [x] `POST /v2/mods/releases/init_publish` - Initialize publish
+  - [x] `POST /v2/mods/releases/finish_upload` - Finish upload (multipart with metadata)
+  - [x] `POST /v2/mods/edit_details` - Edit MOD details
+  - [x] Metadata validation for upload and edit operations
+  - [x] Uses low-level `http_client` for init endpoints
+  - [x] Uses `uploader` for finish_upload with progress events
+  - [ ] `POST /v2/mods/images/add` - Add images (deferred)
+  - [ ] `POST /v2/mods/images/edit` - Edit image order (deferred)
 - [x] Tests: `spec/factorix/api/mod_portal_api_spec.rb` (13 examples)
 - [x] Tests: `spec/factorix/api/mod_download_api_spec.rb` (4 examples)
+- [x] Tests: `spec/factorix/api/mod_management_api_spec.rb` (15 examples)
 - [x] Error handling (HTTPClientError, HTTPServerError)
-- [x] Application container registration (`:mod_portal_api`, `:mod_download_api`, `:service_credential`)
+- [x] Application container registration (`:mod_portal_api`, `:mod_download_api`, `:mod_management_api`, `:service_credential`, `:api_credential`)
+- [x] HTTP client variants: `:http_client`, `:download_http_client` (retry+cache), `:upload_http_client` (retry only)
 - [x] RBS type signatures
 - [x] Configuration: `config.credential.source` (:player_data or :env)
 
@@ -499,8 +505,20 @@ Command-line interface using dry-cli.
   - [ ] Version conflict detection
 - [ ] `cli/commands/mod/uninstall.rb` - Uninstall MOD
   - [ ] Reverse dependency check
-- [ ] `cli/commands/mod/publish.rb` - Publish new MOD
+- [ ] `cli/commands/mod/upload.rb` - Upload new version of existing MOD
+  - [ ] `--file` option for MOD zip file path
+  - [ ] Optional metadata: `--description`, `--category`
+  - [ ] Progress bar for upload
+  - [ ] Use MODManagementAPI#init_upload and #finish_upload
+- [ ] `cli/commands/mod/publish.rb` - Publish new MOD (first version)
+  - [ ] `--file` option for MOD zip file path
+  - [ ] Optional metadata: `--description`, `--category`
+  - [ ] Progress bar for upload
+  - [ ] Use MODManagementAPI#init_publish and #finish_upload
 - [ ] `cli/commands/mod/edit.rb` - Edit MOD details on portal
+  - [ ] MOD name argument
+  - [ ] Metadata options: `--description`, `--summary`, `--title`, `--category`, `--homepage`, etc.
+  - [ ] Use MODManagementAPI#edit_details
 
 **Dependencies**: Portal, MODList, MODDependencies
 

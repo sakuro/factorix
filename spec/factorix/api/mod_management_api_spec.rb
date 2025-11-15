@@ -19,7 +19,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
       upload_url = api.init_publish("my-mod")
 
-      expect(upload_url).to eq("https://example.com/upload/123")
+      expect(upload_url).to be_a(URI::HTTPS)
+      expect(upload_url.to_s).to eq("https://example.com/upload/123")
       expect(client).to have_received(:post) do |uri, **options|
         expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/releases/init_publish")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
@@ -45,7 +46,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
       upload_url = api.init_upload("my-mod")
 
-      expect(upload_url).to eq("https://example.com/upload/456")
+      expect(upload_url).to be_a(URI::HTTPS)
+      expect(upload_url.to_s).to eq("https://example.com/upload/456")
       expect(client).to have_received(:post) do |uri, **options|
         expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/releases/init_upload")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
@@ -65,7 +67,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
   end
 
   describe "#finish_upload" do
-    let(:upload_url) { "https://example.com/upload/123" }
+    let(:upload_url) { URI("https://example.com/upload/123") }
     let(:file_path) { Pathname("/tmp/my-mod_1.0.0.zip") }
 
     before do
@@ -77,7 +79,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
       api.finish_upload(upload_url, file_path)
 
       expect(uploader).to have_received(:upload).with(
-        URI(upload_url),
+        upload_url,
         file_path,
         fields: {}
       )
@@ -87,7 +89,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
       api.finish_upload(upload_url, file_path, description: "Test mod", category: "content")
 
       expect(uploader).to have_received(:upload).with(
-        URI(upload_url),
+        upload_url,
         file_path,
         fields: {"description" => "Test mod", "category" => "content"}
       )
