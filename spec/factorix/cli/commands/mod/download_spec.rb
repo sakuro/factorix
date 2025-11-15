@@ -5,7 +5,7 @@ require "tmpdir"
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:portal) { instance_double(Factorix::Portal) }
   let(:http) { instance_double(Factorix::Transfer::HTTP) }
-  let(:command) { described_class.new(portal:, http:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, http:) }
   let(:mod_info) do
     Factorix::Types::MODInfo.new(
       name: "test-mod",
@@ -33,14 +33,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     )
   end
 
-  around do |example|
-    Dir.mktmpdir do |tmpdir|
-      @tmpdir = tmpdir
-      example.run
-    end
+  let(:tmpdir) { Dir.mktmpdir }
+
+  after do
+    FileUtils.rm_rf(tmpdir)
   end
 
   before do
+    # Suppress progress bar output
+    allow($stdout).to receive(:tty?).and_return(false)
+    allow($stderr).to receive(:tty?).and_return(false)
+
     # Mock the Application container to return the same instances
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
     allow(portal).to receive(:get_mod).with("test-mod").and_return(mod_info)
@@ -58,28 +61,28 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "#call" do
     it "downloads a single mod" do
-      command.call(mod_specs: ["test-mod"], directory: @tmpdir, jobs: 1)
+      command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
 
       expect(portal).to have_received(:get_mod).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
     it "creates download directory if it does not exist" do
-      download_dir = File.join(@tmpdir, "mods")
+      download_dir = File.join(tmpdir, "mods")
       command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1)
 
       expect(Dir.exist?(download_dir)).to be true
     end
 
     it "handles mod with version specification" do
-      command.call(mod_specs: ["test-mod@1.0.0"], directory: @tmpdir, jobs: 1)
+      command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1)
 
       expect(portal).to have_received(:get_mod).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
     it "handles latest version specification" do
-      command.call(mod_specs: ["test-mod@latest"], directory: @tmpdir, jobs: 1)
+      command.call(mod_specs: ["test-mod@latest"], directory: tmpdir, jobs: 1)
 
       expect(portal).to have_received(:get_mod).with("test-mod")
       expect(portal).to have_received(:download_mod).once
@@ -124,7 +127,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       allow(portal).to receive(:get_mod).with("mod1").and_return(mod1_info)
       allow(portal).to receive(:get_mod).with("mod2").and_return(mod2_info)
 
-      command.call(mod_specs: ["mod1", "mod2"], directory: @tmpdir, jobs: 2)
+      command.call(mod_specs: %w[mod1 mod2], directory: tmpdir, jobs: 2)
 
       expect(portal).to have_received(:get_mod).with("mod1")
       expect(portal).to have_received(:get_mod).with("mod2")
@@ -134,7 +137,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     context "with invalid mod specification" do
       it "raises error for non-existent release version" do
         expect {
-          command.call(mod_specs: ["test-mod@9.9.9"], directory: @tmpdir, jobs: 1)
+          command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1)
         }.to raise_error(ArgumentError, /Release not found/)
       end
     end
@@ -164,7 +167,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(portal).to receive(:get_mod).with("evil-mod").and_return(mod_info_with_bad_filename)
 
         expect {
-          command.call(mod_specs: ["evil-mod"], directory: @tmpdir, jobs: 1)
+          command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1)
         }.to raise_error(ArgumentError, /path/)
       end
     end
@@ -172,25 +175,25 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "#parse_mod_spec" do
     it "parses mod name without version" do
-      name, version = command.send(:parse_mod_spec, "test-mod")
+      name, version = command.__send__(:parse_mod_spec, "test-mod")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
     end
 
     it "parses mod name with version" do
-      name, version = command.send(:parse_mod_spec, "test-mod@1.2.3")
+      name, version = command.__send__(:parse_mod_spec, "test-mod@1.2.3")
       expect(name).to eq("test-mod")
       expect(version).to eq("1.2.3")
     end
 
     it "parses mod name with @latest" do
-      name, version = command.send(:parse_mod_spec, "test-mod@latest")
+      name, version = command.__send__(:parse_mod_spec, "test-mod@latest")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
     end
 
     it "parses mod name with empty version as latest" do
-      name, version = command.send(:parse_mod_spec, "test-mod@")
+      name, version = command.__send__(:parse_mod_spec, "test-mod@")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
     end
@@ -199,31 +202,31 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   describe "#validate_filename" do
     it "accepts valid filename" do
       expect {
-        command.send(:validate_filename, "test-mod_1.0.0.zip")
+        command.__send__(:validate_filename, "test-mod_1.0.0.zip")
       }.not_to raise_error
     end
 
     it "rejects empty filename" do
       expect {
-        command.send(:validate_filename, "")
+        command.__send__(:validate_filename, "")
       }.to raise_error(ArgumentError, /empty/)
     end
 
     it "rejects nil filename" do
       expect {
-        command.send(:validate_filename, nil)
+        command.__send__(:validate_filename, nil)
       }.to raise_error(ArgumentError, /empty/)
     end
 
     it "rejects filename with path separator" do
       expect {
-        command.send(:validate_filename, "path/to/file.zip")
+        command.__send__(:validate_filename, "path/to/file.zip")
       }.to raise_error(ArgumentError, /separator/)
     end
 
     it "rejects filename with parent directory reference" do
       expect {
-        command.send(:validate_filename, "..evil.zip")
+        command.__send__(:validate_filename, "..evil.zip")
       }.to raise_error(ArgumentError, /parent directory/)
     end
   end
