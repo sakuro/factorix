@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module Factorix
   module HTTP
     # Adds caching for GET requests
@@ -37,10 +41,6 @@ module Factorix
       # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
       def post: (URI::HTTPS uri, body: String | IO, ?headers: Hash[String, String], ?content_type: String?) -> Response
-
-      private
-
-      def with_temporary_file: [T] () { (Tempfile) -> T } -> T
     end
 
     # Response wrapper for cached data

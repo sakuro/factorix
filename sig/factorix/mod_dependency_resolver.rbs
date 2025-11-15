@@ -1,3 +1,7 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module Factorix
   # Resolves MOD dependencies recursively
   class MODDependencyResolver
@@ -10,40 +14,6 @@ module Factorix
       Integer jobs,
       Progress::Presenter presenter
     ) -> Array[downloadInfo]
-
-    private
-
-    # Extract downloads with unresolved dependencies
-    def extract_unresolved: (Hash[String, downloadInfo] downloads) -> Hash[String, downloadInfo]
-
-    # Parse dependencies from release info_json
-    def parse_mod_dependencies: (Types::Release release) -> Array[MODDependency]
-
-    # Check version compatibility
-    def check_version_conflict: (downloadInfo existing, Types::MODVersionRequirement? requirement) -> void
-
-    # Check if a requirement is more restrictive
-    def more_restrictive?: (Types::MODVersionRequirement req1, Types::MODVersionRequirement req2) -> bool
-
-    # Detect circular dependencies
-    def detect_circular_dependency: (Hash[String, downloadInfo] downloads, String mod_name, Array[String] chain) -> void
-
-    # Sort downloads in dependency order (dependencies first)
-    def topological_sort: (Hash[String, downloadInfo] downloads_hash) -> Array[downloadInfo]
-
-    # Fetch info for new dependencies in parallel
-    def fetch_dependency_info: (
-      Array[dependencyMetadata] dependencies,
-      Pathname download_dir,
-      Integer jobs,
-      Progress::Presenter presenter
-    ) -> Array[downloadInfo]
-
-    # Fetch info for a single dependency
-    def fetch_single_dependency: (MODDependency dep, Pathname download_dir) -> downloadInfo?
-
-    # Find a compatible release for the given version requirement
-    def find_compatible_release: (Types::MODInfo mod_info, Types::MODVersionRequirement? requirement) -> Types::Release?
 
     type downloadInfo = {
       release: Types::Release,

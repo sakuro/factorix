@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module Factorix
   module HTTP
     # Class that manages retry strategy with exponential backoff and randomization
@@ -35,23 +39,6 @@ module Factorix
       # @return [Object] Return value of the block
       # @raise [StandardError] If the block fails after all retries
       def with_retry: [T] () { () -> T } -> T
-
-      private
-
-      # Configure retry options by merging with defaults and setting up callbacks
-      #
-      # @param options [Hash] User-provided options to merge with defaults
-      # @return [Hash] Complete set of configured options
-      def configure_options: (Hash[Symbol, untyped] options) -> retry_options
-
-      # Default callback for retry attempts that logs retry information
-      #
-      # @param exception [StandardError] The exception that triggered the retry
-      # @param try [Integer] The current retry attempt number
-      # @param elapsed_time [Float] Time elapsed since first attempt
-      # @param next_interval [Float] Time until next retry attempt
-      # @return [void]
-      def default_retry_callback: (StandardError exception, Integer try, Float elapsed_time, Float next_interval) -> void
     end
   end
 end

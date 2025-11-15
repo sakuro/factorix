@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module Factorix
   module HTTP
     # Low-level HTTP client using Net::HTTP
@@ -45,16 +49,6 @@ module Factorix
       # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
       def post: (URI::HTTPS uri, body: String | IO, ?headers: Hash[String, String], ?content_type: String?) -> Response
-
-      private
-
-      def perform_request: (Symbol method, URI::HTTPS uri, redirect_count: Integer, headers: Hash[String, String], body: String | IO | nil) ?{ (Net::HTTPResponse) -> void } -> Response
-
-      def handle_response: (Net::HTTPResponse response, Symbol _method, URI::HTTPS _uri, Integer redirect_count) ?{ (Net::HTTPResponse) -> void } -> Response
-
-      def build_request: (Symbol method, URI::HTTPS uri, headers: Hash[String, String], body: String | IO | nil) -> Net::HTTPRequest
-
-      def create_http: (URI::HTTPS uri) -> Net::HTTP
     end
   end
 end

@@ -1,3 +1,7 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module Factorix
   module Types
     class MODInfo
