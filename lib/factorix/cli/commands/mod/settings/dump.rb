@@ -9,6 +9,8 @@ module Factorix
         module Settings
           # Dump MOD settings to JSON format
           class Dump < Dry::CLI::Command
+            prepend CommonOptions
+
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime

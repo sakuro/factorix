@@ -11,6 +11,8 @@ module Factorix
       #   $ factorix version
       #   0.1.0
       class Version < Dry::CLI::Command
+        prepend CommonOptions
+
         desc "Display Factorix version"
 
         # Execute the version command

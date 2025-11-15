@@ -9,6 +9,8 @@ module Factorix
       module MOD
         # Download MOD files from Factorio MOD Portal
         class Download < Dry::CLI::Command
+          prepend CommonOptions
+
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal

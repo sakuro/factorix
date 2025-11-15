@@ -43,12 +43,23 @@ module Factorix
       # Ensure log directory exists
       log_path.dirname.mkpath unless log_path.dirname.exist?
 
-      Dry.Logger(
-        :factorix,
-        level: config.log_level,
-        stream: log_path.to_s,
-        template: "[%<time>s] %<severity>s: %<message>s %<payload>s"
-      )
+      # Dispatcher level is set to DEBUG to allow all messages through
+      # Individual backends control their own filtering levels
+      Dry.Logger(:factorix, level: :debug) do |dispatcher|
+        # Backend 1: File (log level configurable via --log-level option)
+        dispatcher.add_backend(
+          level: config.log_level,
+          stream: log_path.to_s,
+          template: "[%<time>s] %<severity>s: %<message>s %<payload>s"
+        )
+
+        # Backend 2: $stderr (always WARN and above)
+        dispatcher.add_backend(
+          level: :warn,
+          stream: $stderr,
+          template: "[%<time>s] %<severity>s: %<message>s %<payload>s"
+        )
+      end
     end
 
     # Register retry strategy for network operations

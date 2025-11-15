@@ -9,6 +9,8 @@ module Factorix
       # By default, the game is launched asynchronously (in the background), but certain
       # options like --help and --dump-* are automatically detected and run synchronously.
       class Launch < Dry::CLI::Command
+        prepend CommonOptions
+
         # Game options that require synchronous execution
         #
         # These options output information and exit immediately, so we should

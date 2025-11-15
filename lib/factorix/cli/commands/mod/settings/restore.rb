@@ -9,6 +9,8 @@ module Factorix
         module Settings
           # Restore MOD settings from JSON format
           class Restore < Dry::CLI::Command
+            prepend CommonOptions
+
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime

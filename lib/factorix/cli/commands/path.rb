@@ -15,6 +15,8 @@ module Factorix
       #   $ factorix path mods-dir user-dir
       #   {"mods-dir":"/path/to/mods","user-dir":"/path/to/user"}
       class Path < Dry::CLI::Command
+        prepend CommonOptions
+
         # Mapping from normalized path types (with hyphens) to runtime method names
         PATH_TYPES = {
           "executable-path" => :executable_path,
