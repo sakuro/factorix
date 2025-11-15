@@ -21,7 +21,7 @@ module Factorix
     # - Caching (delegated to CacheDecorator)
     # - JSON parsing (handled by API clients)
     class Client
-      include Factorix::Import["logger"]
+      include Factorix::Import[:logger]
 
       MAX_REDIRECTS = 10
       private_constant :MAX_REDIRECTS

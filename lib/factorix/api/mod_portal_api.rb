@@ -11,9 +11,9 @@ module Factorix
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
       include Factorix::Import[
-        "logger",
-        cache: "api_cache",
-        client: "api_http_client"
+        :logger,
+        cache: :api_cache,
+        client: :api_http_client
       ]
 
       BASE_URL = "https://mods.factorio.com"

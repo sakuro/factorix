@@ -39,7 +39,7 @@ module Factorix
         #   attr_reader :runtime
         #   # @return [Dry::Logger::Dispatcher]
         #   attr_reader :logger
-        include Factorix::Import["runtime", "logger"]
+        include Factorix::Import[:runtime, :logger]
 
         desc "Display Factorio and Factorix paths"
 

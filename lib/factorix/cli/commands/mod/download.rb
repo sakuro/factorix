@@ -12,9 +12,7 @@ module Factorix
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
-          include Factorix::Import[
-            portal: "portal"
-          ]
+          include Factorix::Import[:portal]
 
           desc "Download MOD files from Factorio MOD Portal"
 

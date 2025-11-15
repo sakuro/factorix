@@ -15,9 +15,9 @@ module Factorix
     # Publishes progress events during download.
     class Downloader
       include Factorix::Import[
-        "logger",
-        cache: "download_cache",
-        client: "download_http_client"
+        :logger,
+        cache: :download_cache,
+        client: :download_http_client
       ]
       include Dry::Events::Publisher[:downloader]
 

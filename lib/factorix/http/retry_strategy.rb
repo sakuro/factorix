@@ -11,7 +11,7 @@ module Factorix
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import["logger"]
+      include Factorix::Import[:logger]
 
       DEFAULT_OPTIONS = {
         tries: 3,                 # Number of attempts (including the initial try)

@@ -12,9 +12,7 @@ module Factorix
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime
-            include Factorix::Import[
-              runtime: "runtime"
-            ]
+            include Factorix::Import[:runtime]
 
             desc "Dump MOD settings to JSON format"
 

@@ -12,8 +12,8 @@ module Factorix
     # Uses Transfer::HTTP for the actual upload with event-driven progress notification.
     class Uploader
       include Factorix::Import[
-        "logger",
-        client: "download_http_client"
+        :logger,
+        client: :download_http_client
       ]
       include Dry::Events::Publisher[:uploader]
 

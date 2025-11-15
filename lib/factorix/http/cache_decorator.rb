@@ -11,7 +11,7 @@ module Factorix
     # Stores successful GET responses in FileSystem cache.
     # Only caches non-streaming requests (no block given).
     class CacheDecorator
-      include Factorix::Import["client", "cache", "logger"]
+      include Factorix::Import[:client, :cache, :logger]
       include Dry::Events::Publisher[:http]
 
       register_event("cache.hit")

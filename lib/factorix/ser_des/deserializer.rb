@@ -10,7 +10,7 @@ module Factorix
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import["logger"]
+      include Factorix::Import[:logger]
 
       # Create a new Deserializer instance
       #
