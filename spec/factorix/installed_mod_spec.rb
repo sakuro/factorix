@@ -1,0 +1,264 @@
+# frozen_string_literal: true
+
+require "tempfile"
+require "zip"
+
+RSpec.describe Factorix::InstalledMOD do
+  let(:temp_dir) { Pathname(Dir.mktmpdir) }
+
+  after do
+    FileUtils.remove_entry(temp_dir) if temp_dir.exist?
+  end
+
+  describe ".scan" do
+    context "with empty mod directory" do
+      it "returns empty array" do
+        expect(Factorix::InstalledMOD.scan(temp_dir)).to eq([])
+      end
+    end
+
+    context "with valid ZIP MOD" do
+      let(:mod_name) { "test-mod" }
+      let(:mod_version) { "1.0.0" }
+      let(:zip_path) { temp_dir + "#{mod_name}_#{mod_version}.zip" }
+
+      before do
+        create_valid_zip_mod(zip_path, mod_name, mod_version)
+      end
+
+      it "finds the MOD" do
+        mods = Factorix::InstalledMOD.scan(temp_dir)
+        expect(mods.size).to eq(1)
+        expect(mods.first.mod.name).to eq(mod_name)
+        expect(mods.first.version.to_s).to eq(mod_version)
+        expect(mods.first.form).to eq(Factorix::InstalledMOD::ZIP_FORM)
+      end
+    end
+
+    context "with valid directory MOD (versioned)" do
+      let(:mod_name) { "test-mod" }
+      let(:mod_version) { "1.0.0" }
+      let(:dir_path) { temp_dir + "#{mod_name}_#{mod_version}" }
+
+      before do
+        create_valid_directory_mod(dir_path, mod_name, mod_version)
+      end
+
+      it "finds the MOD" do
+        mods = Factorix::InstalledMOD.scan(temp_dir)
+        expect(mods.size).to eq(1)
+        expect(mods.first.mod.name).to eq(mod_name)
+        expect(mods.first.version.to_s).to eq(mod_version)
+        expect(mods.first.form).to eq(Factorix::InstalledMOD::DIRECTORY_FORM)
+      end
+    end
+
+    context "with valid directory MOD (unversioned)" do
+      let(:mod_name) { "test-mod" }
+      let(:mod_version) { "1.0.0" }
+      let(:dir_path) { temp_dir + mod_name }
+
+      before do
+        create_valid_directory_mod(dir_path, mod_name, mod_version)
+      end
+
+      it "finds the MOD" do
+        mods = Factorix::InstalledMOD.scan(temp_dir)
+        expect(mods.size).to eq(1)
+        expect(mods.first.mod.name).to eq(mod_name)
+        expect(mods.first.version.to_s).to eq(mod_version)
+        expect(mods.first.form).to eq(Factorix::InstalledMOD::DIRECTORY_FORM)
+      end
+    end
+
+    context "with invalid ZIP (filename mismatch)" do
+      let(:zip_path) { temp_dir + "wrong-name_1.0.0.zip" }
+
+      before do
+        create_valid_zip_mod(zip_path, "correct-name", "1.0.0")
+      end
+
+      it "skips the invalid MOD" do
+        expect(Factorix::InstalledMOD.scan(temp_dir)).to be_empty
+      end
+    end
+
+    context "with invalid directory (name mismatch)" do
+      let(:dir_path) { temp_dir + "wrong-name_1.0.0" }
+
+      before do
+        create_valid_directory_mod(dir_path, "correct-name", "1.0.0")
+      end
+
+      it "skips the invalid MOD" do
+        expect(Factorix::InstalledMOD.scan(temp_dir)).to be_empty
+      end
+    end
+
+    context "with duplicate MODs (ZIP and directory, same version)" do
+      let(:mod_name) { "test-mod" }
+      let(:mod_version) { "1.0.0" }
+      let(:zip_path) { temp_dir + "#{mod_name}_#{mod_version}.zip" }
+      let(:dir_path) { temp_dir + "#{mod_name}_#{mod_version}" }
+
+      before do
+        create_valid_zip_mod(zip_path, mod_name, mod_version)
+        create_valid_directory_mod(dir_path, mod_name, mod_version)
+      end
+
+      it "prefers directory over ZIP" do
+        mods = Factorix::InstalledMOD.scan(temp_dir)
+        expect(mods.size).to eq(1)
+        expect(mods.first.form).to eq(Factorix::InstalledMOD::DIRECTORY_FORM)
+      end
+    end
+
+    context "with multiple versions" do
+      let(:mod_name) { "test-mod" }
+
+      before do
+        create_valid_zip_mod(temp_dir + "#{mod_name}_1.0.0.zip", mod_name, "1.0.0")
+        create_valid_zip_mod(temp_dir + "#{mod_name}_2.0.0.zip", mod_name, "2.0.0")
+        create_valid_zip_mod(temp_dir + "#{mod_name}_1.5.0.zip", mod_name, "1.5.0")
+      end
+
+      it "returns all versions sorted by version descending" do
+        mods = Factorix::InstalledMOD.scan(temp_dir)
+        expect(mods.size).to eq(3)
+        expect(mods[0].version.to_s).to eq("2.0.0")
+        expect(mods[1].version.to_s).to eq("1.5.0")
+        expect(mods[2].version.to_s).to eq("1.0.0")
+      end
+    end
+  end
+
+  describe ".find_by_name" do
+    let(:mod_name) { "test-mod" }
+
+    before do
+      create_valid_zip_mod(temp_dir + "#{mod_name}_1.0.0.zip", mod_name, "1.0.0")
+      create_valid_zip_mod(temp_dir + "#{mod_name}_2.0.0.zip", mod_name, "2.0.0")
+      create_valid_zip_mod(temp_dir + "other-mod_1.0.0.zip", "other-mod", "1.0.0")
+    end
+
+    it "finds all versions of the specified MOD" do
+      mods = Factorix::InstalledMOD.find_by_name(temp_dir, mod_name)
+      expect(mods.size).to eq(2)
+      expect(mods.map {|m| m.version.to_s }).to contain_exactly("1.0.0", "2.0.0")
+    end
+
+    it "returns empty array for non-existent MOD" do
+      mods = Factorix::InstalledMOD.find_by_name(temp_dir, "non-existent")
+      expect(mods).to be_empty
+    end
+  end
+
+  describe ".find" do
+    let(:mod_name) { "test-mod" }
+
+    before do
+      create_valid_zip_mod(temp_dir + "#{mod_name}_1.0.0.zip", mod_name, "1.0.0")
+      create_valid_zip_mod(temp_dir + "#{mod_name}_2.0.0.zip", mod_name, "2.0.0")
+    end
+
+    context "without version specified" do
+      it "returns the latest version" do
+        mod = Factorix::InstalledMOD.find(temp_dir, mod_name)
+        expect(mod).not_to be_nil
+        expect(mod.version.to_s).to eq("2.0.0")
+      end
+    end
+
+    context "with version specified" do
+      it "returns the specified version" do
+        version = Factorix::Types::MODVersion.from_string("1.0.0")
+        mod = Factorix::InstalledMOD.find(temp_dir, mod_name, version)
+        expect(mod).not_to be_nil
+        expect(mod.version.to_s).to eq("1.0.0")
+      end
+
+      it "returns nil if version not found" do
+        version = Factorix::Types::MODVersion.from_string("3.0.0")
+        mod = Factorix::InstalledMOD.find(temp_dir, mod_name, version)
+        expect(mod).to be_nil
+      end
+    end
+
+    context "when MOD doesn't exist" do
+      it "returns nil" do
+        mod = Factorix::InstalledMOD.find(temp_dir, "non-existent")
+        expect(mod).to be_nil
+      end
+    end
+  end
+
+  describe "#<=>" do
+    let(:mod1_v1) { build_installed_mod("test-mod", "1.0.0", :zip) }
+    let(:mod1_v2) { build_installed_mod("test-mod", "2.0.0", :zip) }
+    let(:mod1_v1_dir) { build_installed_mod("test-mod", "1.0.0", :directory) }
+    let(:mod2_v1) { build_installed_mod("other-mod", "1.0.0", :zip) }
+
+    it "sorts by version ascending" do
+      expect(mod1_v1 <=> mod1_v2).to eq(-1)
+      expect(mod1_v2 <=> mod1_v1).to eq(1)
+    end
+
+    it "prefers directory over ZIP for same version" do
+      expect(mod1_v1_dir <=> mod1_v1).to eq(1)
+      expect(mod1_v1 <=> mod1_v1_dir).to eq(-1)
+    end
+
+    it "returns nil for different MOD names" do
+      expect(mod1_v1 <=> mod2_v1).to be_nil
+    end
+  end
+
+  # Helper methods for creating test fixtures
+
+  def create_valid_zip_mod(zip_path, name, version)
+    info_json = {
+      name:,
+      version:,
+      title: "Test MOD",
+      author: "Test Author",
+      description: "Test description",
+      factorio_version: "1.1"
+    }.to_json
+
+    Zip::File.open(zip_path, create: true) do |zipfile|
+      zipfile.get_output_stream("#{name}_#{version}/info.json") {|f| f.write(info_json) }
+    end
+  end
+
+  def create_valid_directory_mod(dir_path, name, version)
+    dir_path.mkpath
+    info_json = {
+      name:,
+      version:,
+      title: "Test MOD",
+      author: "Test Author",
+      description: "Test description",
+      factorio_version: "1.1"
+    }.to_json
+
+    (dir_path + "info.json").write(info_json)
+  end
+
+  def build_installed_mod(name, version, form)
+    mod = Factorix::MOD[name:]
+    mod_version = Factorix::Types::MODVersion.from_string(version)
+    path = Pathname("/fake/path/#{name}_#{version}#{".zip" if form == :zip}")
+    info = Factorix::Types::InfoJSON.from_hash(
+      {
+        "name" => name,
+        "version" => version,
+        "title" => "Test",
+        "author" => "Test",
+        "description" => "Test",
+        "factorio_version" => "1.1"
+      }
+    )
+
+    described_class.new(mod:, version: mod_version, form:, path:, info:)
+  end
+end

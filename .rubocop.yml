@@ -63,6 +63,7 @@ Metrics/PerceivedComplexity:
     - lib/factorix/mod_dependency_list.rb
     - lib/factorix/mod_dependency_resolver.rb
     - lib/factorix/cli/commands/mod/edit.rb
+    - lib/factorix/installed_mod.rb
 
 Naming/PredicateMethod:
   Exclude:
@@ -88,6 +89,7 @@ RSpec/IndexedLet:
     - spec/factorix/mod_dependency_spec.rb
     - spec/factorix/mod_dependency_list_spec.rb
     - spec/factorix/types/mod_version_requirement_spec.rb
+    - spec/factorix/installed_mod_spec.rb
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false

@@ -1,0 +1,46 @@
+# TypeProf 0.21.11
+
+# Classes
+module Factorix
+  class InstalledMOD
+    include Comparable
+
+    ZIP_FORM: Symbol
+
+    DIRECTORY_FORM: Symbol
+
+    def self.scan: (Pathname mod_dir) -> Array[InstalledMOD]
+
+    def self.find_by_name: (Pathname mod_dir, String name) -> Array[InstalledMOD]
+
+    def self.find: (Pathname mod_dir, String name, ?Types::MODVersion? version) -> InstalledMOD?
+
+    def initialize: (mod: MOD, version: Types::MODVersion, form: Symbol, path: Pathname, info: Types::InfoJSON) -> void
+
+    attr_reader mod: MOD
+
+    attr_reader version: Types::MODVersion
+
+    attr_reader form: Symbol
+
+    attr_reader path: Pathname
+
+    attr_reader info: Types::InfoJSON
+
+    def <=>: (InstalledMOD other) -> Integer?
+
+    private
+
+    def form_priority: (Symbol form) -> Integer
+
+    private
+
+    def self.scan_zip: (Pathname path, Dry::Logger::Dispatcher logger) -> InstalledMOD?
+
+    def self.scan_directory: (Pathname path, Dry::Logger::Dispatcher logger) -> InstalledMOD?
+
+    def self.resolve_duplicates: (Array[InstalledMOD] mods) -> Array[InstalledMOD]
+
+    def self.form_priority_class: (Symbol form) -> Integer
+  end
+end

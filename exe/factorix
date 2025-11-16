@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 require_relative "../lib/factorix"
+require "zip"
+
+# Suppress warnings about invalid dates in ZIP files
+Zip.warn_invalid_date = false
 
 begin
   Dry::CLI.new(Factorix::CLI).call

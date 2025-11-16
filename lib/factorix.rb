@@ -20,6 +20,7 @@ module Factorix
     "csv_converter" => "CSVConverter",
     "http" => "HTTP",
     "info_json" => "InfoJSON",
+    "installed_mod" => "InstalledMOD",
     "json_converter" => "JSONConverter",
     "mac_os" => "MacOS",
     "mod" => "MOD",
