@@ -6,7 +6,13 @@ require_relative "../lib/factorix"
 begin
   Dry::CLI.new(Factorix::CLI).call
   exit 0
-rescue => e
-  warn e.message
+rescue Factorix::Error => e
+  logger = Factorix::Application[:logger]
+  logger.warn(e.message)
+  logger.debug(e)
   exit 1
+rescue => e
+  logger = Factorix::Application[:logger]
+  logger.error(e)
+  exit 2
 end

@@ -160,7 +160,6 @@ module Factorix
         url_string = data["upload_url"] or raise HTTPError, "Missing upload_url in response"
         URI(url_string)
       rescue JSON::ParserError => e
-        logger.error("Failed to parse JSON response", error: e.message)
         raise HTTPError, "Invalid JSON response: #{e.message}"
       end
     end

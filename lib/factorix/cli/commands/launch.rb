@@ -46,13 +46,8 @@ module Factorix
           # Detect if we should run synchronously based on the arguments
           async = args.none? {|arg| SYNCHRONOUS_OPTIONS.include?(arg) }
 
-          begin
-            runtime.launch(*args, async:)
-            logger.info("Factorio launched successfully", async:)
-          rescue => e
-            logger.error("Failed to launch Factorio", error_class: e.class.name, error_message: e.message)
-            raise
-          end
+          runtime.launch(*args, async:)
+          logger.info("Factorio launched successfully", async:)
 
           # If async and --wait is specified, wait for the game to start and finish
           return unless async && wait

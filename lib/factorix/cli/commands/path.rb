@@ -90,9 +90,6 @@ module Factorix
           end
 
           puts JSON.pretty_generate(result)
-        rescue => e
-          logger.error("Failed to display paths", error_class: e.class.name, error_message: e.message)
-          raise
         end
       end
     end

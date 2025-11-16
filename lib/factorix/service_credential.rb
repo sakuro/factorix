@@ -64,36 +64,31 @@ module Factorix
       logger = Application["logger"]
       logger.debug "Loading service credentials from player-data.json"
 
-      begin
-        player_data_path = runtime.player_data_path
-        data = JSON.parse(player_data_path.read)
+      player_data_path = runtime.player_data_path
+      data = JSON.parse(player_data_path.read)
 
-        username = data["service-username"]
-        token = data["service-token"]
+      username = data["service-username"]
+      token = data["service-token"]
 
-        if username.nil?
-          logger.error("Failed to load credentials from player-data.json", reason: "service-username missing")
-          raise ArgumentError, "service-username is missing in player-data.json"
-        end
-        if username.empty?
-          logger.error("Failed to load credentials from player-data.json", reason: "service-username empty")
-          raise ArgumentError, "service-username is empty in player-data.json"
-        end
-        if token.nil?
-          logger.error("Failed to load credentials from player-data.json", reason: "service-token missing")
-          raise ArgumentError, "service-token is missing in player-data.json"
-        end
-        if token.empty?
-          logger.error("Failed to load credentials from player-data.json", reason: "service-token empty")
-          raise ArgumentError, "service-token is empty in player-data.json"
-        end
-
-        logger.info("Service credentials loaded from player-data.json")
-        new(username:, token:)
-      rescue => e
-        logger.error("Failed to load credentials from player-data.json", error_class: e.class.name, error_message: e.message)
-        raise
+      if username.nil?
+        logger.error("Failed to load credentials from player-data.json", reason: "service-username missing")
+        raise ArgumentError, "service-username is missing in player-data.json"
       end
+      if username.empty?
+        logger.error("Failed to load credentials from player-data.json", reason: "service-username empty")
+        raise ArgumentError, "service-username is empty in player-data.json"
+      end
+      if token.nil?
+        logger.error("Failed to load credentials from player-data.json", reason: "service-token missing")
+        raise ArgumentError, "service-token is missing in player-data.json"
+      end
+      if token.empty?
+        logger.error("Failed to load credentials from player-data.json", reason: "service-token empty")
+        raise ArgumentError, "service-token is empty in player-data.json"
+      end
+
+      logger.info("Service credentials loaded from player-data.json")
+      new(username:, token:)
     end
 
     private_class_method :new, :[]

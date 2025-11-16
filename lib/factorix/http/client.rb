@@ -103,8 +103,7 @@ module Factorix
         else
           raise HTTPError, "#{response.code} #{response.message}"
         end
-      rescue URI::InvalidURIError => e
-        logger.error("Invalid redirect URI", location: response["Location"], error: e.message)
+      rescue URI::InvalidURIError
         raise HTTPError, "Invalid redirect URI: #{response["Location"]}"
       end
 
