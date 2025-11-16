@@ -149,8 +149,6 @@ module Factorix
 
         private def parse_homepage(value)
           URI(value)
-        rescue URI::InvalidURIError
-          value
         end
       end
 

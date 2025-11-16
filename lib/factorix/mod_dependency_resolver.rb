@@ -224,13 +224,11 @@ module Factorix
       }
 
       results = futures.map(&:value!)
-      pool.shutdown
-      pool.wait_for_termination
 
       results.compact
-    rescue => e
+    ensure
       pool&.shutdown
-      raise e
+      pool&.wait_for_termination
     end
 
     # Fetch info for a single dependency
