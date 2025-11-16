@@ -207,7 +207,8 @@ module Factorix
               logger.debug("Released lock", key:)
               begin
                 lock_path.unlink
-              rescue
+              rescue => e
+                logger.debug("Failed to remove lock file", path: lock_path.to_s, error: e.message)
                 nil
               end
             end
@@ -248,7 +249,8 @@ module Factorix
         begin
           lock_path.unlink
           logger.warn("Removed stale lock", path: lock_path.to_s, age_seconds: age)
-        rescue
+        rescue => e
+          logger.debug("Failed to remove stale lock", path: lock_path.to_s, error: e.message)
           nil
         end
       end
