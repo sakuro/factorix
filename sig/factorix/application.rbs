@@ -26,6 +26,8 @@ module Factorix
 
       def credential: () -> CredentialConfig
 
+      def runtime: () -> RuntimeConfig
+
       def http: () -> HttpConfig
 
       def cache: () -> CacheConfig
@@ -35,6 +37,16 @@ module Factorix
       def source: () -> Symbol
 
       def source=: (Symbol) -> void
+    end
+
+    class RuntimeConfig
+      def executable_path: () -> Pathname?
+
+      def executable_path=: (Pathname | String | nil) -> void
+
+      def user_dir: () -> Pathname?
+
+      def user_dir=: (Pathname | String | nil) -> void
     end
 
     class HttpConfig

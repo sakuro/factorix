@@ -4,8 +4,8 @@ RSpec.describe Factorix::Runtime::Base do
   let(:runtime) { Factorix::Runtime::Base.new }
 
   describe "#user_dir" do
-    it "raises NotImplementedError" do
-      expect { runtime.user_dir }.to raise_error(NotImplementedError, /user_dir is not implemented/)
+    it "raises ConfigurationError when not configured and auto-detection fails" do
+      expect { runtime.user_dir }.to raise_error(Factorix::ConfigurationError, /user_dir not configured/)
     end
   end
 

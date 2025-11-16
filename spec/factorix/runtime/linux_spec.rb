@@ -3,9 +3,15 @@
 RSpec.describe Factorix::Runtime::Linux do
   let(:runtime) { Factorix::Runtime::Linux.new }
 
+  describe "#executable_path" do
+    it "raises NotImplementedError" do
+      expect { runtime.executable_path }.to raise_error(NotImplementedError, /Auto-detection not supported on Linux/)
+    end
+  end
+
   describe "#user_dir" do
-    it "raises NotImplementedError with explanation" do
-      expect { runtime.user_dir }.to raise_error(NotImplementedError, /varies on Linux/)
+    it "raises NotImplementedError" do
+      expect { runtime.user_dir }.to raise_error(NotImplementedError, /Auto-detection not supported on Linux/)
     end
   end
 

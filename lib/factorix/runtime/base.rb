@@ -10,6 +10,8 @@ module Factorix
     # implementations must provide. It provides common implementations for
     # derived paths and XDG Base Directory specification support.
     class Base
+      prepend UserConfigurable
+
       # Get the Factorio executable path
       #
       # Returns the path to the Factorio executable file.

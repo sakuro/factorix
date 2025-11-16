@@ -4,7 +4,7 @@
 
 module Factorix
   class Runtime
-    class Linux < Base
+    module UserConfigurable
       def executable_path: () -> Pathname
 
       def user_dir: () -> Pathname

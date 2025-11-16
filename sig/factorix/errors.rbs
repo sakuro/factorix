@@ -9,6 +9,9 @@ module Factorix
   class InfrastructureError < Error
   end
 
+  class ConfigurationError < InfrastructureError
+  end
+
   class HTTPError < InfrastructureError
   end
 

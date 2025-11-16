@@ -177,6 +177,12 @@ module Factorix
       setting :source, default: :player_data # :player_data or :env
     end
 
+    # Runtime settings (optional overrides for auto-detection)
+    setting :runtime do
+      setting :executable_path, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :user_dir, constructor: ->(v) { v ? Pathname(v) : nil }
+    end
+
     # HTTP timeout settings
     setting :http do
       setting :connect_timeout, default: 5
