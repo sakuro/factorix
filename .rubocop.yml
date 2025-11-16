@@ -64,6 +64,12 @@ Metrics/PerceivedComplexity:
     - lib/factorix/mod_dependency_resolver.rb
     - lib/factorix/cli/commands/mod/edit.rb
     - lib/factorix/installed_mod.rb
+    - lib/factorix/cli/commands/mod/enable.rb
+    - lib/factorix/cli/commands/mod/uninstall.rb
+
+Metrics/ParameterLists:
+  Exclude:
+    - lib/factorix/cli/commands/mod/enable.rb
 
 Naming/PredicateMethod:
   Exclude:
