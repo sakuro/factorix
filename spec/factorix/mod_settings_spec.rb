@@ -50,11 +50,11 @@ RSpec.describe Factorix::MODSettings do
         expect(loaded_settings["runtime-per-user"]).to be_a(Factorix::MODSettings::Section)
       end
 
-      it "raises InvalidMODSectionError for invalid section names" do
+      it "raises ArgumentError for invalid section names" do
         invalid_settings = {"invalid-section" => {}}
         allow(deserializer).to receive(:read_property_tree).and_return(invalid_settings)
 
-        expect { Factorix::MODSettings.load(from: settings_path) }.to raise_error(Factorix::InvalidMODSectionError)
+        expect { Factorix::MODSettings.load(from: settings_path) }.to raise_error(ArgumentError)
       end
 
       it "raises ExtraDataError if extra data exists at the end of file" do
@@ -73,8 +73,8 @@ RSpec.describe Factorix::MODSettings do
       expect(section.name).to eq("startup")
     end
 
-    it "raises InvalidMODSectionError for invalid section names" do
-      expect { settings["invalid"] }.to raise_error(Factorix::InvalidMODSectionError)
+    it "raises ArgumentError for invalid section names" do
+      expect { settings["invalid"] }.to raise_error(ArgumentError)
     end
 
     it "raises MODSectionNotFoundError if the section doesn't exist" do
@@ -145,8 +145,8 @@ RSpec.describe Factorix::MODSettings do
         expect(section.name).to eq("startup")
       end
 
-      it "raises InvalidMODSectionError for invalid section names" do
-        expect { Factorix::MODSettings::Section.new("invalid") }.to raise_error(Factorix::InvalidMODSectionError)
+      it "raises ArgumentError for invalid section names" do
+        expect { Factorix::MODSettings::Section.new("invalid") }.to raise_error(ArgumentError)
       end
     end
 

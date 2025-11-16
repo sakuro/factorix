@@ -52,8 +52,8 @@ RSpec.describe Factorix::MODList do
       context "when base MOD is disabled" do
         let(:invalid_list_path) { Pathname("spec/fixtures/mod-list/invalid_base_disabled.json") }
 
-        it "raises InvalidMODListError" do
-          expect { Factorix::MODList.load(from: invalid_list_path) }.to raise_error(Factorix::InvalidMODListError)
+        it "raises ArgumentError" do
+          expect { Factorix::MODList.load(from: invalid_list_path) }.to raise_error(ArgumentError)
         end
       end
     end

@@ -32,8 +32,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
     end
 
     context "with negative length" do
-      it "raises ArgumentError" do
-        expect { deserializer.read_bytes(-1) }.to raise_error(ArgumentError)
+      it "raises InvalidLengthError" do
+        expect { deserializer.read_bytes(-1) }.to raise_error(Factorix::InvalidLengthError)
       end
     end
 
@@ -44,8 +44,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
     end
 
     context "with nil length" do
-      it "raises ArgumentError" do
-        expect { deserializer.read_bytes(nil) }.to raise_error(ArgumentError)
+      it "raises InvalidLengthError" do
+        expect { deserializer.read_bytes(nil) }.to raise_error(Factorix::InvalidLengthError)
       end
     end
   end

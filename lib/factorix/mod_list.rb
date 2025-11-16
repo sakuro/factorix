@@ -17,7 +17,7 @@ module Factorix
     #
     # @param from [Pathname] the path to the file to load the MOD list from
     # @return [Factorix::MODList] the loaded MOD list
-    # @raise [Factorix::InvalidMODListError] if the base MOD is disabled
+    # @raise [ArgumentError] if the base MOD is disabled
     def self.load(from:)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
@@ -27,7 +27,7 @@ module Factorix
 
         # Validate that base MOD is not disabled
         if mod.base? && !entry[:enabled]
-          raise InvalidMODListError, "base MOD cannot be disabled"
+          raise ArgumentError, "base MOD cannot be disabled"
         end
 
         [mod, state]

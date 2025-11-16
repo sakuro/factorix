@@ -18,10 +18,10 @@ RSpec.describe Factorix::Types::MODVersion do
       end
     end
 
-    it "raises ArgumentError for component out of range" do
-      expect { Factorix::Types::MODVersion.from_string("256.0.0") }.to raise_error(ArgumentError, /major/)
-      expect { Factorix::Types::MODVersion.from_string("0.256.0") }.to raise_error(ArgumentError, /minor/)
-      expect { Factorix::Types::MODVersion.from_string("0.0.256") }.to raise_error(ArgumentError, /patch/)
+    it "raises RangeError for component out of range" do
+      expect { Factorix::Types::MODVersion.from_string("256.0.0") }.to raise_error(RangeError, /major/)
+      expect { Factorix::Types::MODVersion.from_string("0.256.0") }.to raise_error(RangeError, /minor/)
+      expect { Factorix::Types::MODVersion.from_string("0.0.256") }.to raise_error(RangeError, /patch/)
     end
   end
 
@@ -34,12 +34,12 @@ RSpec.describe Factorix::Types::MODVersion do
       expect(version.patch).to eq(3)
     end
 
-    it "raises ArgumentError for invalid integers" do
+    it "raises RangeError for integers out of range" do
       aggregate_failures "invalid integers" do
-        expect { Factorix::Types::MODVersion.from_numbers(256, 0, 0) }.to raise_error(ArgumentError, /major/)
-        expect { Factorix::Types::MODVersion.from_numbers(0, 256, 0) }.to raise_error(ArgumentError, /minor/)
-        expect { Factorix::Types::MODVersion.from_numbers(0, 0, 256) }.to raise_error(ArgumentError, /patch/)
-        expect { Factorix::Types::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(ArgumentError, /major/)
+        expect { Factorix::Types::MODVersion.from_numbers(256, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::Types::MODVersion.from_numbers(0, 256, 0) }.to raise_error(RangeError, /minor/)
+        expect { Factorix::Types::MODVersion.from_numbers(0, 0, 256) }.to raise_error(RangeError, /patch/)
+        expect { Factorix::Types::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(RangeError, /major/)
       end
     end
   end

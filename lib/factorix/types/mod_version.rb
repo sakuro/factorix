@@ -25,9 +25,10 @@ module Factorix
 
       class << self
         private def validate_component(value, name)
-          return if value.is_a?(Integer) && value.between?(0, UINT8_MAX)
+          raise ArgumentError, "#{name} must be an Integer, got #{value.class}" unless value.is_a?(Integer)
+          return if value.between?(0, UINT8_MAX)
 
-          raise ArgumentError, "#{name} must be an integer between 0 and #{UINT8_MAX}, got #{value.inspect}"
+          raise RangeError, "#{name} must be between 0 and #{UINT8_MAX}, got #{value}"
         end
       end
 

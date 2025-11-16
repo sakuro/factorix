@@ -28,12 +28,12 @@ module Factorix
       # Read raw bytes from the stream
       #
       # @param length [Integer] Number of bytes to read
-      # @raise [ArgumentError] If length is nil or negative
+      # @raise [Factorix::InvalidLengthError] If length is nil or negative
       # @raise [EOFError] If end of file is reached before reading length bytes
       # @return [String] Binary data read
       def read_bytes(length)
-        raise ArgumentError, "nil length" if length.nil?
-        raise ArgumentError, "negative length" if length.negative?
+        raise Factorix::InvalidLengthError, "nil length" if length.nil?
+        raise Factorix::InvalidLengthError, "negative length #{length}" if length.negative?
         return +"" if length.zero?
 
         bytes = @stream.read(length)
