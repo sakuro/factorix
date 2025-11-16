@@ -126,10 +126,13 @@ module Factorix
         metadata[:tags] = metadata[:tags].join(",") if metadata[:tags].is_a?(Array)
 
         uri = URI.join(BASE_URL, "/api/v2/mods/edit_details")
-        body = JSON.generate({mod: mod_name, **metadata})
+
+        # Build form data
+        form_data = {mod: mod_name, **metadata}.transform_keys(&:to_s)
+        body = URI.encode_www_form(form_data)
 
         logger.info("Editing mod details", mod: mod_name, fields: metadata.keys)
-        client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+        client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Edit completed successfully")
       end
 

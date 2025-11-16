@@ -3,7 +3,9 @@
 RSpec.describe Factorix::Portal do
   let(:mod_portal_api) { instance_double(Factorix::API::MODPortalAPI) }
   let(:mod_download_api) { instance_double(Factorix::API::MODDownloadAPI) }
-  let(:portal) { Factorix::Portal.new(mod_portal_api:, mod_download_api:) }
+  let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, info: nil) }
+  let(:portal) { Factorix::Portal.new(mod_portal_api:, mod_download_api:, mod_management_api:, logger:) }
 
   describe "#list_mods" do
     it "returns an array of MODInfo objects" do
@@ -142,6 +144,119 @@ RSpec.describe Factorix::Portal do
       portal.download_mod(release, output_path)
 
       expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", expected_pathname)
+    end
+  end
+
+  describe "#upload_mod" do
+    let(:file_path) { Pathname("/tmp/test-mod_1.0.0.zip") }
+    let(:upload_url) { URI("https://mods.factorio.com/upload/123") }
+
+    context "when mod does not exist (new mod)" do
+      before do
+        allow(mod_portal_api).to receive(:get_mod).with("test-mod")
+          .and_raise(Factorix::HTTPClientError.new("404 Not Found"))
+        allow(mod_management_api).to receive(:init_publish).with("test-mod").and_return(upload_url)
+        allow(mod_management_api).to receive(:finish_upload)
+      end
+
+      it "uses init_publish and includes metadata in finish_upload" do
+        portal.upload_mod("test-mod", file_path, description: "Test", category: "content")
+
+        expect(mod_management_api).to have_received(:init_publish).with("test-mod")
+        expect(mod_management_api).to have_received(:finish_upload).with(
+          upload_url,
+          file_path,
+          description: "Test",
+          category: "content"
+        )
+      end
+
+      it "works without metadata" do
+        portal.upload_mod("test-mod", file_path)
+
+        expect(mod_management_api).to have_received(:init_publish).with("test-mod")
+        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+      end
+    end
+
+    context "when mod exists (update)" do
+      let(:existing_mod_data) do
+        {
+          name: "test-mod",
+          title: "Test Mod",
+          owner: "test-user",
+          summary: "Summary",
+          downloads_count: 100,
+          category: "content"
+        }
+      end
+
+      before do
+        allow(mod_portal_api).to receive(:get_mod).with("test-mod").and_return(existing_mod_data)
+        allow(mod_management_api).to receive(:init_upload).with("test-mod").and_return(upload_url)
+        allow(mod_management_api).to receive(:finish_upload)
+        allow(mod_management_api).to receive(:edit_details)
+      end
+
+      it "uses init_upload and edit_details separately" do
+        portal.upload_mod("test-mod", file_path, description: "Updated", license: "MIT")
+
+        expect(mod_management_api).to have_received(:init_upload).with("test-mod")
+        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+        expect(mod_management_api).to have_received(:edit_details).with(
+          "test-mod",
+          description: "Updated",
+          license: "MIT"
+        )
+      end
+
+      it "skips edit_details when no metadata provided" do
+        portal.upload_mod("test-mod", file_path)
+
+        expect(mod_management_api).to have_received(:init_upload).with("test-mod")
+        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+        expect(mod_management_api).not_to have_received(:edit_details)
+      end
+    end
+
+    it "re-raises non-404 errors" do
+      allow(mod_portal_api).to receive(:get_mod).with("test-mod")
+        .and_raise(Factorix::HTTPClientError.new("403 Forbidden"))
+
+      expect {
+        portal.upload_mod("test-mod", file_path)
+      }.to raise_error(Factorix::HTTPClientError, /Forbidden/)
+    end
+  end
+
+  describe "#edit_mod" do
+    before do
+      allow(mod_management_api).to receive(:edit_details)
+    end
+
+    it "calls edit_details with metadata" do
+      portal.edit_mod("test-mod", description: "New description", category: "utilities")
+
+      expect(mod_management_api).to have_received(:edit_details).with(
+        "test-mod",
+        description: "New description",
+        category: "utilities"
+      )
+    end
+
+    it "raises ArgumentError when no metadata provided" do
+      expect {
+        portal.edit_mod("test-mod")
+      }.to raise_error(ArgumentError, /No metadata provided/)
+    end
+
+    it "accepts tags as array" do
+      portal.edit_mod("test-mod", tags: %w[combat logistics])
+
+      expect(mod_management_api).to have_received(:edit_details).with(
+        "test-mod",
+        tags: %w[combat logistics]
+      )
     end
   end
 end

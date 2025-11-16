@@ -130,8 +130,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(client).to have_received(:post) do |uri, **options|
         expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/edit_details")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
-        expect(options[:content_type]).to eq("application/json")
-        body = JSON.parse(options[:body])
+        expect(options[:content_type]).to eq("application/x-www-form-urlencoded")
+        body = URI.decode_www_form(options[:body]).to_h
         expect(body["mod"]).to eq("my-mod")
         expect(body["description"]).to eq("Updated description")
         expect(body["category"]).to eq("content")

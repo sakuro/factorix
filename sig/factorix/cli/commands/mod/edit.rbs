@@ -1,0 +1,30 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        class Edit < Dry::CLI::Command
+          attr_reader portal: Portal
+
+          def call: (
+                      mod_name: String,
+                      ?description: String?,
+                      ?summary: String?,
+                      ?title: String?,
+                      ?category: String?,
+                      ?tags: Array[String]?,
+                      ?license: String?,
+                      ?homepage: String?,
+                      ?source_url: String?,
+                      ?faq: String?,
+                      ?deprecated: bool?,
+                      **untyped
+                    ) -> void
+        end
+      end
+    end
+  end
+end
