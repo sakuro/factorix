@@ -9,6 +9,7 @@ module Factorix
       module MOD
         # Install MODs from Factorio MOD Portal
         class Install < Base
+          prepend RequiresGameStopped
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal

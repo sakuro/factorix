@@ -9,6 +9,8 @@ module Factorix
         module Settings
           # Restore MOD settings from JSON format
           class Restore < Base
+            prepend RequiresGameStopped
+
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime

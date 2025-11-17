@@ -3,7 +3,11 @@
 # Shared context for mocking runtime in CLI command specs
 RSpec.shared_context "with mock runtime" do
   let(:runtime) do
-    instance_double(Factorix::Runtime::Base, factorix_config_path: Pathname("/tmp/factorix/config.rb"))
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      running?: false # Default: game is not running
+    )
   end
 
   before do

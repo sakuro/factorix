@@ -7,6 +7,7 @@ module Factorix
         # Uninstall MODs from mod directory
         class Uninstall < Base
           include Confirmable
+          prepend RequiresGameStopped
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]

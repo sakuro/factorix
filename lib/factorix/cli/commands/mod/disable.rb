@@ -7,6 +7,7 @@ module Factorix
         # Disable MODs in mod-list.json with reverse dependency resolution
         class Disable < Base
           include Confirmable
+          prepend RequiresGameStopped
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]

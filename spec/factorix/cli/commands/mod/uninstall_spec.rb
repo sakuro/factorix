@@ -339,5 +339,22 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         end
       end
     end
+
+    context "when game is running" do
+      let(:version) { Factorix::Types::MODVersion.from_string("1.0.0") }
+      let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version:) }
+
+      before do
+        allow(runtime).to receive(:running?).and_return(true)
+        allow(graph).to receive(:node?).with(mod_a).and_return(true)
+        allow(graph).to receive(:node).with(mod_a).and_return(node_a)
+      end
+
+      it "displays an error message and exits" do
+        expect { command.call(mod_specs: ["mod-a"], yes: true) }
+          .to output(/Cannot perform this operation while Factorio is running/).to_stdout
+          .and raise_error(SystemExit)
+      end
+    end
   end
 end

@@ -4,13 +4,10 @@ require "fileutils"
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
-  subject(:command) do
-    Factorix::CLI::Commands::MOD::Settings::Restore.new(
-      runtime: runtime_double
-    )
-  end
+  subject(:command) { Factorix::CLI::Commands::MOD::Settings::Restore.new }
 
-  let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
+  include_context "with mock runtime"
+
   let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.0-42") }
   let(:startup_section) do
     section = Factorix::MODSettings::Section.new("startup")
@@ -38,7 +35,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
 
   before do
     allow(settings).to receive(:save)
-    allow(runtime_double).to receive(:mod_settings_path).and_return(Pathname("/default/mod-settings.dat"))
+    allow(runtime).to receive(:mod_settings_path).and_return(Pathname("/default/mod-settings.dat"))
     allow(Factorix::MODSettings).to receive(:new).and_return(settings)
   end
 
@@ -116,7 +113,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       let(:default_path) { instance_double(Pathname, exist?: false) }
 
       before do
-        allow(runtime_double).to receive(:mod_settings_path).and_return(default_path)
+        allow(runtime).to receive(:mod_settings_path).and_return(default_path)
         input_file.write(json_string)
         input_file.rewind
       end
