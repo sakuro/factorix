@@ -58,6 +58,9 @@ module Factorix
             # Show plan to user
             show_plan(mods_to_disable)
 
+            # Return early if nothing to disable
+            return if mods_to_disable.empty?
+
             # Ask for confirmation
             return unless confirm?("Do you want to disable these MODs?")
 

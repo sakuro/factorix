@@ -61,6 +61,9 @@ module Factorix
             # Show plan to user
             show_plan(mods_to_enable)
 
+            # Return early if nothing to enable
+            return if mods_to_enable.empty?
+
             # Ask for confirmation
             return unless confirm?("Do you want to enable these MODs?")
 
