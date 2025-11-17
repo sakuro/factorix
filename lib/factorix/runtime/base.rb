@@ -34,6 +34,17 @@ module Factorix
         raise NotImplementedError, "#{self.class}#user_dir is not implemented"
       end
 
+      # Get the Factorio data directory path
+      #
+      # This directory contains the base game data and built-in expansion MODs.
+      # Each MOD (base, space-age, etc.) has its own subdirectory with info.json.
+      #
+      # @return [Pathname] the Factorio data directory
+      # @raise [NotImplementedError] if not implemented by the platform
+      def data_dir
+        raise NotImplementedError, "#{self.class}#data_dir is not implemented"
+      end
+
       # Get the MOD directory path of Factorio
       #
       # This directory contains all installed MODs and MOD configuration files

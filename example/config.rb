@@ -22,14 +22,17 @@ Factorix::Application.configure do |config|
   # Standalone installation (manual download)
   # config.runtime.executable_path = "/opt/factorio/bin/x64/factorio"
   # config.runtime.user_dir = "#{Dir.home}/.factorio"
+  # config.runtime.data_dir = "/opt/factorio/data"
 
   # Steam installation
   # config.runtime.executable_path = "#{Dir.home}/.local/share/Steam/steamapps/common/Factorio/bin/x64/factorio"
   # config.runtime.user_dir = "#{Dir.home}/.factorio"
+  # config.runtime.data_dir = "#{Dir.home}/.local/share/Steam/steamapps/common/Factorio/data"
 
   # Flatpak installation
   # config.runtime.executable_path = "/var/lib/flatpak/app/com.valvesoftware.Steam/current/active/files/extra/steam/steamapps/common/Factorio/bin/x64/factorio"
   # config.runtime.user_dir = "#{Dir.home}/.var/app/com.valvesoftware.Steam/.factorio"
+  # config.runtime.data_dir = "/var/lib/flatpak/app/com.valvesoftware.Steam/current/active/files/extra/steam/steamapps/common/Factorio/data"
 
   # --------------------------------------------------------------------------
   # macOS Examples (non-Steam)
@@ -38,6 +41,7 @@ Factorix::Application.configure do |config|
   # Manual installation in Applications
   # config.runtime.executable_path = "/Applications/Factorio.app/Contents/MacOS/factorio"
   # config.runtime.user_dir = "#{Dir.home}/Library/Application Support/factorio"
+  # config.runtime.data_dir = "/Applications/Factorio.app/Contents/data"
 
   # --------------------------------------------------------------------------
   # Windows Examples (non-Steam)
@@ -46,10 +50,12 @@ Factorix::Application.configure do |config|
   # Portable installation
   # config.runtime.executable_path = "C:/Games/Factorio/bin/x64/factorio.exe"
   # config.runtime.user_dir = "C:/Games/Factorio"
+  # config.runtime.data_dir = "C:/Games/Factorio/data"
 
   # Standard installation
   # config.runtime.executable_path = "C:/Program Files/Factorio/bin/x64/factorio.exe"
   # config.runtime.user_dir = "#{ENV['APPDATA']}/Factorio"
+  # config.runtime.data_dir = "C:/Program Files/Factorio/data"
 
   # ============================================================================
   # Logging Configuration

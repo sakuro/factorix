@@ -22,6 +22,14 @@ module Factorix
         def initialize: (type: Symbol, message: String, ?mod: MOD?) -> void
       end
 
+      class Suggestion
+        attr_reader message: String
+        attr_reader mod: MOD
+        attr_reader version: Types::MODVersion
+
+        def initialize: (message: String, mod: MOD, version: Types::MODVersion) -> void
+      end
+
       MISSING_DEPENDENCY: Symbol
       DISABLED_DEPENDENCY: Symbol
       VERSION_MISMATCH: Symbol
@@ -33,12 +41,15 @@ module Factorix
 
       attr_reader errors: Array[Error]
       attr_reader warnings: Array[Warning]
+      attr_reader suggestions: Array[Suggestion]
 
       def initialize: () -> void
       def add_error: (type: Symbol, message: String, ?mod: MOD?, ?dependency: MOD?) -> void
       def add_warning: (type: Symbol, message: String, ?mod: MOD?) -> void
+      def add_suggestion: (message: String, mod: MOD, version: Types::MODVersion) -> void
       def errors?: () -> bool
       def warnings?: () -> bool
+      def suggestions?: () -> bool
       def valid?: () -> bool
     end
   end

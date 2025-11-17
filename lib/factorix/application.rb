@@ -181,6 +181,7 @@ module Factorix
     setting :runtime do
       setting :executable_path, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :user_dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :data_dir, constructor: ->(v) { v ? Pathname(v) : nil }
     end
 
     # HTTP timeout settings

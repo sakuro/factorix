@@ -51,9 +51,9 @@ module Factorix
           (str(">=") | str("<=") | str(">") | str("<") | str("=")).as(:operator)
         end
 
-        # Version: X.Y.Z format
+        # Version: X.Y.Z or X.Y format
         rule(:version) do
-          (match["0-9"].repeat(1) >> str(".") >> match["0-9"].repeat(1) >> str(".") >> match["0-9"].repeat(1)).as(:version)
+          (match["0-9"].repeat(1) >> str(".") >> match["0-9"].repeat(1) >> (str(".") >> match["0-9"].repeat(1)).maybe).as(:version)
         end
 
         # Version requirement: operator space version

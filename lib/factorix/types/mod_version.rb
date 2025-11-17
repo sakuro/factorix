@@ -32,19 +32,28 @@ module Factorix
         end
       end
 
-      # Create MODVersion from version string "X.Y.Z"
+      # Create MODVersion from version string "X.Y.Z" or "X.Y"
       #
-      # @param str [String] version string in "X.Y.Z" format
+      # Accepts both 3-part (X.Y.Z) and 2-part (X.Y) version strings.
+      # For 2-part versions, patch defaults to 0.
+      #
+      # @param str [String] version string in "X.Y.Z" or "X.Y" format
       # @return [MODVersion]
       # @raise [ArgumentError] if string format is invalid
       def self.from_string(str)
-        unless /\A(\d+)\.(\d+)\.(\d+)\z/ =~ str
+        # Try 3-part version first (X.Y.Z)
+        if /\A(\d+)\.(\d+)\.(\d+)\z/ =~ str
+          major = Integer($1)
+          minor = Integer($2)
+          patch = Integer($3)
+        # Try 2-part version (X.Y), patch defaults to 0
+        elsif /\A(\d+)\.(\d+)\z/ =~ str
+          major = Integer($1)
+          minor = Integer($2)
+          patch = 0
+        else
           raise ArgumentError, "invalid version string: #{str.inspect}"
         end
-
-        major = Integer($1)
-        minor = Integer($2)
-        patch = Integer($3)
 
         validate_component(major, :major)
         validate_component(minor, :minor)

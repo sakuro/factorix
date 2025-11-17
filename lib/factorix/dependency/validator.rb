@@ -14,9 +14,11 @@ module Factorix
       #
       # @param graph [Factorix::Dependency::Graph] The dependency graph to validate
       # @param mod_list [Factorix::MODList, nil] Optional MOD list for additional validation
-      def initialize(graph, mod_list: nil)
+      # @param all_installed_mods [Array<Factorix::InstalledMOD>, nil] All installed MODs (all versions) for suggestions
+      def initialize(graph, mod_list: nil, all_installed_mods: nil)
         @graph = graph
         @mod_list = mod_list
+        @all_installed_mods = all_installed_mods || []
       end
 
       # Validate the graph
@@ -75,7 +77,7 @@ module Factorix
         unless dependency_node
           result.add_error(
             type: ValidationResult::MISSING_DEPENDENCY,
-            message: "MOD '#{node.mod.name}' requires '#{edge.to_mod.name}' which is not installed",
+            message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' which is not installed",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -86,7 +88,7 @@ module Factorix
         unless dependency_node.enabled?
           result.add_error(
             type: ValidationResult::DISABLED_DEPENDENCY,
-            message: "MOD '#{node.mod.name}' requires '#{edge.to_mod.name}' which is not enabled",
+            message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' which is not enabled",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -98,11 +100,14 @@ module Factorix
 
         result.add_error(
           type: ValidationResult::VERSION_MISMATCH,
-          message: "MOD '#{node.mod.name}' requires '#{edge.to_mod.name}' version " \
+          message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' version " \
                    "#{edge.version_requirement}, but version #{dependency_node.version} is installed",
           mod: node.mod,
           dependency: edge.to_mod
         )
+
+        # Check for alternative installed versions that would satisfy the requirement
+        check_alternative_versions(edge, result)
       end
 
       # Validate that no conflicts exist between enabled MODs
@@ -124,7 +129,7 @@ module Factorix
 
           result.add_error(
             type: ValidationResult::CONFLICT,
-            message: "MOD '#{node.mod.name}' conflicts with '#{edge.to_mod.name}' but both are enabled",
+            message: "MOD '#{node.mod.name}@#{node.version}' conflicts with '#{edge.to_mod.name}@#{conflict_node.version}' but both are enabled",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -161,6 +166,29 @@ module Factorix
             type: ValidationResult::MOD_INSTALLED_NOT_IN_LIST,
             message: "MOD '#{node.mod.name}' is installed but not in mod-list.json",
             mod: node.mod
+          )
+        end
+      end
+
+      # Check for alternative installed versions that satisfy a requirement
+      #
+      # @param edge [Factorix::Dependency::Edge] The dependency edge with version requirement
+      # @param result [Factorix::Dependency::ValidationResult] The validation result to add suggestions to
+      # @return [void]
+      private def check_alternative_versions(edge, result)
+        return if @all_installed_mods.empty?
+
+        # Find all installed versions of the required MOD
+        alternative_versions = @all_installed_mods.select {|im| im.mod == edge.to_mod }
+
+        # Check if any alternative version satisfies the requirement
+        alternative_versions.each do |installed_mod|
+          next unless edge.satisfied_by?(installed_mod.version)
+
+          result.add_suggestion(
+            message: "MOD '#{edge.to_mod.name}' version #{installed_mod.version} is installed and would satisfy this requirement",
+            mod: edge.to_mod,
+            version: installed_mod.version
           )
         end
       end

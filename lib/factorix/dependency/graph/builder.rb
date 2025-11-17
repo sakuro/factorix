@@ -32,20 +32,31 @@ module Factorix
         def build
           graph = Graph.new
 
-          # Add nodes for all installed MODs
-          @installed_mods.each do |installed_mod|
-            add_node_for_installed_mod(graph, installed_mod)
+          # Get unique MODs (handle multiple versions)
+          unique_mods = @installed_mods.map(&:mod)
+          unique_mods.uniq!
 
-            # Add edges for all dependencies
+          # Add nodes for each unique MOD
+          unique_mods.each do |mod|
+            add_node_for_mod(graph, mod)
+          end
+
+          # Add edges only from active versions
+          # Build a map of MOD -> active version from the graph
+          active_versions = graph.nodes.to_h {|node| [node.mod, node.version] }
+
+          @installed_mods.each do |installed_mod|
+            # Only add edges from the active version
+            next unless active_versions[installed_mod.mod] == installed_mod.version
+
             add_edges_for_dependencies(graph, installed_mod)
           end
 
           graph
         end
 
-        private def add_node_for_installed_mod(graph, installed_mod)
-          mod = installed_mod.mod
-          version = installed_mod.version
+        private def add_node_for_mod(graph, mod)
+          version = select_version_for_mod(mod)
           enabled = mod_enabled?(mod)
 
           node = Node.new(
@@ -58,6 +69,26 @@ module Factorix
           graph.add_node(node)
         end
 
+        # Select which version to use for a MOD
+        #
+        # @param mod [Factorix::MOD] The MOD
+        # @return [Factorix::Types::MODVersion] The selected version
+        private def select_version_for_mod(mod)
+          # Prefer version specified in mod-list.json if it exists
+          if @mod_list.exist?(mod)
+            specified_version = @mod_list.version(mod)
+            if specified_version
+              # Check if the specified version is actually installed
+              installed_with_version = @installed_mods.find {|im| im.mod == mod && im.version == specified_version }
+              return specified_version if installed_with_version
+            end
+          end
+
+          # Otherwise, use the latest installed version
+          versions_for_mod = @installed_mods.select {|im| im.mod == mod }
+          versions_for_mod.max_by(&:version).version
+        end
+
         # Add edges for a MOD's dependencies
         #
         # @param graph [Factorix::Dependency::Graph] The graph to add to
@@ -68,7 +99,8 @@ module Factorix
           dependencies = installed_mod.info.dependencies || []
 
           dependencies.each do |dependency|
-            # Skip base MOD (always available)
+            # Skip only base MOD (always available and cannot be disabled)
+            # Expansion MODs can be disabled, so they must be validated
             next if dependency.mod.base?
 
             edge = Edge.new(

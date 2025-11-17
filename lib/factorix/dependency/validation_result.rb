@@ -21,6 +21,13 @@ module Factorix
         :mod          # MOD (optional) - related MOD
       )
 
+      # Validation suggestion
+      Suggestion = Data.define(
+        :message,     # String - suggestion message
+        :mod,         # MOD - related MOD
+        :version      # Types::MODVersion - suggested version
+      )
+
       # Error types
       MISSING_DEPENDENCY = :missing_dependency
       DISABLED_DEPENDENCY = :disabled_dependency
@@ -37,6 +44,7 @@ module Factorix
       def initialize
         @errors = []
         @warnings = []
+        @suggestions = []
       end
 
       # Add an error
@@ -60,6 +68,16 @@ module Factorix
         @warnings << Warning.new(type:, message:, mod:)
       end
 
+      # Add a suggestion
+      #
+      # @param message [String] Suggestion message
+      # @param mod [Factorix::MOD] Related MOD
+      # @param version [Factorix::Types::MODVersion] Suggested version
+      # @return [void]
+      def add_suggestion(message:, mod:, version:)
+        @suggestions << Suggestion.new(message:, mod:, version:)
+      end
+
       # Get all errors
       #
       # @return [Array<Error>]
@@ -69,6 +87,11 @@ module Factorix
       #
       # @return [Array<Warning>]
       attr_reader :warnings
+
+      # Get all suggestions
+      #
+      # @return [Array<Suggestion>]
+      attr_reader :suggestions
 
       # Check if there are any errors
       #
@@ -82,6 +105,13 @@ module Factorix
       # @return [Boolean]
       def warnings?
         !@warnings.empty?
+      end
+
+      # Check if there are any suggestions
+      #
+      # @return [Boolean]
+      def suggestions?
+        !@suggestions.empty?
       end
 
       # Check if validation passed (no errors)

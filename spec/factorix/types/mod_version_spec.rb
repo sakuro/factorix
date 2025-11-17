@@ -10,11 +10,19 @@ RSpec.describe Factorix::Types::MODVersion do
       expect(version.patch).to eq(3)
     end
 
+    it "accepts 2-part version strings (X.Y)" do
+      version = Factorix::Types::MODVersion.from_string("1.2")
+      expect(version.major).to eq(1)
+      expect(version.minor).to eq(2)
+      expect(version.patch).to eq(0)
+      expect(version.to_s).to eq("1.2.0")
+    end
+
     it "raises ArgumentError for invalid version strings" do
       aggregate_failures "invalid version strings" do
-        expect { Factorix::Types::MODVersion.from_string("1.2") }.to raise_error(ArgumentError)
         expect { Factorix::Types::MODVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
         expect { Factorix::Types::MODVersion.from_string("a.b.c") }.to raise_error(ArgumentError)
+        expect { Factorix::Types::MODVersion.from_string("1") }.to raise_error(ArgumentError)
       end
     end
 

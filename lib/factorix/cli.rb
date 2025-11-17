@@ -16,6 +16,7 @@ module Factorix
     register "version", Commands::Version
     register "launch", Commands::Launch
     register "path", Commands::Path
+    register "mod check", Commands::MOD::Check
     register "mod download", Commands::MOD::Download
     register "mod upload", Commands::MOD::Upload
     register "mod edit", Commands::MOD::Edit

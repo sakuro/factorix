@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Factorix
-  # Represents a MOD installed in the mod directory
+  # Represents a MOD installed in the mod directory or data directory
   #
-  # InstalledMOD represents an actual MOD package found in the mod directory,
-  # either as a ZIP file or as a directory. This is distinct from MOD (which is
-  # just a name identifier) and MODState (which represents desired state in mod-list.json).
+  # InstalledMOD represents an actual MOD package found in either:
+  # - The mod directory (user-installed MODs as ZIP files or directories)
+  # - The data directory (base and expansion MODs bundled with the game)
   #
-  # Base and expansion MODs are not included in scans, as they are bundled with
-  # the game itself and not stored in the mod directory.
+  # This is distinct from MOD (which is just a name identifier) and
+  # MODState (which represents desired state in mod-list.json).
   class InstalledMOD
     include Comparable
 
@@ -17,17 +17,20 @@ module Factorix
     DIRECTORY_FORM = :directory
     public_constant :ZIP_FORM, :DIRECTORY_FORM
 
-    # Scan the mod directory for installed MODs
+    # Scan directories for installed MODs
     #
     # Scans the given mod directory for both ZIP and directory form MODs.
+    # Optionally scans the data directory for base/expansion MODs.
     # Invalid packages are skipped with debug logging.
     #
     # @param mod_dir [Pathname] The mod directory to scan
+    # @param data_dir [Pathname, nil] Optional data directory to scan for base/expansion MODs
     # @return [Array<InstalledMOD>] Array of installed MODs
-    def self.scan(mod_dir)
+    def self.scan(mod_dir, data_dir: nil)
       logger = Factorix::Application[:logger]
       installed_mods = []
 
+      # Scan user MOD directory
       mod_dir.children.each do |path|
         if path.file? && path.extname == ".zip"
           mod = scan_zip(path, logger)
@@ -35,6 +38,17 @@ module Factorix
         elsif path.directory?
           mod = scan_directory(path, logger)
           installed_mods << mod if mod
+        end
+      end
+
+      # Scan data directory for base/expansion MODs if provided
+      if data_dir&.exist?
+        data_dir.children.each do |path|
+          next unless path.directory?
+
+          mod = scan_directory(path, logger)
+          # Only include base and expansion MODs from data directory
+          installed_mods << mod if mod && (mod.mod.base? || mod.mod.expansion?)
         end
       end
 

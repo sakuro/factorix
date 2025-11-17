@@ -24,6 +24,15 @@ module Factorix
         Pathname(Dir.home).join("Library/Application Support/factorio")
       end
 
+      # Get the Factorio data directory path
+      #
+      # This directory contains the base game data and built-in expansion MODs.
+      #
+      # @return [Pathname] the Factorio data directory
+      def data_dir
+        Pathname(Dir.home).join("Library/Application Support/Steam/steamapps/common/Factorio/factorio.app/Contents/data")
+      end
+
       # Get the Factorix log file path
       #
       # Returns the path to the Factorix log file using macOS convention.

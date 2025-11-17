@@ -5,7 +5,7 @@
 module Factorix
   module Dependency
     class Validator
-      def initialize: (Graph graph, ?mod_list: MODList?) -> void
+      def initialize: (Graph graph, ?mod_list: MODList?, ?all_installed_mods: Array[InstalledMOD]?) -> void
 
       def validate: () -> ValidationResult
     end

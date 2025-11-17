@@ -71,6 +71,33 @@ module Factorix
             end
         MESSAGE
       end
+
+      # Get the Factorio data directory path
+      #
+      # Returns the configured data_dir if available, otherwise falls back
+      # to platform-specific auto-detection.
+      #
+      # @return [Pathname] the Factorio data directory
+      # @raise [ConfigurationError] if auto-detection is not supported and no configuration is provided
+      def data_dir
+        if (configured = Factorix::Application.config.runtime.data_dir)
+          Factorix::Application[:logger].info("Using configured data_dir", path: configured.to_s)
+          configured
+        else
+          Factorix::Application[:logger].info("No configuration for data_dir, using auto-detection")
+          super.tap {|path| Factorix::Application[:logger].info("Auto-detected data_dir", path: path.to_s) }
+        end
+      rescue NotImplementedError => e
+        Factorix::Application[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
+        raise Factorix::ConfigurationError, <<~MESSAGE
+          data_dir not configured and auto-detection is not supported for this platform.
+          Please configure it in #{Factorix::Application[:runtime].factorix_config_path}:
+
+            Factorix::Application.configure do |config|
+              config.runtime.data_dir = "/path/to/factorio/data"
+            end
+        MESSAGE
+      end
     end
   end
 end
