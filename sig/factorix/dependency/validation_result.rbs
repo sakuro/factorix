@@ -1,0 +1,45 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    class ValidationResult
+      class Error
+        attr_reader type: Symbol
+        attr_reader message: String
+        attr_reader mod: MOD?
+        attr_reader dependency: MOD?
+
+        def initialize: (type: Symbol, message: String, ?mod: MOD?, ?dependency: MOD?) -> void
+      end
+
+      class Warning
+        attr_reader type: Symbol
+        attr_reader message: String
+        attr_reader mod: MOD?
+
+        def initialize: (type: Symbol, message: String, ?mod: MOD?) -> void
+      end
+
+      MISSING_DEPENDENCY: Symbol
+      DISABLED_DEPENDENCY: Symbol
+      VERSION_MISMATCH: Symbol
+      CONFLICT: Symbol
+      CIRCULAR_DEPENDENCY: Symbol
+
+      MOD_IN_LIST_NOT_INSTALLED: Symbol
+      MOD_INSTALLED_NOT_IN_LIST: Symbol
+
+      attr_reader errors: Array[Error]
+      attr_reader warnings: Array[Warning]
+
+      def initialize: () -> void
+      def add_error: (type: Symbol, message: String, ?mod: MOD?, ?dependency: MOD?) -> void
+      def add_warning: (type: Symbol, message: String, ?mod: MOD?) -> void
+      def errors?: () -> bool
+      def warnings?: () -> bool
+      def valid?: () -> bool
+    end
+  end
+end

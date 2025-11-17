@@ -1,0 +1,13 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    class Validator
+      def initialize: (Graph graph, ?mod_list: MODList?) -> void
+
+      def validate: () -> ValidationResult
+    end
+  end
+end
