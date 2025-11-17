@@ -6,6 +6,8 @@ module Factorix
       module MOD
         # Enable MODs in mod-list.json with dependency resolution
         class Enable < Base
+          include Confirmable
+
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -14,63 +16,55 @@ module Factorix
           desc "Enable MODs in mod-list.json (recursively enables dependencies)"
 
           argument :mod_names, type: :array, required: true, desc: "MOD names to enable"
+          option :only,
+            type: :boolean,
+            default: false,
+            desc: "Only enable specified MODs (error if dependencies are not already enabled)"
 
           # Execute the enable command
           #
           # @param mod_names [Array<String>] MOD names to enable
+          # @param only [Boolean] Only enable specified MODs without dependencies
           # @return [void]
-          def call(mod_names:, **)
+          def call(mod_names:, only: false, **)
             runtime = Factorix::Runtime.detect
             mod_list_path = runtime.mod_list_path
             mod_dir = runtime.mod_dir
 
-            # Load mod-list.json
+            # Load current state
             mod_list = Factorix::MODList.load(from: mod_list_path)
-
-            # Scan installed MODs
             installed_mods = Factorix::InstalledMOD.scan(mod_dir)
-            installed_by_mod = installed_mods.to_h {|im| [im.mod, im] }
+
+            # Build dependency graph
+            graph = Factorix::Dependency::Graph::Builder.build(
+              installed_mods:,
+              mod_list:
+            )
 
             # Convert mod names to MOD objects
-            mods = mod_names.map {|name| Factorix::MOD[name:] }
+            target_mods = mod_names.map {|name| Factorix::MOD[name:] }
 
-            # Phase 1: Planning - collect all changes
-            to_enable = Set.new
-            to_disable = Set.new
-            processed = Set.new
+            # Validate target MODs exist
+            validate_target_mods_exist(target_mods, graph)
 
-            mods.each do |mod|
-              collect_changes(
-                mod,
-                mod_list,
-                installed_by_mod,
-                to_enable,
-                to_disable,
-                processed
-              )
-            end
+            # Determine MODs to enable
+            mods_to_enable = if only
+                               plan_only_mode(target_mods, graph)
+                             else
+                               plan_with_dependencies(target_mods, graph)
+                             end
 
-            # Log the plan
-            say "Planning to enable #{to_enable.size} MOD(s)"
-            to_enable.each {|m| logger.debug("  Will enable", mod_name: m.name) }
+            # Validate the plan (check for conflicts)
+            validate_plan(mods_to_enable, graph)
 
-            if to_disable.any?
-              say "Planning to disable #{to_disable.size} conflicting MOD(s)"
-              to_disable.each {|m| logger.debug("  Will disable", mod_name: m.name) }
-            end
+            # Show plan to user
+            show_plan(mods_to_enable)
 
-            # Phase 2: Execution - apply all changes
-            to_disable.each do |mod|
-              mod_list.disable(mod)
-              say "✓ Disabled #{mod.name}"
-              logger.debug("Disabled conflicting MOD", mod_name: mod.name)
-            end
+            # Ask for confirmation
+            return unless confirm?("Do you want to enable these MODs?")
 
-            to_enable.each do |mod|
-              mod_list.enable(mod)
-              say "✓ Enabled #{mod.name}"
-              logger.debug("Enabled MOD", mod_name: mod.name)
-            end
+            # Execute the plan
+            execute_plan(mods_to_enable, mod_list)
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
@@ -78,92 +72,186 @@ module Factorix
             logger.debug("Saved mod-list.json")
           end
 
-          private def collect_changes(mod, mod_list, installed_by_mod, to_enable, to_disable, processed)
-            # Skip if already processed
-            return if processed.include?(mod)
+          private
 
-            processed.add(mod)
-
-            # Check if MOD is in mod-list.json
-            unless mod_list.exist?(mod)
-              logger.warn("MOD not in mod-list.json, skipping", mod_name: mod.name)
-              return
-            end
-
-            # Skip if already enabled
-            if mod_list.enabled?(mod)
-              logger.debug("MOD already enabled", mod_name: mod.name)
-              return
-            end
-
-            # Get installed MOD to read dependencies
-            installed_mod = installed_by_mod[mod]
-            unless installed_mod
-              logger.warn("MOD not installed, cannot enable", mod_name: mod.name)
-              return
-            end
-
-            # Parse dependencies from info.json
-            dependencies = parse_dependencies(installed_mod.info)
-
-            # Collect incompatible MODs (conflicts) to disable
-            dependencies.select(&:incompatible?).each do |dep|
-              next if dep.mod.base? # Can't disable base
-
-              next unless mod_list.exist?(dep.mod) && mod_list.enabled?(dep.mod)
-
-              logger.debug(
-                "Found conflict",
-                conflicting_mod: dep.mod.name,
-                required_by: mod.name
-              )
-              to_disable.add(dep.mod)
-            end
-
-            # Recursively collect required dependencies to enable
-            dependencies.select(&:required?).each do |dep|
-              next if dep.mod.base? # Base is always enabled
-              next if dep.mod.expansion? # Expansions are managed separately
-
-              # Validate version requirement if the dependency is installed
-              if installed_by_mod[dep.mod]
-                installed_version = installed_by_mod[dep.mod].version
-                unless dep.satisfied_by?(installed_version)
-                  logger.error(
-                    "Dependency version requirement not satisfied",
-                    mod_name: mod.name,
-                    dependency: dep.mod.name,
-                    required: dep.version_requirement.to_s,
-                    installed: installed_version.to_s
-                  )
-                  raise Factorix::Error, "Cannot enable #{mod.name}: dependency #{dep.mod.name} version requirement not satisfied"
-                end
+          # Validate that all target MODs are installed
+          #
+          # @param target_mods [Array<Factorix::MOD>] MODs to validate
+          # @param graph [Factorix::Dependency::Graph] Dependency graph
+          # @return [void]
+          # @raise [Factorix::Error] if any MOD is not installed
+          private def validate_target_mods_exist(target_mods, graph)
+            target_mods.each do |mod|
+              unless graph.node?(mod)
+                raise Factorix::Error, "MOD '#{mod.name}' is not installed"
               end
-
-              # Recursively collect changes for the dependency
-              collect_changes(
-                dep.mod,
-                mod_list,
-                installed_by_mod,
-                to_enable,
-                to_disable,
-                processed
-              )
             end
-
-            # Add this MOD to the enable set
-            to_enable.add(mod)
           end
 
-          # Parse dependencies from info.json
+          # Plan enable in --only mode
           #
-          # @param info [Types::InfoJSON] The info.json data
-          # @return [Array<Dependency::Entry>] Array of dependencies
-          private def parse_dependencies(info)
-            return [] unless info.dependencies
+          # Verifies all dependencies are already enabled and returns only the specified MODs.
+          #
+          # @param target_mods [Array<Factorix::MOD>] MODs to enable
+          # @param graph [Factorix::Dependency::Graph] Dependency graph
+          # @return [Array<Factorix::MOD>] MODs to enable
+          # @raise [Factorix::Error] if any dependency is not enabled
+          private def plan_only_mode(target_mods, graph)
+            mods_to_enable = []
 
-            # InfoJSON already parses dependencies, so just return them
-            info.dependencies
+            target_mods.each do |mod|
+              node = graph.node(mod)
+
+              # Skip if already enabled
+              if node.enabled?
+                logger.debug("MOD already enabled", mod_name: mod.name)
+                next
+              end
+
+              # Check all required dependencies are enabled
+              graph.edges_from(mod).select(&:required?).each do |edge|
+                next if edge.to_mod.base? # Base is always available
+
+                dep_node = graph.node(edge.to_mod)
+
+                unless dep_node
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name} with --only: dependency #{edge.to_mod.name} is not installed"
+                end
+
+                unless dep_node.enabled?
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name} with --only: dependency #{edge.to_mod.name} is not enabled"
+                end
+
+                # Validate version requirement
+                next if edge.satisfied_by?(dep_node.version)
+
+                raise Factorix::Error,
+                  "Cannot enable #{mod.name}: dependency #{edge.to_mod.name} version requirement not satisfied " \
+                  "(required: #{edge.version_requirement}, installed: #{dep_node.version})"
+              end
+
+              mods_to_enable << mod
+            end
+
+            mods_to_enable
+          end
+
+          # Plan enable with automatic dependency resolution
+          #
+          # Uses graph traversal to find all dependencies recursively.
+          #
+          # @param target_mods [Array<Factorix::MOD>] MODs to enable
+          # @param graph [Factorix::Dependency::Graph] Dependency graph
+          # @return [Array<Factorix::MOD>] MODs to enable (including dependencies)
+          # @raise [Factorix::Error] if any dependency is missing or has version mismatch
+          private def plan_with_dependencies(target_mods, graph)
+            mods_to_enable = Set.new
+            to_process = target_mods.dup
+
+            while (mod = to_process.shift)
+              node = graph.node(mod)
+
+              # Skip if already enabled
+              if node.enabled?
+                logger.debug("MOD already enabled", mod_name: mod.name)
+                next
+              end
+
+              # Skip if already in the enable set
+              next if mods_to_enable.include?(mod)
+
+              # Add to enable set
+              mods_to_enable.add(mod)
+
+              # Add all required dependencies to process
+              graph.edges_from(mod).select(&:required?).each do |edge|
+                next if edge.to_mod.base? # Base is always available
+
+                dep_mod = edge.to_mod
+                dep_node = graph.node(dep_mod)
+
+                # Validate dependency exists
+                unless dep_node
+                  raise Factorix::Error,
+                    "MOD '#{mod.name}' requires '#{dep_mod.name}' which is not installed"
+                end
+
+                # Validate version requirement
+                unless edge.satisfied_by?(dep_node.version)
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name}: dependency #{dep_mod.name} version requirement not satisfied " \
+                    "(required: #{edge.version_requirement}, installed: #{dep_node.version})"
+                end
+
+                # Add to process queue if not already enabled
+                to_process << dep_mod unless dep_node.enabled?
+              end
+            end
+
+            mods_to_enable.to_a
+          end
+
+          # Validate the enable plan
+          #
+          # Checks for conflicts with currently enabled MODs or MODs in the enable plan.
+          #
+          # @param mods_to_enable [Array<Factorix::MOD>] MODs to enable
+          # @param graph [Factorix::Dependency::Graph] Dependency graph
+          # @return [void]
+          # @raise [Factorix::Error] if any conflict is detected
+          private def validate_plan(mods_to_enable, graph)
+            mods_to_enable_set = Set.new(mods_to_enable)
+
+            mods_to_enable.each do |mod|
+              graph.edges_from(mod).select(&:incompatible?).each do |edge|
+                conflict_node = graph.node(edge.to_mod)
+
+                # Check if conflicting MOD is currently enabled
+                if conflict_node&.enabled?
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name}: conflicts with #{edge.to_mod.name} which is currently enabled"
+                end
+
+                # Check if conflicting MOD is in the enable plan
+                if mods_to_enable_set.include?(edge.to_mod)
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name}: conflicts with #{edge.to_mod.name} which is also being enabled"
+                end
+              end
+            end
+          end
+
+          # Show the enable plan to user
+          #
+          # @param mods_to_enable [Array<Factorix::MOD>] MODs to enable
+          # @return [void]
+          private def show_plan(mods_to_enable)
+            if mods_to_enable.empty?
+              say "All specified MODs are already enabled"
+              return
+            end
+
+            say "Planning to enable #{mods_to_enable.size} MOD(s):"
+            mods_to_enable.each do |mod|
+              say "  - #{mod.name}"
+            end
+          end
+
+          # Execute the enable plan
+          #
+          # @param mods_to_enable [Array<Factorix::MOD>] MODs to enable
+          # @param mod_list [Factorix::MODList] MOD list to modify
+          # @return [void]
+          private def execute_plan(mods_to_enable, mod_list)
+            return if mods_to_enable.empty?
+
+            mods_to_enable.each do |mod|
+              mod_list.enable(mod)
+              say "✓ Enabled #{mod.name}"
+              logger.debug("Enabled MOD", mod_name: mod.name)
+            end
           end
         end
       end
