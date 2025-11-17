@@ -66,8 +66,6 @@ module Factorix
             say "Metadata updated successfully!"
           end
 
-          private
-
           # Build metadata hash from options
           #
           # @param description [String, nil] description

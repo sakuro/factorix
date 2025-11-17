@@ -61,8 +61,6 @@ module Factorix
             end
           end
 
-          private
-
           # Extract mod name from info.json inside zip file
           #
           # @param file_path [Pathname] path to zip file

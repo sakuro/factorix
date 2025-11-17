@@ -72,8 +72,6 @@ module Factorix
             logger.debug("Saved mod-list.json")
           end
 
-          private
-
           # Validate that all target MODs are installed
           #
           # @param target_mods [Array<Factorix::MOD>] MODs to validate
