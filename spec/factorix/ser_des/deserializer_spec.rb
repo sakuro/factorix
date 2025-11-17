@@ -164,8 +164,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
 
       it "reads 254 (0xFE) as a single byte value" do
-        deserializer_fe = Factorix::SerDes::Deserializer.new(StringIO.new("\xFE"))
-        expect(deserializer_fe.read_optim_u16).to eq(254)
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new("\xFE"))
+        expect(deserializer.read_optim_u16).to eq(254)
       end
     end
 
@@ -177,8 +177,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
 
       it "reads 255 as 0xFF followed by u16" do
-        deserializer_255 = Factorix::SerDes::Deserializer.new(StringIO.new("\xFF\xFF\x00"))
-        expect(deserializer_255.read_optim_u16).to eq(255)
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new("\xFF\xFF\x00"))
+        expect(deserializer.read_optim_u16).to eq(255)
       end
 
       context "with not enough bytes left" do
@@ -200,8 +200,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
 
       it "reads 254 (0xFE) as a single byte value" do
-        deserializer_fe = Factorix::SerDes::Deserializer.new(StringIO.new("\xFE"))
-        expect(deserializer_fe.read_optim_u32).to eq(254)
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new("\xFE"))
+        expect(deserializer.read_optim_u32).to eq(254)
       end
     end
 
@@ -213,8 +213,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
       end
 
       it "reads 255 as 0xFF followed by u32" do
-        deserializer_255 = Factorix::SerDes::Deserializer.new(StringIO.new("\xFF\xFF\x00\x00\x00"))
-        expect(deserializer_255.read_optim_u32).to eq(255)
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new("\xFF\xFF\x00\x00\x00"))
+        expect(deserializer.read_optim_u32).to eq(255)
       end
 
       context "with not enough bytes left" do
@@ -258,8 +258,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
         # "あ" is 3 bytes in UTF-8, so 100 characters = 300 bytes
         long_str = "あ" * 100
         binary = "\xFF\x2C\x01\x00\x00#{long_str}".b
-        deserializer_multi = Factorix::SerDes::Deserializer.new(StringIO.new(binary))
-        result = deserializer_multi.read_str
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new(binary))
+        result = deserializer.read_str
         expect(result).to eq(long_str)
         expect(result.encoding).to eq(Encoding::UTF_8)
       end
@@ -276,8 +276,8 @@ RSpec.describe Factorix::SerDes::Deserializer do
         # "こんにちは" is 15 bytes in UTF-8 (5 characters × 3 bytes each)
         multibyte_str = "こんにちは"
         binary = "\x0F#{multibyte_str}".b
-        deserializer_multi = Factorix::SerDes::Deserializer.new(StringIO.new(binary))
-        result = deserializer_multi.read_str
+        deserializer = Factorix::SerDes::Deserializer.new(StringIO.new(binary))
+        result = deserializer.read_str
         expect(result).to eq(multibyte_str)
         expect(result.encoding).to eq(Encoding::UTF_8)
       end

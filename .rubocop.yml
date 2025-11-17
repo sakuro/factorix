@@ -78,31 +78,19 @@ Naming/PredicateMethod:
     - lib/factorix/ser_des/deserializer.rb
 
 Naming/VariableNumber:
-  Exclude:
-    - spec/factorix/ser_des/deserializer_spec.rb
-    - spec/factorix/types/game_version_spec.rb
-    - spec/factorix/types/mod_version_spec.rb
-    - spec/factorix/dependency/entry_spec.rb
-    - spec/factorix/dependency/list_spec.rb
-    - spec/factorix/dependency/edge_spec.rb
-    - spec/factorix/dependency/graph_spec.rb
-    - spec/factorix/dependency/graph/builder_spec.rb
-    - spec/factorix/types/mod_version_requirement_spec.rb
+  AllowedPatterns:
+    - '^version_\d+'        # Allow version_1_0_0, version_123, etc.
+    - '_v\d+$'              # Allow mod1_v1, etc.
+    - '^requirement_\w+_\d+' # Allow requirement_ge_1_2_0, etc.
 
 RSpec/ExampleLength:
   Enabled: false
 
 RSpec/IndexedLet:
-  Exclude:
-    - spec/factorix/types/game_version_spec.rb
-    - spec/factorix/types/mod_version_spec.rb
-    - spec/factorix/dependency/entry_spec.rb
-    - spec/factorix/dependency/list_spec.rb
-    - spec/factorix/dependency/edge_spec.rb
-    - spec/factorix/dependency/graph_spec.rb
-    - spec/factorix/dependency/graph/builder_spec.rb
-    - spec/factorix/types/mod_version_requirement_spec.rb
-    - spec/factorix/installed_mod_spec.rb
+  AllowedPatterns:
+    - '^version_\d+'  # Allow version_1_0_0, version_123, etc.
+    - '^edge\d+$'     # Allow edge1, edge2, etc.
+    - '^mod\d+_v\d+$' # Allow mod1_v1, mod2_v1, etc.
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
