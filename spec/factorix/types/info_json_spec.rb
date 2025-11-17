@@ -30,11 +30,11 @@ RSpec.describe Factorix::Types::InfoJSON do
     it "parses dependencies correctly" do
       info = Factorix::Types::InfoJSON.from_hash(valid_data)
 
-      expect(info.dependencies[0]).to be_a(Factorix::MODDependency)
+      expect(info.dependencies[0]).to be_a(Factorix::Dependency::Entry)
       expect(info.dependencies[0].mod.name).to eq("base")
       expect(info.dependencies[0].required?).to be true
 
-      expect(info.dependencies[1]).to be_a(Factorix::MODDependency)
+      expect(info.dependencies[1]).to be_a(Factorix::Dependency::Entry)
       expect(info.dependencies[1].mod.name).to eq("optional-mod")
       expect(info.dependencies[1].optional?).to be true
     end

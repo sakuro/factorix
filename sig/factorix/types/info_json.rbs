@@ -11,7 +11,7 @@ module Factorix
       attr_reader author: String
       attr_reader description: String
       attr_reader factorio_version: String?
-      attr_reader dependencies: Array[MODDependency]
+      attr_reader dependencies: Array[Factorix::Dependency::Entry]
 
       def self.from_json: (String json_string) -> InfoJSON
       def self.from_hash: (Hash[String, untyped] data) -> InfoJSON

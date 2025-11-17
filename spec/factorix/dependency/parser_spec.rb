@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::MODDependencyParser do
-  subject(:parser) { Factorix::MODDependencyParser.new }
+RSpec.describe Factorix::Dependency::Parser do
+  subject(:parser) { Factorix::Dependency::Parser.new }
 
   describe "#parse" do
     context "with required dependencies" do

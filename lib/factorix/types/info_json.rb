@@ -44,7 +44,7 @@ module Factorix
         raise ArgumentError, "Missing required fields: #{missing.join(", ")}" unless missing.empty?
 
         # Parse dependencies
-        parser = MODDependencyParser.new
+        parser = Dependency::Parser.new
         dependencies = (data["dependencies"] || []).map {|dep_str| parser.parse(dep_str) }
 
         new(

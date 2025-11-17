@@ -61,7 +61,7 @@ module Factorix
 
             # Resolve dependencies if requested
             if recursive
-              resolver = MODDependencyResolver.new
+              resolver = Dependency::Resolver.new
               downloads = resolver.resolve_dependencies(downloads, download_dir, jobs, presenter)
             end
 

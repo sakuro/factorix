@@ -55,14 +55,14 @@ Metrics/MethodLength:
 
 Metrics/BlockLength:
   Exclude:
-    - lib/factorix/mod_dependency_resolver.rb
+    - lib/factorix/dependency/resolver.rb
 
 Metrics/PerceivedComplexity:
   Exclude:
     - lib/factorix/types/mod_info.rb
-    - lib/factorix/mod_dependency_parser.rb
-    - lib/factorix/mod_dependency_list.rb
-    - lib/factorix/mod_dependency_resolver.rb
+    - lib/factorix/dependency/parser.rb
+    - lib/factorix/dependency/list.rb
+    - lib/factorix/dependency/resolver.rb
     - lib/factorix/cli/commands/mod/edit.rb
     - lib/factorix/installed_mod.rb
     - lib/factorix/cli/commands/mod/enable.rb
@@ -82,8 +82,8 @@ Naming/VariableNumber:
     - spec/factorix/ser_des/deserializer_spec.rb
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
-    - spec/factorix/mod_dependency_spec.rb
-    - spec/factorix/mod_dependency_list_spec.rb
+    - spec/factorix/dependency/entry_spec.rb
+    - spec/factorix/dependency/list_spec.rb
     - spec/factorix/types/mod_version_requirement_spec.rb
 
 RSpec/ExampleLength:
@@ -93,8 +93,8 @@ RSpec/IndexedLet:
   Exclude:
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
-    - spec/factorix/mod_dependency_spec.rb
-    - spec/factorix/mod_dependency_list_spec.rb
+    - spec/factorix/dependency/entry_spec.rb
+    - spec/factorix/dependency/list_spec.rb
     - spec/factorix/types/mod_version_requirement_spec.rb
     - spec/factorix/installed_mod_spec.rb
 

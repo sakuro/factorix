@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::MODDependencyResolver do
-  subject(:resolver) { Factorix::MODDependencyResolver.new(logger:) }
+RSpec.describe Factorix::Dependency::Resolver do
+  subject(:resolver) { Factorix::Dependency::Resolver.new(logger:) }
 
   let(:logger) { instance_double(Logger, info: nil, warn: nil, error: nil) }
   let(:download_dir) { Pathname.new("/tmp/downloads") }

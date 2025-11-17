@@ -149,13 +149,12 @@ module Factorix
           # Parse dependencies from info.json
           #
           # @param info [Types::InfoJSON] The info.json data
-          # @return [Array<MODDependency>] Array of dependencies
+          # @return [Array<Dependency::Entry>] Array of dependencies
           private def parse_dependencies(info)
             return [] unless info.dependencies
 
-            parser = Factorix::MODDependencyParser.new
-            dependency_list = parser.parse(info.dependencies)
-            dependency_list.to_a
+            # InfoJSON already parses dependencies, so just return them
+            info.dependencies
           end
         end
       end

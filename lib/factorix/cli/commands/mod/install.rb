@@ -46,7 +46,7 @@ module Factorix
             downloads = fetch_mod_info_parallel(mod_specs, mod_dir, jobs, presenter)
 
             # Resolve dependencies recursively
-            resolver = MODDependencyResolver.new
+            resolver = Dependency::Resolver.new
             downloads = resolver.resolve_dependencies(downloads, mod_dir, jobs, presenter)
 
             # Download files

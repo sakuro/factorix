@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::MODDependencyList do
+RSpec.describe Factorix::Dependency::List do
   let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
   let(:version_1_2_0) { Factorix::Types::MODVersion.from_string("1.2.0") }
   let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
@@ -18,19 +18,19 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe ".from_strings" do
     it "creates instance from array of dependency strings" do
-      deps = Factorix::MODDependencyList.from_strings(["base", "? optional-mod"])
-      expect(deps).to be_a(Factorix::MODDependencyList)
+      deps = Factorix::Dependency::List.from_strings(["base", "? optional-mod"])
+      expect(deps).to be_a(Factorix::Dependency::List)
       expect(deps.size).to eq(2)
     end
 
     it "parses all dependency types correctly" do
-      deps = Factorix::MODDependencyList.from_strings([
-                                                        "base",
-                                                        "? optional-mod",
-                                                        "(?) hidden-mod",
-                                                        "! incompatible-mod",
-                                                        "~ neutral-mod"
-                                                      ])
+      deps = Factorix::Dependency::List.from_strings([
+                                                       "base",
+                                                       "? optional-mod",
+                                                       "(?) hidden-mod",
+                                                       "! incompatible-mod",
+                                                       "~ neutral-mod"
+                                                     ])
 
       expect(deps.required.size).to eq(1)
       expect(deps.optional.size).to eq(2)
@@ -39,7 +39,7 @@ RSpec.describe Factorix::MODDependencyList do
     end
 
     it "parses version requirements" do
-      deps = Factorix::MODDependencyList.from_strings(["required-mod >= 1.2.0"])
+      deps = Factorix::Dependency::List.from_strings(["required-mod >= 1.2.0"])
       dep = deps.first
       expect(dep.version_requirement).not_to be_nil
       expect(dep.version_requirement.operator).to eq(">=")
@@ -48,7 +48,7 @@ RSpec.describe Factorix::MODDependencyList do
 
     it "raises ArgumentError for invalid dependency string" do
       expect {
-        Factorix::MODDependencyList.from_strings([""])
+        Factorix::Dependency::List.from_strings([""])
       }.to raise_error(ArgumentError)
     end
   end
@@ -56,15 +56,15 @@ RSpec.describe Factorix::MODDependencyList do
   describe ".new" do
     context "with valid dependencies array" do
       it "creates instance" do
-        dep = Factorix::MODDependency[mod: base_mod, type: :required]
-        deps = Factorix::MODDependencyList.new([dep])
+        dep = Factorix::Dependency::Entry[mod: base_mod, type: :required]
+        deps = Factorix::Dependency::List.new([dep])
         expect(deps.size).to eq(1)
       end
     end
 
     context "with empty array" do
       it "creates empty instance" do
-        deps = Factorix::MODDependencyList.new([])
+        deps = Factorix::Dependency::List.new([])
         expect(deps).to be_empty
         expect(deps.size).to eq(0)
       end
@@ -72,7 +72,7 @@ RSpec.describe Factorix::MODDependencyList do
 
     context "with no arguments" do
       it "creates empty instance" do
-        deps = Factorix::MODDependencyList.new
+        deps = Factorix::Dependency::List.new
         expect(deps).to be_empty
       end
     end
@@ -80,21 +80,21 @@ RSpec.describe Factorix::MODDependencyList do
     context "with invalid arguments" do
       it "raises ArgumentError when not an Array" do
         expect {
-          Factorix::MODDependencyList.new("not an array")
+          Factorix::Dependency::List.new("not an array")
         }.to raise_error(ArgumentError, /must be an Array/)
       end
 
-      it "raises ArgumentError when element is not MODDependency" do
+      it "raises ArgumentError when element is not Dependency::Entry" do
         expect {
-          Factorix::MODDependencyList.new(["not a dependency"])
-        }.to raise_error(ArgumentError, /must be a MODDependency/)
+          Factorix::Dependency::List.new(["not a dependency"])
+        }.to raise_error(ArgumentError, /must be a Dependency::Entry/)
       end
     end
   end
 
   describe "#each" do
     let(:deps) do
-      Factorix::MODDependencyList.from_strings(["base", "? optional-mod"])
+      Factorix::Dependency::List.from_strings(["base", "? optional-mod"])
     end
 
     context "with block" do
@@ -123,13 +123,13 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "filter methods" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: required_mod, type: :required],
-                                        Factorix::MODDependency[mod: optional_mod, type: :optional],
-                                        Factorix::MODDependency[mod: hidden_mod, type: :hidden],
-                                        Factorix::MODDependency[mod: incompatible_mod, type: :incompatible],
-                                        Factorix::MODDependency[mod: neutral_mod, type: :load_neutral]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional],
+                                       Factorix::Dependency::Entry[mod: hidden_mod, type: :hidden],
+                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
+                                       Factorix::Dependency::Entry[mod: neutral_mod, type: :load_neutral]
+                                     ])
     end
 
     describe "#required" do
@@ -168,10 +168,10 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#depends_on?" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: required_mod, type: :required],
-                                        Factorix::MODDependency[mod: incompatible_mod, type: :incompatible]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
+                                     ])
     end
 
     it "returns true for required dependency (String argument)" do
@@ -193,10 +193,10 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#incompatible_with?" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: required_mod, type: :required],
-                                        Factorix::MODDependency[mod: incompatible_mod, type: :incompatible]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
+                                     ])
     end
 
     it "returns true for incompatible dependency (String argument)" do
@@ -218,35 +218,35 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#empty?" do
     it "returns true for empty dependencies" do
-      deps = Factorix::MODDependencyList.new([])
+      deps = Factorix::Dependency::List.new([])
       expect(deps.empty?).to be(true)
     end
 
     it "returns false for non-empty dependencies" do
-      deps = Factorix::MODDependencyList.from_strings(["base"])
+      deps = Factorix::Dependency::List.from_strings(["base"])
       expect(deps.empty?).to be(false)
     end
   end
 
   describe "#size" do
     it "returns 0 for empty dependencies" do
-      deps = Factorix::MODDependencyList.new
+      deps = Factorix::Dependency::List.new
       expect(deps.size).to eq(0)
     end
 
     it "returns correct count for non-empty dependencies" do
-      deps = Factorix::MODDependencyList.from_strings(["base", "? optional-mod", "! bad-mod"])
+      deps = Factorix::Dependency::List.from_strings(["base", "? optional-mod", "! bad-mod"])
       expect(deps.size).to eq(3)
     end
   end
 
   describe "#satisfied_by?" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: base_mod, type: :required],
-                                        Factorix::MODDependency[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0],
-                                        Factorix::MODDependency[mod: optional_mod, type: :optional]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0],
+                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
+                                     ])
     end
 
     context "when all required dependencies are satisfied" do
@@ -291,10 +291,10 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#conflicts_with?" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: incompatible_mod, type: :incompatible],
-                                        Factorix::MODDependency[mod: Factorix::MOD[name: "another-bad-mod"], type: :incompatible]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
+                                       Factorix::Dependency::Entry[mod: Factorix::MOD[name: "another-bad-mod"], type: :incompatible]
+                                     ])
     end
 
     it "returns empty array when no conflicts" do
@@ -321,11 +321,11 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#missing_required" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: base_mod, type: :required],
-                                        Factorix::MODDependency[mod: required_mod, type: :required],
-                                        Factorix::MODDependency[mod: optional_mod, type: :optional]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
+                                     ])
     end
 
     it "returns empty array when all required deps are available" do
@@ -351,10 +351,10 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#unsatisfied_versions" do
     let(:deps) do
-      Factorix::MODDependencyList.new([
-                                        Factorix::MODDependency[mod: base_mod, type: :required],
-                                        Factorix::MODDependency[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0]
-                                      ])
+      Factorix::Dependency::List.new([
+                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
+                                       Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0]
+                                     ])
     end
 
     it "returns empty hash when all versions are satisfied" do
@@ -395,54 +395,54 @@ RSpec.describe Factorix::MODDependencyList do
   describe ".detect_circular" do
     context "with no cycles" do
       it "returns empty array for empty map" do
-        expect(Factorix::MODDependencyList.detect_circular({})).to eq([])
+        expect(Factorix::Dependency::List.detect_circular({})).to eq([])
       end
 
       it "returns empty array when no dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.new([]),
-          "mod-b" => Factorix::MODDependencyList.new([])
+          "mod-a" => Factorix::Dependency::List.new([]),
+          "mod-b" => Factorix::Dependency::List.new([])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
 
       it "returns empty array for linear dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["base"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-a"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(["mod-b"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["base"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-a"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(["mod-b"])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
 
       it "returns empty array for tree structure" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["base"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["base"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(%w[mod-a mod-b])
+          "mod-a" => Factorix::Dependency::List.from_strings(["base"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["base"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(%w[mod-a mod-b])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
     end
 
     context "with cycles" do
       it "detects simple 2-node cycle" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-a"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to eq(1)
         expect(cycles.first).to eq(%w[mod-a mod-b mod-a]).or eq(%w[mod-b mod-a mod-b])
       end
 
       it "detects 3-node cycle" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-c"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(["mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-c"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(["mod-a"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to eq(1)
         cycle = cycles.first
         # Cycle can start from any node
@@ -452,21 +452,21 @@ RSpec.describe Factorix::MODDependencyList do
 
       it "detects self-dependency" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["mod-a"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to eq(1)
         expect(cycles.first).to eq(%w[mod-a mod-a])
       end
 
       it "detects multiple disconnected cycles" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-a"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(["mod-d"]),
-          "mod-d" => Factorix::MODDependencyList.from_strings(["mod-c"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-a"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(["mod-d"]),
+          "mod-d" => Factorix::Dependency::List.from_strings(["mod-c"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to eq(2)
       end
     end
@@ -474,19 +474,19 @@ RSpec.describe Factorix::MODDependencyList do
     context "with optional dependencies" do
       it "does not detect cycles through optional dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["? mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["? mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["? mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["? mod-a"])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
 
       it "detects cycles only through required dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["mod-b", "? mod-c"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-a"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(["? mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["mod-b", "? mod-c"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-a"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(["? mod-a"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to eq(1)
         # Cycle should only include mod-a and mod-b
         cycle = cycles.first
@@ -498,32 +498,32 @@ RSpec.describe Factorix::MODDependencyList do
     context "with load-neutral dependencies" do
       it "does not detect cycles through load-neutral dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["~ mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["~ mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["~ mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["~ mod-a"])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
     end
 
     context "with incompatible dependencies" do
       it "does not detect cycles through incompatible dependencies" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(["! mod-b"]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["! mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(["! mod-b"]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["! mod-a"])
         }
-        expect(Factorix::MODDependencyList.detect_circular(map)).to eq([])
+        expect(Factorix::Dependency::List.detect_circular(map)).to eq([])
       end
     end
 
     context "with complex dependency graphs" do
       it "detects cycles in graphs with multiple paths" do
         map = {
-          "mod-a" => Factorix::MODDependencyList.from_strings(%w[mod-b mod-c]),
-          "mod-b" => Factorix::MODDependencyList.from_strings(["mod-d"]),
-          "mod-c" => Factorix::MODDependencyList.from_strings(["mod-d"]),
-          "mod-d" => Factorix::MODDependencyList.from_strings(["mod-a"])
+          "mod-a" => Factorix::Dependency::List.from_strings(%w[mod-b mod-c]),
+          "mod-b" => Factorix::Dependency::List.from_strings(["mod-d"]),
+          "mod-c" => Factorix::Dependency::List.from_strings(["mod-d"]),
+          "mod-d" => Factorix::Dependency::List.from_strings(["mod-a"])
         }
-        cycles = Factorix::MODDependencyList.detect_circular(map)
+        cycles = Factorix::Dependency::List.detect_circular(map)
         expect(cycles.size).to be >= 1
         # Should detect at least one cycle involving mod-a and mod-d
         expect(cycles.any? {|c| c.include?("mod-a") && c.include?("mod-d") }).to be(true)
@@ -533,7 +533,7 @@ RSpec.describe Factorix::MODDependencyList do
 
   describe "#to_a" do
     it "returns array of dependency strings" do
-      deps = Factorix::MODDependencyList.from_strings(["base", "? optional-mod >= 1.0.0"])
+      deps = Factorix::Dependency::List.from_strings(["base", "? optional-mod >= 1.0.0"])
       result = deps.to_a
       expect(result).to be_a(Array)
       expect(result.size).to eq(2)
@@ -542,23 +542,23 @@ RSpec.describe Factorix::MODDependencyList do
     end
 
     it "returns empty array for empty dependencies" do
-      deps = Factorix::MODDependencyList.new
+      deps = Factorix::Dependency::List.new
       expect(deps.to_a).to eq([])
     end
   end
 
   describe "#to_h" do
     it "returns hash keyed by MOD name" do
-      deps = Factorix::MODDependencyList.from_strings(["base", "? optional-mod"])
+      deps = Factorix::Dependency::List.from_strings(["base", "? optional-mod"])
       result = deps.to_h
       expect(result).to be_a(Hash)
       expect(result.keys).to contain_exactly("base", "optional-mod")
-      expect(result["base"]).to be_a(Factorix::MODDependency)
+      expect(result["base"]).to be_a(Factorix::Dependency::Entry)
       expect(result["base"].mod.name).to eq("base")
     end
 
     it "returns empty hash for empty dependencies" do
-      deps = Factorix::MODDependencyList.new
+      deps = Factorix::Dependency::List.new
       expect(deps.to_h).to eq({})
     end
   end

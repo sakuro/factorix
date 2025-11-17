@@ -3,7 +3,9 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  class MODDependencyParser
-    def parse: (String dependency_string) -> MODDependency
+  module Dependency
+    class Parser
+      def parse: (String dependency_string) -> Entry
+    end
   end
 end

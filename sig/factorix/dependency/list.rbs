@@ -1,0 +1,69 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    # Represents a collection of MOD dependencies
+    class List
+      include Enumerable[Entry]
+
+      @dependencies: Array[Entry]
+
+      # Create List from an array of dependency strings
+      def self.from_strings: (Array[String] dependency_strings) -> List
+
+      # Initialize a List collection
+      def initialize: (?Array[Entry] dependencies) -> void
+
+      # Iterate through all dependencies
+      def each: () { (Entry) -> void } -> List
+              | () -> Enumerator[Entry, void]
+
+      # Get all required dependencies
+      def required: () -> Array[Entry]
+
+      # Get all optional dependencies (including hidden optional)
+      def optional: () -> Array[Entry]
+
+      # Get all incompatible dependencies
+      def incompatible: () -> Array[Entry]
+
+      # Get all load-neutral dependencies
+      def load_neutral: () -> Array[Entry]
+
+      # Check if this collection depends on a specific MOD
+      def depends_on?: (String | MOD mod_name_or_mod) -> bool
+
+      # Check if this collection marks a MOD as incompatible
+      def incompatible_with?: (String | MOD mod_name_or_mod) -> bool
+
+      # Check if the collection is empty
+      def empty?: () -> bool
+
+      # Get the total number of dependencies
+      def size: () -> Integer
+
+      # Check if all required dependencies are satisfied
+      def satisfied_by?: (Hash[String, Types::MODVersion] available_mods) -> bool
+
+      # Get list of incompatible MODs that are present
+      def conflicts_with?: (Hash[String, Types::MODVersion] available_mods) -> Array[String]
+
+      # Get list of missing required dependencies
+      def missing_required: (Hash[String, Types::MODVersion] available_mods) -> Array[String]
+
+      # Get list of dependencies with unsatisfied version requirements
+      def unsatisfied_versions: (Hash[String, Types::MODVersion] available_mods) -> Hash[String, Hash[Symbol, String]]
+
+      # Detect circular dependencies in a collection of MOD dependencies
+      def self.detect_circular: (Hash[String, List] mod_dependencies_map) -> Array[Array[String]]
+
+      # Convert to array of dependency strings
+      def to_a: () -> Array[String]
+
+      # Convert to hash keyed by MOD name
+      def to_h: () -> Hash[String, Entry]
+    end
+  end
+end
