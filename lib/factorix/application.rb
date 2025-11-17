@@ -83,15 +83,14 @@ module Factorix
       Factorix::HTTP::Client.new
     end
 
-    # Register decorated HTTP client for downloads (with retry + cache)
+    # Register decorated HTTP client for downloads (with retry only)
+    # Note: Caching is handled by Downloader, not at HTTP client level
     register(:download_http_client, memoize: false) do
       client = resolve(:http_client)
-      download_cache = resolve(:download_cache)
       retry_strategy = resolve(:retry_strategy)
 
-      # Decorate: Client -> Cache -> Retry
-      cached = Factorix::HTTP::CacheDecorator.new(client:, cache: download_cache)
-      Factorix::HTTP::RetryDecorator.new(client: cached, retry_strategy:)
+      # Decorate: Client -> Retry (no cache, handled by Downloader)
+      Factorix::HTTP::RetryDecorator.new(client:, retry_strategy:)
     end
 
     # Register decorated HTTP client for API calls (with retry + cache)
