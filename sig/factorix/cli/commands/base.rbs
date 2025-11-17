@@ -6,6 +6,7 @@ module Factorix
   class CLI
     module Commands
       class Base < Dry::CLI::Command
+        def self.require_game_stopped!: () -> void
       end
     end
   end

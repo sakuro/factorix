@@ -38,6 +38,12 @@ module Factorix
           subclass.prepend BeforeCallSetup
         end
 
+        # Require that the game is not running when this command executes
+        # @return [void]
+        def self.require_game_stopped!
+          prepend RequiresGameStopped
+        end
+
         # Common options available to all commands
         option :config_path, type: :string, aliases: ["-c"], desc: "Path to configuration file"
         option :log_level, type: :string, values: %w[debug info warn error fatal], desc: "Set log level"

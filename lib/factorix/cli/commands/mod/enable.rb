@@ -7,7 +7,8 @@ module Factorix
         # Enable MODs in mod-list.json with dependency resolution
         class Enable < Base
           include Confirmable
-          prepend RequiresGameStopped
+
+          require_game_stopped!
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]

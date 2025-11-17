@@ -9,7 +9,7 @@ module Factorix
         module Settings
           # Restore MOD settings from JSON format
           class Restore < Base
-            prepend RequiresGameStopped
+            require_game_stopped!
 
             # @!parse
             #   # @return [Runtime::Base]
