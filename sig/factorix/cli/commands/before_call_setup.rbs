@@ -4,8 +4,10 @@
 
 module Factorix
   class CLI
-    module BeforeCallSetup
-      def call: (**untyped options) -> void
+    module Commands
+      module BeforeCallSetup
+        def call: (**untyped options) -> void
+      end
     end
   end
 end
