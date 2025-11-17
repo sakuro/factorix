@@ -24,6 +24,14 @@ module Factorix
       #     end
       #   end
       class Base < Dry::CLI::Command
+        # Emoji prefix mapping for common message types
+        EMOJI_PREFIXES = {
+          warn: "\u{26A0}\u{FE0F}", # WARNING SIGN (with emoji presentation)
+          error: "\u{274C}",         # CROSS MARK
+          fatal: "\u{1F4A5}"         # COLLISION SYMBOL (explosion)
+        }.freeze
+        private_constant :EMOJI_PREFIXES
+
         # Prepend BeforeCallSetup to each command class that inherits from Base
         def self.inherited(subclass)
           super
@@ -35,10 +43,12 @@ module Factorix
         option :log_level, type: :string, values: %w[debug info warn error fatal], desc: "Set log level"
         option :quiet, type: :boolean, default: false, aliases: ["-q"], desc: "Suppress non-essential output"
 
-        private def say(message)
+        private def say(message, prefix: "")
           return if quiet?
 
-          puts message
+          resolved_prefix = EMOJI_PREFIXES.fetch(prefix) { prefix.to_s }
+          output = resolved_prefix.empty? ? message : "#{resolved_prefix} #{message}"
+          puts output
         end
 
         private def quiet?

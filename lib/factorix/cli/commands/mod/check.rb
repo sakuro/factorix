@@ -73,16 +73,16 @@ module Factorix
           end
 
           private def display_warnings(result)
-            logger.warn("⚠️  Warnings:")
+            say "Warnings:", prefix: :warn
             result.warnings.each do |warning|
-              logger.warn("  - #{warning.message}")
+              say "  - #{warning.message}"
             end
           end
 
           private def display_errors(result)
-            logger.error("❌ Errors:")
+            say "Errors:", prefix: :error
             result.errors.each do |error|
-              logger.error("  - #{error.message}")
+              say "  - #{error.message}"
             end
           end
 

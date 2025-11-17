@@ -83,7 +83,7 @@ module Factorix
               Available path types:
               #{available_list}
             ERROR
-            logger.error("Unknown path types", unknown_types:, available_types: available_keys)
+            logger.debug("Unknown path types", unknown_types:, available_types: available_keys)
             raise ArgumentError, error_message.chomp
           end
 

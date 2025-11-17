@@ -93,7 +93,8 @@ module Factorix
 
               # Check if MOD exists in graph (is installed)
               unless graph.node?(mod)
-                logger.warn("MOD not installed, skipping", mod_name: mod.name)
+                say "MOD not installed, skipping: #{mod.name}", prefix: :warn
+                logger.debug("MOD not installed", mod_name: mod.name)
               end
             end
           end

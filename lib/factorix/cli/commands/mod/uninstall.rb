@@ -110,13 +110,15 @@ module Factorix
 
             # Check if installed
             unless graph.node?(mod)
-              logger.warn("MOD not installed: #{mod.name}")
+              say "MOD not installed: #{mod.name}", prefix: :warn
+              logger.debug("MOD not installed", mod_name: mod.name)
               return nil
             end
 
             # For versioned uninstall, check if the specific version exists
             if target.versioned? && !version_installed?(target, installed_mods)
-              logger.warn("MOD version not installed: #{target}")
+              say "MOD version not installed: #{target}", prefix: :warn
+              logger.debug("MOD version not installed", target: target.to_s)
               return nil
             end
 
