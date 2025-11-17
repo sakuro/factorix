@@ -1,6 +1,7 @@
-# TypeProf 0.21.11
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
 
-# Classes
 module Factorix
   class InstalledMOD
     include Comparable

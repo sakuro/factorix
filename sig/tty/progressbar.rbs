@@ -1,4 +1,7 @@
-# Minimal type definitions for tty-progressbar
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
 module TTY
   class ProgressBar
     def initialize: (String format, **untyped options) -> void
