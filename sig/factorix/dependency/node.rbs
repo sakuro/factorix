@@ -1,0 +1,24 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    class Node
+      attr_reader mod: MOD
+      attr_reader version: Types::MODVersion
+      attr_accessor enabled: bool
+      attr_accessor installed: bool
+      attr_accessor operation: Symbol?
+
+      def initialize: (mod: MOD, version: Types::MODVersion, ?enabled: bool, ?installed: bool, ?operation: Symbol?) -> void
+
+      def enabled?: () -> bool
+      def installed?: () -> bool
+      def operation?: () -> bool
+
+      def to_s: () -> String
+      def inspect: () -> String
+    end
+  end
+end

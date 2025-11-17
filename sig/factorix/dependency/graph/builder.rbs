@@ -1,0 +1,17 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    class Graph
+      class Builder
+        def self.build: (installed_mods: Array[InstalledMOD], mod_list: MODList) -> Graph
+
+        def initialize: (installed_mods: Array[InstalledMOD], mod_list: MODList) -> void
+
+        def build: () -> Graph
+      end
+    end
+  end
+end

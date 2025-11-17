@@ -84,6 +84,9 @@ Naming/VariableNumber:
     - spec/factorix/types/mod_version_spec.rb
     - spec/factorix/dependency/entry_spec.rb
     - spec/factorix/dependency/list_spec.rb
+    - spec/factorix/dependency/edge_spec.rb
+    - spec/factorix/dependency/graph_spec.rb
+    - spec/factorix/dependency/graph/builder_spec.rb
     - spec/factorix/types/mod_version_requirement_spec.rb
 
 RSpec/ExampleLength:
@@ -95,6 +98,9 @@ RSpec/IndexedLet:
     - spec/factorix/types/mod_version_spec.rb
     - spec/factorix/dependency/entry_spec.rb
     - spec/factorix/dependency/list_spec.rb
+    - spec/factorix/dependency/edge_spec.rb
+    - spec/factorix/dependency/graph_spec.rb
+    - spec/factorix/dependency/graph/builder_spec.rb
     - spec/factorix/types/mod_version_requirement_spec.rb
     - spec/factorix/installed_mod_spec.rb
 

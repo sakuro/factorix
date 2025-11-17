@@ -1,0 +1,35 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Dependency
+    class Graph
+      def initialize: () -> void
+
+      def add_node: (Node node) -> void
+      def add_edge: (Edge edge) -> void
+
+      def node: (MOD mod) -> Node?
+      def nodes: () -> Array[Node]
+
+      def edges_from: (MOD mod) -> Array[Edge]
+      def edges: () -> Array[Edge]
+
+      def node?: (MOD mod) -> bool
+
+      def size: () -> Integer
+      def empty?: () -> bool
+
+      def topological_order: () -> Array[MOD]
+      def cyclic?: () -> bool
+      def strongly_connected_components: () -> Array[Array[MOD]]
+
+      def tsort_each_node: () { (MOD) -> void } -> void
+      def tsort_each_child: (MOD mod) { (MOD) -> void } -> void
+
+      def to_s: () -> String
+      def inspect: () -> String
+    end
+  end
+end
