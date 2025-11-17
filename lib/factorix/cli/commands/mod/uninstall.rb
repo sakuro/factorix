@@ -11,7 +11,9 @@ module Factorix
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
-          include Factorix::Import[:logger]
+          #   # @return [Factorix::Runtime]
+          #   attr_reader :runtime
+          include Factorix::Import[:logger, :runtime]
 
           desc "Uninstall MODs from mod directory"
 
@@ -36,7 +38,6 @@ module Factorix
           # @param mod_specs [Array<String>] MOD specifications
           # @return [void]
           def call(mod_specs:, **)
-            runtime = Factorix::Runtime.detect
             mod_list_path = runtime.mod_list_path
             mod_dir = runtime.mod_dir
             data_dir = runtime.data_dir

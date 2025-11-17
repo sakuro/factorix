@@ -6,13 +6,12 @@ module Factorix
   class CLI
     module Commands
       module MOD
-        class Disable < Base
-          include Confirmable
-
+        class Install < Base
+          attr_reader portal: Portal
           attr_reader logger: Dry::Logger::Dispatcher
           attr_reader runtime: Runtime
 
-          def call: (mod_names: Array[String], ?only: bool, ?yes: bool, ?quiet: bool) -> void
+          def call: (mod_specs: Array[String], ?jobs: Integer, ?quiet: bool) -> void
         end
       end
     end

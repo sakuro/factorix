@@ -14,7 +14,9 @@ module Factorix
           #   attr_reader :portal
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
-          include Factorix::Import[:portal, :logger]
+          #   # @return [Factorix::Runtime]
+          #   attr_reader :runtime
+          include Factorix::Import[:portal, :logger, :runtime]
 
           desc "Install MODs from Factorio MOD Portal (downloads to mod directory and enables)"
 
@@ -27,7 +29,6 @@ module Factorix
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
           def call(mod_specs:, jobs: 4, **)
-            runtime = Factorix::Runtime.detect
             mod_dir = runtime.mod_dir
             mod_list_path = runtime.mod_list_path
 

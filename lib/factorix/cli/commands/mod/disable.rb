@@ -11,7 +11,9 @@ module Factorix
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
-          include Factorix::Import[:logger]
+          #   # @return [Factorix::Runtime]
+          #   attr_reader :runtime
+          include Factorix::Import[:logger, :runtime]
 
           desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
 
@@ -27,7 +29,6 @@ module Factorix
           # @param only [Boolean] Only disable specified MODs without dependents
           # @return [void]
           def call(mod_names:, only: false, **)
-            runtime = Factorix::Runtime.detect
             mod_list_path = runtime.mod_list_path
             mod_dir = runtime.mod_dir
 
