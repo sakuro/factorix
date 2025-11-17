@@ -4,12 +4,8 @@
 
 module Factorix
   class CLI
-    module Commands
-      class Launch < Base
-        @runtime: Runtime::Base
-
-        def call: (?wait: bool, ?args: Array[String]) -> void
-      end
+    module BeforeCallSetup
+      def call: (**untyped options) -> void
     end
   end
 end

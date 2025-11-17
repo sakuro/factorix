@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Disable MODs in mod-list.json with reverse dependency resolution
-        class Disable < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Disable < Base
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -51,18 +49,20 @@ module Factorix
             end
 
             # Log the plan and execute
-            logger.info("Planning to disable #{to_disable.size} MOD(s)")
+            say "Planning to disable #{to_disable.size} MOD(s)"
 
             # Phase 2: Execution - apply all changes
             to_disable.each do |mod|
               logger.debug("  Will disable", mod_name: mod.name)
               mod_list.disable(mod)
-              logger.info("Disabled MOD", mod_name: mod.name)
+              say "✓ Disabled #{mod.name}"
+              logger.debug("Disabled MOD", mod_name: mod.name)
             end
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
-            logger.info("Saved mod-list.json")
+            say "✓ Saved mod-list.json"
+            logger.debug("Saved mod-list.json")
           end
 
           private def collect_to_disable(mod, mod_list, installed_by_mod, to_disable, processed)

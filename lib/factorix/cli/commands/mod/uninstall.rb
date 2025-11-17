@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Uninstall MODs from mod directory
-        class Uninstall < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Uninstall < Base
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -43,7 +41,8 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
-            logger.info("Saved mod-list.json")
+            say "✓ Saved mod-list.json"
+            logger.debug("Saved mod-list.json")
           end
 
           private def uninstall_mod(mod, mod_list, installed_mods, installed_by_mod)
@@ -79,7 +78,8 @@ module Factorix
               return
             end
 
-            logger.info("Uninstalling #{mod_versions.size} version(s) of MOD", mod_name: mod.name)
+            say "Uninstalling #{mod_versions.size} version(s) of #{mod.name}"
+            logger.debug("Uninstalling versions", mod_name: mod.name, count: mod_versions.size)
 
             # Remove all versions from file system
             mod_versions.each do |installed_mod|
@@ -90,7 +90,8 @@ module Factorix
             return unless mod_list.exist?(mod)
 
             mod_list.remove(mod)
-            logger.info("Removed from mod-list.json", mod_name: mod.name)
+            say "✓ Removed #{mod.name} from mod-list.json"
+            logger.debug("Removed from mod-list.json", mod_name: mod.name)
           end
 
           # Find all enabled MODs that have a required dependency on the given MOD

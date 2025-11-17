@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Upload MOD to Factorio MOD Portal (handles both new and update)
-        class Upload < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Upload < Base
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
@@ -57,7 +55,7 @@ module Factorix
             begin
               # Upload via Portal (auto-detects new vs update)
               portal.upload_mod(mod_name, file_path, **metadata)
-              puts "Upload completed successfully!"
+              say "Upload completed successfully!"
             ensure
               uploader.unsubscribe(handler)
             end

@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Enable MODs in mod-list.json with dependency resolution
-        class Enable < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Enable < Base
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -53,28 +51,31 @@ module Factorix
             end
 
             # Log the plan
-            logger.info("Planning to enable #{to_enable.size} MOD(s)")
+            say "Planning to enable #{to_enable.size} MOD(s)"
             to_enable.each {|m| logger.debug("  Will enable", mod_name: m.name) }
 
             if to_disable.any?
-              logger.info("Planning to disable #{to_disable.size} conflicting MOD(s)")
+              say "Planning to disable #{to_disable.size} conflicting MOD(s)"
               to_disable.each {|m| logger.debug("  Will disable", mod_name: m.name) }
             end
 
             # Phase 2: Execution - apply all changes
             to_disable.each do |mod|
               mod_list.disable(mod)
-              logger.info("Disabled conflicting MOD", mod_name: mod.name)
+              say "✓ Disabled #{mod.name}"
+              logger.debug("Disabled conflicting MOD", mod_name: mod.name)
             end
 
             to_enable.each do |mod|
               mod_list.enable(mod)
-              logger.info("Enabled MOD", mod_name: mod.name)
+              say "✓ Enabled #{mod.name}"
+              logger.debug("Enabled MOD", mod_name: mod.name)
             end
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
-            logger.info("Saved mod-list.json")
+            say "✓ Saved mod-list.json"
+            logger.debug("Saved mod-list.json")
           end
 
           private def collect_changes(mod, mod_list, installed_by_mod, to_enable, to_disable, processed)

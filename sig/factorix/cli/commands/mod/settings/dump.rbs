@@ -7,7 +7,7 @@ module Factorix
     module Commands
       module MOD
         module Settings
-          class Dump < Dry::CLI::Command
+          class Dump < Base
             def call: (?settings_file: String?, ?output: String?, **untyped) -> void
           end
         end

@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Edit MOD metadata on Factorio MOD Portal
-        class Edit < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Edit < Base
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
@@ -58,14 +56,14 @@ module Factorix
 
             # Validate at least one metadata field is provided
             if metadata.empty?
-              puts "Error: At least one metadata option must be provided"
-              puts "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
+              say "Error: At least one metadata option must be provided"
+              say "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
               exit 1
             end
 
             # Edit metadata via Portal
             portal.edit_mod(mod_name, **metadata)
-            puts "Metadata updated successfully!"
+            say "Metadata updated successfully!"
           end
 
           private

@@ -8,9 +8,7 @@ module Factorix
       # This command launches the Factorio game executable with optional arguments.
       # By default, the game is launched asynchronously (in the background), but certain
       # options like --help and --dump-* are automatically detected and run synchronously.
-      class Launch < Dry::CLI::Command
-        prepend CommonOptions
-
+      class Launch < Base
         # Game options that require synchronous execution
         #
         # These options output information and exit immediately, so we should

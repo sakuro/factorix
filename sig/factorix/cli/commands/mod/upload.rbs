@@ -6,7 +6,7 @@ module Factorix
   class CLI
     module Commands
       module MOD
-        class Upload < Dry::CLI::Command
+        class Upload < Base
           attr_reader portal: Portal
 
           def call: (

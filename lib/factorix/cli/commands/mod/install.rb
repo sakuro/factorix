@@ -8,9 +8,7 @@ module Factorix
     module Commands
       module MOD
         # Install MODs from Factorio MOD Portal
-        class Install < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Install < Base
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
@@ -64,17 +62,20 @@ module Factorix
                 # Enable if already in list
                 unless mod_list.enabled?(mod)
                   mod_list.enable(mod)
-                  logger.info("Enabled in mod-list.json", mod_name: mod.name)
+                  say "✓ Enabled #{mod.name} in mod-list.json"
+                  logger.debug("Enabled in mod-list.json", mod_name: mod.name)
                 end
               else
                 mod_list.add(mod, enabled: true)
-                logger.info("Added to mod-list.json", mod_name: mod.name)
+                say "✓ Added #{mod.name} to mod-list.json"
+                logger.debug("Added to mod-list.json", mod_name: mod.name)
               end
             end
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
-            logger.info("Saved mod-list.json")
+            say "✓ Saved mod-list.json"
+            logger.debug("Saved mod-list.json")
           end
 
           private def download_mods(downloads, jobs)

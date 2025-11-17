@@ -5,7 +5,7 @@
 module Factorix
   class CLI
     module Commands
-      class Path < Dry::CLI::Command
+      class Path < Base
         PATH_TYPES: Hash[String, Symbol]
 
         @runtime: Runtime::Base

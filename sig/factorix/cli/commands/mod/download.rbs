@@ -6,7 +6,7 @@ module Factorix
   class CLI
     module Commands
       module MOD
-        class Download < Dry::CLI::Command
+        class Download < Base
           attr_reader portal: Portal
 
           def call: (mod_specs: Array[String], ?directory: String, ?jobs: Integer) -> void

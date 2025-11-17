@@ -10,9 +10,7 @@ module Factorix
       # @example
       #   $ factorix version
       #   0.1.0
-      class Version < Dry::CLI::Command
-        prepend CommonOptions
-
+      class Version < Base
         desc "Display Factorix version"
 
         # Execute the version command
@@ -21,7 +19,7 @@ module Factorix
         #
         # @return [void]
         def call(**)
-          puts Factorix::VERSION
+          say Factorix::VERSION
         end
       end
     end

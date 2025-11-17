@@ -6,7 +6,7 @@ module Factorix
   class CLI
     module Commands
       module MOD
-        class Edit < Dry::CLI::Command
+        class Edit < Base
           attr_reader portal: Portal
 
           def call: (

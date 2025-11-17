@@ -8,9 +8,7 @@ module Factorix
       module MOD
         module Settings
           # Dump MOD settings to JSON format
-          class Dump < Dry::CLI::Command
-            prepend CommonOptions
-
+          class Dump < Base
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime
@@ -39,7 +37,7 @@ module Factorix
               if output
                 Pathname(output).write(output_string)
               else
-                puts output_string
+                say output_string
               end
             end
 

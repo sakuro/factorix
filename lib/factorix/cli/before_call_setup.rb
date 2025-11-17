@@ -1,36 +1,26 @@
 # frozen_string_literal: true
 
+require "logger"
+
 module Factorix
   class CLI
-    # Common options shared across all CLI commands
-    module CommonOptions
-      # Hook called when this module is prepended to a class
-      # @param base [Class] the class this module is being prepended to
-      def self.prepended(base)
-        base.class_eval do
-          option :config_path,
-            type: :string,
-            desc: "Path to configuration file"
-
-          option :log_level,
-            type: :string,
-            values: %w[debug info warn error fatal],
-            desc: "Set log level"
-        end
-      end
-
-      # Wraps the call method to load config and set log level before executing command
+    # Module that wraps command execution to perform setup before calling the actual command
+    #
+    # This module is prepended to Base to ensure configuration loading and log level
+    # setup happen before every command execution.
+    module BeforeCallSetup
+      # Performs setup before command execution, then calls the command's implementation
       # @param options [Hash] command options including :config_path and :log_level
       def call(**options)
+        @quiet = options[:quiet]
+
         load_config!(options[:config_path])
         log_level!(options[:log_level]) if options[:log_level]
+
+        # Call the command's implementation
         super
       end
 
-      private
-
-      # Loads configuration from the specified file or default location
-      # @param path [String, nil] path to configuration file (nil for default)
       private def load_config!(path)
         if path
           # Explicitly specified path via --config-path

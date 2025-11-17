@@ -5,7 +5,7 @@
 module Factorix
   class CLI
     module Commands
-      class Version < Dry::CLI::Command
+      class Version < Base
         def call: () -> void
       end
     end

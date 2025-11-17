@@ -5,10 +5,7 @@
 module Factorix
   class CLI
     module Commands
-      class Launch < Base
-        @runtime: Runtime::Base
-
-        def call: (?wait: bool, ?args: Array[String]) -> void
+      class Base < Dry::CLI::Command
       end
     end
   end

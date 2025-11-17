@@ -7,7 +7,7 @@ module Factorix
     module Commands
       module MOD
         module Settings
-          class Restore < Dry::CLI::Command
+          class Restore < Base
             def call: (?input: String?, ?settings_file: String?, ?backup_extension: String, **untyped) -> void
           end
         end

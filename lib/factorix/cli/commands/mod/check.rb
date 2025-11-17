@@ -5,9 +5,7 @@ module Factorix
     module Commands
       module MOD
         # Validate MOD dependencies without making changes
-        class Check < Dry::CLI::Command
-          prepend CommonOptions
-
+        class Check < Base
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -53,8 +51,7 @@ module Factorix
           end
 
           private def display_result(result, graph)
-            logger.info("Validating MOD dependencies...")
-            logger.info("")
+            say "Validating MOD dependencies..."
 
             if result.valid? && !result.warnings?
               display_success_messages
@@ -64,18 +61,18 @@ module Factorix
             display_errors(result) if result.errors?
             display_suggestions(result) if result.suggestions?
 
-            logger.info("")
             display_summary(result, graph)
           end
 
           private def display_success_messages
-            logger.info("✅ All enabled MODs have their required dependencies satisfied")
-            logger.info("✅ No circular dependencies detected")
-            logger.info("✅ No conflicting MODs are enabled simultaneously")
+            say <<~MESSAGE
+              ✅ All enabled MODs have their required dependencies satisfied
+              ✅ No circular dependencies detected
+              ✅ No conflicting MODs are enabled simultaneously
+            MESSAGE
           end
 
           private def display_warnings(result)
-            logger.info("")
             logger.warn("⚠️  Warnings:")
             result.warnings.each do |warning|
               logger.warn("  - #{warning.message}")
@@ -83,7 +80,6 @@ module Factorix
           end
 
           private def display_errors(result)
-            logger.info("")
             logger.error("❌ Errors:")
             result.errors.each do |error|
               logger.error("  - #{error.message}")
@@ -91,11 +87,11 @@ module Factorix
           end
 
           private def display_suggestions(result)
-            logger.info("")
-            logger.info("💡 Suggestions:")
-            result.suggestions.each do |suggestion|
-              logger.info("  - #{suggestion.message}")
-            end
+            suggestions_text = result.suggestions.map {|s| "  - #{s.message}" }.join("\n")
+            say <<~MESSAGE
+              💡 Suggestions:
+              #{suggestions_text}
+            MESSAGE
           end
 
           private def display_summary(result, graph)
@@ -110,7 +106,7 @@ module Factorix
               parts << "#{result.warnings.size} warning#{"s" unless result.warnings.size == 1}"
             end
 
-            logger.info("Summary: #{parts.join(", ")}")
+            say "Summary: #{parts.join(", ")}"
           end
         end
       end

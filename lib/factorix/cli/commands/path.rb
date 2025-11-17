@@ -14,9 +14,7 @@ module Factorix
       # @example
       #   $ factorix path mods-dir user-dir
       #   {"mods-dir":"/path/to/mods","user-dir":"/path/to/user"}
-      class Path < Dry::CLI::Command
-        prepend CommonOptions
-
+      class Path < Base
         # Mapping from normalized path types (with hyphens) to runtime method names
         PATH_TYPES = {
           "executable-path" => :executable_path,
@@ -89,7 +87,7 @@ module Factorix
             raise ArgumentError, error_message.chomp
           end
 
-          puts JSON.pretty_generate(result)
+          say JSON.pretty_generate(result)
         end
       end
     end
