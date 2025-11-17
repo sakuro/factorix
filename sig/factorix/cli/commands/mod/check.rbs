@@ -1,0 +1,18 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        class Check < Base
+          attr_reader logger: Dry::Logger::Dispatcher
+          attr_reader runtime: Runtime
+
+          def call: (?quiet: bool) -> void
+        end
+      end
+    end
+  end
+end

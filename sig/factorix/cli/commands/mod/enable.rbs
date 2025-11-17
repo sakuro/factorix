@@ -1,0 +1,19 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        class Enable < Base
+          include Confirmable
+
+          attr_reader logger: Dry::Logger::Dispatcher
+
+          def call: (mod_names: Array[String], ?only: bool, ?yes: bool, ?quiet: bool) -> void
+        end
+      end
+    end
+  end
+end
