@@ -33,11 +33,11 @@ module Factorix
             raise Factorix::Error, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
           end
 
-          print "#{message} [Y/n] "
+          print "#{message} [y/N] "
           response = $stdin.gets&.strip&.downcase
 
-          # Y, y, yes, or empty (Enter) means yes
-          response.empty? || response == "y" || response == "yes"
+          # Only explicit y or yes means yes (default is no for safety)
+          response == "y" || response == "yes"
         end
       end
     end
