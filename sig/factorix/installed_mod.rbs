@@ -29,19 +29,5 @@ module Factorix
     attr_reader info: Types::InfoJSON
 
     def <=>: (InstalledMOD other) -> Integer?
-
-    private
-
-    def form_priority: (Symbol form) -> Integer
-
-    private
-
-    def self.scan_zip: (Pathname path, Dry::Logger::Dispatcher logger) -> InstalledMOD?
-
-    def self.scan_directory: (Pathname path, Dry::Logger::Dispatcher logger) -> InstalledMOD?
-
-    def self.resolve_duplicates: (Array[InstalledMOD] mods) -> Array[InstalledMOD]
-
-    def self.form_priority_class: (Symbol form) -> Integer
   end
 end
