@@ -22,13 +22,12 @@ module Factorix
     extend Dry::Container::Mixin
     extend Dry::Configurable
 
-    # Some items are registered with memoize: false to support parallel downloads.
+    # Some items are registered with memoize: false to support independent event handlers
+    # for each parallel download task (e.g., progress tracking).
     # Items registered with memoize: false:
-    # - :download_http_client
-    # - :api_http_client
-    # - :downloader
-    # - :mod_download_api
-    # - :portal
+    # - :downloader (event handlers for progress tracking)
+    # - :mod_download_api (contains :downloader)
+    # - :portal (contains :mod_download_api)
 
     # Register runtime detector
     register(:runtime, memoize: true) do
@@ -85,7 +84,7 @@ module Factorix
 
     # Register decorated HTTP client for downloads (with retry only)
     # Note: Caching is handled by Downloader, not at HTTP client level
-    register(:download_http_client, memoize: false) do
+    register(:download_http_client, memoize: true) do
       client = resolve(:http_client)
       retry_strategy = resolve(:retry_strategy)
 
@@ -94,7 +93,7 @@ module Factorix
     end
 
     # Register decorated HTTP client for API calls (with retry + cache)
-    register(:api_http_client, memoize: false) do
+    register(:api_http_client, memoize: true) do
       client = resolve(:http_client)
       api_cache = resolve(:api_cache)
       retry_strategy = resolve(:retry_strategy)
@@ -105,7 +104,7 @@ module Factorix
     end
 
     # Register decorated HTTP client for uploads (with retry only, no cache)
-    register(:upload_http_client, memoize: false) do
+    register(:upload_http_client, memoize: true) do
       client = resolve(:http_client)
       retry_strategy = resolve(:retry_strategy)
 
