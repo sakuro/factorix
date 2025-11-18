@@ -16,10 +16,7 @@ module Factorix
       #   attr_reader :logger
       #   # @return [HTTP::Client]
       #   attr_reader :client
-      include Factorix::Import[
-        :logger,
-        client: :upload_http_client
-      ]
+      include Factorix::Import[:logger, client: :upload_http_client]
       include Dry::Events::Publisher[:uploader]
 
       register_event("upload.started")

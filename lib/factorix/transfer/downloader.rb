@@ -21,11 +21,7 @@ module Factorix
       #   attr_reader :cache
       #   # @return [HTTP::Client]
       #   attr_reader :client
-      include Factorix::Import[
-        :logger,
-        cache: :download_cache,
-        client: :download_http_client
-      ]
+      include Factorix::Import[:logger, cache: :download_cache, client: :download_http_client]
       include Dry::Events::Publisher[:downloader]
 
       register_event("download.started")
