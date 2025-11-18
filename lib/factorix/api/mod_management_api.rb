@@ -44,6 +44,14 @@ module Factorix
       ].freeze
       private_constant :ALLOWED_EDIT_METADATA
 
+      # Initialize with thread-safe credential loading
+      #
+      # @param args [Hash] dependency injection arguments
+      def initialize(...)
+        super
+        @api_credential_mutex = Mutex.new
+      end
+
       # Initialize new mod publication
       #
       # @param mod_name [String] the mod name
@@ -137,7 +145,11 @@ module Factorix
       end
 
       private def api_credential
-        @api_credential ||= Application[:api_credential]
+        return @api_credential if defined?(@api_credential)
+
+        @api_credential_mutex.synchronize do
+          @api_credential ||= Application[:api_credential]
+        end
       end
 
       private def build_auth_header

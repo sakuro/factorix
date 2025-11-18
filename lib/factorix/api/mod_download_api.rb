@@ -21,6 +21,14 @@ module Factorix
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
 
+      # Initialize with thread-safe credential loading
+      #
+      # @param args [Hash] dependency injection arguments
+      def initialize(...)
+        super
+        @service_credential_mutex = Mutex.new
+      end
+
       # Download a mod file to the specified output path
       #
       # @param download_url [String] relative download URL from API response (e.g., "/download/mod-name/...")
@@ -38,7 +46,11 @@ module Factorix
       end
 
       private def service_credential
-        @service_credential ||= Application[:service_credential]
+        return @service_credential if defined?(@service_credential)
+
+        @service_credential_mutex.synchronize do
+          @service_credential ||= Application[:service_credential]
+        end
       end
 
       private def build_download_uri(download_url)
