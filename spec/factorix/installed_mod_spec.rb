@@ -132,66 +132,6 @@ RSpec.describe Factorix::InstalledMOD do
     end
   end
 
-  describe ".find_by_name" do
-    let(:mod_name) { "test-mod" }
-
-    before do
-      create_valid_zip_mod(temp_dir + "#{mod_name}_1.0.0.zip", mod_name, "1.0.0")
-      create_valid_zip_mod(temp_dir + "#{mod_name}_2.0.0.zip", mod_name, "2.0.0")
-      create_valid_zip_mod(temp_dir + "other-mod_1.0.0.zip", "other-mod", "1.0.0")
-    end
-
-    it "finds all versions of the specified MOD" do
-      mods = Factorix::InstalledMOD.find_by_name(temp_dir, mod_name)
-      expect(mods.size).to eq(2)
-      expect(mods.map {|m| m.version.to_s }).to contain_exactly("1.0.0", "2.0.0")
-    end
-
-    it "returns empty array for non-existent MOD" do
-      mods = Factorix::InstalledMOD.find_by_name(temp_dir, "non-existent")
-      expect(mods).to be_empty
-    end
-  end
-
-  describe ".find" do
-    let(:mod_name) { "test-mod" }
-
-    before do
-      create_valid_zip_mod(temp_dir + "#{mod_name}_1.0.0.zip", mod_name, "1.0.0")
-      create_valid_zip_mod(temp_dir + "#{mod_name}_2.0.0.zip", mod_name, "2.0.0")
-    end
-
-    context "without version specified" do
-      it "returns the latest version" do
-        mod = Factorix::InstalledMOD.find(temp_dir, mod_name)
-        expect(mod).not_to be_nil
-        expect(mod.version.to_s).to eq("2.0.0")
-      end
-    end
-
-    context "with version specified" do
-      it "returns the specified version" do
-        version = Factorix::Types::MODVersion.from_string("1.0.0")
-        mod = Factorix::InstalledMOD.find(temp_dir, mod_name, version)
-        expect(mod).not_to be_nil
-        expect(mod.version.to_s).to eq("1.0.0")
-      end
-
-      it "returns nil if version not found" do
-        version = Factorix::Types::MODVersion.from_string("3.0.0")
-        mod = Factorix::InstalledMOD.find(temp_dir, mod_name, version)
-        expect(mod).to be_nil
-      end
-    end
-
-    context "when MOD doesn't exist" do
-      it "returns nil" do
-        mod = Factorix::InstalledMOD.find(temp_dir, "non-existent")
-        expect(mod).to be_nil
-      end
-    end
-  end
-
   describe "#<=>" do
     let(:mod1_v1) { build_installed_mod("test-mod", "1.0.0", :zip) }
     let(:mod1_v2) { build_installed_mod("test-mod", "2.0.0", :zip) }

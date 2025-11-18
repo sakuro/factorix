@@ -57,35 +57,6 @@ module Factorix
       resolved.sort_by {|mod| [-mod.version.major, -mod.version.minor, -mod.version.patch] }
     end
 
-    # Find all installed MODs with the given name
-    #
-    # @param mod_dir [Pathname] The mod directory to scan
-    # @param name [String] The MOD name to search for
-    # @return [Array<InstalledMOD>] Array of installed MODs with the given name, sorted by version (descending)
-    def self.find_by_name(mod_dir, name)
-      scan(mod_dir).select {|mod| mod.mod.name == name }
-    end
-
-    # Find an installed MOD with the given name and optional version
-    #
-    # If version is nil, returns the latest version.
-    # If version is specified, returns the MOD with that exact version.
-    #
-    # @param mod_dir [Pathname] The mod directory to scan
-    # @param name [String] The MOD name to search for
-    # @param version [Factorix::Types::MODVersion, nil] The version to search for (nil for latest)
-    # @return [InstalledMOD, nil] The found MOD or nil if not found
-    def self.find(mod_dir, name, version=nil)
-      mods = find_by_name(mod_dir, name)
-      return nil if mods.empty?
-
-      if version
-        mods.find {|mod| mod.version == version }
-      else
-        mods.first # Already sorted by version descending
-      end
-    end
-
     # Scan a ZIP file and create InstalledMOD if valid
     #
     # @param path [Pathname] Path to the ZIP file
