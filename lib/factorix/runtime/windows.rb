@@ -62,23 +62,33 @@ module Factorix
         #
         # @return [Pathname] the Program Files (x86) directory
         def program_files_x86
-          # ProgramFiles(x86) is the environment variable name, but Ruby doesn't allow
-          # parentheses in variable names, so we use fetch with a string key
-          Pathname(ENV.fetch("ProgramFiles(x86)"))
+          Pathname(convert_separator(ENV.fetch("ProgramFiles(x86)")))
         end
 
         # Get the AppData directory path
         #
         # @return [Pathname] the AppData directory
         def app_data
-          Pathname(ENV.fetch("APPDATA"))
+          Pathname(convert_separator(ENV.fetch("APPDATA")))
         end
 
         # Get the Local AppData directory path
         #
         # @return [Pathname] the Local AppData directory
         def local_app_data
-          Pathname(ENV.fetch("LOCALAPPDATA"))
+          Pathname(convert_separator(ENV.fetch("LOCALAPPDATA")))
+        end
+
+        # Convert Windows path separators to forward slashes for aesthetics and consistency
+        #
+        # While Ruby accepts both separators, normalizing to forward slashes prevents
+        # mixing backslashes and forward slashes when concatenating paths with Pathname#+,
+        # which improves readability.
+        #
+        # @param path_string [String] the path string with backslashes
+        # @return [String] the path string with forward slashes
+        private def convert_separator(path_string)
+          path_string.tr(File::ALT_SEPARATOR, File::SEPARATOR)
         end
       end
     end
