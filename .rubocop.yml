@@ -20,6 +20,7 @@ plugins:
   - rubocop-performance
   - rubocop-rake
   - rubocop-rspec
+  - rubocop-thread_safety
 
 inherit_gem:
   docquet:
@@ -34,6 +35,7 @@ inherit_gem:
     - config/cops/rspec.yml
     - config/cops/security.yml
     - config/cops/style.yml
+    - config/cops/thread_safety.yml
 
 inherit_from: .rubocop_todo.yml
 
