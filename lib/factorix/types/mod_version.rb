@@ -82,16 +82,12 @@ module Factorix
       # Convert to string representation
       #
       # @return [String] Version string in format "X.Y.Z"
-      def to_s
-        "#{major}.#{minor}.#{patch}"
-      end
+      def to_s = "#{major}.#{minor}.#{patch}"
 
       # Convert to array of integers
       #
       # @return [Array<Integer>] Array containing [major, minor, patch]
-      def to_a
-        [major, minor, patch].freeze
-      end
+      def to_a = [major, minor, patch].freeze
 
       # Compare with another MODVersion
       #

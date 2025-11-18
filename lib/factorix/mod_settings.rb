@@ -45,9 +45,7 @@ module Factorix
       #
       # @param key [String] The setting key
       # @return [Object, nil] The setting value or nil if not found
-      def [](key)
-        @settings[key]
-      end
+      def [](key) = @settings[key]
 
       # Iterate over all settings in this section
       #
@@ -64,40 +62,30 @@ module Factorix
       # Check if this section has any settings
       #
       # @return [Boolean] True if the section has no settings
-      def empty?
-        @settings.empty?
-      end
+      def empty? = @settings.empty?
 
       # Check if a key exists in this section
       #
       # @param key [String] The setting key
       # @return [Boolean] True if the key exists
-      def key?(key)
-        @settings.key?(key)
-      end
+      def key?(key) = @settings.key?(key)
       alias has_key? key?
       alias include? key?
 
       # Get all keys in this section
       #
       # @return [Array<String>] Array of all setting keys
-      def keys
-        @settings.keys
-      end
+      def keys = @settings.keys
 
       # Get all values in this section
       #
       # @return [Array<Object>] Array of all setting values
-      def values
-        @settings.values
-      end
+      def values = @settings.values
 
       # Get the number of settings in this section
       #
       # @return [Integer] Number of settings
-      def size
-        @settings.size
-      end
+      def size = @settings.size
       alias length size
 
       # Fetch a setting value with optional default or block
@@ -108,16 +96,12 @@ module Factorix
       # @yieldparam key [String] The missing key
       # @return [Object] The setting value, default, or block result
       # @raise [KeyError] If key doesn't exist and no default/block provided
-      def fetch(key, *, &)
-        @settings.fetch(key, *, &)
-      end
+      def fetch(key, *, &) = @settings.fetch(key, *, &)
 
       # Convert this section to a Hash
       #
       # @return [Hash<String, Object>] Hash of all settings
-      def to_h
-        @settings.dup
-      end
+      def to_h = @settings.dup
     end
 
     # Load MOD settings from file

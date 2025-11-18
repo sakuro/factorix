@@ -74,30 +74,22 @@ module Factorix
       # Check if this is a required dependency
       #
       # @return [Boolean] true if dependency is required
-      def required?
-        type == REQUIRED
-      end
+      def required? = type == REQUIRED
 
       # Check if this is an optional dependency (including hidden optional)
       #
       # @return [Boolean] true if dependency is optional or hidden optional
-      def optional?
-        type == OPTIONAL || type == HIDDEN_OPTIONAL
-      end
+      def optional? = type == OPTIONAL || type == HIDDEN_OPTIONAL
 
       # Check if this is an incompatible (conflicting) dependency
       #
       # @return [Boolean] true if dependency is incompatible
-      def incompatible?
-        type == INCOMPATIBLE
-      end
+      def incompatible? = type == INCOMPATIBLE
 
       # Check if this dependency does not affect load order
       #
       # @return [Boolean] true if dependency is load-neutral
-      def load_neutral?
-        type == LOAD_NEUTRAL
-      end
+      def load_neutral? = type == LOAD_NEUTRAL
 
       # Check if a given version satisfies this dependency's version requirement
       #

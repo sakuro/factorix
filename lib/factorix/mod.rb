@@ -21,24 +21,18 @@ module Factorix
     #
     # @return [Boolean] true if this MOD is the base MOD
     # @note The check is case-sensitive, only "base" (not "BASE" or "Base") is considered the base MOD
-    def base?
-      name == "base"
-    end
+    def base? = name == "base"
 
     # Check if this MOD is an expansion MOD
     #
     # @return [Boolean] true if this MOD is an expansion MOD (space-age, quality, or elevated-rails)
     # @note The check is case-sensitive
-    def expansion?
-      EXPANSION_MODS.include?(name)
-    end
+    def expansion? = EXPANSION_MODS.include?(name)
 
     # Return the name of the MOD
     #
     # @return [String] the name of the MOD
-    def to_s
-      name
-    end
+    def to_s = name
 
     # Compare this MOD with another MOD by name
     #

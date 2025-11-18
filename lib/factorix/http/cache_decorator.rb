@@ -94,9 +94,7 @@ module Factorix
       # @param headers [Hash<String, String>] request headers
       # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
-      def post(uri, body:, headers: {}, content_type: nil)
-        client.post(uri, body:, headers:, content_type:)
-      end
+      def post(uri, body:, headers: {}, content_type: nil) = client.post(uri, body:, headers:, content_type:)
 
       private def with_temporary_file
         temp_file = Tempfile.new("http_cache")
@@ -123,16 +121,12 @@ module Factorix
       # Always returns true for cached responses
       #
       # @return [Boolean] true
-      def success?
-        true
-      end
+      def success? = true
 
       # Get content length from body size
       #
       # @return [Integer] body size in bytes
-      def content_length
-        @body.bytesize
-      end
+      def content_length = @body.bytesize
     end
   end
 end

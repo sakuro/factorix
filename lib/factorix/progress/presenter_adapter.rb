@@ -35,16 +35,12 @@ module Factorix
       #
       # @param current [Integer] current progress value
       # @return [void]
-      def update(current)
-        @mutex.synchronize { @tty_bar.current = current }
-      end
+      def update(current) = @mutex.synchronize { @tty_bar.current = current }
 
       # Mark the progress as finished
       #
       # @return [void]
-      def finish
-        @mutex.synchronize { @tty_bar.finish }
-      end
+      def finish = @mutex.synchronize { @tty_bar.finish }
     end
   end
 end

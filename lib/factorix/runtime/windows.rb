@@ -22,16 +22,12 @@ module Factorix
       # Returns the default Steam installation path on Windows.
       #
       # @return [Pathname] the Factorio executable path
-      def executable_path
-        path.program_files_x86.join("Steam/steamapps/common/Factorio/bin/x64/factorio.exe")
-      end
+      def executable_path = path.program_files_x86.join("Steam/steamapps/common/Factorio/bin/x64/factorio.exe")
 
       # Get the Factorio user directory path
       #
       # @return [Pathname] the Factorio user directory
-      def user_dir
-        path.app_data.join("Factorio")
-      end
+      def user_dir = path.app_data.join("Factorio")
 
       private attr_reader :path
 
@@ -61,23 +57,17 @@ module Factorix
         # Get the Program Files (x86) directory path
         #
         # @return [Pathname] the Program Files (x86) directory
-        def program_files_x86
-          Pathname(convert_separator(ENV.fetch("ProgramFiles(x86)")))
-        end
+        def program_files_x86 = Pathname(convert_separator(ENV.fetch("ProgramFiles(x86)")))
 
         # Get the AppData directory path
         #
         # @return [Pathname] the AppData directory
-        def app_data
-          Pathname(convert_separator(ENV.fetch("APPDATA")))
-        end
+        def app_data = Pathname(convert_separator(ENV.fetch("APPDATA")))
 
         # Get the Local AppData directory path
         #
         # @return [Pathname] the Local AppData directory
-        def local_app_data
-          Pathname(convert_separator(ENV.fetch("LOCALAPPDATA")))
-        end
+        def local_app_data = Pathname(convert_separator(ENV.fetch("LOCALAPPDATA")))
 
         # Convert Windows path separators to forward slashes for aesthetics and consistency
         #

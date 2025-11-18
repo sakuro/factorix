@@ -46,9 +46,7 @@ module Factorix
       # @param headers [Hash<String, String>] request headers
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
-      def get(uri, headers: {}, &)
-        request(:get, uri, headers:, &)
-      end
+      def get(uri, headers: {}, &) = request(:get, uri, headers:, &)
 
       # Execute a POST request
       #

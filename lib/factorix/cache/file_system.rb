@@ -42,9 +42,7 @@ module Factorix
       #
       # @param url_string [String] URL string to generate key for
       # @return [String] cache key
-      def key_for(url_string)
-        Digest::SHA1.hexdigest(url_string)
-      end
+      def key_for(url_string) = Digest::SHA1.hexdigest(url_string)
 
       # Check if a cache entry exists and is not expired.
       # A cache entry is considered to exist if its file exists and is not expired

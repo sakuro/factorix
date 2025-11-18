@@ -40,9 +40,7 @@ module Factorix
 
         # Require that the game is not running when this command executes
         # @return [void]
-        def self.require_game_stopped!
-          prepend RequiresGameStopped
-        end
+        def self.require_game_stopped! = prepend RequiresGameStopped
 
         # Common options available to all commands
         option :config_path, type: :string, aliases: ["-c"], desc: "Path to configuration file"

@@ -36,16 +36,12 @@ module Factorix
         include TSort
 
         # @param mod_deps_map [Hash<String, Dependency::List>] Map of MOD names to dependencies
-        def initialize(mod_deps_map)
-          @mod_deps_map = mod_deps_map
-        end
+        def initialize(mod_deps_map) = @mod_deps_map = mod_deps_map
 
         # Iterate through all nodes in the graph
         #
         # @yieldparam node [String] MOD name
-        def tsort_each_node(&)
-          @mod_deps_map.each_key(&)
-        end
+        def tsort_each_node(&) = @mod_deps_map.each_key(&)
 
         # Iterate through children (dependencies) of a node
         #
@@ -148,30 +144,22 @@ module Factorix
       # Get all required dependencies
       #
       # @return [Array<Entry>] Array of required dependencies
-      def required
-        @dependencies.select(&:required?)
-      end
+      def required = @dependencies.select(&:required?)
 
       # Get all optional dependencies (including hidden optional)
       #
       # @return [Array<Entry>] Array of optional dependencies
-      def optional
-        @dependencies.select(&:optional?)
-      end
+      def optional = @dependencies.select(&:optional?)
 
       # Get all incompatible dependencies
       #
       # @return [Array<Entry>] Array of incompatible dependencies
-      def incompatible
-        @dependencies.select(&:incompatible?)
-      end
+      def incompatible = @dependencies.select(&:incompatible?)
 
       # Get all load-neutral dependencies
       #
       # @return [Array<Entry>] Array of load-neutral dependencies
-      def load_neutral
-        @dependencies.select(&:load_neutral?)
-      end
+      def load_neutral = @dependencies.select(&:load_neutral?)
 
       # Check if this collection depends on a specific MOD
       #
@@ -200,16 +188,12 @@ module Factorix
       # Check if the collection is empty
       #
       # @return [Boolean] true if no dependencies, false otherwise
-      def empty?
-        @dependencies.empty?
-      end
+      def empty? = @dependencies.empty?
 
       # Get the total number of dependencies
       #
       # @return [Integer] Number of dependencies
-      def size
-        @dependencies.size
-      end
+      def size = @dependencies.size
 
       # Check if all required dependencies are satisfied
       #
@@ -269,16 +253,12 @@ module Factorix
       # Convert to array of dependency strings
       #
       # @return [Array<String>] Array of dependency strings
-      def to_a
-        @dependencies.map(&:to_s)
-      end
+      def to_a = @dependencies.map(&:to_s)
 
       # Convert to hash keyed by MOD name
       #
       # @return [Hash<String, Entry>] Hash of {mod_name => dependency}
-      def to_h
-        @dependencies.to_h {|dep| [dep.mod.name, dep] }
-      end
+      def to_h = @dependencies.to_h {|dep| [dep.mod.name, dep] }
     end
   end
 end

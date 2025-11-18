@@ -9,33 +9,25 @@ module Factorix
       # Create a new download handler
       #
       # @param presenter [Presenter, PresenterAdapter] progress presenter to update
-      def initialize(presenter)
-        @presenter = presenter
-      end
+      def initialize(presenter) = @presenter = presenter
 
       # Handle download started event
       #
       # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_download_started(event)
-        @presenter.start(total: event[:total_size])
-      end
+      def on_download_started(event) = @presenter.start(total: event[:total_size])
 
       # Handle download progress event
       #
       # @param event [Dry::Events::Event] event with current_size payload
       # @return [void]
-      def on_download_progress(event)
-        @presenter.update(event[:current_size])
-      end
+      def on_download_progress(event) = @presenter.update(event[:current_size])
 
       # Handle download completed event
       #
       # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_download_completed(_event)
-        @presenter.finish
-      end
+      def on_download_completed(_event) = @presenter.finish
 
       # Handle cache hit event
       #

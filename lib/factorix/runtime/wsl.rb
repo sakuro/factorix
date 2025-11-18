@@ -11,32 +11,24 @@ module Factorix
       # Initialize WSL runtime environment
       #
       # @param path [WSLPath] the path provider (for dependency injection)
-      def initialize(path: WSLPath.new)
-        super
-      end
+      def initialize(path: WSLPath.new) = super
 
       # WSL-specific path provider
       class WSLPath
         # Get the Program Files (x86) directory path (WSL-converted)
         #
         # @return [Pathname] the Program Files (x86) directory
-        def program_files_x86
-          Pathname(wslpath(windows_env("ProgramFiles(x86)")))
-        end
+        def program_files_x86 = Pathname(wslpath(windows_env("ProgramFiles(x86)")))
 
         # Get the AppData directory path (WSL-converted)
         #
         # @return [Pathname] the AppData directory
-        def app_data
-          Pathname(wslpath(windows_env("APPDATA")))
-        end
+        def app_data = Pathname(wslpath(windows_env("APPDATA")))
 
         # Get the Local AppData directory path (WSL-converted)
         #
         # @return [Pathname] the Local AppData directory
-        def local_app_data
-          Pathname(wslpath(windows_env("LOCALAPPDATA")))
-        end
+        def local_app_data = Pathname(wslpath(windows_env("LOCALAPPDATA")))
 
         # Get Windows environment variable value
         #

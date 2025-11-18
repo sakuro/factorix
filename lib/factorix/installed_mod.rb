@@ -38,17 +38,13 @@ module Factorix
     # Get all installed MODs
     #
     # @return [Array<InstalledMOD>] Array of all installed MODs
-    def self.all
-      Scanner.new.scan
-    end
+    def self.all = Scanner.new.scan
 
     # Enumerate over all installed MODs
     #
     # @yieldparam [InstalledMOD] mod Each installed MOD
     # @return [Enumerator, Array] Enumerator if no block given, otherwise the result of the block
-    def self.each(&)
-      all.each(&)
-    end
+    def self.each(&) = all.each(&)
 
     # Create InstalledMOD from a ZIP file
     #
@@ -188,16 +184,12 @@ module Factorix
     # Check if this is the base MOD
     #
     # @return [Boolean] true if this is the base MOD
-    def base?
-      mod.base?
-    end
+    def base? = mod.base?
 
     # Check if this is an expansion MOD
     #
     # @return [Boolean] true if this is an expansion MOD
-    def expansion?
-      mod.expansion?
-    end
+    def expansion? = mod.expansion?
 
     private def form_priority(form)
       case form

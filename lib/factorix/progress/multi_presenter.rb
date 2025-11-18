@@ -47,9 +47,7 @@ module Factorix
       #
       # @param name [String, Symbol] the identifier used during registration
       # @return [PresenterAdapter, nil] the presenter adapter or nil if not found
-      def [](name)
-        @presenters[name]
-      end
+      def [](name) = @presenters[name]
     end
   end
 end

@@ -16,17 +16,13 @@ module Factorix
       #
       # @return [Pathname] the Factorio user directory
       # @raise [NotImplementedError] Linux implementation requires configuration
-      def user_dir
-        raise NotImplementedError, "Auto-detection not supported on Linux"
-      end
+      def user_dir = raise NotImplementedError, "Auto-detection not supported on Linux"
 
       # Get the Factorio executable path
       #
       # @return [Pathname] the Factorio executable path
       # @raise [NotImplementedError] Linux implementation requires configuration
-      def executable_path
-        raise NotImplementedError, "Auto-detection not supported on Linux"
-      end
+      def executable_path = raise NotImplementedError, "Auto-detection not supported on Linux"
     end
   end
 end

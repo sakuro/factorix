@@ -48,53 +48,39 @@ module Factorix
       #
       # @param mod [Factorix::MOD] The MOD identifier
       # @return [Factorix::Dependency::Node, nil] The node or nil if not found
-      def node(mod)
-        @nodes[mod]
-      end
+      def node(mod) = @nodes[mod]
 
       # Get all nodes
       #
       # @return [Array<Factorix::Dependency::Node>] All nodes in the graph
-      def nodes
-        @nodes.values
-      end
+      def nodes = @nodes.values
 
       # Get edges from a MOD
       #
       # @param mod [Factorix::MOD] The MOD identifier
       # @return [Array<Factorix::Dependency::Edge>] Edges from this MOD
-      def edges_from(mod)
-        @edges[mod] || []
-      end
+      def edges_from(mod) = @edges[mod] || []
 
       # Get all edges in the graph
       #
       # @return [Array<Factorix::Dependency::Edge>] All edges
-      def edges
-        @edges.values.flatten
-      end
+      def edges = @edges.values.flatten
 
       # Check if the graph contains a node for the given MOD
       #
       # @param mod [Factorix::MOD] The MOD identifier
       # @return [Boolean]
-      def node?(mod)
-        @nodes.key?(mod)
-      end
+      def node?(mod) = @nodes.key?(mod)
 
       # Get the number of nodes in the graph
       #
       # @return [Integer]
-      def size
-        @nodes.size
-      end
+      def size = @nodes.size
 
       # Check if the graph is empty
       #
       # @return [Boolean]
-      def empty?
-        @nodes.empty?
-      end
+      def empty? = @nodes.empty?
 
       # Get topological order of MODs
       #
@@ -103,9 +89,7 @@ module Factorix
       #
       # @return [Array<Factorix::MOD>] MODs in topological order
       # @raise [TSort::Cyclic] if the graph contains cycles
-      def topological_order
-        tsort
-      end
+      def topological_order = tsort
 
       # Check if the graph contains cycles
       #
@@ -120,17 +104,13 @@ module Factorix
       # Find strongly connected components (cycles)
       #
       # @return [Array<Array<Factorix::MOD>>] Array of cycles
-      def strongly_connected_components
-        each_strongly_connected_component.to_a
-      end
+      def strongly_connected_components = each_strongly_connected_component.to_a
 
       # TSort interface: iterate over each node
       #
       # @yield [Factorix::MOD] Each MOD in the graph
       # @return [void]
-      def tsort_each_node(&)
-        @nodes.each_key(&)
-      end
+      def tsort_each_node(&) = @nodes.each_key(&)
 
       # TSort interface: iterate over children of a node
       #
@@ -149,9 +129,7 @@ module Factorix
       # Get a string representation of the graph
       #
       # @return [String]
-      def to_s
-        "#<#{self.class.name} nodes=#{@nodes.size} edges=#{edges.size}>"
-      end
+      def to_s = "#<#{self.class.name} nodes=#{@nodes.size} edges=#{edges.size}>"
 
       # Detailed inspection string
       #

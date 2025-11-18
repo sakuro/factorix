@@ -147,16 +147,12 @@ module Factorix
         # Check if at end of stream
         #
         # @return [Boolean] true if at EOF
-        def eof?
-          @io.eof?
-        end
+        def eof? = @io.eof?
 
         # Close underlying IO
         #
         # @return [void]
-        def close
-          @io.close
-        end
+        def close = @io.close
 
         # Rewind underlying IO
         #
@@ -169,9 +165,7 @@ module Factorix
         # Get current size
         #
         # @return [Integer] total size
-        def size
-          @total_size
-        end
+        def size = @total_size
       end
 
       # Combined IO that concatenates multiple IO streams
@@ -201,16 +195,12 @@ module Factorix
         # Check if all streams are exhausted
         #
         # @return [Boolean] true if at EOF
-        def eof?
-          @index >= @ios.size
-        end
+        def eof? = @index >= @ios.size
 
         # Close all IO streams
         #
         # @return [void]
-        def close
-          @ios.each(&:close)
-        end
+        def close = @ios.each(&:close)
 
         # Rewind all streams
         #
@@ -223,9 +213,7 @@ module Factorix
         # Get total size of all streams
         #
         # @return [Integer] total size
-        def size
-          @ios.sum(&:size)
-        end
+        def size = @ios.sum(&:size)
       end
     end
   end

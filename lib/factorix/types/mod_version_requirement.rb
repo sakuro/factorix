@@ -67,9 +67,7 @@ module Factorix
       # String representation of the requirement
       #
       # @return [String] String representation (e.g., ">= 1.2.0")
-      def to_s
-        "#{operator} #{version}"
-      end
+      def to_s = "#{operator} #{version}"
     end
   end
 end

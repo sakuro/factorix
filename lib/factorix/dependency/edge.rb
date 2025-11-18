@@ -37,30 +37,22 @@ module Factorix
       # Check if this is a required dependency
       #
       # @return [Boolean]
-      def required?
-        @type == REQUIRED
-      end
+      def required? = @type == REQUIRED
 
       # Check if this is an optional dependency
       #
       # @return [Boolean]
-      def optional?
-        @type == OPTIONAL || @type == HIDDEN_OPTIONAL
-      end
+      def optional? = @type == OPTIONAL || @type == HIDDEN_OPTIONAL
 
       # Check if this is an incompatibility relationship
       #
       # @return [Boolean]
-      def incompatible?
-        @type == INCOMPATIBLE
-      end
+      def incompatible? = @type == INCOMPATIBLE
 
       # Check if this is a load-neutral dependency
       #
       # @return [Boolean]
-      def load_neutral?
-        @type == LOAD_NEUTRAL
-      end
+      def load_neutral? = @type == LOAD_NEUTRAL
 
       # Check if the given version satisfies this edge's version requirement
       #
@@ -83,9 +75,7 @@ module Factorix
       # Detailed inspection string
       #
       # @return [String]
-      def inspect
-        "#<#{self.class.name} #{self}>"
-      end
+      def inspect = "#<#{self.class.name} #{self}>"
     end
   end
 end

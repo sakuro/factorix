@@ -54,9 +54,7 @@ module Factorix
       # @param mod [Factorix::MOD, nil] Related MOD
       # @param dependency [Factorix::MOD, nil] Dependency MOD
       # @return [void]
-      def add_error(type:, message:, mod: nil, dependency: nil)
-        @errors << Error.new(type:, message:, mod:, dependency:)
-      end
+      def add_error(type:, message:, mod: nil, dependency: nil) = @errors << Error.new(type:, message:, mod:, dependency:)
 
       # Add a warning
       #
@@ -64,9 +62,7 @@ module Factorix
       # @param message [String] Warning message
       # @param mod [Factorix::MOD, nil] Related MOD
       # @return [void]
-      def add_warning(type:, message:, mod: nil)
-        @warnings << Warning.new(type:, message:, mod:)
-      end
+      def add_warning(type:, message:, mod: nil) = @warnings << Warning.new(type:, message:, mod:)
 
       # Add a suggestion
       #
@@ -74,9 +70,7 @@ module Factorix
       # @param mod [Factorix::MOD] Related MOD
       # @param version [Factorix::Types::MODVersion] Suggested version
       # @return [void]
-      def add_suggestion(message:, mod:, version:)
-        @suggestions << Suggestion.new(message:, mod:, version:)
-      end
+      def add_suggestion(message:, mod:, version:) = @suggestions << Suggestion.new(message:, mod:, version:)
 
       # Get all errors
       #
@@ -96,30 +90,22 @@ module Factorix
       # Check if there are any errors
       #
       # @return [Boolean]
-      def errors?
-        !@errors.empty?
-      end
+      def errors? = !@errors.empty?
 
       # Check if there are any warnings
       #
       # @return [Boolean]
-      def warnings?
-        !@warnings.empty?
-      end
+      def warnings? = !@warnings.empty?
 
       # Check if there are any suggestions
       #
       # @return [Boolean]
-      def suggestions?
-        !@suggestions.empty?
-      end
+      def suggestions? = !@suggestions.empty?
 
       # Check if validation passed (no errors)
       #
       # @return [Boolean]
-      def valid?
-        !errors?
-      end
+      def valid? = !errors?
     end
   end
 end

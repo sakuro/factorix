@@ -48,23 +48,17 @@ module Factorix
       # Read an unsigned 8-bit integer
       #
       # @return [Integer] 8-bit unsigned integer
-      def read_u8
-        read_bytes(1).unpack1("C")
-      end
+      def read_u8 = read_bytes(1).unpack1("C")
 
       # Read an unsigned 16-bit integer
       #
       # @return [Integer] 16-bit unsigned integer
-      def read_u16
-        read_bytes(2).unpack1("v")
-      end
+      def read_u16 = read_bytes(2).unpack1("v")
 
       # Read an unsigned 32-bit integer
       #
       # @return [Integer] 32-bit unsigned integer
-      def read_u32
-        read_bytes(4).unpack1("V")
-      end
+      def read_u32 = read_bytes(4).unpack1("V")
 
       # Read a space-optimized 16-bit unsigned integer
       #
@@ -88,16 +82,12 @@ module Factorix
       #
       # @param length [Integer] Number of integers to read
       # @return [Array<Integer>] Array of 16-bit unsigned integers
-      def read_u16_tuple(length)
-        Array.new(length) { read_u16 }
-      end
+      def read_u16_tuple(length) = Array.new(length) { read_u16 }
 
       # Read a boolean value
       #
       # @return [Boolean] Boolean value
-      def read_bool
-        read_u8 != 0
-      end
+      def read_bool = read_u8 != 0
 
       # Read a string
       #
@@ -111,45 +101,33 @@ module Factorix
       #
       # @see https://wiki.factorio.com/Property_tree#String
       # @return [String] String property
-      def read_str_property
-        read_bool ? "" : read_str
-      end
+      def read_str_property = read_bool ? "" : read_str
 
       # Read a double-precision floating point number
       #
       # @see https://wiki.factorio.com/Property_tree#Number
       # @return [Float] Double-precision floating point number
-      def read_double
-        read_bytes(8).unpack1("d")
-      end
+      def read_double = read_bytes(8).unpack1("d")
 
       # Read a GameVersion object
       #
       # @return [GameVersion] GameVersion object
-      def read_game_version
-        Factorix::Types::GameVersion.from_numbers(read_u16, read_u16, read_u16, read_u16)
-      end
+      def read_game_version = Factorix::Types::GameVersion.from_numbers(read_u16, read_u16, read_u16, read_u16)
 
       # Read a MODVersion object
       #
       # @return [MODVersion] MODVersion object
-      def read_mod_version
-        Factorix::Types::MODVersion.from_numbers(read_optim_u16, read_optim_u16, read_optim_u16)
-      end
+      def read_mod_version = Factorix::Types::MODVersion.from_numbers(read_optim_u16, read_optim_u16, read_optim_u16)
 
       # Read a signed long integer (8 bytes)
       #
       # @return [Integer] Signed long integer
-      def read_long
-        read_bytes(8).unpack1("q<")
-      end
+      def read_long = read_bytes(8).unpack1("q<")
 
       # Read an unsigned long integer (8 bytes)
       #
       # @return [Integer] Unsigned long integer
-      def read_unsigned_long
-        read_bytes(8).unpack1("Q<")
-      end
+      def read_unsigned_long = read_bytes(8).unpack1("Q<")
 
       # Read a dictionary
       #
@@ -214,9 +192,7 @@ module Factorix
       # Check if the stream is at EOF
       #
       # @return [Boolean] True if at end of file, false otherwise
-      def eof?
-        @stream.eof?
-      end
+      def eof? = @stream.eof?
     end
   end
 end

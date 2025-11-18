@@ -90,9 +90,7 @@ module Factorix
       # Convert to array of integers
       #
       # @return [Array<Integer>] Array containing [major, minor, patch, build]
-      def to_a
-        [major, minor, patch, build].freeze
-      end
+      def to_a = [major, minor, patch, build].freeze
 
       # Compare with another GameVersion
       #

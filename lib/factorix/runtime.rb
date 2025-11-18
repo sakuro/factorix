@@ -29,9 +29,7 @@ module Factorix
     # Check if running on WSL
     #
     # @return [Boolean] true if running on WSL, false otherwise
-    def self.wsl?
-      File.exist?("/proc/version") && /microsoft/i.match?(File.read("/proc/version"))
-    end
+    def self.wsl? = File.exist?("/proc/version") && /microsoft/i.match?(File.read("/proc/version"))
     private_class_method :wsl?
   end
 end

@@ -121,9 +121,7 @@ module Factorix
     #
     # @param mod [Factorix::MOD] the MOD to check
     # @return [Boolean] true if the MOD is in the list, false otherwise
-    def exist?(mod)
-      @mods.key?(mod)
-    end
+    def exist?(mod) = @mods.key?(mod)
 
     # Check if the MOD is enabled
     #

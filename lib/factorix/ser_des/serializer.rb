@@ -41,25 +41,19 @@ module Factorix
       #
       # @param uint8 [Integer] 8-bit unsigned integer
       # @return [void]
-      def write_u8(uint8)
-        write_bytes([uint8].pack("C"))
-      end
+      def write_u8(uint8) = write_bytes([uint8].pack("C"))
 
       # Write an unsigned 16-bit integer
       #
       # @param uint16 [Integer] 16-bit unsigned integer
       # @return [void]
-      def write_u16(uint16)
-        write_bytes([uint16].pack("v"))
-      end
+      def write_u16(uint16) = write_bytes([uint16].pack("v"))
 
       # Write an unsigned 32-bit integer
       #
       # @param uint32 [Integer] 32-bit unsigned integer
       # @return [void]
-      def write_u32(uint32)
-        write_bytes([uint32].pack("V"))
-      end
+      def write_u32(uint32) = write_bytes([uint32].pack("V"))
 
       # Write a space-optimized 16-bit unsigned integer
       #
@@ -93,9 +87,7 @@ module Factorix
       #
       # @param bool [Boolean] Boolean value
       # @return [void]
-      def write_bool(bool)
-        write_u8(bool ? 0x01 : 0x00)
-      end
+      def write_bool(bool) = write_u8(bool ? 0x01 : 0x00)
 
       # Write a string
       #
@@ -131,25 +123,19 @@ module Factorix
       # @see https://wiki.factorio.com/Property_tree#Number
       # @param dbl [Float] Double-precision floating point number
       # @return [void]
-      def write_double(dbl)
-        write_bytes([dbl].pack("d"))
-      end
+      def write_double(dbl) = write_bytes([dbl].pack("d"))
 
       # Write a GameVersion object
       #
       # @param game_version [GameVersion] GameVersion object
       # @return [void]
-      def write_game_version(game_version)
-        game_version.to_a.each {|u16| write_u16(u16) }
-      end
+      def write_game_version(game_version) = game_version.to_a.each {|u16| write_u16(u16) }
 
       # Write a MODVersion object
       #
       # @param mod_version [MODVersion] MODVersion object
       # @return [void]
-      def write_mod_version(mod_version)
-        mod_version.to_a.each {|u16| write_optim_u16(u16) }
-      end
+      def write_mod_version(mod_version) = mod_version.to_a.each {|u16| write_optim_u16(u16) }
 
       # Write a list
       #
@@ -180,17 +166,13 @@ module Factorix
       #
       # @param long [Integer] Signed long integer
       # @return [void]
-      def write_long(long)
-        write_bytes([long].pack("q<"))
-      end
+      def write_long(long) = write_bytes([long].pack("q<"))
 
       # Write an unsigned long integer (8 bytes)
       #
       # @param ulong [Integer] Unsigned long integer
       # @return [void]
-      def write_unsigned_long(ulong)
-        write_bytes([ulong].pack("Q<"))
-      end
+      def write_unsigned_long(ulong) = write_bytes([ulong].pack("Q<"))
 
       # Write a property tree
       #

@@ -32,23 +32,17 @@ module Factorix
       # Check if the MOD is enabled
       #
       # @return [Boolean]
-      def enabled?
-        @enabled
-      end
+      def enabled? = @enabled
 
       # Check if the MOD is installed
       #
       # @return [Boolean]
-      def installed?
-        @installed
-      end
+      def installed? = @installed
 
       # Check if an operation is planned for this node
       #
       # @return [Boolean]
-      def operation?
-        !@operation.nil?
-      end
+      def operation? = !@operation.nil?
 
       # String representation of the node
       #
@@ -66,9 +60,7 @@ module Factorix
       # Detailed inspection string
       #
       # @return [String]
-      def inspect
-        "#<#{self.class.name} #{self}>"
-      end
+      def inspect = "#<#{self.class.name} #{self}>"
     end
   end
 end

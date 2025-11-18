@@ -143,9 +143,7 @@ module Factorix
         # Check if the MOD is deprecated
         #
         # @return [Boolean] true if deprecated
-        def deprecated?
-          deprecated
-        end
+        def deprecated? = deprecated
 
         private def parse_homepage(value)
           URI(value)

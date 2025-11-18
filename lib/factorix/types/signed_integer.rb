@@ -29,9 +29,7 @@ module Factorix
       # Get the underlying integer value
       #
       # @return [Integer] The wrapped integer value
-      def value
-        __getobj__
-      end
+      def value = __getobj__
 
       # Compare with another SignedInteger or Integer
       #
@@ -51,9 +49,7 @@ module Factorix
       # Hash code for use in Hash keys
       #
       # @return [Integer] Hash code
-      def hash
-        [value, :signed].hash
-      end
+      def hash = [value, :signed].hash
 
       # Check if equal (alias for ==)
       alias eql? ==
@@ -61,9 +57,7 @@ module Factorix
       # String representation
       #
       # @return [String] String representation
-      def inspect
-        "#<Factorix::Types::SignedInteger:0x%016x value=#{value}>" % object_id
-      end
+      def inspect = "#<Factorix::Types::SignedInteger:0x%016x value=#{value}>" % object_id
     end
   end
 end

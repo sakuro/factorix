@@ -56,9 +56,7 @@ module Factorix
       # Mark the progress presenter as finished
       #
       # @return [void]
-      def finish
-        @tty_bar&.finish
-      end
+      def finish = @tty_bar&.finish
     end
   end
 end

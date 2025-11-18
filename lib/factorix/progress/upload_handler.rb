@@ -9,9 +9,7 @@ module Factorix
       # Create a new upload handler
       #
       # @param presenter [Presenter, PresenterAdapter] progress presenter to update
-      def initialize(presenter)
-        @presenter = presenter
-      end
+      def initialize(presenter) = @presenter = presenter
 
       # Handle upload started event
       #
@@ -28,17 +26,13 @@ module Factorix
       #
       # @param event [Dry::Events::Event] event with current_size payload
       # @return [void]
-      def on_upload_progress(event)
-        @presenter.update(event[:current_size])
-      end
+      def on_upload_progress(event) = @presenter.update(event[:current_size])
 
       # Handle upload completed event
       #
       # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_upload_completed(_event)
-        @presenter.finish
-      end
+      def on_upload_completed(_event) = @presenter.finish
     end
   end
 end

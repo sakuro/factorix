@@ -20,16 +20,12 @@ module Factorix
       # Check if response is successful (2xx)
       #
       # @return [Boolean] true if 2xx response
-      def success?
-        (200..299).cover?(@code)
-      end
+      def success? = (200..299).cover?(@code)
 
       # Get Content-Length from headers
       #
       # @return [Integer, nil] content length in bytes, or nil if not present
-      def content_length
-        Integer(@headers["content-length"]&.first, 10)
-      end
+      def content_length = Integer(@headers["content-length"]&.first, 10)
     end
   end
 end

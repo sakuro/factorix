@@ -18,9 +18,7 @@ module Factorix
     #   state = Factorix::MODState[enabled: true]
     #   version = Factorix::Types::MODVersion.from_string("1.2.3")
     #   state = Factorix::MODState[enabled: false, version: version]
-    def initialize(enabled:, version: nil)
-      super
-    end
+    def initialize(enabled:, version: nil) = super
 
     # @!attribute [r] enabled
     #   @return [Boolean] whether the MOD is enabled
@@ -31,8 +29,6 @@ module Factorix
     # Check if the MOD is enabled
     #
     # @return [Boolean] true if the MOD is enabled, false otherwise
-    def enabled?
-      enabled
-    end
+    def enabled? = enabled
   end
 end

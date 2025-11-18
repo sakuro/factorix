@@ -25,15 +25,11 @@ module Factorix
           UninstallTarget = Data.define(:mod, :version) {
             # Check if a specific version is targeted
             # @return [Boolean] true if version is specified
-            def versioned?
-              !version.nil?
-            end
+            def versioned? = !version.nil?
 
             # String representation of the uninstall target
             # @return [String] MOD name with optional version (e.g., "mod-a@1.0.0" or "mod-a")
-            def to_s
-              versioned? ? "#{mod.name}@#{version}" : mod.name
-            end
+            def to_s = versioned? ? "#{mod.name}@#{version}" : mod.name
           }
           # Execute the uninstall command
           #
