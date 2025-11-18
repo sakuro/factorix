@@ -4,8 +4,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
   let(:command) { Factorix::CLI::Commands::MOD::Enable.new }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_dir) { Pathname("/fake/path/mods") }
+  let(:data_dir) { Pathname("/fake/path/data") }
   let(:mod_list) { instance_spy(Factorix::MODList) }
   let(:graph) { instance_spy(Factorix::Dependency::Graph) }
+  let(:scanner) { instance_double(Factorix::InstalledMOD::Scanner) }
 
   # Test MODs
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
@@ -15,7 +17,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
   before do
     # Runtime is already mocked by "with mock runtime" shared context
     allow(Factorix::Runtime).to receive(:detect).and_return(runtime)
-    allow(runtime).to receive_messages(mod_list_path:, mod_dir:)
+    allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
 
     # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
@@ -25,8 +27,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:enable)
 
-    # Mock InstalledMOD.scan
-    allow(Factorix::InstalledMOD).to receive(:scan).and_return([])
+    # Mock InstalledMOD::Scanner
+    allow(Factorix::InstalledMOD::Scanner).to receive(:new).and_return(scanner)
+    allow(scanner).to receive(:scan).and_return([])
 
     # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)

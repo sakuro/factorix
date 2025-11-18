@@ -32,11 +32,10 @@ module Factorix
           # @return [void]
           def call(mod_names:, only: false, **)
             mod_list_path = runtime.mod_list_path
-            mod_dir = runtime.mod_dir
 
             # Load current state
             mod_list = Factorix::MODList.load(from: mod_list_path)
-            installed_mods = Factorix::InstalledMOD.scan(mod_dir)
+            installed_mods = Factorix::InstalledMOD::Scanner.new.scan
 
             # Build dependency graph
             graph = Factorix::Dependency::Graph::Builder.build(

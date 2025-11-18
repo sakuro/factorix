@@ -9,6 +9,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
   let(:data_dir) { Pathname("/fake/path/data") }
   let(:mod_list) { instance_spy(Factorix::MODList) }
   let(:graph) { instance_spy(Factorix::Dependency::Graph) }
+  let(:scanner) { instance_double(Factorix::InstalledMOD::Scanner) }
 
   # Test MODs
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
@@ -40,8 +41,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     allow(mod_list).to receive(:remove)
     allow(mod_list).to receive(:exist?)
 
-    # Mock InstalledMOD.scan
-    allow(Factorix::InstalledMOD).to receive(:scan).and_return([])
+    # Mock InstalledMOD::Scanner
+    allow(Factorix::InstalledMOD::Scanner).to receive(:new).and_return(scanner)
+    allow(scanner).to receive(:scan).and_return([])
 
     # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
@@ -56,7 +58,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
       end
 
@@ -166,7 +168,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a_zip])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a_zip])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(installed_mod_a_zip.path).to receive(:delete)
       end
@@ -201,7 +203,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(installed_mod_a_v1.path).to receive(:rmtree)
         allow(installed_mod_a_v2.path).to receive(:rmtree)
@@ -243,7 +245,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(installed_mod_a_v1.path).to receive(:rmtree)
         allow(installed_mod_a_v2.path).to receive(:rmtree)
@@ -290,7 +292,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a_v1, installed_mod_a_v2])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(installed_mod_a_v1.path).to receive(:rmtree)
         allow(installed_mod_a_v2.path).to receive(:rmtree)
@@ -300,7 +302,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         # First uninstall v1
         capture_stdout { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
         # Then uninstall v2 - should now remove from mod-list
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a_v2])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a_v2])
         capture_stdout { command.call(mod_specs: ["mod-a@2.0.0"], yes: true) }
         expect(mod_list).to have_received(:remove).with(mod_a)
       end
@@ -312,7 +314,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a])
-        allow(Factorix::InstalledMOD).to receive(:scan).and_return([installed_mod_a])
+        allow(scanner).to receive(:scan).and_return([installed_mod_a])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(installed_mod_a.path).to receive(:rmtree)
       end

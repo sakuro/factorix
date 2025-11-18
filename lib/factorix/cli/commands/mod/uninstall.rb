@@ -41,14 +41,12 @@ module Factorix
           # @return [void]
           def call(mod_specs:, **)
             mod_list_path = runtime.mod_list_path
-            mod_dir = runtime.mod_dir
-            data_dir = runtime.data_dir
 
             # Load mod-list.json
             mod_list = Factorix::MODList.load(from: mod_list_path)
 
             # Scan installed MODs (including base/expansion from data directory)
-            installed_mods = Factorix::InstalledMOD.scan(mod_dir, data_dir:)
+            installed_mods = Factorix::InstalledMOD::Scanner.new.scan
 
             # Build dependency graph
             graph = Factorix::Dependency::Graph::Builder.build(

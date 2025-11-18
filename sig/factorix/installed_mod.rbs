@@ -10,22 +10,23 @@ module Factorix
 
     DIRECTORY_FORM: Symbol
 
-    def self.scan: (Pathname mod_dir) -> Array[InstalledMOD]
+    def self.from_zip: (Pathname path) -> InstalledMOD
 
-    def self.find_by_name: (Pathname mod_dir, String name) -> Array[InstalledMOD]
+    def self.from_directory: (Pathname path) -> InstalledMOD
 
-    def self.find: (Pathname mod_dir, String name, ?Types::MODVersion? version) -> InstalledMOD?
+    # Scanner for finding installed MODs
+    class Scanner
+      # Provided by Factorix::Import[:runtime, :logger]
+      attr_reader runtime: Runtime::Base
+      attr_reader logger: Dry::Logger::Dispatcher
 
-    def initialize: (mod: MOD, version: Types::MODVersion, form: Symbol, path: Pathname, info: Types::InfoJSON) -> void
+      def scan: () -> Array[InstalledMOD]
+    end
 
     attr_reader mod: MOD
-
     attr_reader version: Types::MODVersion
-
     attr_reader form: Symbol
-
     attr_reader path: Pathname
-
     attr_reader info: Types::InfoJSON
 
     def <=>: (InstalledMOD other) -> Integer?
