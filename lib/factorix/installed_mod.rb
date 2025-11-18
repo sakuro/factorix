@@ -25,10 +25,30 @@ module Factorix
   class InstalledMOD
     include Comparable
 
+    # Make the class itself enumerable over all installed MODs
+    class << self
+      include Enumerable
+    end
+
     # Form constants
     ZIP_FORM = :zip
     DIRECTORY_FORM = :directory
     public_constant :ZIP_FORM, :DIRECTORY_FORM
+
+    # Get all installed MODs
+    #
+    # @return [Array<InstalledMOD>] Array of all installed MODs
+    def self.all
+      Scanner.new.scan
+    end
+
+    # Enumerate over all installed MODs
+    #
+    # @yieldparam [InstalledMOD] mod Each installed MOD
+    # @return [Enumerator, Array] Enumerator if no block given, otherwise the result of the block
+    def self.each(&)
+      all.each(&)
+    end
 
     # Create InstalledMOD from a ZIP file
     #
@@ -119,7 +139,7 @@ module Factorix
           begin
             mod = InstalledMOD.from_directory(path)
             # Only include base and expansion MODs from data directory
-            installed_mods << mod if mod.mod.base? || mod.mod.expansion?
+            installed_mods << mod if mod.base? || mod.expansion?
           rescue ArgumentError => e
             logger.debug("Skipping invalid directory MOD package", path: path.to_s, reason: e.message)
           rescue => e
@@ -149,6 +169,7 @@ module Factorix
         end
       end
     end
+    private_constant :Scanner
 
     # Compare with another InstalledMOD
     #
@@ -162,6 +183,20 @@ module Factorix
 
       # Compare by version (ascending), then by form priority (directory > ZIP)
       (version <=> other.version).nonzero? || form_priority(form) <=> form_priority(other.form)
+    end
+
+    # Check if this is the base MOD
+    #
+    # @return [Boolean] true if this is the base MOD
+    def base?
+      mod.base?
+    end
+
+    # Check if this is an expansion MOD
+    #
+    # @return [Boolean] true if this is an expansion MOD
+    def expansion?
+      mod.expansion?
     end
 
     private def form_priority(form)

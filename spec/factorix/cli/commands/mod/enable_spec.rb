@@ -7,7 +7,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
   let(:data_dir) { Pathname("/fake/path/data") }
   let(:mod_list) { instance_spy(Factorix::MODList) }
   let(:graph) { instance_spy(Factorix::Dependency::Graph) }
-  let(:scanner) { instance_double(Factorix::InstalledMOD::Scanner) }
 
   # Test MODs
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
@@ -27,9 +26,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:enable)
 
-    # Mock InstalledMOD::Scanner
-    allow(Factorix::InstalledMOD::Scanner).to receive(:new).and_return(scanner)
-    allow(scanner).to receive(:scan).and_return([])
+    # Mock InstalledMOD.all
+    allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 
     # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)

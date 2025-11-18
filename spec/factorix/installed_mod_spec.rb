@@ -18,10 +18,10 @@ RSpec.describe Factorix::InstalledMOD do
     FileUtils.remove_entry(data_dir) if data_dir.exist?
   end
 
-  describe "Scanner#scan" do
+  describe ".all" do
     context "with empty mod directory" do
       it "returns empty array" do
-        expect(Factorix::InstalledMOD::Scanner.new.scan).to eq([])
+        expect(Factorix::InstalledMOD.all).to eq([])
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "finds the MOD" do
-        mods = Factorix::InstalledMOD::Scanner.new.scan
+        mods = Factorix::InstalledMOD.all
         expect(mods.size).to eq(1)
         expect(mods.first.mod.name).to eq(mod_name)
         expect(mods.first.version.to_s).to eq(mod_version)
@@ -53,7 +53,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "finds the MOD" do
-        mods = Factorix::InstalledMOD::Scanner.new.scan
+        mods = Factorix::InstalledMOD.all
         expect(mods.size).to eq(1)
         expect(mods.first.mod.name).to eq(mod_name)
         expect(mods.first.version.to_s).to eq(mod_version)
@@ -71,7 +71,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "finds the MOD" do
-        mods = Factorix::InstalledMOD::Scanner.new.scan
+        mods = Factorix::InstalledMOD.all
         expect(mods.size).to eq(1)
         expect(mods.first.mod.name).to eq(mod_name)
         expect(mods.first.version.to_s).to eq(mod_version)
@@ -87,7 +87,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "skips the invalid MOD" do
-        expect(Factorix::InstalledMOD::Scanner.new.scan).to be_empty
+        expect(Factorix::InstalledMOD.all).to be_empty
       end
     end
 
@@ -99,7 +99,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "skips the invalid MOD" do
-        expect(Factorix::InstalledMOD::Scanner.new.scan).to be_empty
+        expect(Factorix::InstalledMOD.all).to be_empty
       end
     end
 
@@ -115,7 +115,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "prefers directory over ZIP" do
-        mods = Factorix::InstalledMOD::Scanner.new.scan
+        mods = Factorix::InstalledMOD.all
         expect(mods.size).to eq(1)
         expect(mods.first.form).to eq(Factorix::InstalledMOD::DIRECTORY_FORM)
       end
@@ -131,7 +131,7 @@ RSpec.describe Factorix::InstalledMOD do
       end
 
       it "returns all versions sorted by version descending" do
-        mods = Factorix::InstalledMOD::Scanner.new.scan
+        mods = Factorix::InstalledMOD.all
         expect(mods.size).to eq(3)
         expect(mods[0].version.to_s).to eq("2.0.0")
         expect(mods[1].version.to_s).to eq("1.5.0")

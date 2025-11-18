@@ -14,14 +14,10 @@ module Factorix
 
     def self.from_directory: (Pathname path) -> InstalledMOD
 
-    # Scanner for finding installed MODs
-    class Scanner
-      # Provided by Factorix::Import[:runtime, :logger]
-      attr_reader runtime: Runtime::Base
-      attr_reader logger: Dry::Logger::Dispatcher
-
-      def scan: () -> Array[InstalledMOD]
-    end
+    # Enumerable class methods
+    def self.all: () -> Array[InstalledMOD]
+    def self.each: () { (InstalledMOD) -> void } -> Array[InstalledMOD]
+                 | () -> Enumerator[InstalledMOD, Array[InstalledMOD]]
 
     attr_reader mod: MOD
     attr_reader version: Types::MODVersion
@@ -30,5 +26,9 @@ module Factorix
     attr_reader info: Types::InfoJSON
 
     def <=>: (InstalledMOD other) -> Integer?
+
+    def base?: () -> bool
+
+    def expansion?: () -> bool
   end
 end

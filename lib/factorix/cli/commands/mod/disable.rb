@@ -35,11 +35,10 @@ module Factorix
 
             # Load current state
             mod_list = Factorix::MODList.load(from: mod_list_path)
-            installed_mods = Factorix::InstalledMOD::Scanner.new.scan
 
             # Build dependency graph
             graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods:,
+              installed_mods: Factorix::InstalledMOD.all,
               mod_list:
             )
 

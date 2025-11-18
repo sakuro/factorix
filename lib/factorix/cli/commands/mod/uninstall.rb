@@ -45,12 +45,9 @@ module Factorix
             # Load mod-list.json
             mod_list = Factorix::MODList.load(from: mod_list_path)
 
-            # Scan installed MODs (including base/expansion from data directory)
-            installed_mods = Factorix::InstalledMOD::Scanner.new.scan
-
             # Build dependency graph
             graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods:,
+              installed_mods: Factorix::InstalledMOD.all,
               mod_list:
             )
 
@@ -58,7 +55,7 @@ module Factorix
             uninstall_targets = mod_specs.map {|spec| parse_mod_spec(spec) }
 
             # Plan uninstall
-            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods)
+            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, Factorix::InstalledMOD.all)
 
             if targets_to_uninstall.empty?
               say "No MODs to uninstall"
@@ -70,7 +67,7 @@ module Factorix
             return unless confirm?("Do you want to uninstall these MODs?")
 
             # Execute uninstall
-            execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
+            execute_uninstall(targets_to_uninstall, Factorix::InstalledMOD.all, mod_list)
 
             # Save mod-list.json
             mod_list.save(to: mod_list_path)
