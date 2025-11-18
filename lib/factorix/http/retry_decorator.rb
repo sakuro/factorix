@@ -7,6 +7,13 @@ module Factorix
     # Wraps any HTTP client and retries requests on network errors
     # using the configured RetryStrategy.
     class RetryDecorator
+      # @!parse
+      #   # @return [HTTP::Client]
+      #   attr_reader :client
+      #   # @return [HTTP::RetryStrategy]
+      #   attr_reader :retry_strategy
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
       include Factorix::Import[:client, :retry_strategy, :logger]
 
       # Execute an HTTP request with retry

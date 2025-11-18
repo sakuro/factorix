@@ -10,6 +10,13 @@ module Factorix
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      #   # @return [Cache::FileSystem]
+      #   attr_reader :cache
+      #   # @return [HTTP::Client]
+      #   attr_reader :client
       include Factorix::Import[
         :logger,
         cache: :api_cache,

@@ -14,6 +14,13 @@ module Factorix
     # HTTP redirects are handled automatically by the HTTP layer.
     # Publishes progress events during download.
     class Downloader
+      # @!parse
+      #   # @return [Dry::Logger::Dispatcher]
+      #   attr_reader :logger
+      #   # @return [Cache::FileSystem]
+      #   attr_reader :cache
+      #   # @return [HTTP::Client]
+      #   attr_reader :client
       include Factorix::Import[
         :logger,
         cache: :download_cache,
