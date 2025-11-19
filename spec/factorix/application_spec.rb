@@ -136,6 +136,76 @@ RSpec.describe Factorix::Application do
         expect(service_credential).to be_a(Factorix::ServiceCredential)
       end
     end
+
+    describe "[:retry_strategy]" do
+      it "resolves to an HTTP::RetryStrategy instance" do
+        retry_strategy = Factorix::Application[:retry_strategy]
+        expect(retry_strategy).to be_a(Factorix::HTTP::RetryStrategy)
+      end
+    end
+
+    describe "[:download_http_client]" do
+      it "provides HTTP client interface" do
+        download_http_client = Factorix::Application[:download_http_client]
+        expect(download_http_client).to respond_to(:request, :get, :post)
+      end
+    end
+
+    describe "[:api_http_client]" do
+      it "provides HTTP client interface" do
+        api_http_client = Factorix::Application[:api_http_client]
+        expect(api_http_client).to respond_to(:request, :get, :post)
+      end
+    end
+
+    describe "[:upload_http_client]" do
+      it "provides HTTP client interface" do
+        upload_http_client = Factorix::Application[:upload_http_client]
+        expect(upload_http_client).to respond_to(:request, :get, :post)
+      end
+    end
+
+    describe "[:api_credential]" do
+      before do
+        ENV["FACTORIO_API_KEY"] = "test_api_key"
+      end
+
+      after do
+        ENV.delete("FACTORIO_API_KEY")
+      end
+
+      it "resolves to an APICredential instance" do
+        api_credential = Factorix::Application[:api_credential]
+        expect(api_credential).to be_a(Factorix::APICredential)
+      end
+    end
+
+    describe "[:mod_management_api]" do
+      it "resolves to an API::MODManagementAPI instance" do
+        mod_management_api = Factorix::Application[:mod_management_api]
+        expect(mod_management_api).to be_a(Factorix::API::MODManagementAPI)
+      end
+    end
+
+    describe "[:portal]" do
+      before do
+        # Use environment-based credentials to avoid NotImplementedError on plain Linux
+        Factorix::Application.config.credential.source = :env
+        ENV["FACTORIO_USERNAME"] = "test_user"
+        ENV["FACTORIO_TOKEN"] = "test_token"
+      end
+
+      after do
+        Factorix::Application.config.credential.source = :player_data
+        ENV.delete("FACTORIO_USERNAME")
+        ENV.delete("FACTORIO_TOKEN")
+      end
+
+      it "resolves to a Portal instance" do
+        portal = Factorix::Application[:portal]
+        expect(portal).to be_a(Factorix::Portal)
+      end
+    end
   end
 
   describe "configuration" do
@@ -229,6 +299,29 @@ RSpec.describe Factorix::Application do
 
         expect(Factorix::Application.config.log_level).to eq(:warn)
         expect(Factorix::Application.config.http.connect_timeout).to eq(15)
+      end
+    end
+
+    describe "runtime settings" do
+      after do
+        Factorix::Application.config.runtime.executable_path = nil
+        Factorix::Application.config.runtime.user_dir = nil
+        Factorix::Application.config.runtime.data_dir = nil
+      end
+
+      it "converts executable_path string to Pathname" do
+        Factorix::Application.config.runtime.executable_path = "/path/to/factorio"
+        expect(Factorix::Application.config.runtime.executable_path).to eq(Pathname("/path/to/factorio"))
+      end
+
+      it "converts user_dir string to Pathname" do
+        Factorix::Application.config.runtime.user_dir = "/path/to/user"
+        expect(Factorix::Application.config.runtime.user_dir).to eq(Pathname("/path/to/user"))
+      end
+
+      it "converts data_dir string to Pathname" do
+        Factorix::Application.config.runtime.data_dir = "/path/to/data"
+        expect(Factorix::Application.config.runtime.data_dir).to eq(Pathname("/path/to/data"))
       end
     end
   end
