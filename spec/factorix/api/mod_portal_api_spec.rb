@@ -99,6 +99,25 @@ RSpec.describe Factorix::API::MODPortalAPI do
         expect(a_request(:get, "https://mods.factorio.com/api/mods/example-mod")).not_to have_been_made
       end
     end
+
+    context "with mod name containing spaces" do
+      let(:response_body) { '{"name": "Explosive Excavation", "releases": []}' }
+      let(:parsed_response) { {name: "Explosive Excavation", releases: []} }
+
+      before do
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
+      end
+
+      it "encodes spaces as %20 in URL path" do
+        api.get_mod("Explosive Excavation")
+        expect(client).to have_received(:get) do |uri|
+          expect(uri.to_s).to include("Explosive%20Excavation")
+        end
+      end
+    end
   end
 
   describe "#get_mod_full" do
@@ -133,6 +152,25 @@ RSpec.describe Factorix::API::MODPortalAPI do
         result = api.get_mod_full("example-mod")
         expect(result).to eq(parsed_response)
         expect(a_request(:get, "https://mods.factorio.com/api/mods/example-mod/full")).not_to have_been_made
+      end
+    end
+
+    context "with mod name containing spaces" do
+      let(:response_body) { '{"name": "Explosive Excavation", "changelog": "...", "releases": []}' }
+      let(:parsed_response) { {name: "Explosive Excavation", changelog: "...", releases: []} }
+
+      before do
+        allow(cache).to receive(:read).and_return(nil)
+        allow(cache).to receive(:store)
+        response = instance_double(Factorix::HTTP::Response, code: 200, body: response_body)
+        allow(client).to receive(:get).and_return(response)
+      end
+
+      it "encodes spaces as %20 in URL path" do
+        api.get_mod_full("Explosive Excavation")
+        expect(client).to have_received(:get) do |uri|
+          expect(uri.to_s).to include("Explosive%20Excavation")
+        end
       end
     end
   end

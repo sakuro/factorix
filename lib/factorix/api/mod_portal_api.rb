@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "erb"
 require "json"
 require "tempfile"
 require "uri"
@@ -68,7 +69,8 @@ module Factorix
       # @return [Hash{Symbol => untyped}] parsed JSON response with mod metadata and releases
       def get_mod(name)
         logger.debug "Fetching mod: name=#{name}"
-        uri = build_uri("/api/mods/#{name}")
+        encoded_name = ERB::Util.url_encode(name)
+        uri = build_uri("/api/mods/#{encoded_name}")
         fetch_with_cache(uri)
       end
 
@@ -78,7 +80,8 @@ module Factorix
       # @return [Hash{Symbol => untyped}] parsed JSON response with full mod details including dependencies
       def get_mod_full(name)
         logger.debug "Fetching full mod info: name=#{name}"
-        uri = build_uri("/api/mods/#{name}/full")
+        encoded_name = ERB::Util.url_encode(name)
+        uri = build_uri("/api/mods/#{encoded_name}/full")
         fetch_with_cache(uri)
       end
 
