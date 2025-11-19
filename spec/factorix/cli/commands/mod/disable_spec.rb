@@ -14,8 +14,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
 
   before do
-    # Runtime is already mocked by "with mock runtime" shared context
-    allow(Factorix::Runtime).to receive(:detect).and_return(runtime)
     allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
 
     # Mock Application.load_config

@@ -9,8 +9,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
   let(:validation_result) { instance_double(Factorix::Dependency::ValidationResult) }
 
   before do
-    # Runtime is already mocked by "with mock runtime" shared context
-    allow(Factorix::Runtime).to receive(:detect).and_return(runtime)
     allow(runtime).to receive(:mod_list_path).and_return(mod_list_path)
 
     # Mock Application.load_config
