@@ -6,6 +6,8 @@ module Factorix
       module MOD
         # Validate MOD dependencies without making changes
         class Check < Base
+          include DependencyGraphSupport
+
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -19,19 +21,8 @@ module Factorix
           #
           # @return [void]
           def call(**)
-            mod_list_path = runtime.mod_list_path
-
-            # Load mod-list.json
-            mod_list = Factorix::MODList.load(from: mod_list_path)
-
-            # Get all installed MODs
-            installed_mods = Factorix::InstalledMOD.all
-
-            # Build dependency graph
-            graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods:,
-              mod_list:
-            )
+            # Load current state
+            graph, mod_list, installed_mods = load_current_state
 
             # Validate
             validator = Factorix::Dependency::Validator.new(

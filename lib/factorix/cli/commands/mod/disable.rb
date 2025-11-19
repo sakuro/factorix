@@ -7,6 +7,7 @@ module Factorix
         # Disable MODs in mod-list.json with reverse dependency resolution
         class Disable < Base
           include Confirmable
+          include DependencyGraphSupport
 
           require_game_stopped!
 
@@ -31,16 +32,8 @@ module Factorix
           # @param only [Boolean] Only disable specified MODs without dependents
           # @return [void]
           def call(mod_names:, only: false, **)
-            mod_list_path = runtime.mod_list_path
-
             # Load current state
-            mod_list = Factorix::MODList.load(from: mod_list_path)
-
-            # Build dependency graph
-            graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods: Factorix::InstalledMOD.all,
-              mod_list:
-            )
+            graph, mod_list, _installed_mods = load_current_state
 
             # Convert mod names to MOD objects
             target_mods = mod_names.map {|name| Factorix::MOD[name:] }
@@ -68,7 +61,7 @@ module Factorix
             execute_plan(mods_to_disable, mod_list)
 
             # Save mod-list.json
-            mod_list.save(to: mod_list_path)
+            mod_list.save(to: runtime.mod_list_path)
             say "✓ Saved mod-list.json"
             logger.debug("Saved mod-list.json")
           end

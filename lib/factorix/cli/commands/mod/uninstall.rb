@@ -7,6 +7,7 @@ module Factorix
         # Uninstall MODs from mod directory
         class Uninstall < Base
           include Confirmable
+          include DependencyGraphSupport
 
           require_game_stopped!
 
@@ -36,22 +37,14 @@ module Factorix
           # @param mod_specs [Array<String>] MOD specifications
           # @return [void]
           def call(mod_specs:, **)
-            mod_list_path = runtime.mod_list_path
-
-            # Load mod-list.json
-            mod_list = Factorix::MODList.load(from: mod_list_path)
-
-            # Build dependency graph
-            graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods: Factorix::InstalledMOD.all,
-              mod_list:
-            )
+            # Load current state
+            graph, mod_list, installed_mods = load_current_state
 
             # Parse mod specs to extract MOD and optional version
             uninstall_targets = mod_specs.map {|spec| parse_mod_spec(spec) }
 
             # Plan uninstall
-            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, Factorix::InstalledMOD.all)
+            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods)
 
             if targets_to_uninstall.empty?
               say "No MODs to uninstall"
@@ -63,10 +56,10 @@ module Factorix
             return unless confirm?("Do you want to uninstall these MODs?")
 
             # Execute uninstall
-            execute_uninstall(targets_to_uninstall, Factorix::InstalledMOD.all, mod_list)
+            execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
 
             # Save mod-list.json
-            mod_list.save(to: mod_list_path)
+            mod_list.save(to: runtime.mod_list_path)
             say "✓ Saved mod-list.json"
           end
 
