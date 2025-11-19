@@ -72,8 +72,10 @@ module Factorix
 
         # Add edges from dependencies in info.json
         dependencies = release.info_json[:dependencies] || []
-        dependencies.each do |dep_hash|
-          dependency = Factorix::Types::Dependency.from_hash(dep_hash)
+        parser = Dependency::Parser.new
+
+        dependencies.each do |dep_string|
+          dependency = parser.parse(dep_string)
 
           # Skip base MOD (always available)
           next if dependency.mod.base?
