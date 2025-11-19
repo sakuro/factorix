@@ -9,6 +9,8 @@ require "fileutils"
 require "tmpdir"
 require "webmock/rspec"
 
+WebMock.disable_net_connect!
+
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
 
