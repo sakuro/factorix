@@ -44,6 +44,51 @@ module Factorix
         @edges[from_mod] << edge
       end
 
+      # Add an uninstalled MOD (Category C) to the graph
+      #
+      # Creates a node for an uninstalled MOD and adds edges for its dependencies.
+      # Used by the install command to extend the graph with MODs fetched from the Portal API.
+      #
+      # @param mod_info [Types::MODInfo] MOD information from Portal API
+      # @param release [Types::Release] The release to install
+      # @param operation [Symbol] The operation to perform (default: :install)
+      # @return [void]
+      def add_uninstalled_mod(mod_info, release, operation: :install)
+        mod = Factorix::MOD[name: mod_info.name]
+
+        # Skip if already in graph (might be installed or already added)
+        return if node?(mod)
+
+        # Create node for uninstalled MOD
+        node = Node.new(
+          mod:,
+          version: release.version,
+          enabled: false,
+          installed: false,
+          operation:
+        )
+
+        add_node(node)
+
+        # Add edges from dependencies in info.json
+        dependencies = release.info_json[:dependencies] || []
+        dependencies.each do |dep_hash|
+          dependency = Factorix::Types::Dependency.from_hash(dep_hash)
+
+          # Skip base MOD (always available)
+          next if dependency.mod.base?
+
+          edge = Edge.new(
+            from_mod: mod,
+            to_mod: dependency.mod,
+            type: dependency.type,
+            version_requirement: dependency.version_requirement
+          )
+
+          add_edge(edge)
+        end
+      end
+
       # Get a node by MOD
       #
       # @param mod [Factorix::MOD] The MOD identifier

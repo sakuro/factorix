@@ -59,8 +59,7 @@ module Factorix
 
             # Resolve dependencies if requested
             if recursive
-              resolver = Dependency::Resolver.new
-              downloads = resolver.resolve_dependencies(downloads, download_dir, jobs, presenter)
+              raise Factorix::Error, "--recursive option is not yet implemented for download command"
             end
 
             # Download files

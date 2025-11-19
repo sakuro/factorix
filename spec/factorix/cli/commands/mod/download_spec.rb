@@ -289,7 +289,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       )
     end
 
-    it "downloads dependencies when --recursive is true" do
+    it "raises error when --recursive is true (not yet implemented)" do
       Dir.mktmpdir do |tmpdir|
         Pathname.new(tmpdir)
 
@@ -300,20 +300,16 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
         # Mock portal responses
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
-        allow(portal).to receive(:get_mod_full).with("dep-mod").and_return(dep_mod)
 
-        # Mock download method
-        allow(portal).to receive(:download_mod).and_return(true)
-
-        command.call(
-          mod_specs: ["mod-with-dep"],
-          directory: tmpdir,
-          jobs: 1,
-          recursive: true
-        )
-
-        # Verify both mods were downloaded
-        expect(portal).to have_received(:download_mod).exactly(2).times
+        # Should raise error as --recursive is not yet implemented
+        expect do
+          command.call(
+            mod_specs: ["mod-with-dep"],
+            directory: tmpdir,
+            jobs: 1,
+            recursive: true
+          )
+        end.to raise_error(Factorix::Error, /--recursive option is not yet implemented/)
       end
     end
 
