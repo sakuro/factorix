@@ -7,7 +7,7 @@ RSpec.describe Factorix::Runtime::Linux do
   before do
     allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
     allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(logger).to receive(:info)
+    allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
   end
 

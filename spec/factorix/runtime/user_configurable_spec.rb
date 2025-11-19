@@ -28,7 +28,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
   before do
     # Inject logger into runtime
     allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
-    allow(logger).to receive(:info)
+    allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
 
     # Reset config to defaults
@@ -51,7 +51,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that configured path is used" do
         runtime.executable_path
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Using configured executable_path",
           path: configured_path.to_s
         )
@@ -60,7 +60,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "does not call super (auto-detection)" do
         # If super was called, it would log auto-detection
         runtime.executable_path
-        expect(logger).not_to have_received(:info).with(
+        expect(logger).not_to have_received(:debug).with(
           "No configuration for executable_path, using auto-detection"
         )
       end
@@ -73,10 +73,10 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that auto-detection is used" do
         runtime.executable_path
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "No configuration for executable_path, using auto-detection"
         )
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Auto-detected executable_path",
           path: "/auto/detected/factorio"
         )
@@ -140,7 +140,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that configured path is used" do
         runtime.user_dir
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Using configured user_dir",
           path: configured_path.to_s
         )
@@ -148,7 +148,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "does not call super (auto-detection)" do
         runtime.user_dir
-        expect(logger).not_to have_received(:info).with(
+        expect(logger).not_to have_received(:debug).with(
           "No configuration for user_dir, using auto-detection"
         )
       end
@@ -161,10 +161,10 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that auto-detection is used" do
         runtime.user_dir
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "No configuration for user_dir, using auto-detection"
         )
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Auto-detected user_dir",
           path: "/auto/detected/user"
         )
@@ -228,7 +228,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that configured path is used" do
         runtime.data_dir
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Using configured data_dir",
           path: configured_path.to_s
         )
@@ -236,7 +236,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "does not call super (auto-detection)" do
         runtime.data_dir
-        expect(logger).not_to have_received(:info).with(
+        expect(logger).not_to have_received(:debug).with(
           "No configuration for data_dir, using auto-detection"
         )
       end
@@ -249,10 +249,10 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       it "logs that auto-detection is used" do
         runtime.data_dir
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "No configuration for data_dir, using auto-detection"
         )
-        expect(logger).to have_received(:info).with(
+        expect(logger).to have_received(:debug).with(
           "Auto-detected data_dir",
           path: "/auto/detected/data"
         )
