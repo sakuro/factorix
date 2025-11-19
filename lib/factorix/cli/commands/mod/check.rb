@@ -24,9 +24,12 @@ module Factorix
             # Load mod-list.json
             mod_list = Factorix::MODList.load(from: mod_list_path)
 
+            # Get all installed MODs
+            installed_mods = Factorix::InstalledMOD.all
+
             # Build dependency graph
             graph = Factorix::Dependency::Graph::Builder.build(
-              installed_mods: Factorix::InstalledMOD.all,
+              installed_mods:,
               mod_list:
             )
 
