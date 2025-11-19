@@ -166,8 +166,10 @@ module Factorix
       # @return [void]
       def tsort_each_child(mod)
         edges_from(mod).each do |edge|
-          # Only follow dependency edges, not incompatibility edges
-          next if edge.incompatible?
+          # Only follow required dependency edges for cycle detection
+          # Skip optional, incompatible, load-neutral, and hidden edges
+          # Optional cycles are allowed in Factorio
+          next unless edge.required?
 
           yield edge.to_mod if @nodes.key?(edge.to_mod)
         end

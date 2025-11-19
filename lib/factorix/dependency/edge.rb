@@ -44,6 +44,11 @@ module Factorix
       # @return [Boolean]
       def optional? = @type == OPTIONAL || @type == HIDDEN_OPTIONAL
 
+      # Check if this is a hidden optional dependency
+      #
+      # @return [Boolean]
+      def hidden_optional? = @type == HIDDEN_OPTIONAL
+
       # Check if this is an incompatibility relationship
       #
       # @return [Boolean]

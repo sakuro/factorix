@@ -53,10 +53,20 @@ module Factorix
         name: "Enemies",
         description: "Changes to enemies or entirely new enemies to deal with."
       )
+      CHARACTER = new(
+        value: "character",
+        name: "Character",
+        description: "Changes to the player's in-game appearance."
+      )
       ENVIRONMENT = new(
         value: "environment",
         name: "Environment",
         description: "Map generation and terrain modification."
+      )
+      PLANETS = new(
+        value: "planets",
+        name: "Planets",
+        description: "New places to build more factories."
       )
       MINING = new(
         value: "mining",
@@ -109,7 +119,9 @@ module Factorix
       private_constant :COMBAT
       private_constant :ARMOR
       private_constant :ENEMIES
+      private_constant :CHARACTER
       private_constant :ENVIRONMENT
+      private_constant :PLANETS
       private_constant :MINING
       private_constant :FLUIDS
       private_constant :LOGISTIC_NETWORK
@@ -128,7 +140,9 @@ module Factorix
         "combat" => COMBAT,
         "armor" => ARMOR,
         "enemies" => ENEMIES,
+        "character" => CHARACTER,
         "environment" => ENVIRONMENT,
+        "planets" => PLANETS,
         "mining" => MINING,
         "fluids" => FLUIDS,
         "logistic-network" => LOGISTIC_NETWORK,

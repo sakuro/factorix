@@ -200,7 +200,10 @@ module Factorix
                 next unless node
 
                 # Find dependencies that aren't in graph yet
+                # Only process required dependencies - skip optional, hidden, load_neutral, and incompatible
                 graph.edges_from(node.mod).each do |edge|
+                  next unless edge.required?
+
                   dep_mod = edge.to_mod
 
                   next if graph.node?(dep_mod)
@@ -248,9 +251,10 @@ module Factorix
                 release = find_compatible_release(mod_info, dep[:version_requirement])
 
                 unless release
-                  raise Factorix::Error,
-                    "No compatible release found for #{dep[:mod].name} " \
-                    "(required by #{dep[:required_by]}, requirement: #{dep[:version_requirement]})"
+                  # Skip dependencies without compatible releases (e.g., all releases have invalid versions)
+                  logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): No compatible release found")
+                  presenter.update
+                  next nil
                 end
 
                 presenter.update
@@ -260,10 +264,20 @@ module Factorix
                   mod_info:,
                   release:
                 }
+              rescue HTTPClientError => e
+                # Skip dependencies that cannot be found (404, etc.)
+                logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): #{e.message}")
+                presenter.update
+                nil
+              rescue JSON::ParserError
+                # Skip dependencies with invalid/empty API responses
+                logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): Invalid API response")
+                presenter.update
+                nil
               end
             }
 
-            results = futures.map(&:value!)
+            results = futures.filter_map(&:value!)
 
             # Add to graph
             results.each do |result|
@@ -300,6 +314,14 @@ module Factorix
           private def validate_installation_graph(graph)
             # Check for cycles
             if graph.cyclic?
+              # Get strongly connected components (cycles)
+              cycles = graph.strongly_connected_components.select {|component| component.size > 1 }
+
+              logger.error("Circular dependency detected. Cycles found:")
+              cycles.each do |cycle|
+                logger.error("  Cycle: #{cycle.map(&:name).join(" <-> ")}")
+              end
+
               raise Factorix::Error, "Circular dependency detected in MODs to install"
             end
 
@@ -326,9 +348,6 @@ module Factorix
           # @param all_mod_infos [Hash] All MOD infos by name
           # @return [Array<Hash>] Install targets sorted in topological order
           private def extract_install_targets(graph, all_mod_infos)
-            # Get all nodes with operation: :install
-            graph.nodes.select {|node| node.operation == :install }
-
             # Sort in topological order (dependencies first)
             sorted_mods = graph.topological_order.select {|mod|
               node = graph.node(mod)
@@ -336,8 +355,13 @@ module Factorix
             }
 
             # Build install targets with download information
-            sorted_mods.map {|mod|
+            sorted_mods.filter_map {|mod|
               info = all_mod_infos[mod.name]
+              unless info
+                logger.warn("No info found for #{mod.name}, skipping")
+                next nil
+              end
+
               output_path = runtime.mod_dir / info[:release].file_name
 
               {

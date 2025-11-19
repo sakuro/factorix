@@ -129,8 +129,8 @@ module Factorix
           updated_at = Time.parse(updated_at).utc
           last_highlighted_at = last_highlighted_at ? Time.parse(last_highlighted_at).utc : nil
           description ||= ""
-          source_url = source_url ? URI(source_url) : nil
-          homepage = parse_homepage(homepage)
+          source_url = parse_uri(source_url)
+          homepage = parse_uri(homepage)
           faq ||= ""
           tags = (tags || []).map {|tag_value| Tag.for(tag_value) }
           license = license ? License[**license] : nil
@@ -145,8 +145,18 @@ module Factorix
         # @return [Boolean] true if deprecated
         def deprecated? = deprecated
 
-        private def parse_homepage(value)
+        private def parse_uri(value)
+          return nil if value.nil? || value.empty?
+
           URI(value)
+        rescue URI::InvalidURIError => e
+          logger = begin
+            Factorix::Application[:logger]
+          rescue
+            nil
+          end
+          logger&.warn("Skipping invalid URI '#{value}': #{e.message}")
+          nil
         end
       end
 
@@ -182,7 +192,20 @@ module Factorix
         score ||= 0.0
         thumbnail = thumbnail ? build_thumbnail_uri(thumbnail) : nil
         latest_release = latest_release ? Release[**latest_release] : nil
-        releases = (releases || []).map {|r| Release[**r] }
+        releases = (releases || []).filter_map {|r|
+          begin
+            Release[**r]
+          rescue RangeError => e
+            # Skip releases with invalid version numbers
+            logger = begin
+              Factorix::Application[:logger]
+            rescue
+              nil
+            end
+            logger&.warn("Skipping release #{name}@#{r[:version]}: #{e.message}")
+            nil
+          end
+        }
 
         # Filter detail_fields to only include keys that Detail.new accepts
         # Exclude deprecated fields like github_path

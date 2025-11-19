@@ -58,7 +58,7 @@ module Factorix
 
         # Version requirement: operator space version
         rule(:version_requirement) do
-          space >> operator >> space >> version
+          space? >> operator >> space? >> version
         end
 
         # Complete dependency: [prefix] [space] mod_name [version_requirement]
@@ -131,6 +131,15 @@ module Factorix
 
         version = Types::MODVersion.from_string(version_string)
         Types::MODVersionRequirement[operator:, version:]
+      rescue RangeError => e
+        # Skip version requirements with out-of-range version components
+        logger = begin
+          Factorix::Application[:logger]
+        rescue
+          nil
+        end
+        logger&.warn("Skipping version requirement '#{version_string}': #{e.message}")
+        nil
       rescue ArgumentError => e
         raise ArgumentError, "Invalid version requirement: #{e.message}"
       end
@@ -138,13 +147,13 @@ module Factorix
       private def parse_error_message(input, error)
         # Check for common error patterns
         if input.strip.match?(/^[><=]+/)
-          "Invalid dependency format: empty mod name"
+          "Invalid dependency format: empty mod name (input: #{input.inspect})"
         elsif input.match?(/[><=]\s*$/)
-          "Invalid dependency format: empty version"
+          "Invalid dependency format: empty version (input: #{input.inspect})"
         elsif input.match?(/[><=]\s+\S+$/) && !input.match?(/[><=]\s+\d+\.\d+\.\d+/)
-          "Invalid version requirement: invalid version format"
+          "Invalid version requirement: invalid version format (input: #{input.inspect})"
         else
-          "Invalid dependency format: #{error.parse_failure_cause.ascii_tree}"
+          "Invalid dependency format (input: #{input.inspect}): #{error.parse_failure_cause.ascii_tree}"
         end
       end
     end

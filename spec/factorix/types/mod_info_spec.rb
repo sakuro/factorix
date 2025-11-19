@@ -187,18 +187,17 @@ RSpec.describe Factorix::Types::MODInfo do
     end
 
     context "with invalid homepage URL" do
-      it "raises URI::InvalidURIError" do
-        expect {
-          Factorix::Types::MODInfo[
-            name: "test-mod",
-            title: "Test",
-            owner: "owner",
-            downloads_count: 100,
-            created_at: "2024-01-01T00:00:00.000000Z",
-            updated_at: "2025-01-01T00:00:00.000000Z",
-            homepage: "not a valid url but some text"
-          ]
-        }.to raise_error(URI::InvalidURIError)
+      it "sets homepage to nil and logs a warning" do
+        mod_info = Factorix::Types::MODInfo[
+          name: "test-mod",
+          title: "Test",
+          owner: "owner",
+          downloads_count: 100,
+          created_at: "2024-01-01T00:00:00.000000Z",
+          updated_at: "2025-01-01T00:00:00.000000Z",
+          homepage: "not a valid url but some text"
+        ]
+        expect(mod_info.detail.homepage).to be_nil
       end
     end
   end
