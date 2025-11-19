@@ -205,7 +205,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
   describe "Detail#deprecated?" do
     it "returns true when deprecated is true" do
-      detail = described_class::Detail[
+      detail = Factorix::Types::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
@@ -216,7 +216,7 @@ RSpec.describe Factorix::Types::MODInfo do
     end
 
     it "returns false when deprecated is false" do
-      detail = described_class::Detail[
+      detail = Factorix::Types::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
@@ -227,7 +227,7 @@ RSpec.describe Factorix::Types::MODInfo do
     end
 
     it "returns false when deprecated is nil (default)" do
-      detail = described_class::Detail[
+      detail = Factorix::Types::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com"

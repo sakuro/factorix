@@ -110,11 +110,11 @@ RSpec.describe Factorix::Dependency::Edge do
 
   describe "constants" do
     it "exposes dependency type constants" do
-      expect(described_class::REQUIRED).to eq(:required)
-      expect(described_class::OPTIONAL).to eq(:optional)
-      expect(described_class::HIDDEN_OPTIONAL).to eq(:hidden)
-      expect(described_class::INCOMPATIBLE).to eq(:incompatible)
-      expect(described_class::LOAD_NEUTRAL).to eq(:load_neutral)
+      expect(Factorix::Dependency::Edge::REQUIRED).to eq(:required)
+      expect(Factorix::Dependency::Edge::OPTIONAL).to eq(:optional)
+      expect(Factorix::Dependency::Edge::HIDDEN_OPTIONAL).to eq(:hidden)
+      expect(Factorix::Dependency::Edge::INCOMPATIBLE).to eq(:incompatible)
+      expect(Factorix::Dependency::Edge::LOAD_NEUTRAL).to eq(:load_neutral)
     end
   end
 

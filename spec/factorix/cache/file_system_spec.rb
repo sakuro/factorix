@@ -366,7 +366,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       before do
         lock_path.dirname.mkpath
         FileUtils.touch(lock_path)
-        FileUtils.touch(lock_path, mtime: Time.now - described_class::LOCK_FILE_LIFETIME - 1)
+        FileUtils.touch(lock_path, mtime: Time.now - Factorix::Cache::FileSystem::LOCK_FILE_LIFETIME - 1)
       end
 
       it "removes the stale lock file" do
