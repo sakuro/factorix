@@ -2,16 +2,24 @@
 
 RSpec.describe Factorix::Runtime::Linux do
   let(:runtime) { Factorix::Runtime::Linux.new }
+  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+
+  before do
+    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(logger).to receive(:info)
+    allow(logger).to receive(:error)
+  end
 
   describe "#executable_path" do
-    it "raises NotImplementedError" do
-      expect { runtime.executable_path }.to raise_error(NotImplementedError, /Auto-detection not supported on Linux/)
+    it "raises ConfigurationError when auto-detection is not supported" do
+      expect { runtime.executable_path }.to raise_error(Factorix::ConfigurationError, /executable_path not configured/)
     end
   end
 
   describe "#user_dir" do
-    it "raises NotImplementedError" do
-      expect { runtime.user_dir }.to raise_error(NotImplementedError, /Auto-detection not supported on Linux/)
+    it "raises ConfigurationError when auto-detection is not supported" do
+      expect { runtime.user_dir }.to raise_error(Factorix::ConfigurationError, /user_dir not configured/)
     end
   end
 

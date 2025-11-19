@@ -12,6 +12,18 @@ module Factorix
     class Base
       prepend UserConfigurable
 
+      # Hook called when Base is subclassed
+      #
+      # Automatically prepends UserConfigurable to all subclasses to ensure
+      # configuration support is available across all platform implementations.
+      #
+      # @param subclass [Class] the subclass being created
+      # @return [void]
+      def self.inherited(subclass)
+        super
+        subclass.prepend(UserConfigurable)
+      end
+
       # Get the Factorio executable path
       #
       # Returns the path to the Factorio executable file.
