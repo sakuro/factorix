@@ -2,13 +2,13 @@
 
 require "tempfile"
 
-RSpec.describe Factorix::CLI::Commands::BeforeCallSetup do
+RSpec.describe Factorix::CLI::Commands::CommandWrapper do
   include_context "with mock runtime"
 
   # Create a test command class that includes BeforeCallSetup
   let(:test_command_class) do
     Class.new do
-      prepend Factorix::CLI::Commands::BeforeCallSetup
+      prepend Factorix::CLI::Commands::CommandWrapper
 
       attr_reader :called, :quiet, :yes
 

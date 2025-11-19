@@ -132,7 +132,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
     context "with an unknown path type" do
       it "raises ArgumentError with available path types in bulleted format" do
         expect {
-          command.call(path_types: %w[mod-dir unknown-path user-dir])
+          capture_stdout { command.call(path_types: %w[mod-dir unknown-path user-dir]) }
         }.to raise_error(ArgumentError) do |error|
           expect(error.message).to include("Unknown path types:")
           expect(error.message).to include("- unknown-path")
@@ -146,7 +146,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
     context "with only unknown path types" do
       it "raises ArgumentError listing all unknown types in bulleted format" do
         expect {
-          command.call(path_types: %w[invalid-type another-invalid])
+          capture_stdout { command.call(path_types: %w[invalid-type another-invalid]) }
         }.to raise_error(ArgumentError) do |error|
           expect(error.message).to include("Unknown path types:")
           expect(error.message).to include("- invalid-type")
@@ -162,7 +162,9 @@ RSpec.describe Factorix::CLI::Commands::Path do
       end
 
       it "re-raises the error" do
-        expect { command.call(path_types: ["mod-dir"]) }.to raise_error(StandardError, "Runtime error")
+        expect {
+          capture_stdout { command.call(path_types: ["mod-dir"]) }
+        }.to raise_error(StandardError, "Runtime error")
       end
     end
   end

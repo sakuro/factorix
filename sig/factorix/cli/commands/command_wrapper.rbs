@@ -5,7 +5,7 @@
 module Factorix
   class CLI
     module Commands
-      module BeforeCallSetup
+      module CommandWrapper
         def call: (**untyped options) -> void
       end
     end

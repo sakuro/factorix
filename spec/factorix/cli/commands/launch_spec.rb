@@ -18,7 +18,9 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "raises exception" do
-        expect { command.call }.to raise_error("The game is already running")
+        expect {
+          capture_stdout { command.call }
+        }.to raise_error("The game is already running")
       end
     end
 

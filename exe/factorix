@@ -10,16 +10,10 @@ Zip.warn_invalid_date = false
 begin
   Dry::CLI.new(Factorix::CLI).call
   exit 0
-rescue Factorix::Error => e
-  logger = Factorix::Application[:logger]
-  logger.warn(e.message)
-  logger.debug(e)
-  warn "Error: #{e.message}"
+rescue Factorix::Error
+  # Expected errors are already logged and displayed by CommandWrapper
   exit 1
-rescue => e
-  logger = Factorix::Application[:logger]
-  logger.error(e)
-  warn "Unexpected error: #{e.message}"
-  warn e.backtrace.join("\n")
+rescue
+  # Unexpected errors are already logged and displayed by CommandWrapper
   exit 2
 end

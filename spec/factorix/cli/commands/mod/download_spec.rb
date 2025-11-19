@@ -137,7 +137,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     context "with invalid mod specification" do
       it "raises error for non-existent release version" do
         expect {
-          command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1)
+          capture_stdout { command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1) }
         }.to raise_error(ArgumentError, /Release not found/)
       end
     end
@@ -168,7 +168,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(portal).to receive(:get_mod_full).with("evil-mod").and_return(mod_info_with_bad_filename)
 
         expect {
-          command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1)
+          capture_stdout { command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1) }
         }.to raise_error(ArgumentError, /path/)
       end
     end
@@ -294,7 +294,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         Pathname.new(tmpdir)
 
         # Mock Application container
-        logger = instance_double(Logger, info: nil, warn: nil, error: nil)
+        logger = instance_double(Logger, info: nil, warn: nil, debug: nil, error: nil)
         allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
         allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
 
@@ -303,12 +303,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
         # Should raise error as --recursive is not yet implemented
         expect {
-          command.call(
-            mod_specs: ["mod-with-dep"],
-            directory: tmpdir,
-            jobs: 1,
-            recursive: true
-          )
+          capture_stdout do
+            command.call(
+              mod_specs: ["mod-with-dep"],
+              directory: tmpdir,
+              jobs: 1,
+              recursive: true
+            )
+          end
         }.to raise_error(Factorix::Error, /--recursive option is not yet implemented/)
       end
     end

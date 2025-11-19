@@ -10,7 +10,7 @@ module Factorix
       # This class provides common functionality for all commands:
       # - Common options (--config-path, --log-level, --quiet)
       # - Common helper methods (say, quiet?)
-      # - Pre-call setup (via BeforeCallSetup prepended module)
+      # - Pre-call setup and error handling (via CommandWrapper prepended module)
       #
       # All command classes should inherit from this base class instead of
       # directly from Dry::CLI::Command.
@@ -32,10 +32,10 @@ module Factorix
         }.freeze
         private_constant :EMOJI_PREFIXES
 
-        # Prepend BeforeCallSetup to each command class that inherits from Base
+        # Prepend CommandWrapper to each command class that inherits from Base
         def self.inherited(subclass)
           super
-          subclass.prepend BeforeCallSetup
+          subclass.prepend CommandWrapper
         end
 
         # Require that the game is not running when this command executes

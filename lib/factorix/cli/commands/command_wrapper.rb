@@ -5,12 +5,14 @@ require "logger"
 module Factorix
   class CLI
     module Commands
-      # Module that wraps command execution to perform setup before calling the actual command
+      # Module that wraps command execution to perform setup and error handling
       #
-      # This module is prepended to Base to ensure configuration loading and log level
-      # setup happen before every command execution.
-      module BeforeCallSetup
+      # This module is prepended to Base to ensure configuration loading, log level
+      # setup, and consistent error handling happen for every command execution.
+      module CommandWrapper
         # Performs setup before command execution, then calls the command's implementation
+        # Catches exceptions and displays user-friendly error messages
+        #
         # @param options [Hash] command options including :config_path and :log_level
         def call(**options)
           @quiet = options[:quiet]
@@ -21,6 +23,19 @@ module Factorix
 
           # Call the command's implementation
           super
+        rescue Factorix::Error => e
+          # Expected errors (validation failures, missing dependencies, etc.)
+          log = Factorix::Application[:logger]
+          log.warn(e.message)
+          log.debug(e)
+          say "Error: #{e.message}", prefix: :error unless @quiet
+          raise  # Re-raise for exe/factorix to handle exit code
+        rescue => e
+          # Unexpected errors (bugs, system failures, etc.)
+          log = Factorix::Application[:logger]
+          log.error(e)
+          say "Unexpected error: #{e.message}", prefix: :error unless @quiet
+          raise  # Re-raise for exe/factorix to handle exit code
         end
 
         private def load_config!(path)
