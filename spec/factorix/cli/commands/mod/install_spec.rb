@@ -20,7 +20,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     instance_double(
       Factorix::Types::MODInfo,
       name: "mod-a",
-      category: "gameplay",
+      category: Factorix::Types::Category.for("content"),
       releases: [release_a]
     )
   end
@@ -108,7 +108,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: "gameplay"
+            category: Factorix::Types::Category.for("content")
           }
         ]
 
@@ -163,7 +163,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         instance_double(
           Factorix::Types::MODInfo,
           name: "mod-b",
-          category: "content",
+          category: Factorix::Types::Category.for("internal"),
           releases: [release_b]
         )
       end
@@ -191,14 +191,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_b,
             release: release_b,
             output_path: mod_dir / "mod-b_1.0.0.zip",
-            category: "content"
+            category: Factorix::Types::Category.for("internal")
           },
           {
             mod: mod_a,
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: "gameplay"
+            category: Factorix::Types::Category.for("content")
           }
         ]
 
@@ -271,7 +271,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: "gameplay"
+            category: Factorix::Types::Category.for("content")
           }
         ]
 

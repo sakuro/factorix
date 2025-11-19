@@ -354,7 +354,7 @@ module Factorix
           private def show_plan(targets)
             say "Planning to install #{targets.size} MOD(s):"
             targets.each do |target|
-              say "  - #{target[:mod].name}@#{target[:release].version} (#{target[:category]})"
+              say "  - #{target[:mod].name}@#{target[:release].version} (#{target[:category].name})"
             end
           end
 
