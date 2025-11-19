@@ -20,7 +20,11 @@ module Factorix
 
           desc "Uninstall MODs from mod directory"
 
-          argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name)"
+          argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
+          option :all,
+            type: :boolean,
+            default: false,
+            desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
 
           # Internal structure to represent an uninstall target
           UninstallTarget = Data.define(:mod, :version) {
@@ -35,32 +39,88 @@ module Factorix
           # Execute the uninstall command
           #
           # @param mod_specs [Array<String>] MOD specifications
+          # @param all [Boolean] Uninstall all MODs
           # @return [void]
-          def call(mod_specs:, **)
+          def call(mod_specs: [], all: false, **)
+            # Validate arguments
+            if all && mod_specs.any?
+              raise Factorix::Error, "Cannot specify MOD names with --all option"
+            end
+
+            unless all || mod_specs.any?
+              raise Factorix::Error, "Must specify MOD names or use --all option"
+            end
+
             # Pre-validation: ensure current state is valid
             graph, mod_list, installed_mods = ensure_valid_state!
 
-            # Parse mod specs to extract MOD and optional version
-            uninstall_targets = mod_specs.map {|spec| parse_mod_spec(spec) }
+            # Determine uninstall targets
+            uninstall_targets = if all
+                                  plan_uninstall_all(graph, installed_mods)
+                                else
+                                  # Parse mod specs to extract MOD and optional version
+                                  mod_specs.map {|spec| parse_mod_spec(spec) }
+                                end
 
             # Plan uninstall
             targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods)
 
-            if targets_to_uninstall.empty?
+            # For --all, check if there's anything to do (uninstall or disable)
+            if all
+              expansions_to_disable = graph.nodes.count {|node|
+                mod = node.mod
+                mod.expansion? && mod_list.exist?(mod) && mod_list.enabled?(mod)
+              }
+
+              if targets_to_uninstall.empty? && expansions_to_disable.zero?
+                say "No MODs to uninstall or disable"
+                return
+              end
+            elsif targets_to_uninstall.empty?
               say "No MODs to uninstall"
               return
             end
 
             # Show plan and confirm
-            show_plan(targets_to_uninstall)
+            show_plan(targets_to_uninstall, all:, graph:, mod_list:)
             return unless confirm?("Do you want to uninstall these MODs?")
 
             # Execute uninstall
             execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
 
+            # If --all, also disable expansion MODs
+            if all
+              disable_expansion_mods(graph, mod_list)
+            end
+
             # Save mod-list.json
             mod_list.save(to: runtime.mod_list_path)
             say "✓ Saved mod-list.json"
+          end
+
+          # Plan uninstall all MODs
+          #
+          # @param graph [Dependency::Graph] Dependency graph
+          # @param installed_mods [Array<InstalledMOD>] All installed MODs
+          # @return [Array<UninstallTarget>] Uninstall targets
+          private def plan_uninstall_all(graph, _installed_mods)
+            targets = []
+
+            # Get all installed MODs from graph
+            graph.nodes.each do |node|
+              mod = node.mod
+
+              # Skip base MOD (always keep enabled)
+              next if mod.base?
+
+              # For expansion MODs, we'll disable them in mod-list.json but not uninstall
+              # For regular MODs, create uninstall target
+              unless mod.expansion?
+                targets << UninstallTarget.new(mod:, version: nil)
+              end
+            end
+
+            targets
           end
 
           private def parse_mod_spec(mod_spec)
@@ -192,11 +252,29 @@ module Factorix
           # Show the uninstall plan
           #
           # @param targets [Array<UninstallTarget>] Targets to uninstall
+          # @param all [Boolean] Whether --all was specified
+          # @param graph [Dependency::Graph] Dependency graph
+          # @param mod_list [MODList] The MOD list
           # @return [void]
-          private def show_plan(targets)
+          private def show_plan(targets, all: false, graph: nil, mod_list: nil)
             say "Planning to uninstall #{targets.size} MOD#{"s" unless targets.size == 1}:"
             targets.each do |target|
               say "  - #{target}"
+            end
+
+            # If --all, also show expansion MODs to be disabled
+            return unless all && graph && mod_list
+
+            expansions_to_disable = graph.nodes.filter_map {|node|
+              mod = node.mod
+              mod if mod.expansion? && mod_list.exist?(mod) && mod_list.enabled?(mod)
+            }
+
+            return if expansions_to_disable.none?
+
+            say "\nExpansion MODs to be disabled:"
+            expansions_to_disable.each do |mod|
+              say "  - #{mod.name}"
             end
           end
 
@@ -244,6 +322,23 @@ module Factorix
                 mod_list.remove(mod)
                 say "✓ Removed #{mod.name} from mod-list.json"
               end
+            end
+          end
+
+          # Disable expansion MODs in mod-list.json
+          #
+          # @param graph [Dependency::Graph] Dependency graph
+          # @param mod_list [MODList] The MOD list
+          # @return [void]
+          private def disable_expansion_mods(graph, mod_list)
+            graph.nodes.each do |node|
+              mod = node.mod
+              next unless mod.expansion?
+              next unless mod_list.exist?(mod) && mod_list.enabled?(mod)
+
+              mod_list.disable(mod)
+              say "✓ Disabled expansion MOD: #{mod.name}"
+              logger.info("Disabled expansion MOD", mod_name: mod.name)
             end
           end
 

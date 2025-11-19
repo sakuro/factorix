@@ -302,14 +302,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
 
         # Should raise error as --recursive is not yet implemented
-        expect do
+        expect {
           command.call(
             mod_specs: ["mod-with-dep"],
             directory: tmpdir,
             jobs: 1,
             recursive: true
           )
-        end.to raise_error(Factorix::Error, /--recursive option is not yet implemented/)
+        }.to raise_error(Factorix::Error, /--recursive option is not yet implemented/)
       end
     end
 

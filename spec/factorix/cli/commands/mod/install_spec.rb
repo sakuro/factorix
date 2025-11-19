@@ -38,7 +38,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
 
   before do
     allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
-    allow(command).to receive(:portal).and_return(portal)
 
     # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
@@ -71,15 +70,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false, topological_order: [])
 
     # Stub ensure_valid_state! to skip validation and return state
-    allow(command).to receive(:ensure_valid_state!).and_return([graph, mod_list, []])
+    allow(command).to receive_messages(portal:, ensure_valid_state!: [graph, mod_list, []])
 
     # Mock mod_dir
     allow(mod_dir).to receive(:mkpath)
-    allow(mod_dir).to receive(:exist?).and_return(true)
-    allow(mod_dir).to receive(:/).and_return(Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
+    allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
 
     # Mock portal
-    allow(portal).to receive(:get_mod_full).and_return(mod_info_a)
     allow(portal).to receive(:download_mod)
 
     # Mock Application[:portal]
@@ -90,7 +87,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(downloader).to receive(:subscribe)
     allow(downloader).to receive(:unsubscribe)
     mod_download_api = instance_double(Factorix::API::MODDownloadAPI, downloader:)
-    allow(portal).to receive(:mod_download_api).and_return(mod_download_api)
+    allow(portal).to receive_messages(get_mod_full: mod_info_a, mod_download_api:)
   end
 
   describe "#call" do
@@ -115,10 +112,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           }
         ]
 
-        allow(graph).to receive(:nodes).and_return([node_a])
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-        allow(graph).to receive(:topological_order).and_return([mod_a])
+        allow(graph).to receive_messages(nodes: [node_a], topological_order: [mod_a])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(false)
       end
@@ -184,7 +180,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
 
       before do
         # mod-a depends on mod-b
-        all_mod_infos = {
+        {
           "mod-a" => {mod_name: "mod-a", mod_info: mod_info_a, release: release_a},
           "mod-b" => {mod_name: "mod-b", mod_info: mod_info_b, release: release_b}
         }
@@ -206,8 +202,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           }
         ]
 
-        allow(graph).to receive(:nodes).and_return([node_a, node_b])
-        allow(graph).to receive(:topological_order).and_return([mod_b, mod_a])
+        allow(graph).to receive_messages(nodes: [node_a, node_b], topological_order: [mod_b, mod_a])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).and_return(false)
       end
@@ -226,8 +221,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     context "when MOD is already installed and enabled" do
       before do
         # Empty install targets
-        allow(graph).to receive(:nodes).and_return([])
-        allow(graph).to receive(:topological_order).and_return([])
+        allow(graph).to receive_messages(nodes: [], topological_order: [])
       end
 
       it "displays a message" do
@@ -281,10 +275,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           }
         ]
 
-        allow(graph).to receive(:nodes).and_return([node_a])
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-        allow(graph).to receive(:topological_order).and_return([mod_a])
+        allow(graph).to receive_messages(nodes: [node_a], topological_order: [mod_a])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(false)
       end

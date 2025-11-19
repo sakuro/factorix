@@ -203,25 +203,25 @@ module Factorix
                 graph.edges_from(node.mod).each do |edge|
                   dep_mod = edge.to_mod
 
-                  unless graph.node?(dep_mod)
-                    # Need to fetch this dependency
-                    new_dependencies << {
-                      mod: dep_mod,
-                      version_requirement: edge.version_requirement,
-                      required_by: mod_name
-                    }
-                  end
+                  next if graph.node?(dep_mod)
+
+                  # Need to fetch this dependency
+                  new_dependencies << {
+                    mod: dep_mod,
+                    version_requirement: edge.version_requirement,
+                    required_by: mod_name
+                  }
                 end
               end
 
               # Fetch info for new dependencies
-              unless new_dependencies.empty?
-                fetch_and_add_dependencies(new_dependencies, graph, all_mod_infos, jobs, presenter)
+              next if new_dependencies.empty?
 
-                # Add newly added MODs to processing queue
-                new_dependencies.each do |dep|
-                  to_process << dep[:mod].name unless processed.include?(dep[:mod].name)
-                end
+              fetch_and_add_dependencies(new_dependencies, graph, all_mod_infos, jobs, presenter)
+
+              # Add newly added MODs to processing queue
+              new_dependencies.each do |dep|
+                to_process << dep[:mod].name unless processed.include?(dep[:mod].name)
               end
             end
 
@@ -324,7 +324,7 @@ module Factorix
           # @return [Array<Hash>] Install targets sorted in topological order
           private def extract_install_targets(graph, all_mod_infos)
             # Get all nodes with operation: :install
-            install_nodes = graph.nodes.select {|node| node.operation == :install }
+            graph.nodes.select {|node| node.operation == :install }
 
             # Sort in topological order (dependencies first)
             sorted_mods = graph.topological_order.select {|mod|
@@ -365,7 +365,7 @@ module Factorix
           # @param mod_list [MODList] MOD list
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
-          private def execute_installation(targets, graph, mod_list, jobs)
+          private def execute_installation(targets, _graph, mod_list, jobs)
             # Download all MODs
             download_mods(targets, jobs)
 

@@ -362,5 +362,49 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
           .and raise_error(SystemExit)
       end
     end
+
+    context "with --all option" do
+      let(:expansion_mod) { Factorix::MOD[name: "space-age"] }
+      let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false) }
+      let(:node_expansion) { instance_double(Factorix::Dependency::Node, mod: expansion_mod, enabled?: true) }
+
+      before do
+        allow(graph).to receive(:node?).with(mod_a).and_return(true)
+        allow(graph).to receive_messages(nodes: [node_a, node_expansion], edges_from: [])
+        allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod_a])
+        allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
+        allow(mod_list).to receive(:exist?).with(expansion_mod).and_return(true)
+        allow(mod_list).to receive(:enabled?).with(expansion_mod).and_return(true)
+        allow(mod_list).to receive(:disable)
+        allow(installed_mod_a.path).to receive(:rmtree)
+      end
+
+      it "raises error when MOD specs are also provided" do
+        expect { capture_stdout { command.call(mod_specs: ["mod-a"], all: true, yes: true) } }
+          .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
+      end
+
+      it "uninstalls all regular MODs" do
+        capture_stdout { command.call(all: true, yes: true) }
+        expect(installed_mod_a.path).to have_received(:rmtree)
+      end
+
+      it "disables expansion MODs" do
+        capture_stdout { command.call(all: true, yes: true) }
+        expect(mod_list).to have_received(:disable).with(expansion_mod)
+      end
+
+      it "displays both uninstall and disable in plan" do
+        expect { command.call(all: true, yes: true) }
+          .to output(/Planning to uninstall.*Expansion MODs to be disabled/m).to_stdout
+      end
+    end
+
+    context "with --all option but no mod_specs argument" do
+      it "raises error when neither --all nor mod_specs provided" do
+        expect { capture_stdout { command.call(yes: true) } }
+          .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
+      end
+    end
   end
 end
