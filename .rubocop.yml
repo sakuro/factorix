@@ -93,6 +93,9 @@ RSpec/IndexedLet:
     - '^version_\d+'  # Allow version_1_0_0, version_123, etc.
     - '^edge\d+$'     # Allow edge1, edge2, etc.
     - '^mod\d+_v\d+$' # Allow mod1_v1, mod2_v1, etc.
+    - '^node\d+$'     # Allow node1, node2, etc.
+    - '^error\d+$'    # Allow error1, error2, etc.
+    - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false

@@ -147,13 +147,8 @@ RSpec.describe Factorix::HTTP::Client do
 
     context "with unsupported method" do
       it "raises ArgumentError" do
-        # We need to bypass the HTTPS check first by stubbing perform_request
-        allow_any_instance_of(Factorix::HTTP::Client).to receive(:perform_request) do |instance, method, *args|
-          instance.send(:build_request, method, uri, headers: {}, body: nil)
-        end
-
         expect {
-          client.send(:build_request, :patch, uri, headers: {}, body: nil)
+          client.__send__(:build_request, :patch, uri, headers: {}, body: nil)
         }.to raise_error(ArgumentError, "Unsupported method: patch")
       end
     end
@@ -280,13 +275,13 @@ RSpec.describe Factorix::HTTP::Client do
 
   describe "HTTP configuration" do
     it "configures SSL verification" do
-      http = client.send(:create_http, uri)
+      http = client.__send__(:create_http, uri)
       expect(http).to be_use_ssl
       expect(http.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
     end
 
     it "configures timeouts from application config" do
-      http = client.send(:create_http, uri)
+      http = client.__send__(:create_http, uri)
       expect(http.open_timeout).to eq(10)
       expect(http.read_timeout).to eq(30)
       expect(http.write_timeout).to eq(30) if http.respond_to?(:write_timeout)

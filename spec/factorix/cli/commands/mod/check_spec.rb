@@ -137,33 +137,33 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays errors" do
-        output = capture_stdout do
+        output = capture_stdout {
           begin
             command.call
           rescue SystemExit
             # Expected exit
           end
-        end
+        }
         expect(output).to include("Errors:")
         expect(output).to include("Missing dependency: mod-a")
         expect(output).to include("Circular dependency detected")
       end
 
       it "displays summary with error count" do
-        output = capture_stdout do
+        output = capture_stdout {
           begin
             command.call
           rescue SystemExit
             # Expected exit
           end
-        end
+        }
         expect(output).to include("Summary: 2 enabled MODs, 2 errors")
       end
 
       it "exits with error code 1" do
-        expect do
+        expect {
           capture_stdout { command.call }
-        end.to raise_error(SystemExit) do |error|
+        }.to raise_error(SystemExit) do |error|
           expect(error.status).to eq(1)
         end
       end
@@ -200,13 +200,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays both errors and warnings" do
-        output = capture_stdout do
+        output = capture_stdout {
           begin
             command.call
           rescue SystemExit
             # Expected exit
           end
-        end
+        }
         expect(output).to include("Errors:")
         expect(output).to include("Missing dependency")
         expect(output).to include("Warnings:")
@@ -214,13 +214,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays summary with both counts" do
-        output = capture_stdout do
+        output = capture_stdout {
           begin
             command.call
           rescue SystemExit
             # Expected exit
           end
-        end
+        }
         expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
       end
     end
@@ -292,13 +292,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "uses singular forms correctly" do
-        output = capture_stdout do
+        output = capture_stdout {
           begin
             command.call
           rescue SystemExit
             # Expected exit
           end
-        end
+        }
         expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
       end
     end
