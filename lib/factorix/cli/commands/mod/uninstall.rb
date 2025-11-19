@@ -51,8 +51,8 @@ module Factorix
               raise Factorix::Error, "Must specify MOD names or use --all option"
             end
 
-            # Pre-validation: ensure current state is valid
-            graph, mod_list, installed_mods = ensure_valid_state!
+            # Load current state (without validation to allow fixing issues)
+            graph, mod_list, installed_mods = load_current_state
 
             # Determine uninstall targets
             uninstall_targets = if all

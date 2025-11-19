@@ -34,8 +34,8 @@ module Factorix
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
           def call(mod_specs:, jobs: 4, **)
-            # Pre-validation: ensure current state is valid
-            graph, mod_list, _installed_mods = ensure_valid_state!
+            # Load current state (without validation to allow fixing issues)
+            graph, mod_list, _installed_mods = load_current_state
 
             # Ensure mod directory exists
             runtime.mod_dir.mkpath unless runtime.mod_dir.exist?

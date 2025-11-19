@@ -69,8 +69,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(graph).to receive(:add_uninstalled_mod)
     allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false, topological_order: [])
 
-    # Stub ensure_valid_state! to skip validation and return state
-    allow(command).to receive_messages(portal:, ensure_valid_state!: [graph, mod_list, []])
+    # Stub load_current_state to return mocked state
+    allow(command).to receive_messages(portal:, load_current_state: [graph, mod_list, []])
 
     # Mock mod_dir
     allow(mod_dir).to receive(:mkpath)
