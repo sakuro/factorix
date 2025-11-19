@@ -79,11 +79,6 @@ module Factorix
                 raise Factorix::Error, "Cannot disable base MOD"
               end
 
-              # Check if expansion MOD
-              if mod.expansion?
-                raise Factorix::Error, "Cannot disable expansion MOD: #{mod.name}"
-              end
-
               # Check if MOD exists in graph (is installed)
               unless graph.node?(mod)
                 say "MOD not installed, skipping: #{mod.name}", prefix: :warn

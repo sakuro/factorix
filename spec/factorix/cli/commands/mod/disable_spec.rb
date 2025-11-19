@@ -178,19 +178,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
     end
 
-    context "when trying to disable expansion MOD" do
-      let(:expansion_mod) { Factorix::MOD[name: "space-age"] }
-
-      before do
-        allow(graph).to receive(:node?).with(expansion_mod).and_return(true)
-      end
-
-      it "raises an error" do
-        expect { capture_stdout { command.call(mod_names: ["space-age"], yes: true) } }
-          .to raise_error(Factorix::Error, /Cannot disable expansion MOD/)
-      end
-    end
-
     context "with confirmation prompt" do
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
 
