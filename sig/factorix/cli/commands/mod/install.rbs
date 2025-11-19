@@ -11,7 +11,7 @@ module Factorix
           attr_reader logger: Dry::Logger::Dispatcher
           attr_reader runtime: Runtime
 
-          def call: (mod_specs: Array[String], ?jobs: Integer, ?quiet: bool) -> void
+          def call: (mod_specs: Array[String], ?jobs: Integer, ?yes: bool, ?quiet: bool) -> void
         end
       end
     end
