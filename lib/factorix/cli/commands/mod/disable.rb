@@ -32,8 +32,8 @@ module Factorix
           # @param only [Boolean] Only disable specified MODs without dependents
           # @return [void]
           def call(mod_names:, only: false, **)
-            # Load current state
-            graph, mod_list, _installed_mods = load_current_state
+            # Pre-validation: ensure current state is valid
+            graph, mod_list, _installed_mods = ensure_valid_state!
 
             # Convert mod names to MOD objects
             target_mods = mod_names.map {|name| Factorix::MOD[name:] }

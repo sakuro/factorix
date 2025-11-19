@@ -32,6 +32,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
     allow(graph).to receive(:node?)
     allow(graph).to receive(:node)
     allow(graph).to receive_messages(nodes: [], edges_from: [])
+
+    # Stub ensure_valid_state! to skip validation and return state
+    # (Validator is tested separately in validator_spec.rb)
+    allow(command).to receive(:ensure_valid_state!).and_return([graph, mod_list, []])
   end
 
   describe "#call" do

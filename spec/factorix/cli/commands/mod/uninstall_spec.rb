@@ -45,6 +45,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive(:nodes).and_return([])
+
+    # Stub ensure_valid_state! to skip validation and return state
+    # (Validator is tested separately in validator_spec.rb)
+    # Note: installed_mods will be set per context
+    allow(command).to receive(:ensure_valid_state!) do
+      installed = Factorix::InstalledMOD.all
+      [graph, mod_list, installed]
+    end
   end
 
   describe "#call" do

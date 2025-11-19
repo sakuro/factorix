@@ -37,8 +37,8 @@ module Factorix
           # @param mod_specs [Array<String>] MOD specifications
           # @return [void]
           def call(mod_specs:, **)
-            # Load current state
-            graph, mod_list, installed_mods = load_current_state
+            # Pre-validation: ensure current state is valid
+            graph, mod_list, installed_mods = ensure_valid_state!
 
             # Parse mod specs to extract MOD and optional version
             uninstall_targets = mod_specs.map {|spec| parse_mod_spec(spec) }
