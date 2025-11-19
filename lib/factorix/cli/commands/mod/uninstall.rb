@@ -63,7 +63,7 @@ module Factorix
                                 end
 
             # Plan uninstall
-            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods)
+            targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods, all:)
 
             # For --all, check if there's anything to do (uninstall or disable)
             if all
@@ -102,25 +102,23 @@ module Factorix
           #
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
-          # @return [Array<UninstallTarget>] Uninstall targets
+          # @return [Array<UninstallTarget>] Uninstall targets in reverse dependency order
           private def plan_uninstall_all(graph, _installed_mods)
-            targets = []
+            # Get all MODs in reverse topological order (dependents first, then dependencies)
+            # This ensures we uninstall dependents before their dependencies
+            ordered_mods = graph.topological_order
+            mods_in_reverse_order = ordered_mods.reverse
 
-            # Get all installed MODs from graph
-            graph.nodes.each do |node|
-              mod = node.mod
-
+            mods_in_reverse_order.filter_map do |mod|
               # Skip base MOD (always keep enabled)
               next if mod.base?
 
               # For expansion MODs, we'll disable them in mod-list.json but not uninstall
               # For regular MODs, create uninstall target
               unless mod.expansion?
-                targets << UninstallTarget.new(mod:, version: nil)
+                UninstallTarget.new(mod:, version: nil)
               end
             end
-
-            targets
           end
 
           private def parse_mod_spec(mod_spec)
@@ -135,9 +133,9 @@ module Factorix
             end
           end
 
-          private def plan_uninstall(targets, graph, installed_mods)
+          private def plan_uninstall(targets, graph, installed_mods, all: false)
             targets.filter_map do |target|
-              validate_uninstall_target(target, graph, installed_mods)
+              validate_uninstall_target(target, graph, installed_mods, all:)
             end
           end
 
@@ -146,8 +144,9 @@ module Factorix
           # @param target [UninstallTarget] Target to validate
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
+          # @param all [Boolean] Whether this is part of --all uninstall
           # @return [UninstallTarget, nil] The target if valid, nil if should be skipped
-          private def validate_uninstall_target(target, graph, installed_mods)
+          private def validate_uninstall_target(target, graph, installed_mods, all: false)
             mod = target.mod
 
             # Check if base/expansion
@@ -168,8 +167,8 @@ module Factorix
               return nil
             end
 
-            # Check for enabled dependents
-            check_dependents_with_version(target, graph, installed_mods)
+            # Check for enabled dependents (skip for --all since all MODs are being uninstalled)
+            check_dependents_with_version(target, graph, installed_mods) unless all
 
             target
           end
