@@ -29,13 +29,13 @@ module Factorix
           log.warn(e.message)
           log.debug(e)
           say "Error: #{e.message}", prefix: :error unless @quiet
-          raise  # Re-raise for exe/factorix to handle exit code
+          raise # Re-raise for exe/factorix to handle exit code
         rescue => e
           # Unexpected errors (bugs, system failures, etc.)
           log = Factorix::Application[:logger]
           log.error(e)
           say "Unexpected error: #{e.message}", prefix: :error unless @quiet
-          raise  # Re-raise for exe/factorix to handle exit code
+          raise # Re-raise for exe/factorix to handle exit code
         end
 
         private def load_config!(path)

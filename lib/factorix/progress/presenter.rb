@@ -53,6 +53,17 @@ module Factorix
         end
       end
 
+      # Increase the total count dynamically
+      #
+      # @param increment [Integer] amount to add to current total
+      # @return [void]
+      def increase_total(increment)
+        return unless @tty_bar
+
+        current_total = @tty_bar.total || 0
+        @tty_bar.update(total: current_total + increment)
+      end
+
       # Mark the progress presenter as finished
       #
       # @return [void]

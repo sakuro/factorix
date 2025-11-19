@@ -217,6 +217,9 @@ module Factorix
               # Fetch info for new dependencies
               next if new_dependencies.empty?
 
+              # Increase progress bar total for newly discovered dependencies
+              presenter.increase_total(new_dependencies.size)
+
               fetch_and_add_dependencies(new_dependencies, graph, all_mod_infos, jobs, presenter)
 
               # Add newly added MODs to processing queue

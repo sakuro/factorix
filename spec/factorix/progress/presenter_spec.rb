@@ -62,4 +62,47 @@ RSpec.describe Factorix::Progress::Presenter do
       # - Line 52: @tty_bar&.advance
     end
   end
+
+  describe "#increase_total" do
+    it "increases the total count dynamically" do
+      presenter = nil
+      capture_stderr do
+        presenter = Factorix::Progress::Presenter.new(title: "Fetching")
+
+        # Start with initial total
+        presenter.start(total: 3)
+
+        # Verify initial total
+        expect(presenter.instance_variable_get(:@tty_bar).total).to eq(3)
+
+        # Increase total by 2
+        presenter.increase_total(2)
+
+        # Verify total is increased
+        expect(presenter.instance_variable_get(:@tty_bar).total).to eq(5)
+
+        # Finish
+        presenter.finish
+      end
+    end
+
+    it "handles nil total gracefully" do
+      presenter = nil
+      capture_stderr do
+        presenter = Factorix::Progress::Presenter.new(title: "Processing")
+
+        # Start without total
+        presenter.start(total: nil)
+
+        # Increase total (should set to increment value)
+        presenter.increase_total(5)
+
+        # Verify total is set
+        expect(presenter.instance_variable_get(:@tty_bar).total).to eq(5)
+
+        # Finish
+        presenter.finish
+      end
+    end
+  end
 end
