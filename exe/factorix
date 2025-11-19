@@ -14,9 +14,12 @@ rescue Factorix::Error => e
   logger = Factorix::Application[:logger]
   logger.warn(e.message)
   logger.debug(e)
+  warn "Error: #{e.message}"
   exit 1
 rescue => e
   logger = Factorix::Application[:logger]
   logger.error(e)
+  warn "Unexpected error: #{e.message}"
+  warn e.backtrace.join("\n")
   exit 2
 end
