@@ -39,6 +39,3 @@
 
 # RBS collection
 /.gem_rbs_collection/
-
-# Reference implementation
-/factorix.old/
