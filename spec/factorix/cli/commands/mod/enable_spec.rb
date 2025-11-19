@@ -31,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive(:node)
-    allow(graph).to receive(:edges_from).and_return([])
+    allow(graph).to receive_messages(edges_from: [], edges_to: [])
 
     # Stub load_current_state to return mocked state
     # (Validator is tested separately in validator_spec.rb)
@@ -194,6 +194,32 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
         allow(graph).to receive(:node).with(mod_c).and_return(node_c)
         allow(graph).to receive(:edges_from).with(mod_a).and_return([edge_a_to_c])
+      end
+
+      it "raises an error about the conflict" do
+        expect { capture_stdout { command.call(mod_names: ["mod-a"], yes: true) } }
+          .to raise_error(Factorix::Error, /conflicts with mod-c/)
+      end
+    end
+
+    context "when another MOD conflicts with the MOD being enabled" do
+      let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version: "1.0.0") }
+      let(:node_c) { instance_double(Factorix::Dependency::Node, mod: mod_c, enabled?: true, version: "1.0.0") }
+      let(:edge_c_to_a) do
+        instance_double(
+          Factorix::Dependency::Edge,
+          required?: false,
+          incompatible?: true,
+          from_mod: mod_c
+        )
+      end
+
+      before do
+        allow(graph).to receive(:node?).with(mod_a).and_return(true)
+        allow(graph).to receive(:node).with(mod_a).and_return(node_a)
+        allow(graph).to receive(:node).with(mod_c).and_return(node_c)
+        allow(graph).to receive(:edges_from).with(mod_a).and_return([])
+        allow(graph).to receive(:edges_to).with(mod_a).and_return([edge_c_to_a])
       end
 
       it "raises an error about the conflict" do

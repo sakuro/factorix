@@ -108,6 +108,12 @@ module Factorix
       # @return [Array<Factorix::Dependency::Edge>] Edges from this MOD
       def edges_from(mod) = @edges[mod] || []
 
+      # Get edges to a MOD
+      #
+      # @param mod [Factorix::MOD] The MOD identifier
+      # @return [Array<Factorix::Dependency::Edge>] Edges to this MOD
+      def edges_to(mod) = @edges.values.flatten.select {|edge| edge.to_mod == mod }
+
       # Get all edges in the graph
       #
       # @return [Array<Factorix::Dependency::Edge>] All edges

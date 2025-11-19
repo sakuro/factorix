@@ -200,6 +200,7 @@ module Factorix
             mods_to_enable_set = Set.new(mods_to_enable)
 
             mods_to_enable.each do |mod|
+              # Check outgoing incompatibility edges (this MOD conflicts with others)
               graph.edges_from(mod).select(&:incompatible?).each do |edge|
                 conflict_node = graph.node(edge.to_mod)
 
@@ -213,6 +214,23 @@ module Factorix
                 if mods_to_enable_set.include?(edge.to_mod)
                   raise Factorix::Error,
                     "Cannot enable #{mod.name}: conflicts with #{edge.to_mod.name} which is also being enabled"
+                end
+              end
+
+              # Check incoming incompatibility edges (other MODs conflict with this one)
+              graph.edges_to(mod).select(&:incompatible?).each do |edge|
+                conflict_node = graph.node(edge.from_mod)
+
+                # Check if conflicting MOD is currently enabled
+                if conflict_node&.enabled?
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name}: conflicts with #{edge.from_mod.name} which is currently enabled"
+                end
+
+                # Check if conflicting MOD is in the enable plan
+                if mods_to_enable_set.include?(edge.from_mod)
+                  raise Factorix::Error,
+                    "Cannot enable #{mod.name}: conflicts with #{edge.from_mod.name} which is also being enabled"
                 end
               end
             end

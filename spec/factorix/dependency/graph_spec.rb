@@ -123,6 +123,34 @@ RSpec.describe Factorix::Dependency::Graph do
     end
   end
 
+  describe "#edges_to" do
+    let(:graph) { Factorix::Dependency::Graph.new }
+    let(:edge1) { Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required) }
+    let(:edge2) { Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_b, type: :optional) }
+
+    before do
+      graph.add_node(node_a)
+      graph.add_node(node_b)
+      graph.add_node(node_c)
+      graph.add_edge(edge1)
+      graph.add_edge(edge2)
+    end
+
+    it "returns all edges to a MOD" do
+      edges = graph.edges_to(mod_b)
+      expect(edges).to contain_exactly(edge1, edge2)
+    end
+
+    it "returns empty array when MOD has no incoming edges" do
+      expect(graph.edges_to(mod_a)).to be_empty
+    end
+
+    it "returns empty array when MOD doesn't exist" do
+      mod_x = Factorix::MOD[name: "mod-x"]
+      expect(graph.edges_to(mod_x)).to be_empty
+    end
+  end
+
   describe "#topological_order" do
     let(:graph) { Factorix::Dependency::Graph.new }
 
