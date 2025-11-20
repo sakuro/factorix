@@ -1,11 +1,14 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-autoload -U colors
-colors
+# ANSI color codes
+CYAN=$'\033[36m'
+MAGENTA=$'\033[35m'
+RESET=$'\033[0m'
+
 # prefix for -x
-PS4="${fg[cyan]}[$0:t]$reset_color "
+PS4="${CYAN}[$(basename $0)]${RESET} "
 # prefix for stdout
-exec > >(sed -e "s/^/${fg[magenta]}[$0:t]$reset_color /")
+exec > >(sed -e "s/^/${MAGENTA}[$(basename $0)]${RESET} /")
 
 IFS=$'\n\t'
 set -euxo pipefail
