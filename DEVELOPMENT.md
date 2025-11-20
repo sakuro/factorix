@@ -51,7 +51,7 @@ This opens an IRB session where you can experiment with the Factorix API.
 - `zeitwerk` (~> 2.7) - Code autoloading
 - `retriable` (~> 3.1) - Retry logic for network operations
 - `tty-progressbar` (~> 0.18) - Progress indication
-- `rubyzip` (~> 2.3) - ZIP file handling
+- `rubyzip` (~> 3.2) - ZIP file handling
 - `parslet` (~> 2.0) - Parser construction
 - `concurrent-ruby` (~> 1.0) - Concurrency primitives
 

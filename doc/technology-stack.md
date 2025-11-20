@@ -39,7 +39,7 @@
   - Purpose: PEG parser (dependency string parsing)
   - Assessment: ✅ Adopted (complex dependency syntax parsing)
 
-- **rubyzip** (~> 2.3)
+- **rubyzip** (~> 3.2)
   - Purpose: ZIP file handling (save file parsing)
   - Assessment: ✅ Adopted (Factorio save file extraction)
 
