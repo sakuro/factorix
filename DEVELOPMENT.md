@@ -273,6 +273,75 @@ Commands should use two distinct output methods based on the nature of the outpu
 
 **If the output is the primary value** (data that users/scripts need to capture), use `puts`. **If the output is feedback about what happened**, use `say`.
 
+### Exception Handling in CLI Commands
+
+All CLI commands inherit from `CLI::Commands::Base`, which automatically prepends the `CommandWrapper` module. This module is prepended to intercept all command execution and provides centralized exception handling.
+
+#### CommandWrapper Exception Capture Mechanism
+
+When a command is executed, `CommandWrapper#call` wraps the actual command implementation with a two-tier exception handling strategy:
+
+```ruby
+def call(**options)
+  @quiet = options[:quiet]
+  @yes = options[:yes] if options.key?(:yes)
+
+  load_config!(options[:config_path])
+  log_level!(options[:log_level]) if options[:log_level]
+
+  # Call the command's implementation
+  super
+rescue Factorix::Error => e
+  # Expected errors (domain/infrastructure errors)
+  log = Factorix::Application[:logger]
+  log.warn(e.message)
+  log.debug(e)
+  say "Error: #{e.message}", prefix: :error unless @quiet
+  raise # Re-raise for exe/factorix to handle exit code
+rescue => e
+  # Unexpected errors
+  log = Factorix::Application[:logger]
+  log.error(e)
+  say "Unexpected error: #{e.message}", prefix: :error unless @quiet
+  raise
+end
+```
+
+#### Exception Handling Tiers
+
+**Tier 1: Expected Domain/Infrastructure Errors** (`Factorix::Error`)
+- **Examples**: `ValidationError`, `GameRunningError`, `HTTPClientError`
+- **Logging**: Warning level for message, debug level for full exception
+- **User message**: "Error: {message}" with error prefix (unless `--quiet`)
+- **Exit code**: 1 (mapped in `exe/factorix`)
+
+**Tier 2: Unexpected Errors** (all other exceptions)
+- **Examples**: `StandardError`, `RuntimeError`, programming errors
+- **Logging**: Error level with full exception details
+- **User message**: "Unexpected error: {message}" with error prefix (unless `--quiet`)
+- **Exit code**: 2 (mapped in `exe/factorix`)
+
+#### Exit Code Mapping
+
+The top-level `exe/factorix` script maps exceptions to exit codes:
+
+```ruby
+exit_status = Factorix::CLI.call
+exit exit_status
+rescue Factorix::Error
+  exit 1  # Expected error
+rescue
+  exit 2  # Unexpected error
+```
+
+#### Implications for Command Implementation
+
+Commands should:
+- **Raise appropriate exceptions** instead of calling `exit` directly
+- **Let exceptions propagate** to CommandWrapper (don't rescue unless necessary)
+- **Use domain-specific exceptions** (subclasses of `Factorix::Error`) for expected error conditions
+- **Trust the wrapper** to handle logging and user-facing error messages
+
 ## Development Workflow
 
 ### Running Tests
