@@ -37,7 +37,7 @@ module Factorix
               if output
                 Pathname(output).write(output_string)
               else
-                say output_string
+                puts output_string
               end
             end
 

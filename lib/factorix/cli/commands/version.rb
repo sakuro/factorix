@@ -18,7 +18,7 @@ module Factorix
         # Outputs the current version of the Factorix gem to stdout.
         #
         # @return [void]
-        def call(**) = say Factorix::VERSION
+        def call(**) = puts Factorix::VERSION
       end
     end
   end

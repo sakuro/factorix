@@ -87,7 +87,7 @@ module Factorix
             raise ArgumentError, error_message.chomp
           end
 
-          say JSON.pretty_generate(result)
+          puts JSON.pretty_generate(result)
         end
       end
     end
