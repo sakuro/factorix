@@ -12,7 +12,7 @@ module Factorix
           attr_reader logger: Dry::Logger::Dispatcher
           attr_reader runtime: Runtime
 
-          def call: (mod_names: Array[String], ?only: bool, ?yes: bool, ?quiet: bool) -> void
+          def call: (mod_names: Array[String], ?yes: bool, ?quiet: bool) -> void
         end
       end
     end

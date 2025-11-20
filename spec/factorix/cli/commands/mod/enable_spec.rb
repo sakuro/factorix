@@ -120,63 +120,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
     end
 
-    context "with --only flag" do
-      context "when dependency is already enabled" do
-        let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version: "1.0.0") }
-        let(:node_b) { instance_double(Factorix::Dependency::Node, mod: mod_b, enabled?: true, version: "1.0.0") }
-        let(:edge_a_to_b) do
-          instance_double(
-            Factorix::Dependency::Edge,
-            required?: true,
-            incompatible?: false,
-            to_mod: mod_b,
-            version_requirement: ">=1.0.0",
-            satisfied_by?: true
-          )
-        end
-
-        before do
-          # mod_b is a regular MOD (not base), so base? returns false automatically
-          allow(graph).to receive(:node?).with(mod_a).and_return(true)
-          allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-          allow(graph).to receive(:node).with(mod_b).and_return(node_b)
-          allow(graph).to receive(:edges_from).with(mod_a).and_return([edge_a_to_b])
-          allow(edge_a_to_b).to receive(:satisfied_by?).with("1.0.0").and_return(true)
-        end
-
-        it "enables only the specified MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"], only: true, yes: true) }
-          expect(mod_list).to have_received(:enable).with(mod_a)
-          expect(mod_list).not_to have_received(:enable).with(mod_b)
-        end
-      end
-
-      context "when dependency is not enabled" do
-        let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version: "1.0.0") }
-        let(:node_b) { instance_double(Factorix::Dependency::Node, mod: mod_b, enabled?: false, version: "1.0.0") }
-        let(:edge_a_to_b) do
-          instance_double(
-            Factorix::Dependency::Edge,
-            required?: true,
-            to_mod: mod_b
-          )
-        end
-
-        before do
-          # mod_b is a regular MOD (not base), so base? returns false automatically
-          allow(graph).to receive(:node?).with(mod_a).and_return(true)
-          allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-          allow(graph).to receive(:node).with(mod_b).and_return(node_b)
-          allow(graph).to receive(:edges_from).with(mod_a).and_return([edge_a_to_b])
-        end
-
-        it "raises an error" do
-          expect { capture_stdout { command.call(mod_names: ["mod-a"], only: true, yes: true) } }
-            .to raise_error(Factorix::Error, /dependency mod-b is not enabled/)
-        end
-      end
-    end
-
     context "when MOD has a conflict" do
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version: "1.0.0") }
       let(:node_c) { instance_double(Factorix::Dependency::Node, mod: mod_c, enabled?: true, version: "1.0.0") }

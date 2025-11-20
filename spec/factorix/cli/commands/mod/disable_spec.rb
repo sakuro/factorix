@@ -124,47 +124,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
     end
 
-    context "with --only flag" do
-      context "when no enabled MODs depend on it" do
-        let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
-
-        before do
-          allow(graph).to receive(:node?).with(mod_a).and_return(true)
-          allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-          allow(graph).to receive(:nodes).and_return([node_a])
-        end
-
-        it "disables only the specified MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"], only: true, yes: true) }
-          expect(mod_list).to have_received(:disable).with(mod_a)
-        end
-      end
-
-      context "when enabled MODs depend on it" do
-        let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
-        let(:node_b) { instance_double(Factorix::Dependency::Node, mod: mod_b, enabled?: true) }
-        let(:edge_b_to_a) do
-          instance_double(
-            Factorix::Dependency::Edge,
-            required?: true,
-            to_mod: mod_a
-          )
-        end
-
-        before do
-          allow(graph).to receive(:node?).with(mod_a).and_return(true)
-          allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-          allow(graph).to receive(:nodes).and_return([node_a, node_b])
-          allow(graph).to receive(:edges_from).with(mod_b).and_return([edge_b_to_a])
-        end
-
-        it "raises an error" do
-          expect { capture_stdout { command.call(mod_names: ["mod-a"], only: true, yes: true) } }
-            .to raise_error(Factorix::Error, /other enabled MODs depend on it/)
-        end
-      end
-    end
-
     context "when trying to disable base MOD" do
       let(:base_mod) { Factorix::MOD[name: "base"] }
 

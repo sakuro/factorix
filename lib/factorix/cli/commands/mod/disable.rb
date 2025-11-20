@@ -21,17 +21,12 @@ module Factorix
           desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
 
           argument :mod_names, type: :array, required: true, desc: "MOD names to disable"
-          option :only,
-            type: :boolean,
-            default: false,
-            desc: "Only disable specified MODs (error if other enabled MODs depend on them)"
 
           # Execute the disable command
           #
           # @param mod_names [Array<String>] MOD names to disable
-          # @param only [Boolean] Only disable specified MODs without dependents
           # @return [void]
-          def call(mod_names:, only: false, **)
+          def call(mod_names:, **)
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
@@ -42,11 +37,7 @@ module Factorix
             validate_target_mods(target_mods, graph)
 
             # Determine MODs to disable
-            mods_to_disable = if only
-                                plan_only_mode(target_mods, graph)
-                              else
-                                plan_with_dependents(target_mods, graph)
-                              end
+            mods_to_disable = plan_with_dependents(target_mods, graph)
 
             # Show plan to user
             show_plan(mods_to_disable)
@@ -85,46 +76,6 @@ module Factorix
                 logger.debug("MOD not installed", mod_name: mod.name)
               end
             end
-          end
-
-          # Plan disable in --only mode
-          #
-          # Verifies no enabled MODs depend on the target MODs and returns only the specified MODs.
-          #
-          # @param target_mods [Array<Factorix::MOD>] MODs to disable
-          # @param graph [Factorix::Dependency::Graph] Dependency graph
-          # @return [Array<Factorix::MOD>] MODs to disable
-          # @raise [Factorix::Error] if any enabled MOD depends on a target MOD
-          private def plan_only_mode(target_mods, graph)
-            mods_to_disable = []
-
-            target_mods.each do |mod|
-              node = graph.node(mod)
-
-              # Skip if not installed
-              unless node
-                logger.debug("MOD not installed", mod_name: mod.name)
-                next
-              end
-
-              # Skip if already disabled
-              unless node.enabled?
-                logger.debug("MOD already disabled", mod_name: mod.name)
-                next
-              end
-
-              # Check if any enabled MOD depends on this MOD
-              dependents = find_enabled_dependents(mod, graph)
-              if dependents.any?
-                dependent_names = dependents.map(&:name).join(", ")
-                raise Factorix::Error,
-                  "Cannot disable #{mod.name} with --only: other enabled MODs depend on it (#{dependent_names})"
-              end
-
-              mods_to_disable << mod
-            end
-
-            mods_to_disable
           end
 
           # Plan disable with automatic dependent resolution

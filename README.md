@@ -133,13 +133,11 @@ factorix mod install -j 8 MOD1 MOD2  # Use 8 parallel downloads
 Enable MODs (recursively enables dependencies):
 ```bash
 factorix mod enable MOD_NAME1 MOD_NAME2
-factorix mod enable --only MOD_NAME  # Enable specified MOD without dependencies
 ```
 
 Disable MODs (recursively disables dependents):
 ```bash
 factorix mod disable MOD_NAME1 MOD_NAME2
-factorix mod disable --only MOD_NAME  # Disable specified MOD without disabling dependents
 ```
 
 Uninstall MODs:

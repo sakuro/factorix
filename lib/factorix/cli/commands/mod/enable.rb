@@ -21,17 +21,12 @@ module Factorix
           desc "Enable MODs in mod-list.json (recursively enables dependencies)"
 
           argument :mod_names, type: :array, required: true, desc: "MOD names to enable"
-          option :only,
-            type: :boolean,
-            default: false,
-            desc: "Only enable specified MODs (error if dependencies are not already enabled)"
 
           # Execute the enable command
           #
           # @param mod_names [Array<String>] MOD names to enable
-          # @param only [Boolean] Only enable specified MODs without dependencies
           # @return [void]
-          def call(mod_names:, only: false, **)
+          def call(mod_names:, **)
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
@@ -42,11 +37,7 @@ module Factorix
             validate_target_mods_exist(target_mods, graph)
 
             # Determine MODs to enable
-            mods_to_enable = if only
-                               plan_only_mode(target_mods, graph)
-                             else
-                               plan_with_dependencies(target_mods, graph)
-                             end
+            mods_to_enable = plan_with_dependencies(target_mods, graph)
 
             # Validate the plan (check for conflicts)
             validate_plan(mods_to_enable, graph)
@@ -81,56 +72,6 @@ module Factorix
                 raise Factorix::Error, "MOD '#{mod.name}' is not installed"
               end
             end
-          end
-
-          # Plan enable in --only mode
-          #
-          # Verifies all dependencies are already enabled and returns only the specified MODs.
-          #
-          # @param target_mods [Array<Factorix::MOD>] MODs to enable
-          # @param graph [Factorix::Dependency::Graph] Dependency graph
-          # @return [Array<Factorix::MOD>] MODs to enable
-          # @raise [Factorix::Error] if any dependency is not enabled
-          private def plan_only_mode(target_mods, graph)
-            mods_to_enable = []
-
-            target_mods.each do |mod|
-              node = graph.node(mod)
-
-              # Skip if already enabled
-              if node.enabled?
-                logger.debug("MOD already enabled", mod_name: mod.name)
-                next
-              end
-
-              # Check all required dependencies are enabled
-              graph.edges_from(mod).select(&:required?).each do |edge|
-                next if edge.to_mod.base? # Base is always available
-
-                dep_node = graph.node(edge.to_mod)
-
-                unless dep_node
-                  raise Factorix::Error,
-                    "Cannot enable #{mod.name} with --only: dependency #{edge.to_mod.name} is not installed"
-                end
-
-                unless dep_node.enabled?
-                  raise Factorix::Error,
-                    "Cannot enable #{mod.name} with --only: dependency #{edge.to_mod.name} is not enabled"
-                end
-
-                # Validate version requirement
-                next if edge.satisfied_by?(dep_node.version)
-
-                raise Factorix::Error,
-                  "Cannot enable #{mod.name}: dependency #{edge.to_mod.name} version requirement not satisfied " \
-                  "(required: #{edge.version_requirement}, installed: #{dep_node.version})"
-              end
-
-              mods_to_enable << mod
-            end
-
-            mods_to_enable
           end
 
           # Plan enable with automatic dependency resolution
