@@ -122,6 +122,15 @@ factorix/
 - **Flyweight**: Memory-efficient object sharing
 - **Strategy**: Runtime detection for platform-specific behavior
 
+## Language Policy
+
+### Communication and Documentation
+
+- **Code comments**: English (YARD format for Ruby)
+- **Technical documentation**: English (doc/ directory, README.md)
+- **Commit messages**: English with GitHub emoji notation (`:emoji:` format)
+- **PR/Issue titles and descriptions**: English
+
 ## Coding Conventions
 
 ### Ruby Style Guidelines
@@ -155,8 +164,31 @@ end
 ```
 
 #### Naming Conventions
-- Use Zeitwerk naming conventions
-- Special inflections: `api` => `API`, `http` => `HTTP`, `mod_*` => `MOD*`
+
+**MOD Notation:**
+- Always uppercase: `MOD` (not `Mod` or `mod`)
+- File names: `mod_list.rb` → `Factorix::MODList`
+- Compound words containing MOD require individual Zeitwerk inflector configuration
+
+**Other Abbreviations:**
+- `API` → Uppercase (`api.rb` → `Factorix::API`)
+- `CLI` → Uppercase (`cli.rb` → `Factorix::CLI`)
+- `HTTP` → Uppercase (`http.rb` → `Factorix::HTTP`)
+- `MacOS` → CamelCase (`mac_os.rb` → `Runtime::MacOS`)
+- `WSL` → Uppercase (`wsl.rb` → `Runtime::WSL`)
+
+**Zeitwerk Configuration:**
+All inflections are configured in `lib/factorix.rb`:
+```ruby
+loader.inflector.inflect(
+  "api" => "API",
+  "http" => "HTTP",
+  "mac_os" => "MacOS",
+  "wsl" => "WSL",
+  "mod_download_api" => "MODDownloadAPI",
+  # ... other MOD-related inflections
+)
+```
 
 ### Testing Style
 - **RSpec** with `expect` syntax (no should syntax)
