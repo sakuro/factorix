@@ -24,6 +24,7 @@ module Factorix
     register "mod download", Commands::MOD::Download
     register "mod upload", Commands::MOD::Upload
     register "mod edit", Commands::MOD::Edit
+    register "mod sync", Commands::MOD::Sync
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore
   end

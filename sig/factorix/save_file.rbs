@@ -1,0 +1,40 @@
+module Factorix
+  class SaveFile
+    attr_reader version: Types::GameVersion
+    attr_reader mods: Hash[String, MODState]
+    attr_reader startup_settings: MODSettings::Section
+
+    def initialize: (version: Types::GameVersion, mods: Hash[String, MODState], startup_settings: MODSettings::Section) -> void
+
+    LEVEL_FILE_NAMES: Array[String]
+
+    def self.load: (Pathname path) -> SaveFile
+
+    class Parser
+      @path: Pathname
+      @version: Types::GameVersion
+      @mods: Hash[String, MODState]
+      @startup_settings: MODSettings::Section
+
+      def initialize: (Pathname path) -> void
+
+      def parse: () -> SaveFile
+
+      private
+
+      def open_level_file: () { (IO) -> untyped } -> untyped
+
+      def find_level_entry: (Zip::File zip_file, String file_name) -> Zip::Entry?
+
+      def decompress_if_needed: (IO stream) -> IO
+
+      def parse_save_header: (SerDes::Deserializer deserializer) -> void
+
+      def parse_mods: (SerDes::Deserializer deserializer) -> void
+
+      def skip_unknown_bytes: (SerDes::Deserializer deserializer) -> void
+
+      def parse_startup_settings: (SerDes::Deserializer deserializer) -> void
+    end
+  end
+end

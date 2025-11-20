@@ -8,6 +8,10 @@ require "factorix"
 require "fileutils"
 require "tmpdir"
 require "webmock/rspec"
+require "zip"
+
+# Suppress warnings about invalid dates in ZIP files
+Zip.warn_invalid_date = false
 
 WebMock.disable_net_connect!
 
