@@ -162,6 +162,38 @@ Publish and upload MODs.
 - First time: Use MOD publication API
 - Subsequent: Use MOD upload API
 
+### MOD::Check
+
+Validate dependency integrity of installed MODs.
+
+```bash
+factorix mod check
+```
+
+**Features**:
+- Checks if all required dependencies are installed
+- Validates version requirements
+- Detects incompatibilities (including bidirectional checks)
+- Reports missing dependencies and version mismatches
+
+**Use case**: Verify MOD configuration before launching the game
+
+### MOD::Sync
+
+Synchronize MOD states from a save file.
+
+```bash
+factorix mod sync save-file.zip
+```
+
+**Features**:
+- Extracts MOD information from save file
+- Downloads missing MODs concurrently
+- Enables MODs to match save file state
+- Preserves existing MOD files when possible
+
+**Use case**: Set up MOD environment to match a specific save file
+
 ### MOD::Edit
 
 Edit MOD details on the portal.
@@ -188,7 +220,7 @@ factorix mod edit some-mod --license MIT
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
-### MOD::Image::List
+### MOD::Image::List (Unimplemented)
 
 List all images for a MOD with their IDs and URLs.
 
@@ -205,7 +237,7 @@ factorix mod image list some-mod
 
 **Use case**: Get image IDs needed for the `image edit` command
 
-### MOD::Image::Add
+### MOD::Image::Add (Unimplemented)
 
 Add images to a MOD on the portal.
 
@@ -218,7 +250,7 @@ factorix mod image add some-mod screenshot2.png screenshot3.png
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
-### MOD::Image::Edit
+### MOD::Image::Edit (Unimplemented)
 
 Edit MOD image order on the portal.
 

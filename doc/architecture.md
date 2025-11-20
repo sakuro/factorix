@@ -22,26 +22,25 @@ Factorix/
 │       ├── Info
 │       ├── Launch
 │       └── MOD/
-│           ├── List
-│           ├── Enable
-│           ├── Disable
-│           ├── Download
-│           ├── Install
-│           ├── Uninstall
-│           ├── Publish          # First time: publish API, subsequent: upload API
-│           ├── Edit             # Edit MOD details (title, summary, description, etc.)
-│           ├── Image/
-│           │   ├── List         # List MOD images with IDs
-│           │   ├── Add          # Add MOD images
-│           │   └── Edit         # Edit MOD image order
+│           ├── Check            # Validate dependencies
+│           ├── Enable           # Enable MODs with dependencies
+│           ├── Disable          # Disable MODs with dependents
+│           ├── Download         # Download MOD files
+│           ├── Install          # Download and enable MODs
+│           ├── Uninstall        # Remove MODs from disk
+│           ├── Upload           # Upload MODs to portal
+│           ├── Edit             # Edit MOD metadata
+│           ├── Sync             # Sync from save file
 │           └── Settings/
-│               ├── Load
-│               └── Dump
+│               ├── Dump         # Export settings to JSON
+│               └── Restore      # Import settings from JSON
 │
 ├── API/
-│   ├── PublicAPI              # No authentication required
-│   ├── DownloadAPI            # username + token
-│   └── PortalAPI              # API key
+│   ├── MODListAPI             # List/search MODs (no auth)
+│   ├── MODDownloadAPI         # Download MODs (username + token)
+│   ├── MODFullAPI             # Full MOD info (no auth)
+│   ├── MODUploadAPI           # Upload MODs (API key)
+│   └── MODEditAPI             # Edit MOD metadata (API key)
 │
 ├── Portal                     # Object-oriented wrapper for API
 │
@@ -58,11 +57,13 @@ Factorix/
 │   ├── Pagination             # (not implemented - API returns all results)
 │   └── PaginationLinks        # (not implemented - API returns all results)
 │
-├── Transfer/                  # File transfer
-│   ├── RetryStrategy          # Wrapper for retriable gem
-│   ├── HTTP                   # net/http wrapper (resume, progress notification)
-│   ├── Downloader             # Uses Transfer::HTTP
-│   └── Uploader               # Uses Transfer::HTTP
+├── HTTP/                      # HTTP layer with decorators
+│   ├── Client                 # Base HTTP client (Net::HTTP wrapper)
+│   ├── Response               # HTTP response wrapper
+│   ├── CachedResponse         # Cached response wrapper
+│   ├── RetryDecorator         # Automatic retry decorator
+│   ├── CacheDecorator         # Caching decorator
+│   └── RetryStrategy          # Retry configuration
 │
 ├── Cache/
 │   └── FileSystem             # Initial implementation
@@ -87,13 +88,22 @@ Factorix/
 │   ├── DownloadHandler        # Event handler for download progress
 │   └── UploadHandler          # Event handler for upload progress
 │
-├── MOD                        # Data.define - local MOD
+├── MOD                        # Data.define - local MOD representation
 ├── MODList                    # mod-list.json management
 ├── MODSettings                # mod-settings.dat management
-├── MODState
-├── MODDependency              # Data.define - single dependency
-├── MODDependencyParser        # Parser for dependency strings
-├── MODDependencies            # Manages all dependencies of a MOD
+├── MODState                   # Data.define - MOD state (enabled/disabled)
+├── InstalledMOD               # Data.define - installed MOD with metadata
+├── SaveFile                   # Data.define - save file parser
+│
+├── Dependency/                # Dependency resolution system
+│   ├── Entry                  # Data.define - single dependency entry
+│   ├── Parser                 # Parslet-based dependency string parser
+│   ├── List                   # Collection of dependencies
+│   ├── Graph                  # Dependency graph (DAG with TSort)
+│   ├── Node                   # Graph node representation
+│   ├── Edge                   # Graph edge representation
+│   ├── Validator              # Dependency validator
+│   └── ValidationResult       # Validation result with errors
 │
 ├── ServiceCredential          # username + token (for MOD downloads)
 ├── APICredential              # api_key (for Portal API)

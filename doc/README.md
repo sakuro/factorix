@@ -13,10 +13,6 @@ This directory contains technical documentation for the Factorix project.
 - [architecture.md](architecture.md) - System architecture and class structure
 - [technology-stack.md](technology-stack.md) - Libraries and dependencies
 
-## Design Decisions
-
-- [design-comparison-progress-notification.md](design-comparison-progress-notification.md) - Progress notification design rationale
-
 ## Component Documentation
 
 See [components/](components/) directory for detailed documentation on each component:
@@ -25,8 +21,5 @@ See [components/](components/) directory for detailed documentation on each comp
 - [api-portal.md](components/api-portal.md) - API layer and Portal layer
 - [cli.md](components/cli.md) - CLI commands
 - [credentials.md](components/credentials.md) - Authentication credential management
-- [data-serialization.md](components/data-serialization.md) - SerDes (Property Tree format)
-- [dependencies.md](components/dependencies.md) - MOD dependency management
 - [runtime.md](components/runtime.md) - Platform abstraction
-- [storage.md](components/storage.md) - Cache, MODSettings, and MODList management
-- [transfer.md](components/transfer.md) - File transfer and progress notification
+- [storage.md](components/storage.md) - Cache, MODSettings, MODList, and InstalledMOD management

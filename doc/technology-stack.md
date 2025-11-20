@@ -31,15 +31,25 @@
   - Purpose: Retry logic
   - Assessment: ✅ Recommended (essential for network operations)
 
-- **ruby-progressbar** (>= 1.13.0)
+- **tty-progressbar** (~> 0.18)
   - Purpose: Progress display
-  - Assessment: ✅ Recommended (UX improvement)
+  - Assessment: ✅ Adopted (multi-bar support, UX improvement)
 
-- **tint_me**
-  - Purpose: Terminal output colorization and text decoration
-  - Assessment: ✅ Adopted (UX improvement)
-  - Features: Zeitwerk integration, uses dry-schema/dry-types, composable styles
-  - Performance: Pre-composition recommended (define once, use many)
+- **parslet** (~> 2.0)
+  - Purpose: PEG parser (dependency string parsing)
+  - Assessment: ✅ Adopted (complex dependency syntax parsing)
+
+- **rubyzip** (~> 2.3)
+  - Purpose: ZIP file handling (save file parsing)
+  - Assessment: ✅ Adopted (Factorio save file extraction)
+
+- **concurrent-ruby** (~> 1.0)
+  - Purpose: Parallel processing
+  - Assessment: ✅ Adopted (concurrent mod downloads in sync command)
+
+- **dry-events** (~> 1.1)
+  - Purpose: Event system
+  - Assessment: ✅ Adopted (progress notification)
 
 - **dry-core** (>= 1.1.0)
   - Purpose: Utilities
@@ -47,13 +57,9 @@
 
 ### Output Format Related
 
-- **csv** (>= 3.2.8)
-  - Purpose: CSV output
-  - Assessment: ✅ Standard library, no problem
-
-- **perfect_toml** (>= 0.9.0)
-  - Purpose: TOML serialization (exclusively for MOD settings dump/load)
-  - Assessment: ✅ Adopted (most complete implementation)
+- **json** (standard library)
+  - Purpose: MOD settings export/import
+  - Assessment: ✅ Standard library is sufficient
 
 ### Development Tools
 

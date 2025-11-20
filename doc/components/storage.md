@@ -70,8 +70,8 @@ end
 
 ### Command Integration
 
-- `MOD::Settings::Dump` - Convert mod-settings.dat → TOML
-- `MOD::Settings::Load` - Convert TOML → mod-settings.dat
+- `MOD::Settings::Dump` - Convert mod-settings.dat → JSON
+- `MOD::Settings::Restore` - Convert JSON → mod-settings.dat
 
 ## MODList
 
@@ -138,8 +138,50 @@ mod_list.save
 - `MOD::Enable` - Enable MOD
 - `MOD::Disable` - Disable MOD
 
+## InstalledMOD
+
+Represents an installed MOD with its metadata (Data.define).
+
+### Overview
+
+- Scans MOD directory to discover installed MODs
+- Supports both ZIP and directory forms
+- Provides access to MOD metadata (info.json)
+
+### Data Structure
+
+- `name` - MOD name
+- `version` - MOD version
+- `path` - Path to MOD file or directory
+- `form` - Installation form (`:zip` or `:directory`)
+- `metadata` - Hash of info.json contents
+
+### Main Features
+
+- `InstalledMOD.all(mod_dir)` - Scan and return all installed MODs
+- `InstalledMOD.each(mod_dir) {|mod| ... }` - Iterate over installed MODs
+- `InstalledMOD.from_zip(path)` - Create from ZIP file
+- `InstalledMOD.from_directory(path)` - Create from directory
+- `base?` - Check if base MOD
+- `expansion?` - Check if expansion
+
+### InstalledMOD::Scanner
+
+Internal class that scans MOD directory for installed MODs.
+
+**Features**:
+- Supports both ZIP and directory forms
+- Validates info.json presence
+- Handles missing or invalid MODs gracefully
+- Prefers ZIP form over directory form (higher priority)
+
+### Command Integration
+
+- `MOD::Install` - Creates InstalledMOD entries
+- `MOD::Sync` - Uses InstalledMOD.all to check existing MODs
+- `MOD::Check` - Uses InstalledMOD.all to validate dependencies
+
 ## Related Documentation
 
-- [Data Serialization](data-serialization.md)
 - [CLI Commands](cli.md)
 - [Technology Stack](../technology-stack.md)
