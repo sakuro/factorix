@@ -154,5 +154,41 @@ module Factorix
       mod_management_api.edit_details(mod_name, **metadata)
       logger.info("Metadata updated successfully", mod: mod_name)
     end
+
+    # Add an image to a mod
+    #
+    # @param mod_name [String] the mod name
+    # @param image_file [Pathname] path to image file
+    # @return [Types::Image] the uploaded image info
+    # @raise [HTTPClientError] for 4xx errors
+    # @raise [HTTPServerError] for 5xx errors
+    def add_mod_image(mod_name, image_file)
+      logger.info("Adding image to mod", mod: mod_name, file: image_file.to_s)
+
+      # Initialize upload
+      upload_url = mod_management_api.init_image_upload(mod_name)
+
+      # Upload image
+      response_data = mod_management_api.finish_image_upload(upload_url, image_file)
+
+      # Convert response to Types::Image
+      image = Types::Image[**response_data.transform_keys(&:to_sym)]
+
+      logger.info("Image added successfully", mod: mod_name, image_id: image.id)
+      image
+    end
+
+    # Edit mod's image list
+    #
+    # @param mod_name [String] the mod name
+    # @param image_ids [Array<String>] array of image IDs in desired order
+    # @return [void]
+    # @raise [HTTPClientError] for 4xx errors
+    # @raise [HTTPServerError] for 5xx errors
+    def edit_mod_images(mod_name, image_ids)
+      logger.info("Editing mod images", mod: mod_name, image_count: image_ids.size)
+      mod_management_api.edit_images(mod_name, image_ids)
+      logger.info("Images updated successfully", mod: mod_name)
+    end
   end
 end

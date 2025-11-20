@@ -249,4 +249,70 @@ RSpec.describe Factorix::Portal do
       )
     end
   end
+
+  describe "#add_mod_image" do
+    let(:image_file) { Pathname("/tmp/screenshot.png") }
+    let(:upload_url) { URI("https://example.com/upload/789") }
+    let(:response_data) do
+      {
+        "id" => "abc123def456",
+        "url" => "https://assets-mod.factorio.com/assets/abc123def456.png",
+        "thumbnail" => "https://assets-mod.factorio.com/assets/abc123def456.thumb.png"
+      }
+    end
+
+    before do
+      allow(mod_management_api).to receive_messages(init_image_upload: upload_url, finish_image_upload: response_data)
+    end
+
+    it "uploads image and returns Image object" do
+      image = portal.add_mod_image("test-mod", image_file)
+
+      expect(mod_management_api).to have_received(:init_image_upload).with("test-mod")
+      expect(mod_management_api).to have_received(:finish_image_upload).with(upload_url, image_file)
+      expect(image).to be_a(Factorix::Types::Image)
+      expect(image.id).to eq("abc123def456")
+      expect(image.url.to_s).to eq("https://assets-mod.factorio.com/assets/abc123def456.png")
+      expect(image.thumbnail.to_s).to eq("https://assets-mod.factorio.com/assets/abc123def456.thumb.png")
+    end
+
+    it "re-raises HTTP errors" do
+      allow(mod_management_api).to receive(:init_image_upload)
+        .and_raise(Factorix::HTTPClientError.new("403 Forbidden"))
+
+      expect {
+        portal.add_mod_image("test-mod", image_file)
+      }.to raise_error(Factorix::HTTPClientError, /Forbidden/)
+    end
+  end
+
+  describe "#edit_mod_images" do
+    before do
+      allow(mod_management_api).to receive(:edit_images)
+    end
+
+    it "updates mod's image list" do
+      portal.edit_mod_images("test-mod", %w[abc123 def456 ghi789])
+
+      expect(mod_management_api).to have_received(:edit_images).with(
+        "test-mod",
+        %w[abc123 def456 ghi789]
+      )
+    end
+
+    it "accepts empty array" do
+      portal.edit_mod_images("test-mod", [])
+
+      expect(mod_management_api).to have_received(:edit_images).with("test-mod", [])
+    end
+
+    it "re-raises HTTP errors" do
+      allow(mod_management_api).to receive(:edit_images)
+        .and_raise(Factorix::HTTPClientError.new("400 Bad Request"))
+
+      expect {
+        portal.edit_mod_images("test-mod", %w[abc123])
+      }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
+    end
+  end
 end

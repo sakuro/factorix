@@ -144,6 +144,64 @@ module Factorix
         logger.info("Edit completed successfully")
       end
 
+      # Initialize image upload for a mod
+      #
+      # @param mod_name [String] the mod name
+      # @return [URI::HTTPS] upload URL
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      def init_image_upload(mod_name)
+        uri = URI.join(BASE_URL, "/api/v2/mods/images/add")
+        body = JSON.generate({mod: mod_name})
+
+        logger.info("Initializing image upload", mod: mod_name)
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+
+        parse_upload_url(response)
+      end
+
+      # Complete image upload
+      #
+      # @param upload_url [URI::HTTPS] the upload URL from init_image_upload
+      # @param image_file [Pathname] path to image file
+      # @return [Hash] parsed response with image info (id, url, thumbnail)
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      def finish_image_upload(upload_url, image_file)
+        image_file = Pathname(image_file) unless image_file.is_a?(Pathname)
+
+        logger.info("Uploading image file", file: image_file.to_s)
+
+        response = uploader.upload(upload_url, image_file)
+        data = JSON.parse(response.body)
+
+        logger.info("Image upload completed successfully", image_id: data["id"])
+        data
+      rescue JSON::ParserError => e
+        raise HTTPError, "Invalid JSON response: #{e.message}"
+      end
+
+      # Edit mod's image list
+      #
+      # @param mod_name [String] the mod name
+      # @param image_ids [Array<String>] array of image IDs (SHA1 hashes)
+      # @return [void]
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      def edit_images(mod_name, image_ids)
+        raise ArgumentError, "image_ids must be an array" unless image_ids.is_a?(Array)
+
+        uri = URI.join(BASE_URL, "/api/v2/mods/images/edit")
+
+        # Build form data
+        form_data = {mod: mod_name, images: image_ids.join(",")}
+        body = URI.encode_www_form(form_data)
+
+        logger.info("Editing mod images", mod: mod_name, image_count: image_ids.size)
+        client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
+        logger.info("Images updated successfully")
+      end
+
       private def api_credential
         return @api_credential if defined?(@api_credential)
 

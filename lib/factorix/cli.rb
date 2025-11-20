@@ -25,6 +25,9 @@ module Factorix
     register "mod upload", Commands::MOD::Upload
     register "mod edit", Commands::MOD::Edit
     register "mod sync", Commands::MOD::Sync
+    register "mod image list", Commands::MOD::Image::List
+    register "mod image add", Commands::MOD::Image::Add
+    register "mod image edit", Commands::MOD::Image::Edit
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore
   end

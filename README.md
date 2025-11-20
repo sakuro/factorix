@@ -167,6 +167,18 @@ factorix mod edit MOD_NAME --description "New description"
 factorix mod edit MOD_NAME --title "New Title" --category "new-category"
 ```
 
+Manage MOD images on Factorio MOD Portal:
+```bash
+# List all images for a MOD
+factorix mod image list MOD_NAME
+
+# Add an image to a MOD
+factorix mod image add MOD_NAME screenshot.png
+
+# Edit MOD's image list (reorder or remove images)
+factorix mod image edit MOD_NAME abc123 def456 ghi789
+```
+
 Sync MOD states and startup settings from a save file:
 ```bash
 factorix mod sync SAVE_FILE.zip

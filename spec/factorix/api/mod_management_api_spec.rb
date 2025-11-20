@@ -179,4 +179,119 @@ RSpec.describe Factorix::API::MODManagementAPI do
       }.not_to raise_error
     end
   end
+
+  describe "#init_image_upload" do
+    it "initializes image upload" do
+      response = instance_double(Factorix::HTTP::Response, body: '{"upload_url":"https://example.com/upload/789"}')
+      allow(client).to receive(:post).and_return(response)
+
+      upload_url = api.init_image_upload("my-mod")
+
+      expect(upload_url).to be_a(URI::HTTPS)
+      expect(upload_url.to_s).to eq("https://example.com/upload/789")
+      expect(client).to have_received(:post) do |uri, **options|
+        expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/images/add")
+        expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
+        expect(options[:content_type]).to eq("application/json")
+        body = JSON.parse(options[:body])
+        expect(body["mod"]).to eq("my-mod")
+      end
+    end
+
+    it "raises HTTPClientError for 4xx errors" do
+      allow(client).to receive(:post).and_raise(Factorix::HTTPClientError.new("403 Forbidden"))
+
+      expect {
+        api.init_image_upload("my-mod")
+      }.to raise_error(Factorix::HTTPClientError, /Forbidden/)
+    end
+  end
+
+  describe "#finish_image_upload" do
+    let(:upload_url) { URI("https://example.com/upload/789") }
+    let(:image_file) { Pathname("/tmp/screenshot.png") }
+    let(:response_data) do
+      {
+        "id" => "abc123def456",
+        "url" => "https://assets-mod.factorio.com/assets/abc123def456.png",
+        "thumbnail" => "https://assets-mod.factorio.com/assets/abc123def456.thumb.png"
+      }
+    end
+
+    before do
+      allow(image_file).to receive(:is_a?).with(Pathname).and_return(true)
+    end
+
+    it "uploads image and returns parsed response" do
+      response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
+      allow(uploader).to receive(:upload).and_return(response)
+
+      result = api.finish_image_upload(upload_url, image_file)
+
+      expect(uploader).to have_received(:upload).with(upload_url, image_file)
+      expect(result).to eq(response_data)
+    end
+
+    it "accepts String file path" do
+      response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
+      allow(uploader).to receive(:upload).and_return(response)
+
+      api.finish_image_upload(upload_url, "/tmp/screenshot.png")
+
+      expect(uploader).to have_received(:upload)
+    end
+
+    it "raises HTTPError for invalid JSON response" do
+      response = instance_double(Factorix::HTTP::Response, body: "invalid json")
+      allow(uploader).to receive(:upload).and_return(response)
+
+      expect {
+        api.finish_image_upload(upload_url, image_file)
+      }.to raise_error(Factorix::HTTPError, /Invalid JSON response/)
+    end
+  end
+
+  describe "#edit_images" do
+    it "updates mod's image list" do
+      response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
+      allow(client).to receive(:post).and_return(response)
+
+      api.edit_images("my-mod", %w[abc123 def456 ghi789])
+
+      expect(client).to have_received(:post) do |uri, **options|
+        expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/images/edit")
+        expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
+        expect(options[:content_type]).to eq("application/x-www-form-urlencoded")
+        body = URI.decode_www_form(options[:body]).to_h
+        expect(body["mod"]).to eq("my-mod")
+        expect(body["images"]).to eq("abc123,def456,ghi789")
+      end
+    end
+
+    it "accepts empty array" do
+      response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
+      allow(client).to receive(:post).and_return(response)
+
+      api.edit_images("my-mod", [])
+
+      expect(client).to have_received(:post) do |_uri, **options|
+        body = URI.decode_www_form(options[:body]).to_h
+        expect(body["images"]).to eq("")
+      end
+    end
+
+    it "raises ArgumentError if image_ids is not an array" do
+      expect {
+        api.edit_images("my-mod", "abc123,def456")
+      }.to raise_error(ArgumentError, /image_ids must be an array/)
+    end
+
+    it "raises HTTPClientError for 4xx errors" do
+      allow(client).to receive(:post).and_raise(Factorix::HTTPClientError.new("400 Bad Request"))
+
+      expect {
+        api.edit_images("my-mod", %w[abc123])
+      }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
+    end
+  end
 end

@@ -216,7 +216,7 @@ factorix mod edit some-mod --license MIT
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
-### MOD::Image::List (Unimplemented)
+### MOD::Image::List
 
 List all images for a MOD with their IDs and URLs.
 
@@ -233,28 +233,27 @@ factorix mod image list some-mod
 
 **Use case**: Get image IDs needed for the `image edit` command
 
-### MOD::Image::Add (Unimplemented)
+### MOD::Image::Add
 
-Add images to a MOD on the portal.
+Add an image to a MOD on the portal.
 
 ```bash
-factorix mod image add some-mod screenshot1.png
-factorix mod image add some-mod screenshot2.png screenshot3.png
+factorix mod image add some-mod screenshot.png
 ```
 
-**Response**: Returns image IDs (SHA1), URLs, and thumbnail URLs for uploaded images
+**Response**: Returns image ID (SHA1), URL, and thumbnail URL for uploaded image
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
-### MOD::Image::Edit (Unimplemented)
+### MOD::Image::Edit
 
-Edit MOD image order on the portal.
+Edit MOD image list on the portal.
 
 ```bash
-factorix mod image edit some-mod <image-id-1>,<image-id-2>,<image-id-3>
+factorix mod image edit some-mod image-id-1 image-id-2 image-id-3
 ```
 
-**Purpose**: Reorder images by specifying comma-separated image IDs in desired order
+**Purpose**: Reorder or remove images by specifying image IDs in desired order
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
