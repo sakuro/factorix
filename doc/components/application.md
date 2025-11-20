@@ -9,33 +9,39 @@ Component that manages dependency management and configuration for the entire ap
 
 ## Configuration Items
 
-Uses default values compliant with XDG Base Directory specification via Runtime abstraction.
-
 ```ruby
-setting :cache_dir, default: -> {
-  runtime.xdg_cache_home_dir / "factorix"
-}
-setting :config_dir, default: -> {
-  runtime.xdg_config_home_dir / "factorix"
-}
 setting :log_level, default: :info
+
+setting :credential do
+  setting :source, default: :player_data # :player_data or :env
+end
+
+setting :runtime do
+  setting :executable_path, constructor: ->(v) { v ? Pathname(v) : nil }
+  setting :user_dir, constructor: ->(v) { v ? Pathname(v) : nil }
+  setting :data_dir, constructor: ->(v) { v ? Pathname(v) : nil }
+end
+
 setting :http do
-  setting :open_timeout, default: 60
-  setting :read_timeout, default: 60
+  setting :connect_timeout, default: 5
+  setting :read_timeout, default: 30
+  setting :write_timeout, default: 30
+end
+
+setting :cache do
+  setting :download do
+    setting :dir, constructor: ->(value) { Pathname(value) }
+    setting :ttl, default: nil
+    setting :max_file_size, default: nil
+  end
+
+  setting :api do
+    setting :dir, constructor: ->(value) { Pathname(value) }
+    setting :ttl, default: 3600
+    setting :max_file_size, default: 10 * 1024 * 1024
+  end
 end
 ```
-
-**Benefits**:
-- Platform-aware XDG directory handling (Linux/macOS/Windows/WSL)
-- Centralized path logic in Runtime classes
-- Proper Windows AppData directory support
-
-### XDG Environment Variable Support
-
-| Configuration Item | Runtime Method | Environment Variable | Default (Linux/macOS/WSL) | Default (Windows) |
-|-------------------|----------------|---------------------|---------------------------|-------------------|
-| cache_dir | `xdg_cache_home_dir` | `XDG_CACHE_HOME` | `~/.cache/factorix` | `%LOCALAPPDATA%\factorix` |
-| config_dir | `xdg_config_home_dir` | `XDG_CONFIG_HOME` | `~/.config/factorix` | `%APPDATA%\factorix` |
 
 ## Container Registration
 
@@ -69,7 +75,7 @@ end
 Import = Dry::AutoInject(Factorix::Application)
 
 class SomeClass
-  include Import["cache", "logger"]
+  include Import[:cache, :logger]
 end
 ```
 

@@ -70,45 +70,6 @@ credential.key  # => "sk_live_xxxxxxxxxx"
 
 - `PortalAPI` - Upload/publish/edit MODs
 
-## Recommended Management Method
-
-Manage environment variables with **mise** and `.env` file (dotenv gem not required).
-
-### mise.toml (can be committed)
-
-```toml
-[tools]
-ruby = "3.2"
-
-[env]
-_.path = ["bin", "exe"]
-_.file = ".env"  # Load environment variables from .env file
-```
-
-### .env (gitignore target)
-
-```bash
-# Factorio Service authentication (for MOD downloads)
-FACTORIO_SERVICE_USERNAME=myusername
-FACTORIO_SERVICE_TOKEN=mytoken123
-
-# Factorio API authentication (for Portal API)
-FACTORIO_API_KEY=sk_live_xxxxxxxxxx
-```
-
-### .gitignore
-
-```
-.env
-.env.local
-```
-
-### Benefits
-
-- No need for dotenv gem (mise loads .env)
-- Standard .env naming convention
-- IDE .env support available
-
 ## dry-container Registration
 
 ```ruby

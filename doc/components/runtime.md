@@ -53,70 +53,32 @@ end
 
 Runtime classes abstract XDG Base Directory specification across platforms:
 
+- `xdg_cache_home_dir` - Cache directory (respects `XDG_CACHE_HOME`)
+- `xdg_config_home_dir` - Configuration directory (respects `XDG_CONFIG_HOME`)
+- `xdg_data_home_dir` - Data directory (respects `XDG_DATA_HOME`)
+
+Each platform (Linux, macOS, Windows, WSL) provides appropriate default values when environment variables are not set.
+
+### User Configuration Override
+
+The `UserConfigurable` module is prepended to `Runtime::Base` and all its subclasses to allow users to override auto-detected paths via configuration file.
+
+Users can explicitly configure paths in `~/.config/factorix/config.rb` (or `$XDG_CONFIG_HOME/factorix/config.rb`):
+
 ```ruby
-class Runtime::Base
-  # XDG Base Directory specification
-  def xdg_cache_home_dir
-    if ENV.key?("XDG_CACHE_HOME")
-      Pathname(ENV.fetch("XDG_CACHE_HOME"))
-    else
-      default_cache_home_dir
-    end
-  end
-
-  def xdg_config_home_dir
-    if ENV.key?("XDG_CONFIG_HOME")
-      Pathname(ENV.fetch("XDG_CONFIG_HOME"))
-    else
-      default_config_home_dir
-    end
-  end
-
-  def xdg_data_home_dir
-    if ENV.key?("XDG_DATA_HOME")
-      Pathname(ENV.fetch("XDG_DATA_HOME"))
-    else
-      default_data_home_dir
-    end
-  end
-
-  private
-
-  # Platform-specific defaults (override in subclasses)
-  # Note: Pathname does not expand '~', so use Dir.home explicitly
-  def default_cache_home_dir
-    Pathname(Dir.home).join(".cache")  # Linux/macOS/WSL
-  end
-
-  def default_config_home_dir
-    Pathname(Dir.home).join(".config")  # Linux/macOS/WSL
-  end
-
-  def default_data_home_dir
-    Pathname(Dir.home).join(".local/share")  # Linux/macOS/WSL
-  end
+Factorix::Application.configure do |config|
+  config.runtime.executable_path = "/path/to/factorio"
+  config.runtime.user_dir = "/path/to/factorio/user/dir"
+  config.runtime.data_dir = "/path/to/factorio/data"
 end
 ```
 
-**Windows-specific defaults**:
+**Resolution order**:
+1. User-configured value (via `config.runtime.*`)
+2. Platform-specific auto-detection
+3. Raises `ConfigurationError` if neither is available
 
-```ruby
-class Runtime::Windows < Runtime::Base
-  private
-
-  def default_cache_home_dir
-    Pathname(ENV.fetch("LOCALAPPDATA"))
-  end
-
-  def default_config_home_dir
-    Pathname(ENV.fetch("APPDATA"))
-  end
-
-  def default_data_home_dir
-    Pathname(ENV.fetch("LOCALAPPDATA"))
-  end
-end
-```
+All path resolution decisions are logged at DEBUG level.
 
 ## File Structure
 

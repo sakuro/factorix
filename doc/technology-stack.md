@@ -45,7 +45,7 @@
 
 - **concurrent-ruby** (~> 1.0)
   - Purpose: Parallel processing
-  - Assessment: ✅ Adopted (concurrent mod downloads in sync command)
+  - Assessment: ✅ Adopted (concurrent mod downloads in install, download, and sync commands)
 
 - **dry-events** (~> 1.1)
   - Purpose: Event system
@@ -100,7 +100,7 @@
 - **JSON Parser**: Standard library `json`
   - Assessment: ✅ Standard library is sufficient
 
-- **ERB Templates**: Standard library `erb`
+- **URL Encoding**: Standard library `erb` (`ERB::Util.url_encode`)
   - Assessment: ✅ Standard library is sufficient
 
 ## Related Documentation

@@ -36,26 +36,25 @@ Factorix/
 │               └── Restore      # Import settings from JSON
 │
 ├── API/
-│   ├── MODListAPI             # List/search MODs (no auth)
+│   ├── MODPortalAPI           # List/search/full MOD info (no auth)
 │   ├── MODDownloadAPI         # Download MODs (username + token)
-│   ├── MODFullAPI             # Full MOD info (no auth)
-│   ├── MODUploadAPI           # Upload MODs (API key)
-│   └── MODEditAPI             # Edit MOD metadata (API key)
+│   └── MODManagementAPI       # Upload/edit MODs (API key)
 │
 ├── Portal                     # Object-oriented wrapper for API
 │
 ├── Types/                     # Value objects using Data.define
-│   ├── MODInfo                # Unified info for all API endpoints (list/Short/Full)
-│   │   └── Detail             # Nested class for Full API-specific fields
-│   ├── Release                # MOD release info (with URI conversion)
-│   ├── Image                  # MOD screenshot/image (used in Detail)
-│   ├── License                # License info (used in Detail)
+│   ├── MODInfo                # Unified info for all API endpoints
+│   ├── Release                # MOD release info
+│   ├── Image                  # MOD screenshot/image
+│   ├── License                # License info
+│   ├── InfoJson               # info.json metadata
 │   ├── Category               # MOD category (flyweight pattern)
+│   ├── Tag                    # MOD tags (flyweight pattern)
 │   ├── MODVersion             # MOD version (major.minor.patch)
+│   ├── MODVersionRequirement  # Version requirement
 │   ├── GameVersion            # Game version (major.minor.patch-build)
-│   ├── MODList                # List container (deferred)
-│   ├── Pagination             # (not implemented - API returns all results)
-│   └── PaginationLinks        # (not implemented - API returns all results)
+│   ├── SignedInteger          # Signed 64-bit integer
+│   └── UnsignedInteger        # Unsigned 64-bit integer
 │
 ├── HTTP/                      # HTTP layer with decorators
 │   ├── Client                 # Base HTTP client (Net::HTTP wrapper)
@@ -70,9 +69,7 @@ Factorix/
 │
 ├── SerDes/
 │   ├── Serializer
-│   ├── Deserializer
-│   ├── GameVersion            # Formerly Version64: for game/file format
-│   └── MODVersion             # Formerly Version24: for MODs
+│   └── Deserializer
 │
 ├── Runtime/                   # Runtime environment abstraction
 │   ├── Base                   # Abstract base class
@@ -144,10 +141,9 @@ loader.eager_load
 - `api/mod_portal_api.rb` → `Factorix::API::MODPortalAPI`
 - `api/mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
 - `portal.rb` → `Factorix::Portal`
-- `transfer/retry_strategy.rb` → `Factorix::Transfer::RetryStrategy`
-- `transfer/http.rb` → `Factorix::Transfer::HTTP`
-- `ser_des/game_version.rb` → `Factorix::SerDes::GameVersion`
-- `ser_des/mod_version.rb` → `Factorix::SerDes::MODVersion`
+- `transfer/downloader.rb` → `Factorix::Transfer::Downloader`
+- `transfer/uploader.rb` → `Factorix::Transfer::Uploader`
+- `http/retry_strategy.rb` → `Factorix::HTTP::RetryStrategy`
 
 ## Related Documentation
 

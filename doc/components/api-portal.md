@@ -22,7 +22,8 @@ Split into three classes based on authentication method.
 #### 2. MODDownloadAPI - username + token authentication
 
 - Download MOD files
-- Initialization: `MODDownloadAPI.new(username:, token:)`
+- Uses `ServiceCredential` for authentication (lazily resolved)
+- Injected dependencies: `downloader`, `logger`
 
 #### 3. MODManagementAPI - API key authentication
 
@@ -30,7 +31,7 @@ Split into three classes based on authentication method.
 - Publish MODs
 - Edit MOD details
 - Manage MOD images
-- Initialization: `MODManagementAPI.new(api_key:)`
+- Uses `APICredential` for authentication
 - Corresponds to: [Mod upload API](https://wiki.factorio.com/Mod_upload_API)
 
 ### Benefits
@@ -74,9 +75,7 @@ Split into three classes based on authentication method.
 
 **Response**: MOD metadata and release list
 
-**Response size**: ~1.7KB (51 lines)
-
-**Fields** (7 + 1 optional):
+**Fields**:
 - `category` - MOD category
 - `downloads_count` - Download count
 - `name` - MOD name
@@ -104,9 +103,7 @@ Split into three classes based on authentication method.
 
 **Response**: Basic information + additional details
 
-**Response size**: ~4.4KB (99 lines, 2.6x larger than basic)
-
-**Additional fields in /full** (9 + 1 optional):
+**Additional fields in /full**:
 - `changelog` - Version history with dates and changes
 - `created_at` - MOD creation timestamp (ISO 8601)
 - `deprecated` - **Optional**: Boolean flag, only present when `true` (field omitted for non-deprecated MODs)
@@ -244,7 +241,7 @@ Downloads a MOD file.
 
 **Parameters**:
 - `release`: `Types::Release` object with download_url
-- `output`: `Pathname` or `String` output path
+- `output`: `Pathname` output path
 
 **Note**: Use `releases.max_by(&:released_at)` to get the latest release (order not guaranteed)
 

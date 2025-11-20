@@ -54,14 +54,15 @@ Available path types:
 
 Launch the game.
 
+```bash
+factorix launch
+factorix launch -- --verbose --benchmark save.zip
+```
+
 **Features**:
-- Pass options to Factorio
+- Pass options to Factorio (after `--`)
 - Prevent multiple simultaneous launches
 - Automatically wait for termination for certain commands
-
-### MOD::List
-
-Display MOD list (name, version, state, etc.).
 
 ### MOD::Enable
 
@@ -78,11 +79,11 @@ Disable the specified MOD.
 ```bash
 factorix mod download some-mod              # Latest version
 factorix mod download some-mod@1.2.0        # Specify version
-factorix mod download some-mod --output=/tmp/mods
+factorix mod download some-mod --directory=/tmp/mods
 ```
 
 **Behavior**:
-- Download to any location (specify with `--output`, defaults to current directory)
+- Download to any location (specify with `--directory` or `-d`, defaults to current directory)
 - Don't consider dependencies
 - Don't modify `mod-list.json`
 - Use cache
@@ -149,11 +150,6 @@ Error: Cannot uninstall base
   - Required by: some-mod@1.2.0, another-mod@3.0.0
   - Uninstall these mods first, or disable them
 ```
-
-**Design Policy**:
-- **Detect errors before destructive operations**: Complete all validation before downloading or enabling
-- **Don't implement force option**: YAGNI principle (implement when needed)
-- **Version specification support**: `mod-name@version` format, latest version if not specified
 
 ### MOD::Publish
 
@@ -299,47 +295,6 @@ factorix mod settings restore -i settings.json /path/to/mod-settings.dat
 **Backup**: Automatically creates a backup with `.bak` extension before overwriting (customizable with `--backup-extension`)
 
 **File format**: Reads JSON file and converts it back to the binary `mod-settings.dat` format used by Factorio.
-
-## Output Colorization
-
-**Use TIntMe gem** to make terminal output more readable.
-
-### Basic Policy
-
-- Define styles in advance (performance optimization)
-- Determine which parts to colorize in the future
-
-### Usage Example
-
-```ruby
-# Style definition (pre-defined as constants)
-ERROR_STYLE = TIntMe[:red, :bold]
-SUCCESS_STYLE = TIntMe[:green]
-INFO_STYLE = TIntMe[:blue]
-WARNING_STYLE = TIntMe[:yellow]
-
-# Usage
-puts ERROR_STYLE["Error: MOD not found"]
-puts SUCCESS_STYLE["Successfully installed some-mod"]
-```
-
-### Style Composition
-
-```ruby
-BASE_STYLE = TIntMe[foreground: :blue]
-EMPHASIS_STYLE = TIntMe[bold: true]
-COMBINED_STYLE = BASE_STYLE >> EMPHASIS_STYLE
-```
-
-### Colorization Candidates (to be determined)
-
-- Error messages (red)
-- Success messages (green)
-- Warning messages (yellow)
-- Info messages (blue)
-- MOD names (emphasis)
-- Version numbers (emphasis)
-- Progress display
 
 ## Related Documentation
 

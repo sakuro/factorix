@@ -20,8 +20,8 @@ Filesystem-based cache (Cache::FileSystem).
 - Use file locking (flock)
 - Acquire exclusive lock with `with_lock` method
 - Cleanup old lock files (more than 1 hour old)
-- Two-level directory structure (first 2 characters of SHA1 hash as prefix)
 - Keys generated as SHA1 hash
+- Two-level directory structure (first 2 characters of SHA1 hash as prefix)
 
 ## MODSettings
 
@@ -35,7 +35,7 @@ Manages reading and writing of `mod-settings.dat` file. Uses SerDes module to ha
 
 ### Main Features
 
-- `MODSettings.new(path)` - Load mod-settings.dat file
+- `MODSettings.load(from:)` - Load mod-settings.dat file
 - `[section_name]` - Access section
 - `each_section` - Iterate over all sections
 
@@ -61,7 +61,7 @@ Represents a configuration section.
 ### Usage Example
 
 ```ruby
-settings = MODSettings.new(Pathname("mod-settings.dat"))
+settings = MODSettings.load(from: Pathname("mod-settings.dat"))
 startup = settings["startup"]
 startup.each do |key, value|
   puts "#{key}: #{value}"
@@ -134,7 +134,6 @@ mod_list.save
 
 ### Command Integration
 
-- `MOD::List` - Display MOD list
 - `MOD::Enable` - Enable MOD
 - `MOD::Disable` - Disable MOD
 
@@ -158,8 +157,8 @@ Represents an installed MOD with its metadata (Data.define).
 
 ### Main Features
 
-- `InstalledMOD.all(mod_dir)` - Scan and return all installed MODs
-- `InstalledMOD.each(mod_dir) {|mod| ... }` - Iterate over installed MODs
+- `InstalledMOD.all` - Scan and return all installed MODs
+- `InstalledMOD.each {|mod| ... }` - Iterate over installed MODs
 - `InstalledMOD.from_zip(path)` - Create from ZIP file
 - `InstalledMOD.from_directory(path)` - Create from directory
 - `base?` - Check if base MOD
@@ -178,6 +177,7 @@ Internal class that scans MOD directory for installed MODs.
 ### Command Integration
 
 - `MOD::Install` - Creates InstalledMOD entries
+- `MOD::Uninstall` - Removes InstalledMOD entries
 - `MOD::Sync` - Uses InstalledMOD.all to check existing MODs
 - `MOD::Check` - Uses InstalledMOD.all to validate dependencies
 
