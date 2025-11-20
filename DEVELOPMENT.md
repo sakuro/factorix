@@ -200,6 +200,79 @@ loader.inflector.inflect(
 - **YARD format** for all public APIs
 - Include `@example`, `@param`, `@return`, `@raise` tags where appropriate
 
+### CLI Output Guidelines
+
+Commands should use two distinct output methods based on the nature of the output:
+
+#### `say(message, prefix: "")` - Human-readable messages
+
+**Purpose:** Interactive feedback, status updates, progress indicators
+
+**Behavior:**
+- Respects `--quiet` flag (suppressed in quiet mode)
+- Supports prefixes (`:error`, `:warn`) with emoji indicators
+- Intended for human consumption
+
+**Use cases:**
+- Status updates: `say "✓ Saved mod-list.json"`
+- Progress indicators: `say "Validating MOD dependencies..."`
+- Success messages: `say "Metadata updated successfully!"`
+- Warnings: `say "Warning message", prefix: :warn`
+- Errors: `say "Error message", prefix: :error`
+
+#### `puts(data)` - Structured data output
+
+**Purpose:** Machine-readable output for piping, scripting, or programmatic consumption
+
+**Behavior:**
+- Always outputs regardless of `--quiet` flag
+- No prefix or formatting added
+- Intended for machine/script consumption
+
+**Format:** Typically JSON using `JSON.pretty_generate`
+
+**Use cases:**
+- Command output that other tools will consume
+- Data export/listing operations (path, version, image list)
+- Structured information queries
+
+#### Selection Guidelines
+
+1. **Data query commands** (output as primary purpose) → Use `puts` for data
+   ```ruby
+   def call(path_types: [], **)
+     result = build_path_data(path_types)
+     puts JSON.pretty_generate(result)  # Always output, even with --quiet
+   end
+   ```
+
+2. **Action commands** (perform operations) → Use `say` for feedback
+   ```ruby
+   def call(mod_names:, **)
+     say "Planning to disable #{mod_names.size} MOD(s):"
+     perform_action
+     say "✓ Saved mod-list.json"
+   end
+   ```
+
+3. **Mixed commands** (optional data output) → Use both appropriately
+   ```ruby
+   def call(settings_file: nil, output: nil, **)
+     say "Loading settings..."  # Progress feedback
+     data = load_settings(settings_file)
+     if output
+       write_file(output, data)
+       say "✓ Exported to #{output}"  # Success feedback
+     else
+       puts JSON.pretty_generate(data)  # Data output to stdout
+     end
+   end
+   ```
+
+#### Key Principle
+
+**If the output is the primary value** (data that users/scripts need to capture), use `puts`. **If the output is feedback about what happened**, use `say`.
+
 ## Development Workflow
 
 ### Running Tests

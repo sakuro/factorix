@@ -4,6 +4,7 @@
 
 - Register commands using dry-cli `Registry`
 - Commands are placed under `CLI::Commands` module
+- **Output Guidelines**: Commands use `say()` for human-readable messages (respects `--quiet`) and `puts()` for structured data output (always outputs). See [CLI Output Guidelines](../../DEVELOPMENT.md#cli-output-guidelines) for detailed conventions.
 
 ## Command List
 
