@@ -35,8 +35,8 @@ module Factorix
             # Display results
             display_result(result, graph)
 
-            # Exit with error code if validation failed
-            exit(1) unless result.valid?
+            # Raise exception if validation failed
+            raise ValidationError, "MOD dependency validation failed" unless result.valid?
           end
 
           private def display_result(result, graph)

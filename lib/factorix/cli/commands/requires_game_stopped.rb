@@ -23,10 +23,8 @@ module Factorix
         private def check_game_stopped
           return unless runtime.running?
 
-          say "Cannot perform this operation while Factorio is running.", prefix: :error
-          say "Please stop the game and try again."
           logger.error("Operation blocked: game is running")
-          exit 1
+          raise GameRunningError, "Cannot perform this operation while Factorio is running. Please stop the game and try again."
         end
       end
     end

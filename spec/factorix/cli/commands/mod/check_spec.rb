@@ -138,8 +138,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
         output = capture_stdout {
           begin
             command.call
-          rescue SystemExit
-            # Expected exit
+          rescue Factorix::ValidationError
+            # Expected exception
           end
         }
         expect(output).to include("Errors:")
@@ -151,19 +151,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
         output = capture_stdout {
           begin
             command.call
-          rescue SystemExit
-            # Expected exit
+          rescue Factorix::ValidationError
+            # Expected exception
           end
         }
         expect(output).to include("Summary: 2 enabled MODs, 2 errors")
       end
 
-      it "exits with error code 1" do
+      it "raises ValidationError" do
         expect {
           capture_stdout { command.call }
-        }.to raise_error(SystemExit) do |error|
-          expect(error.status).to eq(1)
-        end
+        }.to raise_error(Factorix::ValidationError, /MOD dependency validation failed/)
       end
     end
 
@@ -201,8 +199,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
         output = capture_stdout {
           begin
             command.call
-          rescue SystemExit
-            # Expected exit
+          rescue Factorix::ValidationError
+            # Expected exception
           end
         }
         expect(output).to include("Errors:")
@@ -215,8 +213,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
         output = capture_stdout {
           begin
             command.call
-          rescue SystemExit
-            # Expected exit
+          rescue Factorix::ValidationError
+            # Expected exception
           end
         }
         expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
@@ -293,8 +291,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
         output = capture_stdout {
           begin
             command.call
-          rescue SystemExit
-            # Expected exit
+          rescue Factorix::ValidationError
+            # Expected exception
           end
         }
         expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")

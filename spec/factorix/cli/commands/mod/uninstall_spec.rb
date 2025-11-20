@@ -356,10 +356,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
       end
 
-      it "displays an error message and exits" do
+      it "raises GameRunningError" do
         expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/Cannot perform this operation while Factorio is running/).to_stdout
-          .and raise_error(SystemExit)
+          .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end
 

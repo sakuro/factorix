@@ -36,4 +36,10 @@ module Factorix
 
   # MOD errors
   class MODNotFoundError < DomainError; end
+
+  # Dependency validation errors
+  class ValidationError < DomainError; end
+
+  # Game state errors
+  class GameRunningError < DomainError; end
 end

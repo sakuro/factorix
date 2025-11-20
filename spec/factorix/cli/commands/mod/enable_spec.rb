@@ -281,10 +281,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         allow(graph).to receive(:edges_from).with(mod_a).and_return([])
       end
 
-      it "displays an error message and exits" do
+      it "raises GameRunningError" do
         expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/Cannot perform this operation while Factorio is running/).to_stdout
-          .and raise_error(SystemExit)
+          .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end
   end
