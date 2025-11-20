@@ -37,7 +37,7 @@ module Factorix
             # Load save file
             say "Loading save file: #{save_file}"
             save_data = Factorix::SaveFile.load(Pathname(save_file))
-            say "✓ Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})"
+            say "Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})", prefix: :success
 
             # Load current state
             graph, mod_list, installed_mods = load_current_state
@@ -60,7 +60,7 @@ module Factorix
 
               # Execute installation
               execute_installation(install_targets, jobs)
-              say "✓ Installed #{install_targets.size} MOD(s)"
+              say "Installed #{install_targets.size} MOD(s)", prefix: :success
             else
               say "All MODs from save file are already installed"
             end
@@ -71,13 +71,13 @@ module Factorix
             # Update mod-list.json
             update_mod_list(mod_list, save_data.mods)
             mod_list.save(to: runtime.mod_list_path)
-            say "✓ Updated mod-list.json"
+            say "Updated mod-list.json", prefix: :success
 
             # Update mod-settings.dat
             update_mod_settings(save_data.startup_settings, save_data.version)
-            say "✓ Updated mod-settings.dat"
+            say "Updated mod-settings.dat", prefix: :success
 
-            say "✓ Sync completed successfully"
+            say "Sync completed successfully", prefix: :success
           end
 
           private def find_mods_to_install(save_mods, installed_mods)
@@ -271,7 +271,7 @@ module Factorix
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)
-                say "⚠ Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)"
+                say "Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)", prefix: :warn
                 logger.debug("Disabled conflicting MOD", mod_name: conflicting_mod.name, conflicts_with: mod.name)
               end
 
@@ -285,7 +285,7 @@ module Factorix
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)
-                say "⚠ Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)"
+                say "Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)", prefix: :warn
                 logger.debug("Disabled conflicting MOD", mod_name: conflicting_mod.name, conflicts_with: mod.name)
               end
             end

@@ -131,8 +131,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
     end
 
     context "when no metadata is provided" do
-      it "exits with error message" do
-        expect { command.call(mod_name: "test-mod") }.to raise_error(SystemExit)
+      it "raises error with message" do
+        expect { command.call(mod_name: "test-mod") }.to raise_error(Factorix::Error, "No metadata options provided")
         expect(portal).not_to have_received(:edit_mod)
       end
     end

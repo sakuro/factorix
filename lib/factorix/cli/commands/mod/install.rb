@@ -57,7 +57,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(to: runtime.mod_list_path)
-            say "✓ Saved mod-list.json"
+            say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
 
@@ -403,12 +403,12 @@ module Factorix
               if mod_list.exist?(mod)
                 unless mod_list.enabled?(mod)
                   mod_list.enable(mod)
-                  say "✓ Enabled #{mod.name} in mod-list.json"
+                  say "Enabled #{mod.name} in mod-list.json", prefix: :success
                   logger.debug("Enabled in mod-list.json", mod_name: mod.name)
                 end
               else
                 mod_list.add(mod, enabled: true)
-                say "✓ Added #{mod.name} to mod-list.json"
+                say "Added #{mod.name} to mod-list.json", prefix: :success
                 logger.debug("Added to mod-list.json", mod_name: mod.name)
               end
             end

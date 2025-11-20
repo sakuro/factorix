@@ -20,7 +20,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
       command.call(mod_name: "test-mod", image_ids: %w[abc123 def456 ghi789])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123 def456 ghi789])
-      expect($stdout).to have_received(:puts).with("Image list updated successfully!")
+      expect($stdout).to have_received(:puts).with("✓ Image list updated successfully!")
       expect($stdout).to have_received(:puts).with("Total images: 3")
     end
 

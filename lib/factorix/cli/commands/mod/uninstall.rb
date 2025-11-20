@@ -95,7 +95,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(to: runtime.mod_list_path)
-            say "✓ Saved mod-list.json"
+            say "Saved mod-list.json", prefix: :success
           end
 
           # Plan uninstall all MODs
@@ -319,7 +319,7 @@ module Factorix
 
               if should_remove_from_list && mod_list.exist?(mod)
                 mod_list.remove(mod)
-                say "✓ Removed #{mod.name} from mod-list.json"
+                say "Removed #{mod.name} from mod-list.json", prefix: :success
               end
             end
           end
@@ -336,7 +336,7 @@ module Factorix
               next unless mod_list.exist?(mod) && mod_list.enabled?(mod)
 
               mod_list.disable(mod)
-              say "✓ Disabled expansion MOD: #{mod.name}"
+              say "Disabled expansion MOD: #{mod.name}", prefix: :success
               logger.info("Disabled expansion MOD", mod_name: mod.name)
             end
           end

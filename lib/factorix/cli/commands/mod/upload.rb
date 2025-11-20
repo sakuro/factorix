@@ -55,7 +55,7 @@ module Factorix
             begin
               # Upload via Portal (auto-detects new vs update)
               portal.upload_mod(mod_name, file_path, **metadata)
-              say "Upload completed successfully!"
+              say "Upload completed successfully!", prefix: :success
             ensure
               uploader.unsubscribe(handler)
             end

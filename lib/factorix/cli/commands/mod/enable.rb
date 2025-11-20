@@ -56,7 +56,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(to: runtime.mod_list_path)
-            say "✓ Saved mod-list.json"
+            say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
 
@@ -203,7 +203,7 @@ module Factorix
 
             mods_to_enable.each do |mod|
               mod_list.enable(mod)
-              say "✓ Enabled #{mod.name}"
+              say "Enabled #{mod.name}", prefix: :success
               logger.debug("Enabled MOD", mod_name: mod.name)
             end
           end

@@ -29,7 +29,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
 
       command.call(mod_name: "test-mod", image_file:)
 
-      expect($stdout).to have_received(:puts).with("Image added successfully!")
+      expect($stdout).to have_received(:puts).with("✓ Image added successfully!")
     end
 
     it "raises error when file does not exist" do

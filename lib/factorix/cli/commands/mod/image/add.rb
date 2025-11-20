@@ -30,7 +30,7 @@ module Factorix
               # Add image via Portal
               image = portal.add_mod_image(mod_name, file_path)
 
-              say "Image added successfully!"
+              say "Image added successfully!", prefix: :success
               say "  ID: #{image.id}"
               say "  Thumbnail: #{image.thumbnail}"
               say "  Full URL: #{image.url}"

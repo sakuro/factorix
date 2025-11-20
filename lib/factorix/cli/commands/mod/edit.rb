@@ -56,14 +56,14 @@ module Factorix
 
             # Validate at least one metadata field is provided
             if metadata.empty?
-              say "Error: At least one metadata option must be provided"
+              say "At least one metadata option must be provided", prefix: :error
               say "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
-              exit 1
+              raise Factorix::Error, "No metadata options provided"
             end
 
             # Edit metadata via Portal
             portal.edit_mod(mod_name, **metadata)
-            say "Metadata updated successfully!"
+            say "Metadata updated successfully!", prefix: :success
           end
 
           # Build metadata hash from options

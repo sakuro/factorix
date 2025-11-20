@@ -46,9 +46,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
 
       it "displays success messages" do
         output = capture_stdout { command.call }
-        expect(output).to include("✅ All enabled MODs have their required dependencies satisfied")
-        expect(output).to include("✅ No circular dependencies detected")
-        expect(output).to include("✅ No conflicting MODs are enabled simultaneously")
+        expect(output).to include("✓ All enabled MODs have their required dependencies satisfied")
+        expect(output).to include("✓ No circular dependencies detected")
+        expect(output).to include("✓ No conflicting MODs are enabled simultaneously")
       end
 
       it "displays summary with enabled count" do
@@ -251,7 +251,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
 
       it "displays suggestions" do
         output = capture_stdout { command.call }
-        expect(output).to include("💡 Suggestions:")
+        expect(output).to include("ℹ Suggestions:")
         expect(output).to include("Consider enabling mod-x")
         expect(output).to include("Update mod-y to latest version")
       end

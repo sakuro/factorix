@@ -54,11 +54,9 @@ module Factorix
           end
 
           private def display_success_messages
-            say <<~MESSAGE
-              ✅ All enabled MODs have their required dependencies satisfied
-              ✅ No circular dependencies detected
-              ✅ No conflicting MODs are enabled simultaneously
-            MESSAGE
+            say "All enabled MODs have their required dependencies satisfied", prefix: :success
+            say "No circular dependencies detected", prefix: :success
+            say "No conflicting MODs are enabled simultaneously", prefix: :success
           end
 
           private def display_warnings(result)
@@ -76,11 +74,10 @@ module Factorix
           end
 
           private def display_suggestions(result)
-            suggestions_text = result.suggestions.map {|s| "  - #{s.message}" }.join("\n")
-            say <<~MESSAGE
-              💡 Suggestions:
-              #{suggestions_text}
-            MESSAGE
+            say "Suggestions:", prefix: :info
+            result.suggestions.each do |suggestion|
+              say "  - #{suggestion.message}"
+            end
           end
 
           private def display_summary(result, graph)
