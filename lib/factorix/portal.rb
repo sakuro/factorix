@@ -71,12 +71,10 @@ module Factorix
     # Download a mod release file
     #
     # @param release [Types::Release] release object containing download_url
-    # @param output [Pathname, String] output file path
+    # @param output [Pathname] output file path
     # @return [void]
     # @raise [ArgumentError] if release download_url is not a URI
     def download_mod(release, output)
-      output = Pathname(output) unless output.is_a?(Pathname)
-
       # Extract path from URI::HTTPS
       download_path = release.download_url.path
       mod_download_api.download(download_path, output)

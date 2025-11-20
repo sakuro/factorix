@@ -135,16 +135,6 @@ RSpec.describe Factorix::Portal do
 
       expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", output_path)
     end
-
-    it "converts String path to Pathname" do
-      output_path = "#{Dir.tmpdir}/test-mod.zip"
-      expected_pathname = Pathname(output_path)
-      allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", expected_pathname)
-
-      portal.download_mod(release, output_path)
-
-      expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", expected_pathname)
-    end
   end
 
   describe "#upload_mod" do
