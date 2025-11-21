@@ -35,9 +35,7 @@ module Factorix
       # Initialize a new Parser instance
       #
       # @param path [Pathname] Path to the save file
-      def initialize(path)
-        @path = path
-      end
+      def initialize(path) = @path = path
 
       # Parse the save file and return extracted data
       #
