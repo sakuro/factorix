@@ -20,18 +20,30 @@ module Factorix
 
           desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
 
-          argument :mod_names, type: :array, required: true, desc: "MOD names to disable"
+          argument :mod_names, type: :array, required: false, desc: "MOD names to disable"
+
+          option :all,
+            type: :boolean,
+            default: false,
+            desc: "Disable all MODs (except base)"
 
           # Execute the disable command
           #
           # @param mod_names [Array<String>] MOD names to disable
+          # @param all [Boolean] Whether to disable all MODs
           # @return [void]
-          def call(mod_names:, **)
+          def call(mod_names: [], all: false, **)
+            validate_arguments(mod_names, all)
+
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
-            # Convert mod names to MOD objects
-            target_mods = mod_names.map {|name| Factorix::MOD[name:] }
+            # Determine target MODs
+            target_mods = if all
+                            plan_disable_all(graph)
+                          else
+                            mod_names.map {|name| Factorix::MOD[name:] }
+                          end
 
             # Validate target MODs exist and can be disabled
             validate_target_mods(target_mods, graph)
@@ -55,6 +67,36 @@ module Factorix
             mod_list.save(runtime.mod_list_path)
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
+          end
+
+          # Validate command arguments
+          #
+          # @param mod_names [Array<String>] MOD names from argument
+          # @param all [Boolean] Whether --all option is specified
+          # @return [void]
+          # @raise [Factorix::Error] if arguments are invalid
+          private def validate_arguments(mod_names, all)
+            if all && mod_names.any?
+              raise Error, "Cannot specify MOD names with --all option"
+            end
+
+            return if all || mod_names.any?
+
+            raise Error, "Must specify MOD names or use --all option"
+          end
+
+          # Plan which MODs to disable when --all is specified
+          #
+          # @param graph [Factorix::Dependency::Graph] Dependency graph
+          # @return [Array<Factorix::MOD>] MODs to disable (all except base)
+          private def plan_disable_all(graph)
+            graph.nodes.filter_map do |node|
+              mod = node.mod
+              next if mod.base?
+              next unless node.enabled?
+
+              mod
+            end
           end
 
           # Validate that all target MODs can be disabled

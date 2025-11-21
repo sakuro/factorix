@@ -183,5 +183,49 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
           .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end
+
+    context "with --all option" do
+      let(:base_mod) { Factorix::MOD[name: "base"] }
+      let(:expansion_mod) { Factorix::MOD[name: "space-age"] }
+      let(:node_base) { instance_double(Factorix::Dependency::Node, mod: base_mod, enabled?: true) }
+      let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
+      let(:node_b) { instance_double(Factorix::Dependency::Node, mod: mod_b, enabled?: false) }
+      let(:node_expansion) { instance_double(Factorix::Dependency::Node, mod: expansion_mod, enabled?: true) }
+
+      before do
+        allow(graph).to receive_messages(nodes: [node_base, node_a, node_b, node_expansion], node?: true)
+        allow(graph).to receive(:node).with(mod_a).and_return(node_a)
+        allow(graph).to receive(:node).with(expansion_mod).and_return(node_expansion)
+      end
+
+      it "disables all enabled MODs except base" do
+        capture_stdout { command.call(all: true, yes: true) }
+        expect(mod_list).to have_received(:disable).with(mod_a)
+        expect(mod_list).to have_received(:disable).with(expansion_mod)
+        expect(mod_list).not_to have_received(:disable).with(base_mod)
+      end
+
+      it "does not disable already disabled MODs" do
+        capture_stdout { command.call(all: true, yes: true) }
+        expect(mod_list).not_to have_received(:disable).with(mod_b)
+      end
+
+      it "displays the plan" do
+        expect { command.call(all: true, yes: true) }
+          .to output(/Planning to disable 2 MOD/).to_stdout
+      end
+
+      it "raises error when used with MOD names" do
+        expect { command.call(mod_names: ["mod-a"], all: true, yes: true) }
+          .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
+      end
+    end
+
+    context "without MOD names or --all option" do
+      it "raises error" do
+        expect { command.call(yes: true) }
+          .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
+      end
+    end
   end
 end

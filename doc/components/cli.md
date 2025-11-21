@@ -71,7 +71,10 @@ Enable the specified MOD.
 
 ### MOD::Disable
 
-Disable the specified MOD.
+Disable the specified MOD(s).
+
+**Options**:
+- `--all` - Disable all MODs except base (includes expansion MODs)
 
 ### MOD::Download vs MOD::Install
 
