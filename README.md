@@ -67,8 +67,7 @@ Factorix auto-detects Factorio installation paths on most platforms. If auto-det
 
 **Find configuration file location:**
 ```bash
-factorix path
-# Look for "factorix-config-path"
+factorix path | jq -r '.factorix_config_path'
 ```
 
 **Create configuration file:**
