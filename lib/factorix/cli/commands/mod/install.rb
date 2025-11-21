@@ -94,7 +94,7 @@ module Factorix
           # @param presenter [Progress::Presenter] Progress presenter
           # @return [Array<Hash>] Array of {mod_spec:, mod_info:, release:}
           private def fetch_target_mod_info(mod_specs, jobs, presenter)
-            presenter.start(total: mod_specs.size)
+            presenter.start
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 
