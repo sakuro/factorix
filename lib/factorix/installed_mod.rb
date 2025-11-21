@@ -128,14 +128,17 @@ module Factorix
           end
         end
 
-        # Scan data directory for base/expansion MODs
+        # Scan data directory for base/expansion MODs only
         data_dir.children.each do |path|
           next unless path.directory?
 
+          # Skip non-base/expansion directories to avoid unnecessary error logs
+          mod_name = path.basename.to_s
+          candidate_mod = MOD[name: mod_name]
+          next unless candidate_mod.base? || candidate_mod.expansion?
+
           begin
-            mod = InstalledMOD.from_directory(path)
-            # Only include base and expansion MODs from data directory
-            installed_mods << mod if mod.base? || mod.expansion?
+            installed_mods << InstalledMOD.from_directory(path)
           rescue ArgumentError => e
             logger.debug("Skipping invalid directory MOD package", path: path.to_s, reason: e.message)
           rescue => e
