@@ -10,46 +10,29 @@
 
 ### Path
 
-Display Factorio and Factorix paths.
+Display all Factorio and Factorix paths.
 
 ```bash
-# Display all paths
 factorix path
-
-# Display specific paths
-factorix path mod-dir user-dir
-
-# Underscore notation is also accepted (automatically normalized to hyphens)
-factorix path mod_dir user_dir
 ```
 
-**Output**: JSON format with path types as keys and path values as values
+**Output**: JSON format with path types as keys (snake_case) and path values as values
 
-**Available path types**:
-- `executable-path` - Factorio executable file
-- `user-dir` - Factorio user directory
-- `mod-dir` - MODs directory
-- `save-dir` - Saves directory
-- `script-output-dir` - Script output directory
-- `mod-list-path` - mod-list.json file
-- `mod-settings-path` - mod-settings.dat file
-- `player-data-path` - player-data.json file
-- `lock-path` - Lock file (indicates if game is running)
-- `factorix-cache-dir` - Factorix cache directory
-- `factorix-config-path` - Factorix configuration file
-- `factorix-log-path` - Factorix log file
-
-**Error handling**: When unknown path types are specified, displays available path types in bulleted list format:
-```
-Unknown path types:
-- invalid-type
-
-Available path types:
-- executable-path
-- factorix-cache-dir
-- factorix-config-path
-...
-```
+**Included paths**:
+- `executable_path` - Factorio executable file
+- `user_dir` - Factorio user directory
+- `mod_dir` - MODs directory
+- `save_dir` - Saves directory
+- `script_output_dir` - Script output directory
+- `mod_list_path` - mod-list.json file
+- `mod_settings_path` - mod-settings.dat file
+- `player_data_path` - player-data.json file
+- `lock_path` - Lock file (indicates if game is running)
+- `current_log_path` - Current log file
+- `previous_log_path` - Previous log file
+- `factorix_cache_dir` - Factorix cache directory
+- `factorix_config_path` - Factorix configuration file
+- `factorix_log_path` - Factorix log file
 
 ### Launch
 

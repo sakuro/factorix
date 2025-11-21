@@ -10,7 +10,7 @@ module Factorix
 
         @runtime: Runtime::Base
 
-        def call: (?path_types: Array[String]) -> void
+        def call: () -> void
       end
     end
   end

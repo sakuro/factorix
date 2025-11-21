@@ -7,15 +7,13 @@ module Factorix
     module Commands
       # Display Factorio and Factorix paths
       #
-      # This command outputs paths managed by the runtime environment.
-      # Path types are specified as arguments with underscores (e.g., mods_dir, user_dir).
-      # Input values with hyphens are automatically normalized to underscores.
+      # This command outputs all paths managed by the runtime environment.
       #
       # @example
-      #   $ factorix path mods_dir user_dir
-      #   {"mods_dir":"/path/to/mods","user_dir":"/path/to/user"}
+      #   $ factorix path
+      #   {"executable_path":"/path/to/factorio","user_dir":"/path/to/user",...}
       class Path < Base
-        # Mapping from normalized path types (with underscores) to runtime method names
+        # Mapping from path type keys to runtime method names
         PATH_TYPES = {
           "executable_path" => :executable_path,
           "user_dir" => :user_dir,
@@ -43,49 +41,13 @@ module Factorix
 
         desc "Display Factorio and Factorix paths"
 
-        argument :path_types, type: :array, desc: "Path types to display"
-
         # Execute the path command
         #
-        # @param path_types [Array<String>] path types to display (defaults to all if empty)
         # @return [void]
-        def call(path_types: [], **)
-          # If no path types specified, show all paths
-          path_types = PATH_TYPES.keys if path_types.empty?
+        def call(**)
+          logger.debug("Displaying all paths")
 
-          logger.debug("Displaying paths", path_types:)
-
-          result = {}
-          unknown_types = []
-
-          path_types.each do |path_type|
-            # Normalize: convert hyphens to underscores
-            normalized = path_type.tr("-", "_")
-
-            unless PATH_TYPES.key?(normalized)
-              unknown_types << normalized
-              next
-            end
-
-            method_name = PATH_TYPES[normalized]
-            result[normalized] = runtime.public_send(method_name).to_s
-          end
-
-          # If there were unknown path types, show an error with available options
-          unless unknown_types.empty?
-            unknown_list = unknown_types.map {|t| "- #{t}" }.join("\n")
-            available_keys = PATH_TYPES.keys.sort
-            available_list = available_keys.map {|t| "- #{t}" }.join("\n")
-            error_message = <<~ERROR
-              Unknown path types:
-              #{unknown_list}
-
-              Available path types:
-              #{available_list}
-            ERROR
-            logger.debug("Unknown path types", unknown_types:, available_types: available_keys)
-            raise ArgumentError, error_message.chomp
-          end
+          result = PATH_TYPES.transform_values {|method_name| runtime.public_send(method_name).to_s }
 
           puts JSON.pretty_generate(result)
         end
