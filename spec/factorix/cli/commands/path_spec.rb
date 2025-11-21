@@ -35,20 +35,20 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
         expect(result.keys).to match_array(
           %w[
-            executable-path
-            user-dir
-            mod-dir
-            save-dir
-            script-output-dir
-            mod-list-path
-            mod-settings-path
-            player-data-path
-            lock-path
-            current-log-path
-            previous-log-path
-            factorix-cache-dir
-            factorix-config-path
-            factorix-log-path
+            executable_path
+            user_dir
+            mod_dir
+            save_dir
+            script_output_dir
+            mod_list_path
+            mod_settings_path
+            player_data_path
+            lock_path
+            current_log_path
+            previous_log_path
+            factorix_cache_dir
+            factorix_config_path
+            factorix_log_path
           ]
         )
       end
@@ -56,34 +56,34 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
     context "with a single valid path type" do
       it "outputs pretty JSON with the path" do
-        output = capture_stdout { command.call(path_types: ["mod-dir"]) }
+        output = capture_stdout { command.call(path_types: ["mod_dir"]) }
         result = JSON.parse(output)
 
         expect(result).to eq({
-          "mod-dir" => "/path/to/mods"
+          "mod_dir" => "/path/to/mods"
         })
       end
     end
 
     context "with multiple valid path types" do
       it "outputs pretty JSON with all paths" do
-        output = capture_stdout { command.call(path_types: %w[mod-dir user-dir]) }
+        output = capture_stdout { command.call(path_types: %w[mod_dir user_dir]) }
         result = JSON.parse(output)
 
         expect(result).to eq({
-          "mod-dir" => "/path/to/mods",
-          "user-dir" => "/path/to/user"
+          "mod_dir" => "/path/to/mods",
+          "user_dir" => "/path/to/user"
         })
       end
     end
 
-    context "with underscore notation" do
-      it "normalizes underscores to hyphens" do
-        output = capture_stdout { command.call(path_types: ["mod_dir"]) }
+    context "with hyphen notation" do
+      it "normalizes hyphens to underscores" do
+        output = capture_stdout { command.call(path_types: ["mod-dir"]) }
         result = JSON.parse(output)
 
         expect(result).to eq({
-          "mod-dir" => "/path/to/mods"
+          "mod_dir" => "/path/to/mods"
         })
       end
     end
@@ -91,40 +91,40 @@ RSpec.describe Factorix::CLI::Commands::Path do
     context "with all supported path types" do
       it "outputs pretty JSON with all paths" do
         path_types = %w[
-          executable-path
-          user-dir
-          mod-dir
-          save-dir
-          script-output-dir
-          mod-list-path
-          mod-settings-path
-          player-data-path
-          lock-path
-          current-log-path
-          previous-log-path
-          factorix-cache-dir
-          factorix-config-path
-          factorix-log-path
+          executable_path
+          user_dir
+          mod_dir
+          save_dir
+          script_output_dir
+          mod_list_path
+          mod_settings_path
+          player_data_path
+          lock_path
+          current_log_path
+          previous_log_path
+          factorix_cache_dir
+          factorix_config_path
+          factorix_log_path
         ]
 
         output = capture_stdout { command.call(path_types:) }
         result = JSON.parse(output)
 
         expect(result).to eq({
-          "executable-path" => "/path/to/factorio",
-          "user-dir" => "/path/to/user",
-          "mod-dir" => "/path/to/mods",
-          "save-dir" => "/path/to/saves",
-          "script-output-dir" => "/path/to/script-output",
-          "mod-list-path" => "/path/to/mods/mod-list.json",
-          "mod-settings-path" => "/path/to/mods/mod-settings.dat",
-          "player-data-path" => "/path/to/user/player-data.json",
-          "lock-path" => "/path/to/user/.lock",
-          "current-log-path" => "/path/to/user/factorio-current.log",
-          "previous-log-path" => "/path/to/user/factorio-previous.log",
-          "factorix-cache-dir" => "/path/to/cache/factorix",
-          "factorix-config-path" => "/path/to/config/factorix/config.rb",
-          "factorix-log-path" => "/path/to/state/factorix/factorix.log"
+          "executable_path" => "/path/to/factorio",
+          "user_dir" => "/path/to/user",
+          "mod_dir" => "/path/to/mods",
+          "save_dir" => "/path/to/saves",
+          "script_output_dir" => "/path/to/script-output",
+          "mod_list_path" => "/path/to/mods/mod-list.json",
+          "mod_settings_path" => "/path/to/mods/mod-settings.dat",
+          "player_data_path" => "/path/to/user/player-data.json",
+          "lock_path" => "/path/to/user/.lock",
+          "current_log_path" => "/path/to/user/factorio-current.log",
+          "previous_log_path" => "/path/to/user/factorio-previous.log",
+          "factorix_cache_dir" => "/path/to/cache/factorix",
+          "factorix_config_path" => "/path/to/config/factorix/config.rb",
+          "factorix_log_path" => "/path/to/state/factorix/factorix.log"
         })
       end
     end
@@ -132,13 +132,13 @@ RSpec.describe Factorix::CLI::Commands::Path do
     context "with an unknown path type" do
       it "raises ArgumentError with available path types in bulleted format" do
         expect {
-          capture_stdout { command.call(path_types: %w[mod-dir unknown-path user-dir]) }
+          capture_stdout { command.call(path_types: %w[mod_dir unknown_path user_dir]) }
         }.to raise_error(ArgumentError) do |error|
           expect(error.message).to include("Unknown path types:")
-          expect(error.message).to include("- unknown-path")
+          expect(error.message).to include("- unknown_path")
           expect(error.message).to include("Available path types:")
-          expect(error.message).to include("- executable-path")
-          expect(error.message).to include("- mod-dir")
+          expect(error.message).to include("- executable_path")
+          expect(error.message).to include("- mod_dir")
         end
       end
     end
@@ -146,11 +146,11 @@ RSpec.describe Factorix::CLI::Commands::Path do
     context "with only unknown path types" do
       it "raises ArgumentError listing all unknown types in bulleted format" do
         expect {
-          capture_stdout { command.call(path_types: %w[invalid-type another-invalid]) }
+          capture_stdout { command.call(path_types: %w[invalid_type another_invalid]) }
         }.to raise_error(ArgumentError) do |error|
           expect(error.message).to include("Unknown path types:")
-          expect(error.message).to include("- invalid-type")
-          expect(error.message).to include("- another-invalid")
+          expect(error.message).to include("- invalid_type")
+          expect(error.message).to include("- another_invalid")
           expect(error.message).to include("Available path types:")
         end
       end
@@ -163,7 +163,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
       it "re-raises the error" do
         expect {
-          capture_stdout { command.call(path_types: ["mod-dir"]) }
+          capture_stdout { command.call(path_types: ["mod_dir"]) }
         }.to raise_error(StandardError, "Runtime error")
       end
     end

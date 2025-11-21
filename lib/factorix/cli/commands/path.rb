@@ -8,29 +8,29 @@ module Factorix
       # Display Factorio and Factorix paths
       #
       # This command outputs paths managed by the runtime environment.
-      # Path types are specified as arguments with hyphens (e.g., mods-dir, user-dir).
-      # Input values with underscores are automatically normalized to hyphens.
+      # Path types are specified as arguments with underscores (e.g., mods_dir, user_dir).
+      # Input values with hyphens are automatically normalized to underscores.
       #
       # @example
-      #   $ factorix path mods-dir user-dir
-      #   {"mods-dir":"/path/to/mods","user-dir":"/path/to/user"}
+      #   $ factorix path mods_dir user_dir
+      #   {"mods_dir":"/path/to/mods","user_dir":"/path/to/user"}
       class Path < Base
-        # Mapping from normalized path types (with hyphens) to runtime method names
+        # Mapping from normalized path types (with underscores) to runtime method names
         PATH_TYPES = {
-          "executable-path" => :executable_path,
-          "user-dir" => :user_dir,
-          "mod-dir" => :mod_dir,
-          "save-dir" => :save_dir,
-          "script-output-dir" => :script_output_dir,
-          "mod-list-path" => :mod_list_path,
-          "mod-settings-path" => :mod_settings_path,
-          "player-data-path" => :player_data_path,
-          "lock-path" => :lock_path,
-          "current-log-path" => :current_log_path,
-          "previous-log-path" => :previous_log_path,
-          "factorix-cache-dir" => :factorix_cache_dir,
-          "factorix-config-path" => :factorix_config_path,
-          "factorix-log-path" => :factorix_log_path
+          "executable_path" => :executable_path,
+          "user_dir" => :user_dir,
+          "mod_dir" => :mod_dir,
+          "save_dir" => :save_dir,
+          "script_output_dir" => :script_output_dir,
+          "mod_list_path" => :mod_list_path,
+          "mod_settings_path" => :mod_settings_path,
+          "player_data_path" => :player_data_path,
+          "lock_path" => :lock_path,
+          "current_log_path" => :current_log_path,
+          "previous_log_path" => :previous_log_path,
+          "factorix_cache_dir" => :factorix_cache_dir,
+          "factorix_config_path" => :factorix_config_path,
+          "factorix_log_path" => :factorix_log_path
         }.freeze
         private_constant :PATH_TYPES
 
@@ -59,8 +59,8 @@ module Factorix
           unknown_types = []
 
           path_types.each do |path_type|
-            # Normalize: convert underscores to hyphens
-            normalized = path_type.tr("_", "-")
+            # Normalize: convert hyphens to underscores
+            normalized = path_type.tr("-", "_")
 
             unless PATH_TYPES.key?(normalized)
               unknown_types << normalized
