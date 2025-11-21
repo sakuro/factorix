@@ -90,7 +90,7 @@ Factorix/
 ├── MODSettings                # mod-settings.dat management
 ├── MODState                   # Data.define - MOD state (enabled/disabled)
 ├── InstalledMOD               # Data.define - installed MOD with metadata
-├── SaveFile                   # Data.define - save file parser
+├── SaveFile                   # Data.define - save file information
 │
 ├── Dependency/                # Dependency resolution system
 │   ├── Entry                  # Data.define - single dependency entry

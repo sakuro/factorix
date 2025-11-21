@@ -111,7 +111,7 @@ factorix/
 - **`Factorix::CLI`** - Command registry (Dry::CLI)
 - **`Factorix::MOD`** - Mod entity representation
 - **`Factorix::Dependency::Resolver`** - Dependency resolution
-- **`Factorix::SaveFile`** - Save file parser
+- **`Factorix::SaveFile`** - Save file information
 
 ### Design Patterns
 
