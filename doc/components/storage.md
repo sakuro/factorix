@@ -35,7 +35,7 @@ Manages reading and writing of `mod-settings.dat` file. Uses SerDes module to ha
 
 ### Main Features
 
-- `MODSettings.load(from:)` - Load mod-settings.dat file
+- `MODSettings.load(path)` - Load mod-settings.dat file
 - `[section_name]` - Access section
 - `each_section` - Iterate over all sections
 
@@ -61,7 +61,7 @@ Represents a configuration section.
 ### Usage Example
 
 ```ruby
-settings = MODSettings.load(from: Pathname("mod-settings.dat"))
+settings = MODSettings.load(Pathname("mod-settings.dat"))
 startup = settings["startup"]
 startup.each do |key, value|
   puts "#{key}: #{value}"
@@ -97,8 +97,8 @@ Manages pairs of MOD and MODState.
 
 ### Main Features
 
-- `MODList.load(from:)` - Load from mod-list.json
-- `save(to:)` - Save to mod-list.json
+- `MODList.load(path)` - Load from mod-list.json
+- `save(path)` - Save to mod-list.json
 - `add(mod, enabled:, version:)` - Add MOD to list
 - `remove(mod)` - Remove MOD from list
 - `enable(mod)` / `disable(mod)` - Enable/disable MOD

@@ -26,7 +26,7 @@ module Factorix
         # @return [Array<Factorix::Dependency::Graph, Factorix::MODList, Array<Factorix::InstalledMOD>>]
         #   Returns a tuple of [graph, mod_list, installed_mods]
         private def load_current_state
-          mod_list = MODList.load(from: runtime.mod_list_path)
+          mod_list = MODList.load(runtime.mod_list_path)
           installed_mods = InstalledMOD.all
 
           graph = Dependency::Graph::Builder.build(

@@ -40,18 +40,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
       it "loads from default path" do
         expect { command.call }.to output.to_stdout
 
-        expect(Factorix::MODSettings).to have_received(:load).with(from: default_settings_path)
+        expect(Factorix::MODSettings).to have_received(:load).with(default_settings_path)
       end
     end
 
     context "with custom settings file" do
       it "loads from specified file" do
         settings_path = Pathname("/path/to/mod-settings.dat")
-        allow(Factorix::MODSettings).to receive(:load).with(from: settings_path).and_return(settings)
+        allow(Factorix::MODSettings).to receive(:load).with(settings_path).and_return(settings)
 
         expect { command.call(settings_file: settings_path.to_s) }.to output(/game_version/).to_stdout
 
-        expect(Factorix::MODSettings).to have_received(:load).with(from: settings_path)
+        expect(Factorix::MODSettings).to have_received(:load).with(settings_path)
       end
     end
 

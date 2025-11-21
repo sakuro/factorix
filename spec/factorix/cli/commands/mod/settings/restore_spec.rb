@@ -60,7 +60,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       it "loads from JSON file and saves settings" do
         command.call(input: input_file.path, settings_file: output_path.to_s)
 
-        expect(settings).to have_received(:save).with(to: output_path)
+        expect(settings).to have_received(:save).with(output_path)
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
         command.call(settings_file: output_path.to_s)
 
         expect($stdin).to have_received(:read)
-        expect(settings).to have_received(:save).with(to: output_path)
+        expect(settings).to have_received(:save).with(output_path)
       end
     end
 
@@ -104,7 +104,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       it "saves to specified output file" do
         command.call(input: input_file.path, settings_file: custom_output_file.path)
 
-        expect(settings).to have_received(:save).with(to: Pathname(custom_output_file.path))
+        expect(settings).to have_received(:save).with(Pathname(custom_output_file.path))
       end
     end
 
@@ -126,7 +126,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       it "saves to default path when settings_file not specified" do
         command.call(input: input_file.path)
 
-        expect(settings).to have_received(:save).with(to: default_path)
+        expect(settings).to have_received(:save).with(default_path)
       end
     end
 

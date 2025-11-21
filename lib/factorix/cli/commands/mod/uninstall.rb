@@ -94,7 +94,7 @@ module Factorix
             end
 
             # Save mod-list.json
-            mod_list.save(to: runtime.mod_list_path)
+            mod_list.save(runtime.mod_list_path)
             say "Saved mod-list.json", prefix: :success
           end
 

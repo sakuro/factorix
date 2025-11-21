@@ -70,7 +70,7 @@ module Factorix
 
             # Update mod-list.json
             update_mod_list(mod_list, save_data.mods)
-            mod_list.save(to: runtime.mod_list_path)
+            mod_list.save(runtime.mod_list_path)
             say "Updated mod-list.json", prefix: :success
 
             # Update mod-settings.dat
@@ -339,7 +339,7 @@ module Factorix
           private def update_mod_settings(startup_settings, game_version)
             # Load existing settings or create new
             mod_settings = if runtime.mod_settings_path.exist?
-                             MODSettings.load(from: runtime.mod_settings_path)
+                             MODSettings.load(runtime.mod_settings_path)
                            else
                              # Create new MODSettings with all sections
                              sections = MODSettings::VALID_SECTIONS.to_h {|section_name|
@@ -355,7 +355,7 @@ module Factorix
             end
 
             # Save updated settings
-            mod_settings.save(to: runtime.mod_settings_path)
+            mod_settings.save(runtime.mod_settings_path)
           end
         end
       end

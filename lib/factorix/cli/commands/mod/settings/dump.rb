@@ -27,7 +27,7 @@ module Factorix
             def call(settings_file: nil, output: nil, **)
               # Load MOD settings
               settings_path = settings_file ? Pathname(settings_file) : runtime.mod_settings_path
-              settings = MODSettings.load(from: settings_path)
+              settings = MODSettings.load(settings_path)
 
               # Convert to JSON format
               data = build_hash(settings)

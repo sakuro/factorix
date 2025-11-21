@@ -131,7 +131,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
 
       it "saves mod-list.json" do
         capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
-        expect(mod_list).to have_received(:save).with(to: mod_list_path)
+        expect(mod_list).to have_received(:save).with(mod_list_path)
       end
 
       it "displays the plan" do

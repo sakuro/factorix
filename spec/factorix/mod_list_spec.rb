@@ -15,11 +15,11 @@ RSpec.describe Factorix::MODList do
   let(:disabled_state) { Factorix::MODState[enabled: false] }
 
   let(:list_path) { Pathname("spec/fixtures/mod-list/list.json") }
-  let(:list) { Factorix::MODList.load(from: list_path) }
+  let(:list) { Factorix::MODList.load(list_path) }
 
   describe ".load" do
-    context "when from: is specified" do
-      let(:loaded_list) { Factorix::MODList.load(from: list_path) }
+    context "with path argument" do
+      let(:loaded_list) { Factorix::MODList.load(list_path) }
 
       it "loads base MOD" do
         expect(loaded_list).to exist(base_mod)
@@ -53,7 +53,7 @@ RSpec.describe Factorix::MODList do
         let(:invalid_list_path) { Pathname("spec/fixtures/mod-list/invalid_base_disabled.json") }
 
         it "raises ArgumentError" do
-          expect { Factorix::MODList.load(from: invalid_list_path) }.to raise_error(ArgumentError)
+          expect { Factorix::MODList.load(invalid_list_path) }.to raise_error(ArgumentError)
         end
       end
     end
@@ -68,9 +68,9 @@ RSpec.describe Factorix::MODList do
       temp_file.unlink
     end
 
-    context "when to: is specified" do
+    context "with path argument" do
       it "saves current MOD list" do
-        list.save(to: temp_path)
+        list.save(temp_path)
         expect(JSON.load_file(temp_path)).to eq(JSON.load_file(list_path))
       end
     end

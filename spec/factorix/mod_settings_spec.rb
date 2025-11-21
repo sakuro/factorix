@@ -4,7 +4,7 @@ require "tempfile"
 
 RSpec.describe Factorix::MODSettings do
   let(:settings_path) { Pathname.new("spec/fixtures/mod-settings/settings.dat") }
-  let(:settings) { Factorix::MODSettings.load(from: settings_path) }
+  let(:settings) { Factorix::MODSettings.load(settings_path) }
   let(:deserializer) { instance_double(Factorix::SerDes::Deserializer, eof?: true) }
   let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.110-0") }
   let(:raw_settings) do
@@ -41,8 +41,8 @@ RSpec.describe Factorix::MODSettings do
   end
 
   describe ".load" do
-    context "when from: is specified" do
-      let(:loaded_settings) { Factorix::MODSettings.load(from: settings_path) }
+    context "with path argument" do
+      let(:loaded_settings) { Factorix::MODSettings.load(settings_path) }
 
       it "loads settings from the given path" do
         expect(loaded_settings["startup"]).to be_a(Factorix::MODSettings::Section)
@@ -54,13 +54,13 @@ RSpec.describe Factorix::MODSettings do
         invalid_settings = {"invalid-section" => {}}
         allow(deserializer).to receive(:read_property_tree).and_return(invalid_settings)
 
-        expect { Factorix::MODSettings.load(from: settings_path) }.to raise_error(ArgumentError)
+        expect { Factorix::MODSettings.load(settings_path) }.to raise_error(ArgumentError)
       end
 
       it "raises ExtraDataError if extra data exists at the end of file" do
         allow(deserializer).to receive_messages(eof?: false, read_property_tree: raw_settings)
 
-        expect { Factorix::MODSettings.load(from: settings_path) }.to raise_error(Factorix::ExtraDataError)
+        expect { Factorix::MODSettings.load(settings_path) }.to raise_error(Factorix::ExtraDataError)
       end
     end
   end
@@ -126,9 +126,9 @@ RSpec.describe Factorix::MODSettings do
       )
     end
 
-    context "when to: is specified" do
+    context "with path argument" do
       it "saves settings to the specified path" do
-        settings.save(to: temp_path)
+        settings.save(temp_path)
 
         expect(serializer).to have_received(:write_game_version).with(game_version)
         expect(serializer).to have_received(:write_bool).with(false)

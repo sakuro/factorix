@@ -15,11 +15,11 @@ module Factorix
 
     # Load the MOD list from the given file
     #
-    # @param from [Pathname] the path to the file to load the MOD list from
+    # @param path [Pathname] the path to the file to load the MOD list from
     # @return [Factorix::MODList] the loaded MOD list
     # @raise [ArgumentError] if the base MOD is disabled
-    def self.load(from:)
-      raw_data = JSON.parse(from.read, symbolize_names: true)
+    def self.load(path)
+      raw_data = JSON.parse(path.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
         mod = MOD[name: entry[:name]]
         version = entry[:version] ? Types::MODVersion.from_string(entry[:version]) : nil
@@ -48,16 +48,16 @@ module Factorix
 
     # Save the MOD list to the given file
     #
-    # @param to [Pathname] the path to the file to save the MOD list to
+    # @param path [Pathname] the path to the file to save the MOD list to
     # @return [void]
-    def save(to:)
+    def save(path)
       mods_data = @mods.map {|mod, state|
         data = {name: mod.name, enabled: state.enabled?}
         # Only include version in the output if it exists
         data[:version] = state.version.to_s if state.version
         data
       }
-      to.write(JSON.pretty_generate({mods: mods_data}))
+      path.write(JSON.pretty_generate({mods: mods_data}))
     end
 
     # Iterate through all MOD-state pairs

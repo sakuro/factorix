@@ -49,7 +49,7 @@ module Factorix
               backup_if_exists(output_path, backup_extension)
 
               # Save settings
-              settings.save(to: output_path)
+              settings.save(output_path)
             end
 
             # Build MODSettings from parsed JSON data

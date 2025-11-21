@@ -106,10 +106,10 @@ module Factorix
 
     # Load MOD settings from file
     #
-    # @param from [Pathname] Path to the MOD settings file
+    # @param path [Pathname] Path to the MOD settings file
     # @return [MODSettings] New MODSettings instance
-    def self.load(from:)
-      from.open("rb") do |io|
+    def self.load(path)
+      path.open("rb") do |io|
         game_version, sections = load_settings_from_io(io)
         new(game_version, sections)
       end
@@ -242,10 +242,10 @@ module Factorix
 
     # Save MOD settings to file
     #
-    # @param to [Pathname] Path to save the MOD settings file
+    # @param path [Pathname] Path to save the MOD settings file
     # @return [void]
-    def save(to:)
-      to.open("wb") do |file|
+    def save(path)
+      path.open("wb") do |file|
         serializer = SerDes::Serializer.new(file)
 
         # 1. Write version

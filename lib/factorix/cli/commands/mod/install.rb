@@ -56,7 +56,7 @@ module Factorix
             execute_installation(install_targets, graph, mod_list, jobs)
 
             # Save mod-list.json
-            mod_list.save(to: runtime.mod_list_path)
+            mod_list.save(runtime.mod_list_path)
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
