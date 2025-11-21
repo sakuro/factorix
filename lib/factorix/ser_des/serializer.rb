@@ -10,7 +10,7 @@ module Factorix
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:logger]
+      include Import[:logger]
 
       # Create a new Serializer instance
       #
@@ -211,19 +211,19 @@ module Factorix
           write_u8(5)
           write_bool(false)
           write_dictionary(obj)
-        when Factorix::Types::SignedInteger
+        when Types::SignedInteger
           # Type 6 - Signed integer
           write_u8(6)
           write_bool(false)
           write_long(obj.__getobj__)
-        when Factorix::Types::UnsignedInteger
+        when Types::UnsignedInteger
           # Type 7 - Unsigned integer
           write_u8(7)
           write_bool(false)
           write_unsigned_long(obj.__getobj__)
         else
           logger.debug("Unknown property type", type: obj.class.name)
-          raise Factorix::UnknownPropertyType, "Unknown property type: #{obj.class}"
+          raise UnknownPropertyType, "Unknown property type: #{obj.class}"
         end
       end
     end

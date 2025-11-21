@@ -27,7 +27,7 @@ module Factorix
         #   attr_reader :runtime
         #   # @return [Dry::Logger::Dispatcher]
         #   attr_reader :logger
-        include Factorix::Import[:runtime, :logger]
+        include Import[:runtime, :logger]
 
         desc "Launch Factorio game"
 

@@ -31,7 +31,7 @@ module Factorix
 
     # Register runtime detector
     register(:runtime, memoize: true) do
-      Factorix::Runtime.detect
+      Runtime.detect
     end
 
     # Register logger
@@ -56,12 +56,12 @@ module Factorix
 
     # Register retry strategy for network operations
     register(:retry_strategy, memoize: true) do
-      Factorix::HTTP::RetryStrategy.new
+      HTTP::RetryStrategy.new
     end
 
     # Register download cache
     register(:download_cache, memoize: true) do
-      Factorix::Cache::FileSystem.new(
+      Cache::FileSystem.new(
         config.cache.download.dir,
         ttl: config.cache.download.ttl,
         max_file_size: config.cache.download.max_file_size
@@ -70,7 +70,7 @@ module Factorix
 
     # Register API cache
     register(:api_cache, memoize: true) do
-      Factorix::Cache::FileSystem.new(
+      Cache::FileSystem.new(
         config.cache.api.dir,
         ttl: config.cache.api.ttl,
         max_file_size: config.cache.api.max_file_size
@@ -79,7 +79,7 @@ module Factorix
 
     # Register base HTTP client
     register(:http_client, memoize: true) do
-      Factorix::HTTP::Client.new
+      HTTP::Client.new
     end
 
     # Register decorated HTTP client for downloads (with retry only)
@@ -89,7 +89,7 @@ module Factorix
       retry_strategy = resolve(:retry_strategy)
 
       # Decorate: Client -> Retry (no cache, handled by Downloader)
-      Factorix::HTTP::RetryDecorator.new(client:, retry_strategy:)
+      HTTP::RetryDecorator.new(client:, retry_strategy:)
     end
 
     # Register decorated HTTP client for API calls (with retry + cache)
@@ -99,8 +99,8 @@ module Factorix
       retry_strategy = resolve(:retry_strategy)
 
       # Decorate: Client -> Cache -> Retry
-      cached = Factorix::HTTP::CacheDecorator.new(client:, cache: api_cache)
-      Factorix::HTTP::RetryDecorator.new(client: cached, retry_strategy:)
+      cached = HTTP::CacheDecorator.new(client:, cache: api_cache)
+      HTTP::RetryDecorator.new(client: cached, retry_strategy:)
     end
 
     # Register decorated HTTP client for uploads (with retry only, no cache)
@@ -109,17 +109,17 @@ module Factorix
       retry_strategy = resolve(:retry_strategy)
 
       # Decorate: Client -> Retry (no cache for uploads)
-      Factorix::HTTP::RetryDecorator.new(client:, retry_strategy:)
+      HTTP::RetryDecorator.new(client:, retry_strategy:)
     end
 
     # Register downloader
     register(:downloader, memoize: false) do
-      Factorix::Transfer::Downloader.new
+      Transfer::Downloader.new
     end
 
     # Register uploader
     register(:uploader, memoize: true) do
-      Factorix::Transfer::Uploader.new
+      Transfer::Uploader.new
     end
 
     # Register service credential
@@ -127,9 +127,9 @@ module Factorix
       runtime = resolve(:runtime)
       case config.credential.source
       when :env
-        Factorix::ServiceCredential.from_env
+        ServiceCredential.from_env
       when :player_data
-        Factorix::ServiceCredential.from_player_data(runtime:)
+        ServiceCredential.from_player_data(runtime:)
       else
         raise ArgumentError, "Invalid credential source: #{config.credential.source}"
       end
@@ -137,27 +137,27 @@ module Factorix
 
     # Register mod portal API client
     register(:mod_portal_api, memoize: true) do
-      Factorix::API::MODPortalAPI.new
+      API::MODPortalAPI.new
     end
 
     # Register mod download API client
     register(:mod_download_api, memoize: false) do
-      Factorix::API::MODDownloadAPI.new
+      API::MODDownloadAPI.new
     end
 
     # Register API credential (for mod upload/management)
     register(:api_credential, memoize: true) do
-      Factorix::APICredential.from_env
+      APICredential.from_env
     end
 
     # Register mod management API client
     register(:mod_management_api, memoize: true) do
-      Factorix::API::MODManagementAPI.new
+      API::MODManagementAPI.new
     end
 
     # Register portal (high-level API wrapper)
     register(:portal, memoize: false) do
-      Factorix::Portal.new
+      Portal.new
     end
 
     # Log level (:debug, :info, :warn, :error, :fatal)

@@ -16,7 +16,7 @@ module Factorix
       #   attr_reader :downloader
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:downloader, :logger]
+      include Import[:downloader, :logger]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL

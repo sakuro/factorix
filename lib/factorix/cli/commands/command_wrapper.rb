@@ -23,16 +23,16 @@ module Factorix
 
           # Call the command's implementation
           super
-        rescue Factorix::Error => e
+        rescue Error => e
           # Expected errors (validation failures, missing dependencies, etc.)
-          log = Factorix::Application[:logger]
+          log = Application[:logger]
           log.warn(e.message)
           log.debug(e)
           say "Error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
         rescue => e
           # Unexpected errors (bugs, system failures, etc.)
-          log = Factorix::Application[:logger]
+          log = Application[:logger]
           log.error(e)
           say "Unexpected error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
@@ -41,22 +41,22 @@ module Factorix
         private def load_config!(path)
           if path
             # Explicitly specified path via --config-path
-            Factorix::Application.load_config(path)
+            Application.load_config(path)
           else
             # Load default configuration
             config_path = if ENV["FACTORIX_CONFIG"]
                             Pathname(ENV.fetch("FACTORIX_CONFIG"))
                           else
-                            Factorix::Application[:runtime].factorix_config_path
+                            Application[:runtime].factorix_config_path
                           end
-            Factorix::Application.load_config(config_path) if config_path.exist?
+            Application.load_config(config_path) if config_path.exist?
           end
         end
 
         # Sets the application logger's level
         # @param level [String] log level (debug, info, warn, error, fatal)
         private def log_level!(level)
-          logger = Factorix::Application[:logger]
+          logger = Application[:logger]
           level_constant = Logger.const_get(level.upcase)
 
           # Change only the File backend (first backend) level

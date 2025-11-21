@@ -16,7 +16,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Enable MODs in mod-list.json (recursively enables dependencies)"
 
@@ -69,7 +69,7 @@ module Factorix
           private def validate_target_mods_exist(target_mods, graph)
             target_mods.each do |mod|
               unless graph.node?(mod)
-                raise Factorix::Error, "MOD '#{mod.name}' is not installed"
+                raise Error, "MOD '#{mod.name}' is not installed"
               end
             end
           end
@@ -110,13 +110,13 @@ module Factorix
 
                 # Validate dependency exists
                 unless dep_node
-                  raise Factorix::Error,
+                  raise Error,
                     "MOD '#{mod.name}' requires '#{dep_mod.name}' which is not installed"
                 end
 
                 # Validate version requirement
                 unless edge.satisfied_by?(dep_node.version)
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot enable #{mod.name}: dependency #{dep_mod.name} version requirement not satisfied " \
                     "(required: #{edge.version_requirement}, installed: #{dep_node.version})"
                 end
@@ -147,13 +147,13 @@ module Factorix
 
                 # Check if conflicting MOD is currently enabled
                 if conflict_node&.enabled?
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot enable #{mod.name}: conflicts with #{edge.to_mod.name} which is currently enabled"
                 end
 
                 # Check if conflicting MOD is in the enable plan
                 if mods_to_enable_set.include?(edge.to_mod)
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot enable #{mod.name}: conflicts with #{edge.to_mod.name} which is also being enabled"
                 end
               end
@@ -164,13 +164,13 @@ module Factorix
 
                 # Check if conflicting MOD is currently enabled
                 if conflict_node&.enabled?
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot enable #{mod.name}: conflicts with #{edge.from_mod.name} which is currently enabled"
                 end
 
                 # Check if conflicting MOD is in the enable plan
                 if mods_to_enable_set.include?(edge.from_mod)
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot enable #{mod.name}: conflicts with #{edge.from_mod.name} which is also being enabled"
                 end
               end

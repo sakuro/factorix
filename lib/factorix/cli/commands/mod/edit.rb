@@ -9,7 +9,7 @@ module Factorix
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
-          include Factorix::Import[:portal]
+          include Import[:portal]
 
           desc "Edit MOD metadata on Factorio MOD Portal"
 
@@ -58,7 +58,7 @@ module Factorix
             if metadata.empty?
               say "At least one metadata option must be provided", prefix: :error
               say "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
-              raise Factorix::Error, "No metadata options provided"
+              raise Error, "No metadata options provided"
             end
 
             # Edit metadata via Portal

@@ -16,7 +16,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
 
@@ -67,7 +67,7 @@ module Factorix
             target_mods.each do |mod|
               # Check if base MOD
               if mod.base?
-                raise Factorix::Error, "Cannot disable base MOD"
+                raise Error, "Cannot disable base MOD"
               end
 
               # Check if MOD exists in graph (is installed)

@@ -14,7 +14,7 @@ module Factorix
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime
-            include Factorix::Import[:runtime]
+            include Import[:runtime]
 
             desc "Restore MOD settings from JSON format"
 

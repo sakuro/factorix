@@ -9,7 +9,7 @@ module Factorix
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
-          include Factorix::Import[:portal]
+          include Import[:portal]
 
           desc "Upload MOD to Factorio MOD Portal (handles both new and update)"
 

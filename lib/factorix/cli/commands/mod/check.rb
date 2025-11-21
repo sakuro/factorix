@@ -13,7 +13,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Validate MOD dependencies"
 
@@ -25,7 +25,7 @@ module Factorix
             graph, mod_list, installed_mods = load_current_state
 
             # Validate
-            validator = Factorix::Dependency::Validator.new(
+            validator = Dependency::Validator.new(
               graph,
               mod_list:,
               all_installed_mods: installed_mods

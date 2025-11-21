@@ -54,7 +54,7 @@ module Factorix
       # @param operation [Symbol] The operation to perform (default: :install)
       # @return [void]
       def add_uninstalled_mod(mod_info, release, operation: :install)
-        mod = Factorix::MOD[name: mod_info.name]
+        mod = MOD[name: mod_info.name]
 
         # Skip if already in graph (might be installed or already added)
         return if node?(mod)

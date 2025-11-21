@@ -151,7 +151,7 @@ module Factorix
           URI(value)
         rescue URI::InvalidURIError => e
           logger = begin
-            Factorix::Application[:logger]
+            Application[:logger]
           rescue
             nil
           end
@@ -198,7 +198,7 @@ module Factorix
           rescue RangeError => e
             # Skip releases with invalid version numbers
             logger = begin
-              Factorix::Application[:logger]
+              Application[:logger]
             rescue
               nil
             end

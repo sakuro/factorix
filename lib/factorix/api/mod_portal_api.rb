@@ -18,7 +18,7 @@ module Factorix
       #   attr_reader :cache
       #   # @return [HTTP::Client]
       #   attr_reader :client
-      include Factorix::Import[:logger, cache: :api_cache, client: :api_http_client]
+      include Import[:logger, cache: :api_cache, client: :api_http_client]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL

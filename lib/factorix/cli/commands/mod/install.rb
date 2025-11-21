@@ -21,7 +21,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:portal, :logger, :runtime]
+          include Import[:portal, :logger, :runtime]
 
           desc "Install MODs from Factorio MOD Portal (downloads to mod directory and enables)"
 
@@ -127,7 +127,7 @@ module Factorix
             release = find_release(mod_info, version_spec)
 
             unless release
-              raise Factorix::Error, "Release not found for #{mod_name}@#{version_spec}"
+              raise Error, "Release not found for #{mod_name}@#{version_spec}"
             end
 
             {
@@ -322,7 +322,7 @@ module Factorix
                 logger.error("  Cycle: #{cycle.map(&:name).join(" <-> ")}")
               end
 
-              raise Factorix::Error, "Circular dependency detected in MODs to install"
+              raise Error, "Circular dependency detected in MODs to install"
             end
 
             # Check for conflicts
@@ -335,7 +335,7 @@ module Factorix
 
                 target_node = graph.node(edge.to_mod)
                 if target_node&.enabled?
-                  raise Factorix::Error,
+                  raise Error,
                     "Cannot install #{node.mod.name}: it conflicts with enabled MOD #{edge.to_mod.name}"
                 end
               end
@@ -432,7 +432,7 @@ module Factorix
             futures = targets.map {|target|
               Concurrent::Future.execute(executor: pool) do
                 # Get a new portal instance
-                thread_portal = Factorix::Application[:portal]
+                thread_portal = Application[:portal]
                 thread_downloader = thread_portal.mod_download_api.downloader
 
                 # Register progress presenter and create handler

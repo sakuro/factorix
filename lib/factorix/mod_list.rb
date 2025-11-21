@@ -11,7 +11,7 @@ module Factorix
     include Enumerable
 
     # Raised when a MOD is not found in the list
-    class MODNotInListError < Factorix::MODNotFoundError; end
+    class MODNotInListError < MODNotFoundError; end
 
     # Load the MOD list from the given file
     #
@@ -21,9 +21,9 @@ module Factorix
     def self.load(from:)
       raw_data = JSON.parse(from.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
-        mod = Factorix::MOD[name: entry[:name]]
-        version = entry[:version] ? Factorix::Types::MODVersion.from_string(entry[:version]) : nil
-        state = Factorix::MODState[enabled: entry[:enabled], version:]
+        mod = MOD[name: entry[:name]]
+        version = entry[:version] ? Types::MODVersion.from_string(entry[:version]) : nil
+        state = MODState[enabled: entry[:enabled], version:]
 
         # Validate that base MOD is not disabled
         if mod.base? && !entry[:enabled]

@@ -12,7 +12,7 @@ module Factorix
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
-          include Factorix::Import[:portal]
+          include Import[:portal]
 
           # Category emoji mapping
           CATEGORY_EMOJIS = {
@@ -59,7 +59,7 @@ module Factorix
 
             # Resolve dependencies if requested
             if recursive
-              raise Factorix::Error, "--recursive option is not yet implemented for download command"
+              raise Error, "--recursive option is not yet implemented for download command"
             end
 
             # Download files
@@ -80,7 +80,7 @@ module Factorix
             futures = downloads.map {|download|
               Concurrent::Future.execute(executor: pool) do
                 # Get a new portal instance (memoize: false)
-                thread_portal = Factorix::Application[:portal]
+                thread_portal = Application[:portal]
                 # Access the downloader instance used by this portal
                 thread_downloader = thread_portal.mod_download_api.downloader
 
@@ -148,7 +148,7 @@ module Factorix
             mod_name, version = parse_mod_spec(mod_spec)
 
             # Get a new portal instance for this thread
-            thread_portal = Factorix::Application[:portal]
+            thread_portal = Application[:portal]
             mod_info = thread_portal.get_mod_full(mod_name)
 
             release = find_release(mod_info, version)

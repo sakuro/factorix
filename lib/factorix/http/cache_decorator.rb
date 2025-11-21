@@ -18,7 +18,7 @@ module Factorix
       #   attr_reader :cache
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:client, :cache, :logger]
+      include Import[:client, :cache, :logger]
       include Dry::Events::Publisher[:http]
 
       register_event("cache.hit")

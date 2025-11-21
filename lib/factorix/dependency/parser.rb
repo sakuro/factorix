@@ -134,7 +134,7 @@ module Factorix
       rescue RangeError => e
         # Skip version requirements with out-of-range version components
         logger = begin
-          Factorix::Application[:logger]
+          Application[:logger]
         rescue
           nil
         end

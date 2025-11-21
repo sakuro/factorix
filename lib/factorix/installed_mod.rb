@@ -93,7 +93,7 @@ module Factorix
     # Scans mod directory and data directory for installed MODs.
     # Gets directory paths from Runtime automatically.
     class Scanner
-      include Factorix::Import[:runtime, :logger]
+      include Import[:runtime, :logger]
 
       # Scan directories for installed MODs
       #

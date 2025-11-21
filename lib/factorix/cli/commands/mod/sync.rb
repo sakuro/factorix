@@ -21,7 +21,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:portal, :logger, :runtime]
+          include Import[:portal, :logger, :runtime]
 
           desc "Sync MOD states and startup settings from a save file"
 
@@ -36,7 +36,7 @@ module Factorix
           def call(save_file:, jobs: 4, **)
             # Load save file
             say "Loading save file: #{save_file}"
-            save_data = Factorix::SaveFile.load(Pathname(save_file))
+            save_data = SaveFile.load(Pathname(save_file))
             say "Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})", prefix: :success
 
             # Load current state
@@ -155,7 +155,7 @@ module Factorix
             release = mod_info.releases.find {|r| r.version == version }
 
             unless release
-              raise Factorix::Error, "Release not found for #{mod_name}@#{version}"
+              raise Error, "Release not found for #{mod_name}@#{version}"
             end
 
             {
@@ -222,7 +222,7 @@ module Factorix
             futures = targets.map {|target|
               Concurrent::Future.execute(executor: pool) do
                 # Get a new portal instance
-                thread_portal = Factorix::Application[:portal]
+                thread_portal = Application[:portal]
                 thread_downloader = thread_portal.mod_download_api.downloader
 
                 # Register progress presenter and create handler
@@ -339,13 +339,13 @@ module Factorix
           private def update_mod_settings(startup_settings, game_version)
             # Load existing settings or create new
             mod_settings = if runtime.mod_settings_path.exist?
-                             Factorix::MODSettings.load(from: runtime.mod_settings_path)
+                             MODSettings.load(from: runtime.mod_settings_path)
                            else
                              # Create new MODSettings with all sections
-                             sections = Factorix::MODSettings::VALID_SECTIONS.to_h {|section_name|
-                               [section_name, Factorix::MODSettings::Section.new(section_name)]
+                             sections = MODSettings::VALID_SECTIONS.to_h {|section_name|
+                               [section_name, MODSettings::Section.new(section_name)]
                              }
-                             Factorix::MODSettings.new(game_version, sections)
+                             MODSettings.new(game_version, sections)
                            end
 
             # Merge startup settings from save file

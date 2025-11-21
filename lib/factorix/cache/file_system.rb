@@ -15,7 +15,7 @@ module Factorix
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:logger]
+      include Import[:logger]
 
       # Maximum lifetime of lock files in seconds.
       # Lock files older than this will be considered stale and removed

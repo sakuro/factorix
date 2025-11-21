@@ -45,7 +45,7 @@ module Factorix
       # @raise [Errno::ENOENT] If save file or level file not found
       def parse
         open_level_file do |stream|
-          deserializer = Factorix::SerDes::Deserializer.new(stream)
+          deserializer = SerDes::Deserializer.new(stream)
           parse_save_header(deserializer)
           skip_unknown_bytes(deserializer)
           parse_startup_settings(deserializer)
@@ -147,7 +147,7 @@ module Factorix
           _crc = deserializer.read_u32
 
           # All MODs in save file are enabled
-          @mods[name] = Factorix::MODState.new(enabled: true, version:)
+          @mods[name] = MODState.new(enabled: true, version:)
         end
       end
 
@@ -167,7 +167,7 @@ module Factorix
         raw_settings = deserializer.read_property_tree
 
         # Create a new Section and populate it
-        @startup_settings = Factorix::MODSettings::Section.new("startup")
+        @startup_settings = MODSettings::Section.new("startup")
 
         return unless raw_settings.is_a?(Hash)
 

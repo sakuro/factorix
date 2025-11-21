@@ -33,7 +33,7 @@ module Factorix
     #   attr_reader :mod_management_api
     #   # @return [Dry::Logger::Dispatcher]
     #   attr_reader :logger
-    include Factorix::Import[:mod_portal_api, :mod_download_api, :mod_management_api, :logger]
+    include Import[:mod_portal_api, :mod_download_api, :mod_management_api, :logger]
 
     # List mods from the Mod Portal
     #

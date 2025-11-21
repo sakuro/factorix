@@ -30,7 +30,7 @@ module Factorix
 
           # Cannot prompt in quiet mode
           if quiet?
-            raise Factorix::Error, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
+            raise Error, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
           end
 
           print "#{message} [y/N] "

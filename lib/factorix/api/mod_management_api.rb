@@ -20,7 +20,7 @@ module Factorix
       #   attr_reader :uploader
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:uploader, :logger, client: :http_client]
+      include Import[:uploader, :logger, client: :http_client]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL

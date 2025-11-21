@@ -120,7 +120,7 @@ module Factorix
     # @param io [IO] IO object to read from
     # @return [Array<Factorix::Types::GameVersion, Hash<String, Section>>] Game version and hash of sections
     def self.load_settings_from_io(io)
-      deserializer = Factorix::SerDes::Deserializer.new(io)
+      deserializer = SerDes::Deserializer.new(io)
 
       # 1. Read version (GameVersion)
       game_version = deserializer.read_game_version
@@ -246,7 +246,7 @@ module Factorix
     # @return [void]
     def save(to:)
       to.open("wb") do |file|
-        serializer = Factorix::SerDes::Serializer.new(file)
+        serializer = SerDes::Serializer.new(file)
 
         # 1. Write version
         serializer.write_game_version(@game_version)

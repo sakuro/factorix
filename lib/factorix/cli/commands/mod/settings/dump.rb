@@ -12,7 +12,7 @@ module Factorix
             # @!parse
             #   # @return [Runtime::Base]
             #   attr_reader :runtime
-            include Factorix::Import[:runtime]
+            include Import[:runtime]
 
             desc "Dump MOD settings to JSON format"
 
@@ -27,7 +27,7 @@ module Factorix
             def call(settings_file: nil, output: nil, **)
               # Load MOD settings
               settings_path = settings_file ? Pathname(settings_file) : runtime.mod_settings_path
-              settings = Factorix::MODSettings.load(from: settings_path)
+              settings = MODSettings.load(from: settings_path)
 
               # Convert to JSON format
               data = build_hash(settings)

@@ -26,10 +26,10 @@ module Factorix
         # @return [Array<Factorix::Dependency::Graph, Factorix::MODList, Array<Factorix::InstalledMOD>>]
         #   Returns a tuple of [graph, mod_list, installed_mods]
         private def load_current_state
-          mod_list = Factorix::MODList.load(from: runtime.mod_list_path)
-          installed_mods = Factorix::InstalledMOD.all
+          mod_list = MODList.load(from: runtime.mod_list_path)
+          installed_mods = InstalledMOD.all
 
-          graph = Factorix::Dependency::Graph::Builder.build(
+          graph = Dependency::Graph::Builder.build(
             installed_mods:,
             mod_list:
           )
@@ -49,7 +49,7 @@ module Factorix
         private def ensure_valid_state!
           graph, mod_list, installed_mods = load_current_state
 
-          validator = Factorix::Dependency::Validator.new(
+          validator = Dependency::Validator.new(
             graph,
             mod_list:,
             all_installed_mods: installed_mods
@@ -63,7 +63,7 @@ module Factorix
           result.errors.each {|error| logger.error("  - #{error.message}") }
 
           # Raise with helpful error message
-          raise Factorix::Error, <<~MESSAGE.chomp
+          raise Error, <<~MESSAGE.chomp
             Cannot proceed because current MOD installation has validation errors.
 
             Please fix these issues first:

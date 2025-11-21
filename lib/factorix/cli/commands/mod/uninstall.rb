@@ -16,7 +16,7 @@ module Factorix
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Factorix::Import[:logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Uninstall MODs from mod directory"
 
@@ -44,11 +44,11 @@ module Factorix
           def call(mod_specs: [], all: false, **)
             # Validate arguments
             if all && mod_specs.any?
-              raise Factorix::Error, "Cannot specify MOD names with --all option"
+              raise Error, "Cannot specify MOD names with --all option"
             end
 
             unless all || mod_specs.any?
-              raise Factorix::Error, "Must specify MOD names or use --all option"
+              raise Error, "Must specify MOD names or use --all option"
             end
 
             # Load current state (without validation to allow fixing issues)
@@ -125,7 +125,7 @@ module Factorix
             if mod_spec.include?("@")
               mod_name, version_str = mod_spec.split("@", 2)
               mod = Factorix::MOD[name: mod_name]
-              version = Factorix::Types::MODVersion.from_string(version_str)
+              version = Types::MODVersion.from_string(version_str)
               UninstallTarget.new(mod:, version:)
             else
               mod = Factorix::MOD[name: mod_spec]
@@ -150,8 +150,8 @@ module Factorix
             mod = target.mod
 
             # Check if base/expansion
-            raise Factorix::Error, "Cannot uninstall base MOD" if mod.base?
-            raise Factorix::Error, "Cannot uninstall expansion MOD: #{mod.name}" if mod.expansion?
+            raise Error, "Cannot uninstall base MOD" if mod.base?
+            raise Error, "Cannot uninstall expansion MOD: #{mod.name}" if mod.expansion?
 
             # Check if installed
             unless graph.node?(mod)
@@ -221,7 +221,7 @@ module Factorix
             return if unsatisfied_dependents.empty?
 
             dependent_names = unsatisfied_dependents.uniq.map!(&:name)
-            raise Factorix::Error,
+            raise Error,
               "Cannot uninstall #{target}: " \
               "the following enabled MODs depend on it: #{dependent_names.join(", ")}"
           end
@@ -348,14 +348,14 @@ module Factorix
           private def remove_mod_files(installed_mod)
             path = installed_mod.path
 
-            if installed_mod.form == Factorix::InstalledMOD::ZIP_FORM
+            if installed_mod.form == InstalledMOD::ZIP_FORM
               path.delete
               logger.info(
                 "Removed ZIP file",
                 mod_name: installed_mod.mod.name,
                 version: installed_mod.version.to_s
               )
-            elsif installed_mod.form == Factorix::InstalledMOD::DIRECTORY_FORM
+            elsif installed_mod.form == InstalledMOD::DIRECTORY_FORM
               path.rmtree
               logger.info(
                 "Removed directory",

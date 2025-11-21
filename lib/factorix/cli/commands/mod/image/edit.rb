@@ -10,7 +10,7 @@ module Factorix
             # @!parse
             #   # @return [Portal]
             #   attr_reader :portal
-            include Factorix::Import[:portal]
+            include Import[:portal]
 
             desc "Edit MOD's image list (reorder/remove images)"
 

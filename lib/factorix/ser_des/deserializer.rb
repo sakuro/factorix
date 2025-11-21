@@ -10,7 +10,7 @@ module Factorix
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Factorix::Import[:logger]
+      include Import[:logger]
 
       # Create a new Deserializer instance
       #
@@ -32,8 +32,8 @@ module Factorix
       # @raise [EOFError] If end of file is reached before reading length bytes
       # @return [String] Binary data read
       def read_bytes(length)
-        raise Factorix::InvalidLengthError, "nil length" if length.nil?
-        raise Factorix::InvalidLengthError, "negative length #{length}" if length.negative?
+        raise InvalidLengthError, "nil length" if length.nil?
+        raise InvalidLengthError, "negative length #{length}" if length.negative?
         return +"" if length.zero?
 
         bytes = @stream.read(length)
@@ -112,12 +112,12 @@ module Factorix
       # Read a GameVersion object
       #
       # @return [GameVersion] GameVersion object
-      def read_game_version = Factorix::Types::GameVersion.from_numbers(read_u16, read_u16, read_u16, read_u16)
+      def read_game_version = Types::GameVersion.from_numbers(read_u16, read_u16, read_u16, read_u16)
 
       # Read a MODVersion object
       #
       # @return [MODVersion] MODVersion object
-      def read_mod_version = Factorix::Types::MODVersion.from_numbers(read_optim_u16, read_optim_u16, read_optim_u16)
+      def read_mod_version = Types::MODVersion.from_numbers(read_optim_u16, read_optim_u16, read_optim_u16)
 
       # Read a signed long integer (8 bytes)
       #
@@ -177,15 +177,15 @@ module Factorix
           # Handle type 6 - Signed integer
           #
           # @see https://wiki.factorio.com/Property_tree
-          Factorix::Types::SignedInteger.new(read_long)
+          Types::SignedInteger.new(read_long)
         when 7
           # Handle type 7 - Unsigned integer
           #
           # @see https://wiki.factorio.com/Property_tree
-          Factorix::Types::UnsignedInteger.new(read_unsigned_long)
+          Types::UnsignedInteger.new(read_unsigned_long)
         else
           logger.debug("Unknown property type", type:)
-          raise Factorix::UnknownPropertyType, "Unknown property type: #{type}"
+          raise UnknownPropertyType, "Unknown property type: #{type}"
         end
       end
 
