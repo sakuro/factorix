@@ -159,8 +159,8 @@ module Factorix
       # @param mods [Array<InstalledMOD>] Array of installed MODs
       # @return [Array<InstalledMOD>] Array with duplicates resolved
       private def resolve_duplicates(mods)
-        # Group by name and version
-        groups = mods.group_by {|mod| [mod.mod.name, mod.version] }
+        # Group by MOD and version
+        groups = mods.group_by {|mod| [mod.mod, mod.version] }
 
         # For each group, select the highest priority (uses InstalledMOD#<=>)
         groups.map do |_key, group_mods|
