@@ -25,12 +25,12 @@ module Factorix
       # Initialize a new file system cache storage.
       # Creates the cache directory if it doesn't exist
       #
-      # @param cache_dir [Pathname, String] path to the cache directory
+      # @param cache_dir [Pathname] path to the cache directory
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
       # @param max_file_size [Integer, nil] maximum file size in bytes (nil for unlimited)
       def initialize(cache_dir, ttl: nil, max_file_size: nil, logger: nil)
         super(logger:)
-        @cache_dir = Pathname(cache_dir)
+        @cache_dir = cache_dir
         @ttl = ttl
         @max_file_size = max_file_size
         @cache_dir.mkpath
@@ -98,7 +98,7 @@ module Factorix
       # If the file size exceeds max_file_size, skips caching and returns false.
       #
       # @param key [String] cache key to store under
-      # @param src [Pathname, String] path of the file to store
+      # @param src [Pathname] path of the file to store
       # @return [Boolean] true if cached successfully, false if skipped due to size limit
       def store(key, src)
         file_size = File.size(src)

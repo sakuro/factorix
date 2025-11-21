@@ -87,7 +87,7 @@ module Factorix
       # Complete upload (works for both publish and update scenarios)
       #
       # @param upload_url [URI::HTTPS] the upload URL from init_publish or init_upload
-      # @param file_path [Pathname, String] path to mod zip file
+      # @param file_path [Pathname] path to mod zip file
       # @param metadata [Hash] optional metadata (only used for init_publish)
       # @option metadata [String] :description Markdown description
       # @option metadata [String] :category Mod category
@@ -98,7 +98,6 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       def finish_upload(upload_url, file_path, **metadata)
         validate_metadata!(metadata, ALLOWED_UPLOAD_METADATA, "finish_upload")
-        file_path = Pathname(file_path) unless file_path.is_a?(Pathname)
 
         logger.info("Uploading mod file", file: file_path.to_s, metadata_count: metadata.size)
 
@@ -168,8 +167,6 @@ module Factorix
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def finish_image_upload(upload_url, image_file)
-        image_file = Pathname(image_file) unless image_file.is_a?(Pathname)
-
         logger.info("Uploading image file", file: image_file.to_s)
 
         response = uploader.upload(upload_url, image_file)

@@ -28,7 +28,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       it "stores response in cache" do
         api.get_mods
-        expect(cache).to have_received(:store).with("cache_key", kind_of(String))
+        expect(cache).to have_received(:store).with("cache_key", kind_of(Pathname))
       end
     end
 

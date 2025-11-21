@@ -95,12 +95,6 @@ RSpec.describe Factorix::API::MODManagementAPI do
       )
     end
 
-    it "accepts String file path" do
-      api.finish_upload(upload_url, "/tmp/my-mod_1.0.0.zip")
-
-      expect(uploader).to have_received(:upload)
-    end
-
     it "rejects invalid metadata keys" do
       expect {
         api.finish_upload(upload_url, file_path, invalid_key: "value", another_bad: "test")
@@ -230,15 +224,6 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
       expect(uploader).to have_received(:upload).with(upload_url, image_file)
       expect(result).to eq(response_data)
-    end
-
-    it "accepts String file path" do
-      response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
-      allow(uploader).to receive(:upload).and_return(response)
-
-      api.finish_image_upload(upload_url, "/tmp/screenshot.png")
-
-      expect(uploader).to have_received(:upload)
     end
 
     it "raises HTTPError for invalid JSON response" do

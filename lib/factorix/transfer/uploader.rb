@@ -26,7 +26,7 @@ module Factorix
       # Upload a file to the given URL with optional form fields
       #
       # @param url [URI::HTTPS, String] URL to upload to (HTTPS only)
-      # @param file_path [Pathname, String] path to the file to upload
+      # @param file_path [Pathname] path to the file to upload
       # @param field_name [String] form field name for the file (default: "file")
       # @param fields [Hash<String, String>] additional form fields (e.g., metadata)
       # @return [void]
@@ -41,7 +41,6 @@ module Factorix
           raise ArgumentError, "URL must be HTTPS"
         end
 
-        file_path = Pathname(file_path)
         unless file_path.exist?
           logger.error("File does not exist", path: file_path.to_s)
           raise ArgumentError, "File does not exist: #{file_path}"

@@ -60,7 +60,7 @@ module Factorix
 
       # Extract from zip file
       #
-      # @param zip_path [Pathname, String] path to mod zip file
+      # @param zip_path [Pathname] path to mod zip file
       # @return [InfoJSON] parsed info.json from zip
       # @raise [ArgumentError] if zip is invalid or info.json not found
       def self.from_zip(zip_path)

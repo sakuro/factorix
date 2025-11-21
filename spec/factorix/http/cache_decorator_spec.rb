@@ -138,8 +138,8 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
 
         expect(cache).to have_received(:store) do |key, path|
           expect(key).to eq(cache_key)
-          expect(path).to be_a(String)
-          expect(File.exist?(path)).to be false # Temp file should be cleaned up
+          expect(path).to be_a(Pathname)
+          expect(path.exist?).to be false # Temp file should be cleaned up
         end
       end
 

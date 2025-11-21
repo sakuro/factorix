@@ -138,7 +138,7 @@ module Factorix
         begin
           temp_file.write(data)
           temp_file.close
-          cache.store(key, temp_file.path)
+          cache.store(key, Pathname(temp_file.path))
           logger.debug("Stored API response in cache", key:)
         ensure
           temp_file.unlink

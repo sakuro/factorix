@@ -79,7 +79,7 @@ module Factorix
             with_temporary_file do |temp|
               temp.write(response.body)
               temp.close
-              cache.store(key, temp.path)
+              cache.store(key, Pathname(temp.path))
             end
           end
 
