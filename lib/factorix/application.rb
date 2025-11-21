@@ -68,12 +68,13 @@ module Factorix
       )
     end
 
-    # Register API cache
+    # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
       Cache::FileSystem.new(
         config.cache.api.dir,
         ttl: config.cache.api.ttl,
-        max_file_size: config.cache.api.max_file_size
+        max_file_size: config.cache.api.max_file_size,
+        compression_threshold: 0
       )
     end
 

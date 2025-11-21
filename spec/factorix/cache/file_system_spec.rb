@@ -33,6 +33,11 @@ RSpec.describe Factorix::Cache::FileSystem do
       cache_with_limit = Factorix::Cache::FileSystem.new(cache_dir, max_file_size: 1024 * 1024)
       expect(cache_with_limit).to be_a(Factorix::Cache::FileSystem)
     end
+
+    it "accepts compression_threshold parameter" do
+      cache_with_compression = Factorix::Cache::FileSystem.new(cache_dir, compression_threshold: 0)
+      expect(cache_with_compression).to be_a(Factorix::Cache::FileSystem)
+    end
   end
 
   describe "#key_for" do
@@ -119,6 +124,18 @@ RSpec.describe Factorix::Cache::FileSystem do
         expect(output_file).not_to exist
       end
     end
+
+    context "with compressed cache entry" do
+      before do
+        cache_path.dirname.mkpath
+        cache_path.binwrite(Zlib.deflate("compressed content"))
+      end
+
+      it "decompresses the data when fetching" do
+        expect(cache.fetch(key, output_file)).to be true
+        expect(output_file.read).to eq("compressed content")
+      end
+    end
   end
 
   describe "#read" do
@@ -159,6 +176,25 @@ RSpec.describe Factorix::Cache::FileSystem do
       it "returns nil for expired cache" do
         FileUtils.touch(cache_path, mtime: Time.now - 20)
         expect(cache.read(key)).to be_nil
+      end
+    end
+
+    context "with compressed cache entry" do
+      before do
+        cache_path.dirname.mkpath
+        cache_path.binwrite(Zlib.deflate("compressed content"))
+      end
+
+      it "decompresses the data when reading" do
+        content = cache.read(key)
+        expect(content).to eq("compressed content")
+      end
+
+      it "applies the specified encoding after decompression" do
+        cache_path.binwrite(Zlib.deflate("日本語コンテンツ"))
+        content = cache.read(key, encoding: Encoding::UTF_8)
+        expect(content).to eq("日本語コンテンツ")
+        expect(content.encoding).to eq(Encoding::UTF_8)
       end
     end
   end
@@ -207,6 +243,74 @@ RSpec.describe Factorix::Cache::FileSystem do
         expect(cache_path).not_to exist
 
         FileUtils.remove_entry(large_file.dirname)
+      end
+    end
+
+    context "with compression_threshold: 0 (always compress)" do
+      let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, compression_threshold: 0) }
+
+      it "stores compressed data" do
+        expect(cache.store(key, source_file)).to be true
+        expect(cache_path).to exist
+
+        # Verify the stored data is zlib-compressed (starts with 0x78)
+        stored_data = cache_path.binread
+        expect(stored_data.getbyte(0)).to eq(0x78)
+      end
+
+      it "stores data smaller than original" do
+        # Create a file with repetitive content that compresses well
+        compressible_file = Pathname(Dir.mktmpdir("compress")).join("data.txt")
+        File.write(compressible_file, "a" * 1000)
+
+        cache.store(key, compressible_file)
+
+        expect(cache_path.size).to be < 1000
+
+        FileUtils.remove_entry(compressible_file.dirname)
+      end
+    end
+
+    context "with compression_threshold: N (compress if >= N bytes)" do
+      let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, compression_threshold: 100) }
+
+      it "compresses files meeting the threshold" do
+        large_file = Pathname(Dir.mktmpdir("large")).join("large.txt")
+        File.write(large_file, "a" * 200)
+
+        cache.store(key, large_file)
+
+        stored_data = cache_path.binread
+        expect(stored_data.getbyte(0)).to eq(0x78)
+
+        FileUtils.remove_entry(large_file.dirname)
+      end
+
+      it "does not compress files below the threshold" do
+        small_file = Pathname(Dir.mktmpdir("small")).join("small.txt")
+        File.write(small_file, "small data")
+
+        cache.store(key, small_file)
+
+        stored_data = cache_path.binread
+        expect(stored_data).to eq("small data")
+
+        FileUtils.remove_entry(small_file.dirname)
+      end
+    end
+
+    context "with max_file_size and compression" do
+      let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, max_file_size: 50, compression_threshold: 0) }
+
+      it "uses compressed size for max_file_size check" do
+        # Create a file that exceeds 50 bytes uncompressed but compresses to under 50
+        compressible_file = Pathname(Dir.mktmpdir("compress")).join("data.txt")
+        File.write(compressible_file, "a" * 200)
+
+        expect(cache.store(key, compressible_file)).to be true
+        expect(cache_path).to exist
+
+        FileUtils.remove_entry(compressible_file.dirname)
       end
     end
   end

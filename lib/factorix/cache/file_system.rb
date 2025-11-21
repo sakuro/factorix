@@ -3,6 +3,7 @@
 require "digest"
 require "fileutils"
 require "pathname"
+require "zlib"
 
 module Factorix
   module Cache
@@ -22,19 +23,27 @@ module Factorix
       LOCK_FILE_LIFETIME = 3600 # 1 hour in seconds
       public_constant :LOCK_FILE_LIFETIME
 
+      # zlib CMF byte indicating DEFLATE compression with default window size.
+      # Used to detect if cached data is zlib-compressed
+      ZLIB_CMF_BYTE = 0x78
+      private_constant :ZLIB_CMF_BYTE
+
       # Initialize a new file system cache storage.
       # Creates the cache directory if it doesn't exist
       #
       # @param cache_dir [Pathname] path to the cache directory
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
       # @param max_file_size [Integer, nil] maximum file size in bytes (nil for unlimited)
-      def initialize(cache_dir, ttl: nil, max_file_size: nil, logger: nil)
+      # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
+      #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
+      def initialize(cache_dir, ttl: nil, max_file_size: nil, compression_threshold: nil, logger: nil)
         super(logger:)
         @cache_dir = cache_dir
         @ttl = ttl
         @max_file_size = max_file_size
+        @compression_threshold = compression_threshold
         @cache_dir.mkpath
-        logger.info("Initializing cache", dir: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size)
+        logger.info("Initializing cache", dir: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size, compression_threshold: @compression_threshold)
       end
 
       # Generate a cache key for the given URL string.
@@ -57,7 +66,8 @@ module Factorix
       end
 
       # Fetch a cached file and copy it to the output path.
-      # If the cache entry doesn't exist or is expired, returns false without modifying the output path
+      # If the cache entry doesn't exist or is expired, returns false without modifying the output path.
+      # Automatically decompresses zlib-compressed cache entries.
       #
       # @param key [String] cache key to fetch
       # @param output [Pathname] path to copy the cached file to
@@ -74,13 +84,20 @@ module Factorix
           return false
         end
 
-        FileUtils.cp(path, output)
+        data = path.binread
+        if zlib_compressed?(data)
+          data = Zlib.inflate(data)
+          output.binwrite(data)
+        else
+          FileUtils.cp(path, output)
+        end
         logger.debug("Cache hit", key:)
         true
       end
 
       # Read a cached file as a string.
-      # If the cache entry doesn't exist or is expired, returns nil
+      # If the cache entry doesn't exist or is expired, returns nil.
+      # Automatically decompresses zlib-compressed cache entries.
       #
       # @param key [String] cache key to read
       # @param encoding [Encoding, String] encoding to use (default: ASCII-8BIT for binary)
@@ -90,29 +107,39 @@ module Factorix
         return nil unless path.exist?
         return nil if expired?(key)
 
-        path.read(encoding:)
+        data = path.binread
+        data = Zlib.inflate(data) if zlib_compressed?(data)
+        data.force_encoding(encoding)
       end
 
       # Store a file in the cache.
-      # Creates necessary subdirectories and copies the source file to the cache.
-      # If the file size exceeds max_file_size, skips caching and returns false.
+      # Creates necessary subdirectories and stores the file in the cache.
+      # Optionally compresses data based on compression_threshold setting.
+      # If the (possibly compressed) size exceeds max_file_size, skips caching and returns false.
       #
       # @param key [String] cache key to store under
       # @param src [Pathname] path of the file to store
       # @return [Boolean] true if cached successfully, false if skipped due to size limit
       def store(key, src)
-        file_size = File.size(src)
+        data = src.binread
+        original_size = data.bytesize
 
-        # Skip caching if file exceeds size limit
-        if @max_file_size && file_size > @max_file_size
-          logger.warn("File size exceeds cache limit, skipping", size_bytes: file_size, limit_bytes: @max_file_size)
+        # Compress if enabled and data meets threshold
+        if should_compress?(original_size)
+          data = Zlib.deflate(data)
+          logger.debug("Compressed data", original_size:, compressed_size: data.bytesize)
+        end
+
+        # Skip caching if (compressed) size exceeds limit
+        if @max_file_size && data.bytesize > @max_file_size
+          logger.warn("File size exceeds cache limit, skipping", size_bytes: data.bytesize, limit_bytes: @max_file_size)
           return false
         end
 
         path = cache_path_for(key)
         path.dirname.mkpath
-        FileUtils.cp(src, path)
-        logger.debug("Stored in cache", key:, size_bytes: file_size)
+        path.binwrite(data)
+        logger.debug("Stored in cache", key:, size_bytes: data.bytesize)
         true
       end
 
@@ -231,6 +258,24 @@ module Factorix
       # @return [Pathname] path to the lock file
       private def lock_path_for(key)
         cache_path_for(key).sub_ext(".lock")
+      end
+
+      # Check if data should be compressed based on compression_threshold setting.
+      #
+      # @param size [Integer] data size in bytes
+      # @return [Boolean] true if data should be compressed
+      private def should_compress?(size)
+        return false if @compression_threshold.nil?
+
+        size >= @compression_threshold
+      end
+
+      # Check if data is zlib-compressed by examining the CMF byte.
+      #
+      # @param data [String] binary data to check
+      # @return [Boolean] true if data appears to be zlib-compressed
+      private def zlib_compressed?(data)
+        data.bytesize >= 2 && data.getbyte(0) == ZLIB_CMF_BYTE
       end
 
       # Remove lock file if it exists and is older than LOCK_FILE_LIFETIME.
