@@ -270,12 +270,18 @@ module Factorix
         size >= @compression_threshold
       end
 
-      # Check if data is zlib-compressed by examining the CMF byte.
+      # Check if data is zlib-compressed by examining the CMF and FLG bytes.
+      # zlib header consists of CMF (byte 0) and FLG (byte 1) where
+      # (CMF * 256 + FLG) % 31 must equal 0.
       #
       # @param data [String] binary data to check
       # @return [Boolean] true if data appears to be zlib-compressed
       private def zlib_compressed?(data)
-        data.bytesize >= 2 && data.getbyte(0) == ZLIB_CMF_BYTE
+        return false if data.bytesize < 2
+
+        cmf = data.getbyte(0)
+        flg = data.getbyte(1)
+        cmf == ZLIB_CMF_BYTE && ((cmf << 8) | flg) % 31 == 0
       end
 
       # Remove lock file if it exists and is older than LOCK_FILE_LIFETIME.
