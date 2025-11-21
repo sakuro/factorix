@@ -28,9 +28,9 @@ module Factorix
         EMOJI_PREFIXES = {
           success: "\u{2713}",       # CHECK MARK
           info: "\u{2139}",          # INFORMATION SOURCE
-          warn: "\u{26A0}\u{FE0F}",  # WARNING SIGN (with emoji presentation)
-          error: "\u{274C}",         # CROSS MARK
-          fatal: "\u{1F4A5}"         # COLLISION SYMBOL (explosion)
+          warn: "\u{26A0}\u{FE0E}",  # WARNING SIGN (text presentation)
+          error: "\u{2717}",         # BALLOT X
+          fatal: "\u{2620}\u{FE0E}"  # SKULL AND CROSSBONES (text presentation)
         }.freeze
         private_constant :EMOJI_PREFIXES
 
