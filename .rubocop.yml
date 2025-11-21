@@ -72,10 +72,6 @@ Metrics/PerceivedComplexity:
     - lib/factorix/cli/commands/mod/uninstall.rb
     - lib/factorix/cli/commands/mod/sync.rb
 
-Metrics/ParameterLists:
-  Exclude:
-    - lib/factorix/cli/commands/mod/enable.rb
-
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb
