@@ -216,14 +216,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "raises error when used with MOD names" do
-        expect { command.call(mod_names: ["mod-a"], all: true, yes: true) }
+        expect { capture_stdout { command.call(mod_names: ["mod-a"], all: true, yes: true) } }
           .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
       end
     end
 
     context "without MOD names or --all option" do
       it "raises error" do
-        expect { command.call(yes: true) }
+        expect { capture_stdout { command.call(yes: true) } }
           .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
       end
     end
