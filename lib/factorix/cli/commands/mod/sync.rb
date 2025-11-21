@@ -100,7 +100,7 @@ module Factorix
           private def plan_installation(mods_to_install, graph, jobs)
             # Create progress presenter for info fetching
             presenter = Progress::Presenter.new(
-              title: "🔎 Fetching MOD info",
+              title: "\u{1F50D}\u{FE0E} Fetching MOD info",
               output: $stderr
             )
 
@@ -212,7 +212,7 @@ module Factorix
           private def download_mods(targets, jobs)
             # Set up multi-progress presenter
             multi_presenter = Progress::MultiPresenter.new(
-              title: "📥 Downloads"
+              title: "\u{1F4E5}\u{FE0E} Downloads"
             )
 
             # Use thread pool for controlled parallelism
