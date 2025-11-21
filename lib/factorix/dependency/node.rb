@@ -54,7 +54,7 @@ module Factorix
         state_flags << "op:#{@operation}" if @operation
 
         state = state_flags.empty? ? "new" : state_flags.join(", ")
-        "#{@mod.name} v#{@version} (#{state})"
+        "#{@mod} v#{@version} (#{state})"
       end
 
       # Detailed inspection string

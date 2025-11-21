@@ -74,7 +74,7 @@ module Factorix
       # @return [String]
       def to_s
         requirement_str = @version_requirement ? " #{@version_requirement}" : ""
-        "#{@from_mod.name} --[#{@type}#{requirement_str}]--> #{@to_mod.name}"
+        "#{@from_mod} --[#{@type}#{requirement_str}]--> #{@to_mod}"
       end
 
       # Detailed inspection string

@@ -34,7 +34,7 @@ module Factorix
 
             # String representation of the uninstall target
             # @return [String] MOD name with optional version (e.g., "mod-a@1.0.0" or "mod-a")
-            def to_s = versioned? ? "#{mod.name}@#{version}" : mod.name
+            def to_s = versioned? ? "#{mod}@#{version}" : mod.to_s
           }
           # Execute the uninstall command
           #
@@ -151,11 +151,11 @@ module Factorix
 
             # Check if base/expansion
             raise Error, "Cannot uninstall base MOD" if mod.base?
-            raise Error, "Cannot uninstall expansion MOD: #{mod.name}" if mod.expansion?
+            raise Error, "Cannot uninstall expansion MOD: #{mod}" if mod.expansion?
 
             # Check if installed
             unless graph.node?(mod)
-              say "MOD not installed: #{mod.name}", prefix: :warn
+              say "MOD not installed: #{mod}", prefix: :warn
               logger.debug("MOD not installed", mod_name: mod.name)
               return nil
             end
@@ -220,10 +220,9 @@ module Factorix
 
             return if unsatisfied_dependents.empty?
 
-            dependent_names = unsatisfied_dependents.uniq.map!(&:name)
             raise Error,
               "Cannot uninstall #{target}: " \
-              "the following enabled MODs depend on it: #{dependent_names.join(", ")}"
+              "the following enabled MODs depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
           end
 
           # Find all enabled MODs that have a required dependency on the given MOD
@@ -273,7 +272,7 @@ module Factorix
 
             say "\nExpansion MODs to be disabled:"
             expansions_to_disable.each do |mod|
-              say "  - #{mod.name}"
+              say "  - #{mod}"
             end
           end
 
@@ -319,7 +318,7 @@ module Factorix
 
               if should_remove_from_list && mod_list.exist?(mod)
                 mod_list.remove(mod)
-                say "Removed #{mod.name} from mod-list.json", prefix: :success
+                say "Removed #{mod} from mod-list.json", prefix: :success
               end
             end
           end
@@ -336,7 +335,7 @@ module Factorix
               next unless mod_list.exist?(mod) && mod_list.enabled?(mod)
 
               mod_list.disable(mod)
-              say "Disabled expansion MOD: #{mod.name}", prefix: :success
+              say "Disabled expansion MOD: #{mod}", prefix: :success
               logger.info("Disabled expansion MOD", mod_name: mod.name)
             end
           end

@@ -25,7 +25,7 @@ module Factorix
       # @raise [ArgumentError] if a node for this MOD already exists
       def add_node(node)
         mod = node.mod
-        raise ArgumentError, "Node for #{mod.name} already exists" if @nodes.key?(mod)
+        raise ArgumentError, "Node for #{mod} already exists" if @nodes.key?(mod)
 
         @nodes[mod] = node
         @edges[mod] ||= []
@@ -38,7 +38,7 @@ module Factorix
       # @raise [ArgumentError] if from_mod node doesn't exist
       def add_edge(edge)
         from_mod = edge.from_mod
-        raise ArgumentError, "Node for #{from_mod.name} doesn't exist" unless @nodes.key?(from_mod)
+        raise ArgumentError, "Node for #{from_mod} doesn't exist" unless @nodes.key?(from_mod)
 
         @edges[from_mod] ||= []
         @edges[from_mod] << edge
@@ -190,7 +190,7 @@ module Factorix
       #
       # @return [String]
       def inspect
-        node_list = @nodes.values.map(&:to_s).join(", ")
+        node_list = @nodes.values.join(", ")
         "#<#{self.class.name} [#{node_list}]>"
       end
     end

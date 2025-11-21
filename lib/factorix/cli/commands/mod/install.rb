@@ -252,7 +252,7 @@ module Factorix
 
                 unless release
                   # Skip dependencies without compatible releases (e.g., all releases have invalid versions)
-                  logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): No compatible release found")
+                  logger.warn("Skipping dependency #{dep[:mod]} (required by #{dep[:required_by]}): No compatible release found")
                   presenter.update
                   next nil
                 end
@@ -266,12 +266,12 @@ module Factorix
                 }
               rescue HTTPClientError => e
                 # Skip dependencies that cannot be found (404, etc.)
-                logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): #{e.message}")
+                logger.warn("Skipping dependency #{dep[:mod]} (required by #{dep[:required_by]}): #{e.message}")
                 presenter.update
                 nil
               rescue JSON::ParserError
                 # Skip dependencies with invalid/empty API responses
-                logger.warn("Skipping dependency #{dep[:mod].name} (required by #{dep[:required_by]}): Invalid API response")
+                logger.warn("Skipping dependency #{dep[:mod]} (required by #{dep[:required_by]}): Invalid API response")
                 presenter.update
                 nil
               end
@@ -319,7 +319,7 @@ module Factorix
 
               logger.error("Circular dependency detected. Cycles found:")
               cycles.each do |cycle|
-                logger.error("  Cycle: #{cycle.map(&:name).join(" <-> ")}")
+                logger.error("  Cycle: #{cycle.join(" <-> ")}")
               end
 
               raise Error, "Circular dependency detected in MODs to install"
@@ -336,7 +336,7 @@ module Factorix
                 target_node = graph.node(edge.to_mod)
                 if target_node&.enabled?
                   raise Error,
-                    "Cannot install #{node.mod.name}: it conflicts with enabled MOD #{edge.to_mod.name}"
+                    "Cannot install #{node.mod}: it conflicts with enabled MOD #{edge.to_mod}"
                 end
               end
             end
@@ -358,7 +358,7 @@ module Factorix
             sorted_mods.filter_map {|mod|
               info = all_mod_infos[mod.name]
               unless info
-                logger.warn("No info found for #{mod.name}, skipping")
+                logger.warn("No info found for #{mod}, skipping")
                 next nil
               end
 
@@ -381,7 +381,7 @@ module Factorix
           private def show_plan(targets)
             say "Planning to install #{targets.size} MOD(s):"
             targets.each do |target|
-              say "  - #{target[:mod].name}@#{target[:release].version} (#{target[:category].name})"
+              say "  - #{target[:mod]}@#{target[:release].version} (#{target[:category].name})"
             end
           end
 
@@ -403,12 +403,12 @@ module Factorix
               if mod_list.exist?(mod)
                 unless mod_list.enabled?(mod)
                   mod_list.enable(mod)
-                  say "Enabled #{mod.name} in mod-list.json", prefix: :success
+                  say "Enabled #{mod} in mod-list.json", prefix: :success
                   logger.debug("Enabled in mod-list.json", mod_name: mod.name)
                 end
               else
                 mod_list.add(mod, enabled: true)
-                say "Added #{mod.name} to mod-list.json", prefix: :success
+                say "Added #{mod} to mod-list.json", prefix: :success
                 logger.debug("Added to mod-list.json", mod_name: mod.name)
               end
             end

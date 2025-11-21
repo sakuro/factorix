@@ -77,7 +77,7 @@ module Factorix
         unless dependency_node
           result.add_error(
             type: ValidationResult::MISSING_DEPENDENCY,
-            message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' which is not installed",
+            message: "MOD '#{node.mod}@#{node.version}' requires '#{edge.to_mod}' which is not installed",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -88,7 +88,7 @@ module Factorix
         unless dependency_node.enabled?
           result.add_error(
             type: ValidationResult::DISABLED_DEPENDENCY,
-            message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' which is not enabled",
+            message: "MOD '#{node.mod}@#{node.version}' requires '#{edge.to_mod}' which is not enabled",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -100,7 +100,7 @@ module Factorix
 
         result.add_error(
           type: ValidationResult::VERSION_MISMATCH,
-          message: "MOD '#{node.mod.name}@#{node.version}' requires '#{edge.to_mod.name}' version " \
+          message: "MOD '#{node.mod}@#{node.version}' requires '#{edge.to_mod}' version " \
                    "#{edge.version_requirement}, but version #{dependency_node.version} is installed",
           mod: node.mod,
           dependency: edge.to_mod
@@ -129,7 +129,7 @@ module Factorix
 
           result.add_error(
             type: ValidationResult::CONFLICT,
-            message: "MOD '#{node.mod.name}@#{node.version}' conflicts with '#{edge.to_mod.name}@#{conflict_node.version}' but both are enabled",
+            message: "MOD '#{node.mod}@#{node.version}' conflicts with '#{edge.to_mod}@#{conflict_node.version}' but both are enabled",
             mod: node.mod,
             dependency: edge.to_mod
           )
@@ -151,7 +151,7 @@ module Factorix
 
           result.add_warning(
             type: ValidationResult::MOD_IN_LIST_NOT_INSTALLED,
-            message: "MOD '#{mod.name}' in mod-list.json is not installed",
+            message: "MOD '#{mod}' in mod-list.json is not installed",
             mod:
           )
         end
@@ -164,7 +164,7 @@ module Factorix
 
           result.add_warning(
             type: ValidationResult::MOD_INSTALLED_NOT_IN_LIST,
-            message: "MOD '#{node.mod.name}' is installed but not in mod-list.json",
+            message: "MOD '#{node.mod}' is installed but not in mod-list.json",
             mod: node.mod
           )
         end
@@ -186,7 +186,7 @@ module Factorix
           next unless edge.satisfied_by?(installed_mod.version)
 
           result.add_suggestion(
-            message: "MOD '#{edge.to_mod.name}' version #{installed_mod.version} is installed and would satisfy this requirement",
+            message: "MOD '#{edge.to_mod}' version #{installed_mod.version} is installed and would satisfy this requirement",
             mod: edge.to_mod,
             version: installed_mod.version
           )

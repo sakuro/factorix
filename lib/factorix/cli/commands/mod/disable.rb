@@ -72,7 +72,7 @@ module Factorix
 
               # Check if MOD exists in graph (is installed)
               unless graph.node?(mod)
-                say "MOD not installed, skipping: #{mod.name}", prefix: :warn
+                say "MOD not installed, skipping: #{mod}", prefix: :warn
                 logger.debug("MOD not installed", mod_name: mod.name)
               end
             end
@@ -164,7 +164,7 @@ module Factorix
 
             say "Planning to disable #{mods_to_disable.size} MOD(s):"
             mods_to_disable.each do |mod|
-              say "  - #{mod.name}"
+              say "  - #{mod}"
             end
           end
 
@@ -178,7 +178,7 @@ module Factorix
 
             mods_to_disable.each do |mod|
               mod_list.disable(mod)
-              say "Disabled #{mod.name}", prefix: :success
+              say "Disabled #{mod}", prefix: :success
               logger.debug("Disabled MOD", mod_name: mod.name)
             end
           end

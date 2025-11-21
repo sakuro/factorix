@@ -190,7 +190,7 @@ module Factorix
           private def show_install_plan(targets)
             say "Planning to install #{targets.size} MOD(s):"
             targets.each do |target|
-              say "  - #{target[:mod].name}@#{target[:release].version} (#{target[:category].name})"
+              say "  - #{target[:mod]}@#{target[:release].version} (#{target[:category].name})"
             end
           end
 
@@ -271,7 +271,7 @@ module Factorix
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)
-                say "Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)", prefix: :warn
+                say "Disabled #{conflicting_mod} (conflicts with #{mod} from save file)", prefix: :warn
                 logger.debug("Disabled conflicting MOD", mod_name: conflicting_mod.name, conflicts_with: mod.name)
               end
 
@@ -285,7 +285,7 @@ module Factorix
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)
-                say "Disabled #{conflicting_mod.name} (conflicts with #{mod.name} from save file)", prefix: :warn
+                say "Disabled #{conflicting_mod} (conflicts with #{mod} from save file)", prefix: :warn
                 logger.debug("Disabled conflicting MOD", mod_name: conflicting_mod.name, conflicts_with: mod.name)
               end
             end
