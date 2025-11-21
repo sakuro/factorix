@@ -74,8 +74,8 @@ Metrics/PerceivedComplexity:
 
 Naming/PredicateMethod:
   Exclude:
-    - lib/factorix/cache/file_system.rb
-    - lib/factorix/ser_des/deserializer.rb
+    - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
+    - lib/factorix/ser_des/deserializer.rb # read_bool follows binary deserialization naming convention
 
 Naming/VariableNumber:
   AllowedPatterns:
