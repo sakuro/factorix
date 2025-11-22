@@ -76,6 +76,7 @@ Metrics/PerceivedComplexity:
     - lib/factorix/installed_mod.rb
     - lib/factorix/cli/commands/mod/enable.rb
     - lib/factorix/cli/commands/mod/install.rb
+    - lib/factorix/cli/commands/mod/list.rb
     - lib/factorix/cli/commands/mod/uninstall.rb
     - lib/factorix/cli/commands/mod/sync.rb
 

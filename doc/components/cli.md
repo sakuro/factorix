@@ -138,6 +138,31 @@ Error: Cannot uninstall some-library-mod
   - Uninstall these mods first, or disable them
 ```
 
+### MOD::List
+
+List installed MODs with their status.
+
+```bash
+factorix mod list
+factorix mod list --enabled
+factorix mod list --disabled
+factorix mod list --outdated
+factorix mod list --json
+```
+
+**Options**:
+- `--enabled` - Show only enabled MODs
+- `--disabled` - Show only disabled MODs
+- `--errors` - Show only MODs with dependency errors
+- `--outdated` - Show only MODs with available updates (includes LATEST column)
+- `--json` - Output in JSON format
+
+**Output**: Table format by default with NAME, VERSION, STATUS columns. When using `--outdated`, an additional LATEST column shows available update versions.
+
+**Sort order**: base MOD first, then expansion MODs (alphabetically), then other MODs (alphabetically)
+
+**Use case**: Review installed MODs and their status before launching the game
+
 ### MOD::Publish
 
 Publish and upload MODs.

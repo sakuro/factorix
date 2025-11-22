@@ -1,0 +1,30 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class CLI
+    module Commands
+      module MOD
+        class List < Base
+          attr_reader logger: Dry::Logger::Dispatcher
+          attr_reader runtime: Runtime
+          attr_reader mod_portal_api: API::MODPortalAPI
+
+          def call: (?enabled: bool, ?disabled: bool, ?errors: bool, ?outdated: bool, ?json: bool) -> void
+
+          class MODInfo
+            attr_reader name: String
+            attr_reader version: Types::MODVersion
+            attr_reader enabled: bool
+            attr_reader error: String?
+            attr_reader latest_version: Types::MODVersion?
+
+            def status: () -> String
+            def outdated?: () -> bool
+          end
+        end
+      end
+    end
+  end
+end
