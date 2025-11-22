@@ -196,15 +196,22 @@ module Factorix
           # @param mod_infos [Array<MODInfo>] MOD info list
           # @return [Array<MODInfo>] MOD info list with latest versions
           private def fetch_latest_versions(mod_infos)
+            # Separate base/expansion from regular MODs
+            base_and_expansions, regular_mods = mod_infos.partition {|info|
+              mod = Factorix::MOD[name: info.name]
+              mod.base? || mod.expansion?
+            }
+
+            # Only show progress for MODs that need API calls
             presenter = Progress::Presenter.new(
               title: "\u{1F50D}\u{FE0E} Checking for updates",
               output: $stderr
             )
-            presenter.start(total: mod_infos.size)
+            presenter.start(total: regular_mods.size)
 
             pool = Concurrent::FixedThreadPool.new(DEFAULT_JOBS)
 
-            futures = mod_infos.map {|info|
+            futures = regular_mods.map {|info|
               Concurrent::Future.execute(executor: pool) do
                 result = fetch_latest_version_for_mod(info)
                 presenter.update
@@ -214,7 +221,9 @@ module Factorix
 
             results = futures.map(&:value!)
             presenter.finish
-            results
+
+            # Combine base/expansion (unchanged) with fetched results
+            base_and_expansions + results
           ensure
             pool&.shutdown
             pool&.wait_for_termination
@@ -225,10 +234,6 @@ module Factorix
           # @param info [MODInfo] MOD info
           # @return [MODInfo] MOD info with latest version
           private def fetch_latest_version_for_mod(info)
-            # Skip base and expansion (they don't have portal entries)
-            mod = Factorix::MOD[name: info.name]
-            return info if mod.base? || mod.expansion?
-
             portal_info = mod_portal_api.get_mod(info.name)
             latest = portal_info[:releases]&.map {|r| Types::MODVersion.from_string(r[:version]) }&.max
             MODInfo.new(
