@@ -187,33 +187,60 @@ module Factorix
             mod_infos
           end
 
+          # Default number of parallel jobs for fetching latest versions
+          DEFAULT_JOBS = 4
+          private_constant :DEFAULT_JOBS
+
           # Fetch latest versions from portal for outdated check
           #
           # @param mod_infos [Array<MODInfo>] MOD info list
           # @return [Array<MODInfo>] MOD info list with latest versions
           private def fetch_latest_versions(mod_infos)
-            mod_infos.map do |info|
-              # Skip base and expansion (they don't have portal entries)
-              mod = Factorix::MOD[name: info.name]
-              if mod.base? || mod.expansion?
-                info
-              else
-                begin
-                  portal_info = mod_portal_api.get_mod(info.name)
-                  latest = portal_info[:releases]&.map {|r| Types::MODVersion.from_string(r[:version]) }&.max
-                  MODInfo.new(
-                    name: info.name,
-                    version: info.version,
-                    enabled: info.enabled,
-                    error: info.error,
-                    latest_version: latest
-                  )
-                rescue MODNotOnPortalError
-                  logger.debug("MOD not found on portal", mod: info.name)
-                  info
-                end
+            presenter = Progress::Presenter.new(
+              title: "\u{1F50D}\u{FE0E} Checking for updates",
+              output: $stderr
+            )
+            presenter.start(total: mod_infos.size)
+
+            pool = Concurrent::FixedThreadPool.new(DEFAULT_JOBS)
+
+            futures = mod_infos.map {|info|
+              Concurrent::Future.execute(executor: pool) do
+                result = fetch_latest_version_for_mod(info)
+                presenter.update
+                result
               end
-            end
+            }
+
+            results = futures.map(&:value!)
+            presenter.finish
+            results
+          ensure
+            pool&.shutdown
+            pool&.wait_for_termination
+          end
+
+          # Fetch latest version for a single MOD
+          #
+          # @param info [MODInfo] MOD info
+          # @return [MODInfo] MOD info with latest version
+          private def fetch_latest_version_for_mod(info)
+            # Skip base and expansion (they don't have portal entries)
+            mod = Factorix::MOD[name: info.name]
+            return info if mod.base? || mod.expansion?
+
+            portal_info = mod_portal_api.get_mod(info.name)
+            latest = portal_info[:releases]&.map {|r| Types::MODVersion.from_string(r[:version]) }&.max
+            MODInfo.new(
+              name: info.name,
+              version: info.version,
+              enabled: info.enabled,
+              error: info.error,
+              latest_version: latest
+            )
+          rescue MODNotOnPortalError
+            logger.debug("MOD not found on portal", mod: info.name)
+            info
           end
 
           # Sort MODs: base -> expansion (alphabetically) -> others (alphabetically)

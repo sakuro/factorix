@@ -21,6 +21,9 @@
 # SimpleCov
 /coverage/
 
+# StackProf
+*.dump
+
 # YARD
 /.yardoc
 ## Generated API docs (specified in .yardopts)

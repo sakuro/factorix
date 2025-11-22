@@ -168,6 +168,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         allow(mod_portal_api).to receive(:get_mod).with("another-mod").and_return({
           releases: [{version: "0.5.0"}]
         })
+
+        # Stub Progress::Presenter to avoid tty-progressbar issues in parallel test environment
+        presenter = instance_double(Factorix::Progress::Presenter, start: nil, update: nil, finish: nil)
+        allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
       end
 
       it "shows only MODs with available updates" do
