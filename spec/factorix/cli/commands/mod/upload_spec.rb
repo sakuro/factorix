@@ -4,6 +4,8 @@ require "tmpdir"
 require "zip"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Upload do
+  include_context "with suppressed output"
+
   let(:portal) { instance_double(Factorix::Portal) }
   let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
   let(:uploader) { instance_double(Factorix::Transfer::Uploader) }

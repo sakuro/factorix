@@ -3,6 +3,8 @@
 require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
+  include_context "with suppressed output"
+
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }

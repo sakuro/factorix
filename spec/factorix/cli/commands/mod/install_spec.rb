@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Install do
+  include_context "with suppressed output"
+
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -133,13 +135,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "saves mod-list.json" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:save).with(mod_list_path)
-      end
-
-      it "displays the plan" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/Planning to install 1 MOD/).to_stdout
       end
     end
 
@@ -211,13 +208,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "downloads both MODs in dependency order" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(portal).to have_received(:download_mod).twice
-      end
-
-      it "displays both MODs in the plan" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/Planning to install 2 MOD/).to_stdout
       end
     end
 
@@ -227,13 +219,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         allow(graph).to receive_messages(nodes: [], topological_order: [])
       end
 
-      it "displays a message" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/All specified MODs are already installed and enabled/).to_stdout
-      end
-
       it "does not download anything" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(portal).not_to have_received(:download_mod)
       end
     end

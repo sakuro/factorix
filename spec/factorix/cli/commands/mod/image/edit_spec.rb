@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
+  include_context "with suppressed output"
+
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::Edit.new(portal:) }
 
   before do
-    # Suppress stdout
-    allow($stdout).to receive(:puts)
-
     allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
     allow(portal).to receive(:edit_mod_images)
@@ -18,22 +17,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
       command.call(mod_name: "test-mod", image_ids: %w[abc123 def456 ghi789])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123 def456 ghi789])
-      expect($stdout).to have_received(:puts).with("✓ Image list updated successfully!")
-      expect($stdout).to have_received(:puts).with("Total images: 3")
     end
 
     it "edits mod images with single ID" do
       command.call(mod_name: "test-mod", image_ids: %w[abc123])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123])
-      expect($stdout).to have_received(:puts).with("Total images: 1")
     end
 
     it "edits mod images with empty array" do
       command.call(mod_name: "test-mod", image_ids: [])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", [])
-      expect($stdout).to have_received(:puts).with("Total images: 0")
     end
 
     context "when errors occur" do

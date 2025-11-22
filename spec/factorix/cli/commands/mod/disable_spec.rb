@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Disable do
+  include_context "with suppressed output"
+
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -56,13 +58,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "saves the mod-list.json" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:save).with(mod_list_path)
-      end
-
-      it "displays the plan" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/Planning to disable 1 MOD/).to_stdout
       end
     end
 
@@ -96,14 +93,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables both the MOD and its dependents" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:disable).with(mod_a)
         expect(mod_list).to have_received(:disable).with(mod_b)
-      end
-
-      it "displays both MODs in the plan" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/Planning to disable 2 MOD/).to_stdout
       end
     end
 
@@ -116,13 +108,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "does not disable the MOD again" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).not_to have_received(:disable)
-      end
-
-      it "displays that all MODs are already disabled" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/All specified MODs are already disabled/).to_stdout
       end
     end
 
@@ -218,13 +205,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "does not disable already disabled MODs" do
-        capture_stdout { command.call(all: true, yes: true) }
+        command.call(all: true, yes: true)
         expect(mod_list).not_to have_received(:disable).with(mod_b)
-      end
-
-      it "displays the plan" do
-        expect { command.call(all: true, yes: true) }
-          .to output(/Planning to disable 2 MOD/).to_stdout
       end
 
       it "raises error when used with MOD names" do

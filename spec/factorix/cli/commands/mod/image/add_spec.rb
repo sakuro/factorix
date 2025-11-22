@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
+  include_context "with suppressed output"
+
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::Add.new(portal:) }
   let(:tmpdir) { Dir.mktmpdir }
 
   before do
-    allow($stdout).to receive(:puts)
     allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
   end
@@ -30,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
 
       command.call(mod_name: "test-mod", image_file:)
 
-      expect($stdout).to have_received(:puts).with("✓ Image added successfully!")
+      expect(portal).to have_received(:add_mod_image).with("test-mod", Pathname(image_file))
     end
 
     it "raises error when file does not exist" do

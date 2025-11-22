@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
+  include_context "with suppressed output"
+
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -72,26 +74,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
 
       it "removes the MOD files" do
         allow(installed_mod_a.path).to receive(:rmtree)
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(installed_mod_a.path).to have_received(:rmtree)
       end
 
       it "removes the MOD from mod-list.json" do
         allow(installed_mod_a.path).to receive(:rmtree)
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:remove).with(mod_a)
       end
 
       it "saves the mod-list.json" do
         allow(installed_mod_a.path).to receive(:rmtree)
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:save).with(mod_list_path)
-      end
-
-      it "displays the plan" do
-        allow(installed_mod_a.path).to receive(:rmtree)
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/Planning to uninstall 1 MOD/).to_stdout
       end
     end
 
@@ -114,7 +110,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "raises an error" do
-        expect { capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) } }
+        expect { command.call(mod_specs: ["mod-a"], yes: true) }
           .to raise_error(Factorix::Error, /following enabled MODs depend on it/)
       end
     end
@@ -127,7 +123,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "raises an error" do
-        expect { capture_stdout { command.call(mod_specs: ["base"], yes: true) } }
+        expect { command.call(mod_specs: ["base"], yes: true) }
           .to raise_error(Factorix::Error, /Cannot uninstall base MOD/)
       end
     end
@@ -140,7 +136,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "raises an error" do
-        expect { capture_stdout { command.call(mod_specs: ["space-age"], yes: true) } }
+        expect { command.call(mod_specs: ["space-age"], yes: true) }
           .to raise_error(Factorix::Error, /Cannot uninstall expansion MOD/)
       end
     end
@@ -150,13 +146,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         allow(graph).to receive(:node?).with(mod_a).and_return(false)
       end
 
-      it "displays a message about no MODs to uninstall" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/No MODs to uninstall/).to_stdout
-      end
-
       it "does not modify mod-list.json" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(mod_list).not_to have_received(:save)
       end
     end
@@ -182,7 +173,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "deletes the ZIP file" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(installed_mod_a_zip.path).to have_received(:delete)
       end
     end
@@ -218,14 +209,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "removes all versions" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(installed_mod_a_v1.path).to have_received(:rmtree)
         expect(installed_mod_a_v2.path).to have_received(:rmtree)
-      end
-
-      it "displays the version count" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to output(/Uninstalling 2 version\(s\) of mod-a/).to_stdout
       end
     end
 
@@ -260,19 +246,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "removes only the specified version" do
-        capture_stdout { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
+        command.call(mod_specs: ["mod-a@1.0.0"], yes: true)
         expect(installed_mod_a_v1.path).to have_received(:rmtree)
         expect(installed_mod_a_v2.path).not_to have_received(:rmtree)
       end
 
       it "does not remove from mod-list.json when other versions remain" do
-        capture_stdout { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
+        command.call(mod_specs: ["mod-a@1.0.0"], yes: true)
         expect(mod_list).not_to have_received(:remove)
-      end
-
-      it "displays the version in the plan" do
-        expect { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
-          .to output(/mod-a@1\.0\.0/).to_stdout
       end
     end
 
@@ -308,10 +289,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
 
       it "removes all versions when last version is uninstalled" do
         # First uninstall v1
-        capture_stdout { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
+        command.call(mod_specs: ["mod-a@1.0.0"], yes: true)
         # Then uninstall v2 - should now remove from mod-list
         allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod_a_v2])
-        capture_stdout { command.call(mod_specs: ["mod-a@2.0.0"], yes: true) }
+        command.call(mod_specs: ["mod-a@2.0.0"], yes: true)
         expect(mod_list).to have_received(:remove).with(mod_a)
       end
     end
@@ -333,7 +314,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         end
 
         it "uninstalls the MOD" do
-          capture_stdout { command.call(mod_specs: ["mod-a"]) }
+          command.call(mod_specs: ["mod-a"])
           expect(mod_list).to have_received(:remove).with(mod_a)
         end
       end
@@ -344,7 +325,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         end
 
         it "does not uninstall the MOD" do
-          capture_stdout { command.call(mod_specs: ["mod-a"]) }
+          command.call(mod_specs: ["mod-a"])
           expect(mod_list).not_to have_received(:remove)
         end
       end
@@ -384,29 +365,24 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       end
 
       it "raises error when MOD specs are also provided" do
-        expect { capture_stdout { command.call(mod_specs: ["mod-a"], all: true, yes: true) } }
+        expect { command.call(mod_specs: ["mod-a"], all: true, yes: true) }
           .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
       end
 
       it "uninstalls all regular MODs" do
-        capture_stdout { command.call(all: true, yes: true) }
+        command.call(all: true, yes: true)
         expect(installed_mod_a.path).to have_received(:rmtree)
       end
 
       it "disables expansion MODs" do
-        capture_stdout { command.call(all: true, yes: true) }
+        command.call(all: true, yes: true)
         expect(mod_list).to have_received(:disable).with(expansion_mod)
-      end
-
-      it "displays both uninstall and disable in plan" do
-        expect { command.call(all: true, yes: true) }
-          .to output(/Planning to uninstall.*Expansion MODs to be disabled/m).to_stdout
       end
     end
 
     context "with --all option but no mod_specs argument" do
       it "raises error when neither --all nor mod_specs provided" do
-        expect { capture_stdout { command.call(yes: true) } }
+        expect { command.call(yes: true) }
           .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
       end
     end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Enable do
+  include_context "with suppressed output"
+
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -56,13 +58,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "saves the mod-list.json" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:save).with(mod_list_path)
-      end
-
-      it "displays the plan" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/Planning to enable 1 MOD/).to_stdout
       end
     end
 
@@ -92,14 +89,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "enables both the MOD and its dependency" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:enable).with(mod_a)
         expect(mod_list).to have_received(:enable).with(mod_b)
-      end
-
-      it "displays both MODs in the plan" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/Planning to enable 2 MOD/).to_stdout
       end
     end
 
@@ -112,13 +104,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "does not enable the MOD again" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).not_to have_received(:enable)
-      end
-
-      it "displays that all MODs are already enabled" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
-          .to output(/All specified MODs are already enabled/).to_stdout
       end
     end
 

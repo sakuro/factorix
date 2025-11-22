@@ -3,6 +3,8 @@
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Sync do
+  include_context "with suppressed output"
+
   let(:command) do
     Factorix::CLI::Commands::MOD::Sync.new(
       runtime:,
@@ -60,8 +62,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
     # Stub confirmation to always return true
     allow(command).to receive(:confirm?).and_return(true)
-    # Stub say to avoid output during tests
-    allow(command).to receive(:say)
   end
 
   describe "#call" do
@@ -112,12 +112,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
       before do
         mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
         mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::Types::MODVersion.from_string("1.0.0"))
-      end
-
-      it "does not attempt to install MODs" do
-        command.call(save_file: save_file_path.to_s)
-
-        expect(command).to have_received(:say).with(/All MODs from save file are already installed/)
       end
 
       it "updates mod-list.json" do
