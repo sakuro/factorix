@@ -71,9 +71,7 @@ module Factorix
       # @param zip_file [Zip::File] The zip file
       # @param file_name [String] The level file name to search for
       # @return [Zip::Entry, nil] The entry if found, nil otherwise
-      private def find_level_entry(zip_file, file_name)
-        zip_file.glob("*/#{file_name}").first
-      end
+      private def find_level_entry(zip_file, file_name) = zip_file.glob("*/#{file_name}").first
 
       # Decompress stream if it's zlib compressed
       #
@@ -153,9 +151,7 @@ module Factorix
       #
       # @param deserializer [Factorix::SerDes::Deserializer] The deserializer
       # @return [void]
-      private def skip_unknown_bytes(deserializer)
-        deserializer.read_bytes(4)
-      end
+      private def skip_unknown_bytes(deserializer) = deserializer.read_bytes(4)
 
       # Parse startup settings from save file
       #
