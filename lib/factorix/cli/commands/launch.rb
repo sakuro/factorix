@@ -31,6 +31,12 @@ module Factorix
 
         desc "Launch Factorio game"
 
+        example [
+          "                              # Launch Factorio",
+          "-- --help                     # Show Factorio help",
+          "-- --benchmark save.zip       # Run benchmark"
+        ]
+
         option :wait, type: :boolean, default: false, aliases: ["-w"], desc: "Wait for the game to finish"
 
         # Execute the launch command

@@ -25,6 +25,13 @@ module Factorix
 
           desc "Install MODs from Factorio MOD Portal (downloads to mod directory and enables)"
 
+          example [
+            "some-mod            # Install latest version",
+            "some-mod@1.2.0      # Install specific version",
+            "some-mod@latest     # Install latest version explicitly",
+            "-j 8 mod-a mod-b    # Use 8 parallel downloads"
+          ]
+
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
 

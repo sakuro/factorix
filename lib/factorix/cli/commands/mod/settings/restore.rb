@@ -18,6 +18,11 @@ module Factorix
 
             desc "Restore MOD settings from JSON format"
 
+            example [
+              "-i settings.json        # Restore from file",
+              "                        # Restore from stdin"
+            ]
+
             argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file to write"
             option :input, type: :string, aliases: ["-i"], desc: "Input file path"
             option :backup_extension, type: :string, default: ".bak", desc: "Backup file extension"

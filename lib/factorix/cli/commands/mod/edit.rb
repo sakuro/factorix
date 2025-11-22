@@ -13,6 +13,12 @@ module Factorix
 
           desc "Edit MOD metadata on Factorio MOD Portal"
 
+          example [
+            "some-mod --title \"New Title\"       # Update MOD title",
+            "some-mod --category automation       # Update category",
+            "some-mod --deprecated                # Mark as deprecated"
+          ]
+
           argument :mod_name, type: :string, required: true, desc: "MOD name"
           option :description, type: :string, desc: "Markdown description"
           option :summary, type: :string, desc: "Brief description"

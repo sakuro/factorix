@@ -20,6 +20,12 @@ module Factorix
 
           desc "Uninstall MODs from mod directory"
 
+          example [
+            "some-mod         # Uninstall all versions of MOD",
+            "some-mod@1.2.0   # Uninstall specific version",
+            "--all            # Uninstall all MODs"
+          ]
+
           argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
           option :all, type: :boolean, default: false, desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
 

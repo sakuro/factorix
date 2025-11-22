@@ -24,6 +24,13 @@ module Factorix
 
           desc "Update MODs to their latest versions"
 
+          example [
+            "                   # Update all installed MODs",
+            "some-mod           # Update specific MOD",
+            "mod-a mod-b        # Update multiple MODs",
+            "-j 8 mod-a mod-b   # Use 8 parallel downloads"
+          ]
+
           argument :mod_names, type: :array, required: false, desc: "MOD names to update (all if not specified)"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
 

@@ -12,11 +12,6 @@
 
 Display all Factorio and Factorix paths.
 
-```bash
-factorix path
-factorix path --json
-```
-
 **Options**:
 - `--json` - Output in JSON format
 
@@ -42,11 +37,6 @@ factorix path --json
 
 Launch the game.
 
-```bash
-factorix launch
-factorix launch -- --verbose --benchmark save.zip
-```
-
 **Features**:
 - Pass options to Factorio (after `--`)
 - Automatically wait for termination for certain commands
@@ -66,13 +56,6 @@ Disable the specified MOD(s).
 
 #### Download Command
 
-```bash
-factorix mod download some-mod              # Latest version
-factorix mod download some-mod@1.2.0        # Specify version
-factorix mod download some-mod --directory=/tmp/mods
-factorix mod download some-mod --recursive  # Include dependencies
-```
-
 **Behavior**:
 - Download to any location (specify with `--directory` or `-d`, defaults to current directory)
 - Dependencies are not included by default (use `--recursive` or `-r` to include required dependencies)
@@ -82,11 +65,6 @@ factorix mod download some-mod --recursive  # Include dependencies
 **Purpose**: When only retrieving MOD files is the goal
 
 #### Install Command
-
-```bash
-factorix mod install some-mod               # Latest version
-factorix mod install some-mod@1.2.0         # Specify version
-```
 
 **Workflow**:
 
@@ -119,10 +97,6 @@ Error: Cannot install some-mod@1.2.0
 
 #### Uninstall Command
 
-```bash
-factorix mod uninstall some-mod
-```
-
 **Workflow**:
 
 ##### 1. Reverse Dependency Check
@@ -145,13 +119,6 @@ Error: Cannot uninstall some-library-mod
 ### MOD::Update
 
 Update installed MODs to their latest versions.
-
-```bash
-factorix mod update                    # Update all installed MODs
-factorix mod update some-mod           # Update specific MOD
-factorix mod update mod-a mod-b        # Update multiple MODs
-factorix mod update -j 8               # Use 8 parallel downloads
-```
 
 **Options**:
 - `-j`, `--jobs` - Number of parallel downloads (default: 4)
@@ -185,14 +152,6 @@ factorix mod update -j 8               # Use 8 parallel downloads
 
 List installed MODs with their status.
 
-```bash
-factorix mod list
-factorix mod list --enabled
-factorix mod list --disabled
-factorix mod list --outdated
-factorix mod list --json
-```
-
 **Options**:
 - `--enabled` - Show only enabled MODs
 - `--disabled` - Show only disabled MODs
@@ -206,20 +165,9 @@ factorix mod list --json
 
 **Use case**: Review installed MODs and their status before launching the game
 
-### MOD::Publish
-
-Publish and upload MODs.
-
-- First time: Use MOD publication API
-- Subsequent: Use MOD upload API
-
 ### MOD::Check
 
 Validate dependency integrity of installed MODs.
-
-```bash
-factorix mod check
-```
 
 **Features**:
 - Checks if all required dependencies are installed
@@ -233,10 +181,6 @@ factorix mod check
 
 Synchronize MOD states from a save file.
 
-```bash
-factorix mod sync save-file.zip
-```
-
 **Features**:
 - Extracts MOD information from save file
 - Downloads missing MODs concurrently
@@ -248,14 +192,6 @@ factorix mod sync save-file.zip
 ### MOD::Edit
 
 Edit MOD details on the portal.
-
-```bash
-factorix mod edit some-mod --title "New Title"
-factorix mod edit some-mod --summary "Brief description"
-factorix mod edit some-mod --description "Full description"
-factorix mod edit some-mod --category automation
-factorix mod edit some-mod --license MIT
-```
 
 **Editable fields**:
 - `title` - MOD title (max 250 characters)
@@ -271,14 +207,26 @@ factorix mod edit some-mod --license MIT
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
 
+### MOD::Upload
+
+Upload MOD to Factorio MOD Portal.
+
+**Features**:
+- Handles both new MOD publication and version updates
+- Validates MOD zip file structure
+- Supports optional metadata (description, category, license, source URL)
+
+**Options**:
+- `--description` - Markdown description
+- `--category` - MOD category
+- `--license` - License identifier
+- `--source_url` - Repository URL
+
+**Authentication**: Requires API key with `ModPortal: Upload Mods` permission
+
 ### MOD::Image::List
 
 List all images for a MOD with their IDs and URLs.
-
-```bash
-factorix mod image list some-mod
-factorix mod image list some-mod --json
-```
 
 **Options**:
 - `--json` - Output in JSON format
@@ -296,10 +244,6 @@ factorix mod image list some-mod --json
 
 Add an image to a MOD on the portal.
 
-```bash
-factorix mod image add some-mod screenshot.png
-```
-
 **Response**: Returns image ID (SHA1), URL, and thumbnail URL for uploaded image
 
 **Authentication**: Requires API key with `ModPortal: Edit Mods` permission
@@ -307,10 +251,6 @@ factorix mod image add some-mod screenshot.png
 ### MOD::Image::Edit
 
 Edit MOD image list on the portal.
-
-```bash
-factorix mod image edit some-mod image-id-1 image-id-2 image-id-3
-```
 
 **Purpose**: Reorder or remove images by specifying image IDs in desired order
 
@@ -320,17 +260,6 @@ factorix mod image edit some-mod image-id-1 image-id-2 image-id-3
 
 Export mod settings to JSON format.
 
-```bash
-# Dump to stdout
-factorix mod settings dump
-
-# Dump to file
-factorix mod settings dump -o settings.json
-
-# Dump from specific mod-settings.dat file
-factorix mod settings dump /path/to/mod-settings.dat -o settings.json
-```
-
 **Output**: JSON format with game version and settings organized by section (startup, runtime-global, runtime-per-user)
 
 **File format**: The binary `mod-settings.dat` file is converted to human-readable JSON with proper indentation.
@@ -338,17 +267,6 @@ factorix mod settings dump /path/to/mod-settings.dat -o settings.json
 ### MOD::Settings::Restore
 
 Restore mod settings from JSON format.
-
-```bash
-# Restore from file
-factorix mod settings restore -i settings.json
-
-# Restore from stdin
-cat settings.json | factorix mod settings restore
-
-# Restore to specific location
-factorix mod settings restore -i settings.json /path/to/mod-settings.dat
-```
 
 **Backup**: Automatically creates a backup with `.bak` extension before overwriting (customizable with `--backup-extension`)
 

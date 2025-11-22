@@ -43,6 +43,11 @@ module Factorix
 
         desc "Display Factorio and Factorix paths"
 
+        example [
+          "         # Display paths in table format",
+          "--json   # Display paths in JSON format"
+        ]
+
         option :json, type: :boolean, default: false, desc: "Output in JSON format"
 
         # Execute the path command

@@ -16,6 +16,12 @@ module Factorix
 
             desc "Dump MOD settings to JSON format"
 
+            example [
+              "                        # Dump to stdout",
+              "-o settings.json        # Dump to file",
+              "/path/to/mod-settings.dat -o out.json   # Dump specific file"
+            ]
+
             argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file"
             option :output, type: :string, aliases: ["-o"], desc: "Output file path"
 

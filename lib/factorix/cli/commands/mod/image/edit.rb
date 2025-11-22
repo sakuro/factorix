@@ -14,6 +14,10 @@ module Factorix
 
             desc "Edit MOD's image list (reorder/remove images)"
 
+            example [
+              "some-mod abc123 def456   # Set image order (IDs from 'image list')"
+            ]
+
             argument :mod_name, type: :string, required: true, desc: "MOD name"
             argument :image_ids, type: :array, required: true, desc: "Image IDs in desired order"
 

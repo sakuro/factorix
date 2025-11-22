@@ -17,6 +17,10 @@ module Factorix
 
           desc "Validate MOD dependencies"
 
+          example [
+            "   # Validate all MOD dependencies"
+          ]
+
           # Execute the check command
           #
           # @return [void]

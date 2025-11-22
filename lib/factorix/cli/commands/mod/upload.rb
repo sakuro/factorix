@@ -13,6 +13,11 @@ module Factorix
 
           desc "Upload MOD to Factorio MOD Portal (handles both new and update)"
 
+          example [
+            "my-mod_1.0.0.zip                           # Upload MOD",
+            "my-mod_1.0.0.zip --category automation     # Upload with category"
+          ]
+
           argument :file, type: :string, required: true, desc: "Path to MOD zip file"
           option :description, type: :string, desc: "Markdown description"
           option :category, type: :string, desc: "MOD category"

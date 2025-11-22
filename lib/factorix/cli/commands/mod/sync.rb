@@ -25,6 +25,11 @@ module Factorix
 
           desc "Sync MOD states and startup settings from a save file"
 
+          example [
+            "save.zip           # Sync MODs from save file",
+            "-j 8 save.zip      # Use 8 parallel downloads"
+          ]
+
           argument :save_file, type: :string, required: true, desc: "Path to Factorio save file (.zip)"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
 

@@ -20,6 +20,11 @@ module Factorix
 
           desc "Enable MODs in mod-list.json (recursively enables dependencies)"
 
+          example [
+            "some-mod         # Enable single MOD",
+            "mod-a mod-b      # Enable multiple MODs"
+          ]
+
           argument :mod_names, type: :array, required: true, desc: "MOD names to enable"
 
           # Execute the enable command

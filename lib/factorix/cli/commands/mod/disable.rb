@@ -20,6 +20,12 @@ module Factorix
 
           desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
 
+          example [
+            "some-mod         # Disable single MOD",
+            "mod-a mod-b      # Disable multiple MODs",
+            "--all            # Disable all MODs except base"
+          ]
+
           argument :mod_names, type: :array, required: false, desc: "MOD names to disable"
 
           option :all, type: :boolean, default: false, desc: "Disable all MODs (except base)"

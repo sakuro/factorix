@@ -14,6 +14,11 @@ module Factorix
 
             desc "List images for a MOD"
 
+            example [
+              "some-mod          # List images in table format",
+              "some-mod --json   # List images in JSON format"
+            ]
+
             argument :mod_name, type: :string, required: true, desc: "MOD name"
 
             option :json, type: :boolean, default: false, desc: "Output in JSON format"

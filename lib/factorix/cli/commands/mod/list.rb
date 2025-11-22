@@ -17,6 +17,13 @@ module Factorix
 
           desc "List installed MODs"
 
+          example [
+            "             # List all installed MODs",
+            "--enabled    # List only enabled MODs",
+            "--outdated   # List MODs with available updates",
+            "--json       # Output in JSON format"
+          ]
+
           option :enabled, type: :boolean, default: false, desc: "Show only enabled MODs"
           option :disabled, type: :boolean, default: false, desc: "Show only disabled MODs"
           option :errors, type: :boolean, default: false, desc: "Show only MODs with dependency errors"

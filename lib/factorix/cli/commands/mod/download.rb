@@ -18,6 +18,13 @@ module Factorix
 
           desc "Download MOD files from Factorio MOD Portal"
 
+          example [
+            "some-mod                 # Download latest version to current directory",
+            "some-mod@1.2.0           # Download specific version",
+            "-d /tmp/mods some-mod    # Download to specific directory",
+            "-r some-mod              # Include required dependencies"
+          ]
+
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
           option :directory, type: :string, aliases: ["-d"], default: ".", desc: "Download directory"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
