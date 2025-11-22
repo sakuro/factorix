@@ -121,6 +121,14 @@ Check MOD dependencies:
 factorix mod check
 ```
 
+List installed MODs:
+```bash
+factorix mod list             # List all installed MODs
+factorix mod list --enabled   # List only enabled MODs
+factorix mod list --outdated  # List MODs with available updates
+factorix mod list --json      # Output in JSON format
+```
+
 Install MODs and their dependencies from Factorio MOD Portal:
 ```bash
 factorix mod install MOD_NAME
@@ -144,6 +152,13 @@ Uninstall MODs:
 factorix mod uninstall MOD_NAME
 factorix mod uninstall MOD_NAME@VERSION
 factorix mod uninstall --all  # Uninstall all MODs
+```
+
+Update MODs to latest versions:
+```bash
+factorix mod update           # Update all installed MODs
+factorix mod update MOD_NAME  # Update specific MOD
+factorix mod update -j 8 MOD1 MOD2  # Use 8 parallel downloads
 ```
 
 Download a MOD:
