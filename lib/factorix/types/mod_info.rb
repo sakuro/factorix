@@ -188,6 +188,7 @@ module Factorix
         thumbnail = thumbnail ? build_thumbnail_uri(thumbnail) : nil
         latest_release = latest_release ? Release[**latest_release] : nil
         releases = (releases || []).filter_map {|r|
+          # NOTE: begin is required because {...} blocks cannot use rescue directly
           begin
             Release[**r]
           rescue RangeError => e
