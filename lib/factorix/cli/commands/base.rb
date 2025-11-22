@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/cli"
+require "tint_me"
 
 module Factorix
   class CLI
@@ -34,6 +35,16 @@ module Factorix
         }.freeze
         private_constant :EMOJI_PREFIXES
 
+        # Color styles for message prefixes
+        STYLES = {
+          success: TIntMe[:green],
+          info: TIntMe[:cyan],
+          warn: TIntMe[:magenta],
+          error: TIntMe[:red],
+          fatal: TIntMe[:red, :bold]
+        }.freeze
+        private_constant :STYLES
+
         # Prepend CommandWrapper to each command class that inherits from Base
         def self.inherited(subclass)
           super
@@ -54,6 +65,7 @@ module Factorix
 
           resolved_prefix = EMOJI_PREFIXES.fetch(prefix) { prefix.to_s }
           output = resolved_prefix.empty? ? message : "#{resolved_prefix} #{message}"
+          output = STYLES[prefix][output] if STYLES.key?(prefix)
           puts output
         end
 

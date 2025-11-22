@@ -43,6 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "parslet", "~> 2.0"
   spec.add_dependency "retriable", "~> 3.1"
   spec.add_dependency "rubyzip", "~> 3.2"
+  spec.add_dependency "tint_me", "~> 1.1"
   spec.add_dependency "tty-progressbar", "~> 0.18"
   spec.add_dependency "zeitwerk", "~> 2.7"
 end
