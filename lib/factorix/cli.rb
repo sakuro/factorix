@@ -22,6 +22,7 @@ module Factorix
     register "mod disable", Commands::MOD::Disable
     register "mod install", Commands::MOD::Install
     register "mod uninstall", Commands::MOD::Uninstall
+    register "mod update", Commands::MOD::Update
     register "mod download", Commands::MOD::Download
     register "mod upload", Commands::MOD::Upload
     register "mod edit", Commands::MOD::Edit

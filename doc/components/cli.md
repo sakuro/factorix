@@ -142,6 +142,45 @@ Error: Cannot uninstall some-library-mod
   - Uninstall these mods first, or disable them
 ```
 
+### MOD::Update
+
+Update installed MODs to their latest versions.
+
+```bash
+factorix mod update                    # Update all installed MODs
+factorix mod update some-mod           # Update specific MOD
+factorix mod update mod-a mod-b        # Update multiple MODs
+factorix mod update -j 8               # Use 8 parallel downloads
+```
+
+**Options**:
+- `-j`, `--jobs` - Number of parallel downloads (default: 4)
+
+**Workflow**:
+
+##### 1. Check Phase
+
+- Fetch latest version information from Portal API
+- Compare with currently installed versions
+- Identify MODs with available updates
+
+##### 2. Confirmation Phase
+
+- Display update plan (current → latest version)
+- Prompt for user confirmation
+
+##### 3. Execution Phase
+
+- Download new versions in parallel
+- Clear version pinning in `mod-list.json`
+- Old versions remain in MOD directory (Factorio uses latest)
+
+**Restrictions**:
+- Cannot update `base` MOD
+- Cannot update expansion MODs (e.g., `space-age`)
+
+**Use case**: Keep MODs up to date with latest releases
+
 ### MOD::List
 
 List installed MODs with their status.
