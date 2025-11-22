@@ -38,19 +38,26 @@ module Factorix
           raise # Re-raise for exe/factorix to handle exit code
         end
 
-        private def load_config!(path)
-          if path
-            # Explicitly specified path via --config-path
-            Application.load_config(path)
-          else
-            # Load default configuration
-            config_path = if ENV["FACTORIX_CONFIG"]
-                            Pathname(ENV.fetch("FACTORIX_CONFIG"))
-                          else
-                            Application[:runtime].factorix_config_path
-                          end
-            Application.load_config(config_path) if config_path.exist?
-          end
+        private def load_config!(explicit_path)
+          path = resolve_config_path(explicit_path)
+          return unless path
+
+          Application.load_config(path)
+        end
+
+        # Resolves which config path to use
+        # @param explicit_path [String, nil] path specified via --config-path
+        # @return [Pathname, nil] path to load, or nil if none should be loaded
+        private def resolve_config_path(explicit_path)
+          # Explicitly specified path via --config-path - always use it
+          return Pathname(explicit_path) if explicit_path
+
+          # Check environment variable
+          return Pathname(ENV.fetch("FACTORIX_CONFIG")) if ENV["FACTORIX_CONFIG"]
+
+          # Use default path only if it exists
+          default_path = Application[:runtime].factorix_config_path
+          default_path.exist? ? default_path : nil
         end
 
         # Sets the application logger's level
@@ -61,7 +68,6 @@ module Factorix
 
           # Change only the File backend (first backend) level
           # Dispatcher is always set to DEBUG to allow all messages through
-          # The stderr backend (second backend) is fixed at WARN level
           file_backend = logger.backends.first
           file_backend.level = level_constant if file_backend.respond_to?(:level=)
         end
