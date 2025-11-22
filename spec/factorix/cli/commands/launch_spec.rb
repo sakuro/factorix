@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::Launch do
+  include_context "with suppressed output"
+
   let(:command) { Factorix::CLI::Commands::Launch.new(runtime:) }
 
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
@@ -18,9 +20,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "raises exception" do
-        expect {
-          capture_stdout { command.call }
-        }.to raise_error("The game is already running")
+        expect { command.call }.to raise_error("The game is already running")
       end
     end
 

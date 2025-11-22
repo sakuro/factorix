@@ -3,6 +3,8 @@
 require "json"
 
 RSpec.describe Factorix::CLI::Commands::Path do
+  include_context "with suppressed output"
+
   let(:command) { Factorix::CLI::Commands::Path.new(runtime:) }
 
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
@@ -28,10 +30,9 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
   describe "#call" do
     it "outputs all paths as JSON" do
-      output = capture_stdout { command.call }
-      result = JSON.parse(output)
+      command.call
 
-      expect(result).to eq({
+      expected_json = JSON.pretty_generate({
         "executable_path" => "/path/to/factorio",
         "user_dir" => "/path/to/user",
         "mod_dir" => "/path/to/mods",
@@ -47,6 +48,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
         "factorix_config_path" => "/path/to/config/factorix/config.rb",
         "factorix_log_path" => "/path/to/state/factorix/factorix.log"
       })
+      expect(command).to have_received(:puts).with(expected_json)
     end
 
     context "when runtime raises an error" do
@@ -55,7 +57,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
       end
 
       it "re-raises the error" do
-        expect { capture_stdout { command.call } }.to raise_error(StandardError, "Runtime error")
+        expect { command.call }.to raise_error(StandardError, "Runtime error")
       end
     end
   end

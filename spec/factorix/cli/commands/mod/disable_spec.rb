@@ -53,7 +53,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables the MOD" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:disable).with(mod_a)
       end
 
@@ -121,7 +121,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "raises an error" do
-        expect { capture_stdout { command.call(mod_names: ["base"], yes: true) } }
+        expect { command.call(mod_names: ["base"], yes: true) }
           .to raise_error(Factorix::Error, /Cannot disable base MOD/)
       end
     end
@@ -141,7 +141,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
         end
 
         it "disables the MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"]) }
+          command.call(mod_names: ["mod-a"])
           expect(mod_list).to have_received(:disable).with(mod_a)
         end
       end
@@ -152,7 +152,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
         end
 
         it "does not disable the MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"]) }
+          command.call(mod_names: ["mod-a"])
           expect(mod_list).not_to have_received(:disable)
         end
       end
@@ -198,7 +198,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables all enabled MODs except base" do
-        capture_stdout { command.call(all: true, yes: true) }
+        command.call(all: true, yes: true)
         expect(mod_list).to have_received(:disable).with(mod_a)
         expect(mod_list).to have_received(:disable).with(expansion_mod)
         expect(mod_list).not_to have_received(:disable).with(base_mod)
@@ -210,14 +210,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "raises error when used with MOD names" do
-        expect { capture_stdout { command.call(mod_names: ["mod-a"], all: true, yes: true) } }
+        expect { command.call(mod_names: ["mod-a"], all: true, yes: true) }
           .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
       end
     end
 
     context "without MOD names or --all option" do
       it "raises error" do
-        expect { capture_stdout { command.call(yes: true) } }
+        expect { command.call(yes: true) }
           .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
       end
     end

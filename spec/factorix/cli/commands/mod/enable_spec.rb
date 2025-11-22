@@ -53,7 +53,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "enables the MOD" do
-        capture_stdout { command.call(mod_names: ["mod-a"], yes: true) }
+        command.call(mod_names: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:enable).with(mod_a)
       end
 
@@ -129,7 +129,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error about the conflict" do
-        expect { capture_stdout { command.call(mod_names: ["mod-a"], yes: true) } }
+        expect { command.call(mod_names: ["mod-a"], yes: true) }
           .to raise_error(Factorix::Error, /conflicts with mod-c/)
       end
     end
@@ -155,7 +155,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error about the conflict" do
-        expect { capture_stdout { command.call(mod_names: ["mod-a"], yes: true) } }
+        expect { command.call(mod_names: ["mod-a"], yes: true) }
           .to raise_error(Factorix::Error, /conflicts with mod-c/)
       end
     end
@@ -166,7 +166,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error" do
-        expect { capture_stdout { command.call(mod_names: ["mod-a"], yes: true) } }
+        expect { command.call(mod_names: ["mod-a"], yes: true) }
           .to raise_error(Factorix::Error, /not installed/)
       end
     end
@@ -186,7 +186,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         end
 
         it "enables the MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"]) }
+          command.call(mod_names: ["mod-a"])
           expect(mod_list).to have_received(:enable).with(mod_a)
         end
       end
@@ -197,7 +197,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         end
 
         it "does not enable the MOD" do
-          capture_stdout { command.call(mod_names: ["mod-a"]) }
+          command.call(mod_names: ["mod-a"])
           expect(mod_list).not_to have_received(:enable)
         end
       end

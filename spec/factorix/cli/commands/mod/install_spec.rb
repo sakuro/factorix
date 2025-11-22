@@ -125,12 +125,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "downloads the MOD" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(portal).to have_received(:download_mod)
       end
 
       it "adds the MOD to mod-list.json" do
-        capture_stdout { command.call(mod_specs: ["mod-a"], yes: true) }
+        command.call(mod_specs: ["mod-a"], yes: true)
         expect(mod_list).to have_received(:add).with(mod_a, enabled: true)
       end
 
@@ -233,13 +233,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       it "accepts name@version format" do
         # Allow the command to proceed without actual download
         allow(graph).to receive(:nodes).and_return([])
-        capture_stdout { command.call(mod_specs: ["mod-a@1.0.0"], yes: true) }
+        command.call(mod_specs: ["mod-a@1.0.0"], yes: true)
         expect(portal).to have_received(:get_mod_full).with("mod-a")
       end
 
       it "accepts name@latest format" do
         allow(graph).to receive(:nodes).and_return([])
-        capture_stdout { command.call(mod_specs: ["mod-a@latest"], yes: true) }
+        command.call(mod_specs: ["mod-a@latest"], yes: true)
         expect(portal).to have_received(:get_mod_full).with("mod-a")
       end
     end
@@ -278,7 +278,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         end
 
         it "installs the MOD" do
-          capture_stdout { command.call(mod_specs: ["mod-a"]) }
+          command.call(mod_specs: ["mod-a"])
           expect(mod_list).to have_received(:add).with(mod_a, enabled: true)
         end
       end
@@ -289,7 +289,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         end
 
         it "does not install the MOD" do
-          capture_stdout { command.call(mod_specs: ["mod-a"]) }
+          command.call(mod_specs: ["mod-a"])
           expect(mod_list).not_to have_received(:add)
         end
       end
