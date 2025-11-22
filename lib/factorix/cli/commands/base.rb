@@ -35,6 +35,10 @@ module Factorix
         }.freeze
         private_constant :EMOJI_PREFIXES
 
+        # Plain style (no-op) for default output
+        PLAIN = TIntMe::Style[]
+        private_constant :PLAIN
+
         # Color styles for message prefixes
         STYLES = {
           success: TIntMe[:green],
@@ -65,8 +69,8 @@ module Factorix
 
           resolved_prefix = EMOJI_PREFIXES.fetch(prefix) { prefix.to_s }
           output = resolved_prefix.empty? ? message : "#{resolved_prefix} #{message}"
-          output = STYLES[prefix][output] if STYLES.key?(prefix)
-          puts output
+          style = STYLES.fetch(prefix, PLAIN)
+          puts style[output]
         end
 
         private def quiet?
