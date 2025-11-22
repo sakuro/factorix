@@ -14,9 +14,13 @@ Display all Factorio and Factorix paths.
 
 ```bash
 factorix path
+factorix path --json
 ```
 
-**Output**: JSON format with path types as keys (snake_case) and path values as values
+**Options**:
+- `--json` - Output in JSON format
+
+**Output**: Table format by default, JSON format with `--json` option
 
 **Included paths**:
 - `executable_path` - Factorio executable file
@@ -234,9 +238,13 @@ List all images for a MOD with their IDs and URLs.
 
 ```bash
 factorix mod image list some-mod
+factorix mod image list some-mod --json
 ```
 
-**Output**: Displays image information including:
+**Options**:
+- `--json` - Output in JSON format
+
+**Output**: Table format by default showing:
 - Image ID (SHA1 hash)
 - Full-size image URL
 - Thumbnail URL

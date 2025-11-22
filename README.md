@@ -67,7 +67,7 @@ Factorix auto-detects Factorio installation paths for Steam installations. For o
 
 **Find configuration file location:**
 ```bash
-factorix path | jq -r '.factorix_config_path'
+factorix path --json | jq -r '.factorix_config_path'
 ```
 
 **Create configuration file:**

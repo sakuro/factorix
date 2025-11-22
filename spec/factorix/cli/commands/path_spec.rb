@@ -3,8 +3,6 @@
 require "json"
 
 RSpec.describe Factorix::CLI::Commands::Path do
-  include_context "with suppressed output"
-
   let(:command) { Factorix::CLI::Commands::Path.new(runtime:) }
 
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
@@ -29,26 +27,37 @@ RSpec.describe Factorix::CLI::Commands::Path do
   end
 
   describe "#call" do
-    it "outputs all paths as JSON" do
-      command.call
+    it "outputs all paths in table format by default" do
+      output = capture_stdout { command.call(json: false) }
 
-      expected_json = JSON.pretty_generate({
-        "executable_path" => "/path/to/factorio",
-        "user_dir" => "/path/to/user",
-        "mod_dir" => "/path/to/mods",
-        "save_dir" => "/path/to/saves",
-        "script_output_dir" => "/path/to/script-output",
-        "mod_list_path" => "/path/to/mods/mod-list.json",
-        "mod_settings_path" => "/path/to/mods/mod-settings.dat",
-        "player_data_path" => "/path/to/user/player-data.json",
-        "lock_path" => "/path/to/user/.lock",
-        "current_log_path" => "/path/to/user/factorio-current.log",
-        "previous_log_path" => "/path/to/user/factorio-previous.log",
-        "factorix_cache_dir" => "/path/to/cache/factorix",
-        "factorix_config_path" => "/path/to/config/factorix/config.rb",
-        "factorix_log_path" => "/path/to/state/factorix/factorix.log"
-      })
-      expect(command).to have_received(:puts).with(expected_json)
+      expect(output).to include("executable_path")
+      expect(output).to include("/path/to/factorio")
+      expect(output).to include("user_dir")
+      expect(output).to include("/path/to/user")
+    end
+
+    context "with --json option" do
+      it "outputs all paths as JSON" do
+        output = capture_stdout { command.call(json: true) }
+
+        json = JSON.parse(output)
+        expect(json).to include(
+          "executable_path" => "/path/to/factorio",
+          "user_dir" => "/path/to/user",
+          "mod_dir" => "/path/to/mods",
+          "save_dir" => "/path/to/saves",
+          "script_output_dir" => "/path/to/script-output",
+          "mod_list_path" => "/path/to/mods/mod-list.json",
+          "mod_settings_path" => "/path/to/mods/mod-settings.dat",
+          "player_data_path" => "/path/to/user/player-data.json",
+          "lock_path" => "/path/to/user/.lock",
+          "current_log_path" => "/path/to/user/factorio-current.log",
+          "previous_log_path" => "/path/to/user/factorio-previous.log",
+          "factorix_cache_dir" => "/path/to/cache/factorix",
+          "factorix_config_path" => "/path/to/config/factorix/config.rb",
+          "factorix_log_path" => "/path/to/state/factorix/factorix.log"
+        )
+      end
     end
 
     context "when runtime raises an error" do
@@ -57,7 +66,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
       end
 
       it "re-raises the error" do
-        expect { command.call }.to raise_error(StandardError, "Runtime error")
+        expect { command.call(json: false) }.to raise_error(StandardError, "Runtime error")
       end
     end
   end

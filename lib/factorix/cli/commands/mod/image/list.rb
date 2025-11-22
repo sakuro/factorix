@@ -16,11 +16,17 @@ module Factorix
 
             argument :mod_name, type: :string, required: true, desc: "MOD name"
 
+            option :json,
+              type: :boolean,
+              default: false,
+              desc: "Output in JSON format"
+
             # Execute the list command
             #
             # @param mod_name [String] the mod name
+            # @param json [Boolean] output in JSON format
             # @return [void]
-            def call(mod_name:, **)
+            def call(mod_name:, json:, **)
               # Get full mod info to retrieve images
               mod_info = portal.get_mod_full(mod_name)
 
@@ -36,7 +42,33 @@ module Factorix
                          []
                        end
 
-              puts JSON.pretty_generate(images)
+              if json
+                say JSON.pretty_generate(images)
+              else
+                output_table(images)
+              end
+            end
+
+            private
+
+            # Output images in table format
+            #
+            # @param images [Array<Hash>] image data
+            # @return [void]
+            def output_table(images)
+              if images.empty?
+                say "No images found"
+                return
+              end
+
+              id_width = [images.map {|i| i[:id].length }.max, 2].max
+              thumb_width = [images.map {|i| i[:thumbnail].length }.max, 9].max
+
+              say "%-#{id_width}s  %-#{thumb_width}s  %s" % %w[ID THUMBNAIL URL]
+
+              images.each do |image|
+                say "%-#{id_width}s  %-#{thumb_width}s  %s" % [image[:id], image[:thumbnail], image[:url]]
+              end
             end
           end
         end

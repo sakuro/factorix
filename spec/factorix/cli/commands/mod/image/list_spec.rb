@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::List.new(portal:) }
 
@@ -46,24 +44,35 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
         allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
       end
 
-      it "lists all images with their details" do
-        command.call(mod_name: "test-mod")
+      it "outputs table format by default" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
+
+        expect(portal).to have_received(:get_mod_full).with("test-mod")
+        expect(output).to include("ID")
+        expect(output).to include("THUMBNAIL")
+        expect(output).to include("URL")
+        expect(output).to include("abc123")
+        expect(output).to include("def456")
+      end
+
+      it "outputs JSON format with --json option" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
 
-        expected_json = JSON.pretty_generate([
+        json = JSON.parse(output)
+        expect(json).to eq([
           {
-            id: "abc123",
-            thumbnail: "https://example.com/thumb1.jpg",
-            url: "https://example.com/image1.jpg"
+            "id" => "abc123",
+            "thumbnail" => "https://example.com/thumb1.jpg",
+            "url" => "https://example.com/image1.jpg"
           },
           {
-            id: "def456",
-            thumbnail: "https://example.com/thumb2.jpg",
-            url: "https://example.com/image2.jpg"
+            "id" => "def456",
+            "thumbnail" => "https://example.com/thumb2.jpg",
+            "url" => "https://example.com/image2.jpg"
           }
         ])
-        expect(command).to have_received(:puts).with(expected_json)
       end
     end
 
@@ -90,11 +99,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
         allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
       end
 
-      it "displays empty array" do
-        command.call(mod_name: "test-mod")
+      it "displays 'No images found' in table format" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(command).to have_received(:puts).with(JSON.pretty_generate([]))
+        expect(output).to include("No images found")
+      end
+
+      it "displays empty array in JSON format" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
+
+        expect(portal).to have_received(:get_mod_full).with("test-mod")
+        expect(JSON.parse(output)).to eq([])
       end
     end
 
@@ -114,11 +130,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
         allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
       end
 
-      it "displays empty array" do
-        command.call(mod_name: "test-mod")
+      it "displays 'No images found' in table format" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(command).to have_received(:puts).with(JSON.pretty_generate([]))
+        expect(output).to include("No images found")
+      end
+
+      it "displays empty array in JSON format" do
+        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
+
+        expect(portal).to have_received(:get_mod_full).with("test-mod")
+        expect(JSON.parse(output)).to eq([])
       end
     end
 
@@ -131,7 +154,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
 
       it "raises MODNotOnPortalError" do
         expect {
-          command.call(mod_name: "non-existent-mod")
+          capture_stdout { command.call(mod_name: "non-existent-mod", json: false) }
         }.to raise_error(Factorix::MODNotOnPortalError, /not found on portal/)
       end
     end

@@ -8,9 +8,10 @@ module Factorix
       class Path < Base
         PATH_TYPES: Hash[String, Symbol]
 
-        @runtime: Runtime::Base
+        attr_reader runtime: Runtime::Base
+        attr_reader logger: Dry::Logger::Dispatcher
 
-        def call: () -> void
+        def call: (?json: bool) -> void
       end
     end
   end

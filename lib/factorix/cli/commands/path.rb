@@ -11,7 +11,9 @@ module Factorix
       #
       # @example
       #   $ factorix path
-      #   {"executable_path":"/path/to/factorio","user_dir":"/path/to/user",...}
+      #   executable_path     /path/to/factorio
+      #   user_dir            /path/to/user
+      #   ...
       class Path < Base
         # Mapping from path type keys to runtime method names
         PATH_TYPES = {
@@ -41,15 +43,38 @@ module Factorix
 
         desc "Display Factorio and Factorix paths"
 
+        option :json,
+          type: :boolean,
+          default: false,
+          desc: "Output in JSON format"
+
         # Execute the path command
         #
+        # @param json [Boolean] output in JSON format
         # @return [void]
-        def call(**)
+        def call(json:, **)
           logger.debug("Displaying all paths")
 
           result = PATH_TYPES.transform_values {|method_name| runtime.public_send(method_name).to_s }
 
-          puts JSON.pretty_generate(result)
+          if json
+            say JSON.pretty_generate(result)
+          else
+            output_table(result)
+          end
+        end
+
+        private
+
+        # Output paths in table format
+        #
+        # @param result [Hash<String, String>] path type to path value mapping
+        # @return [void]
+        def output_table(result)
+          key_width = result.keys.map(&:length).max
+          result.each do |key, value|
+            say "%-#{key_width}s  %s" % [key, value]
+          end
         end
       end
     end

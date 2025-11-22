@@ -10,7 +10,7 @@ module Factorix
           class List < Base
             attr_reader portal: Portal
 
-            def call: (mod_name: String, **untyped) -> void
+            def call: (mod_name: String, ?json: bool) -> void
           end
         end
       end
