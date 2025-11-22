@@ -23,8 +23,10 @@ module Factorix
           argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
           option :all, type: :boolean, default: false, desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
 
+          UninstallTarget = Data.define(:mod, :version)
+
           # Internal structure to represent an uninstall target
-          UninstallTarget = Data.define(:mod, :version) {
+          class UninstallTarget
             # Check if a specific version is targeted
             # @return [Boolean] true if version is specified
             def versioned? = !version.nil?
@@ -32,7 +34,8 @@ module Factorix
             # String representation of the uninstall target
             # @return [String] MOD name with optional version (e.g., "mod-a@1.0.0" or "mod-a")
             def to_s = versioned? ? "#{mod}@#{version}" : mod.to_s
-          }
+          end
+
           # Execute the uninstall command
           #
           # @param mod_specs [Array<String>] MOD specifications
