@@ -32,95 +32,14 @@ This opens an IRB session where you can experiment with the Factorix API.
 
 ## Technology Stack
 
-### Ruby Version
+See [doc/technology-stack.md](doc/technology-stack.md) for details.
 
-- **Required**: Ruby >= 3.2
+- **Required Ruby version**: >= 3.2
 - **CI tested**: Ruby 3.2, 3.3, 3.4
-
-### Core Dependencies
-
-#### Dry-rb Ecosystem
-- `dry-auto_inject` (~> 1.0) - Dependency injection
-- `dry-cli` (~> 1.0) - Command-line interface framework
-- `dry-configurable` (~> 1.0) - Configuration management
-- `dry-container` (~> 0.11) - Service container
-- `dry-events` (~> 1.1) - Event system
-- `dry-logger` (~> 1.2) - Logging
-
-#### Utilities
-- `zeitwerk` (~> 2.7) - Code autoloading
-- `retriable` (~> 3.1) - Retry logic for network operations
-- `tty-progressbar` (~> 0.18) - Progress indication
-- `rubyzip` (~> 3.2) - ZIP file handling
-- `parslet` (~> 2.0) - Parser construction
-- `concurrent-ruby` (~> 1.0) - Concurrency primitives
-
-### Development Tools
-
-#### Testing
-- **RSpec** - Test framework
-- **WebMock** - HTTP request mocking
-- **SimpleCov** - Code coverage reporting
-
-#### Code Quality
-- **RuboCop** - Ruby linter and formatter
-  - `rubocop-performance` - Performance cops
-  - `rubocop-rake` - Rake-specific cops
-  - `rubocop-rspec` - RSpec-specific cops
-  - `rubocop-thread_safety` - Thread safety cops
-  - `docquet` - Shared RuboCop configuration
-
-#### Type Checking
-- **Steep** - Static type checker for Ruby
-- **RBS** - Ruby type signature files (in `sig/` directory)
-
-#### Documentation
-- **YARD** - Documentation generator
 
 ## Project Structure
 
-### Directory Layout
-
-```
-factorix/
-├── exe/                       # Executables
-│   └── factorix               # CLI entry point
-├── lib/factorix/              # Main source code
-│   ├── api/                   # API clients
-│   ├── cache/                 # Caching system
-│   ├── cli/                   # CLI framework
-│   │   └── commands/          # CLI command implementations
-│   ├── dependency/            # Dependency management
-│   ├── http/                  # HTTP operations
-│   ├── progress/              # Progress indication
-│   ├── runtime/               # Platform-specific code
-│   ├── ser_des/               # Serialization/Deserialization
-│   └── types/                 # Data models
-├── spec/                      # RSpec tests
-├── sig/                       # RBS type signatures
-├── bin/                       # Development executables
-│   ├── setup                  # Setup script
-│   └── console                # Interactive console
-└── .github/workflows/         # CI/CD
-```
-
-### Key Modules and Classes
-
-- **`Factorix::Application`** - DI container (Dry::Container) and configuration (Dry::Configurable)
-- **`Factorix::Portal`** - High-level API facade
-- **`Factorix::CLI`** - Command registry (Dry::CLI)
-- **`Factorix::MOD`** - Mod entity representation
-- **`Factorix::Dependency`** - Dependency resolution
-- **`Factorix::SaveFile`** - Save file information
-
-### Design Patterns
-
-- **Dependency Injection**: Dry::Container + Dry::AutoInject
-- **Service Container**: Centralized dependency management
-- **Decorator**: HTTP caching and retry decorators
-- **Adapter**: Progress presenter adapter for tty-progressbar
-- **Flyweight**: Memory-efficient object sharing
-- **Strategy**: Runtime detection for platform-specific behavior
+See [doc/architecture.md](doc/architecture.md) for detailed class hierarchy and design patterns.
 
 ## Language Policy
 
@@ -165,30 +84,10 @@ end
 
 #### Naming Conventions
 
-**MOD Notation:**
-- Always uppercase: `MOD` (not `Mod` or `mod`)
-- File names: `mod_list.rb` → `Factorix::MODList`
-- Compound words containing MOD require individual Zeitwerk inflector configuration
+- `MOD` is always uppercase (not `Mod` or `mod`)
+- Other abbreviations: `API`, `CLI`, `HTTP`, `MacOS`, `WSL`
 
-**Other Abbreviations:**
-- `API` → Uppercase (`api.rb` → `Factorix::API`)
-- `CLI` → Uppercase (`cli.rb` → `Factorix::CLI`)
-- `HTTP` → Uppercase (`http.rb` → `Factorix::HTTP`)
-- `MacOS` → CamelCase (`mac_os.rb` → `Runtime::MacOS`)
-- `WSL` → Uppercase (`wsl.rb` → `Runtime::WSL`)
-
-**Zeitwerk Configuration:**
-All inflections are configured in `lib/factorix.rb`:
-```ruby
-loader.inflector.inflect(
-  "api" => "API",
-  "http" => "HTTP",
-  "mac_os" => "MacOS",
-  "wsl" => "WSL",
-  "mod_download_api" => "MODDownloadAPI",
-  # ... other MOD-related inflections
-)
-```
+See [doc/architecture.md](doc/architecture.md) for Zeitwerk configuration and file-to-class mapping details.
 
 ### Testing Style
 - **RSpec** with `expect` syntax (no should syntax)
@@ -251,7 +150,7 @@ Commands should use two distinct output methods based on the nature of the outpu
    def call(mod_names:, **)
      say "Planning to disable #{mod_names.size} MOD(s):"
      perform_action
-     say "✓ Saved mod-list.json"
+     say "Saved mod-list.json", prefix: :success
    end
    ```
 
@@ -262,7 +161,7 @@ Commands should use two distinct output methods based on the nature of the outpu
      data = load_settings(settings_file)
      if output
        write_file(output, data)
-       say "✓ Exported to #{output}"  # Success feedback
+       say "Exported to #{output}", prefix: :success  # Success feedback
      else
        puts JSON.pretty_generate(data)  # Data output to stdout
      end

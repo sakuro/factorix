@@ -10,6 +10,7 @@
   - Config file: XDG-compliant (`$XDG_CONFIG_HOME/factorix/config.rb`, defaults to `~/.config/factorix/config.rb`)
   - Format: Ruby DSL
 - **dry-events** (~> 1.1) - Event system for progress notification
+- **dry-logger** (~> 1.2) - Logging
 - **dry-core** (>= 1.1.0) - Utilities
 - **retriable** (>= 3.1.2) - Retry logic for network operations
 - **tty-progressbar** (~> 0.18) - Progress display with multi-bar support
@@ -26,11 +27,24 @@
 
 ## Development Tools
 
+### Testing
 - **RSpec** - Testing framework
 - **WebMock** - HTTP request stubbing and mocking
 - **SimpleCov** - Coverage measurement
+
+### Code Quality
 - **RuboCop** - Code style enforcement
-- **Steep** - Static type checking
+  - `rubocop-performance` - Performance cops
+  - `rubocop-rake` - Rake-specific cops
+  - `rubocop-rspec` - RSpec-specific cops
+  - `rubocop-thread_safety` - Thread safety cops
+  - `docquet` - Shared RuboCop configuration
+
+### Type Checking
+- **Steep** - Static type checker for Ruby
+- **RBS** - Ruby type signature files (in `sig/` directory)
+
+### Documentation
 - **YARD** - Documentation generation
 
 ## Related Documentation
