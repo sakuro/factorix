@@ -18,23 +18,17 @@ module Factorix
         # Get the Program Files (x86) directory path (WSL-converted)
         #
         # @return [Pathname] the Program Files (x86) directory
-        def program_files_x86
-          @program_files_x86 ||= Pathname(wslpath(windows_env("ProgramFiles(x86)")))
-        end
+        def program_files_x86 = @program_files_x86 ||= Pathname(wslpath(windows_env("ProgramFiles(x86)")))
 
         # Get the AppData directory path (WSL-converted)
         #
         # @return [Pathname] the AppData directory
-        def app_data
-          @app_data ||= Pathname(wslpath(windows_env("APPDATA")))
-        end
+        def app_data = @app_data ||= Pathname(wslpath(windows_env("APPDATA")))
 
         # Get the Local AppData directory path (WSL-converted)
         #
         # @return [Pathname] the Local AppData directory
-        def local_app_data
-          @local_app_data ||= Pathname(wslpath(windows_env("LOCALAPPDATA")))
-        end
+        def local_app_data = @local_app_data ||= Pathname(wslpath(windows_env("LOCALAPPDATA")))
 
         # Get Windows environment variable value
         #
@@ -60,9 +54,7 @@ module Factorix
         #
         # @param path [String] Windows-style path to convert
         # @return [String] equivalent WSL path
-        private def wslpath(path)
-          %x(wslpath "#{path}").chomp
-        end
+        private def wslpath(path) = %x(wslpath "#{path}").chomp
       end
     end
   end

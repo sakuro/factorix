@@ -24,13 +24,7 @@ module Factorix
       # @param format [String] progress presenter format string (default: generic format)
       # @return [void]
       def start(total: nil, format: nil)
-        format ||= if total.nil?
-                     # Indeterminate progress bar (no total)
-                     "#{@title} [:bar] :current"
-                   else
-                     # Determinate progress bar (with total)
-                     "#{@title} [:bar] :percent :current/:total"
-                   end
+        format ||= total.nil? ? "#{@title} [:bar] :current" : "#{@title} [:bar] :percent :current/:total"
         @tty_bar = TTY::ProgressBar.new(
           format,
           total:,

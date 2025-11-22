@@ -16,15 +16,7 @@ module Factorix
       def initialize(title: "Progress", output: $stderr)
         @title = title
         @output = output
-        @multi = TTY::ProgressBar::Multi.new(
-          @title,
-          output: @output,
-          style: {
-            top: "",
-            middle: "",
-            bottom: ""
-          }
-        )
+        @multi = TTY::ProgressBar::Multi.new(@title, output: @output, style: {top: "", middle: "", bottom: ""})
         @presenters = {}
         @mutex = Mutex.new
       end

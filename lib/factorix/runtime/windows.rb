@@ -41,23 +41,17 @@ module Factorix
       # Get the default cache home directory for Windows
       #
       # @return [Pathname] the default cache home directory
-      private def default_cache_home_dir
-        path.local_app_data
-      end
+      private def default_cache_home_dir = path.local_app_data
 
       # Get the default config home directory for Windows
       #
       # @return [Pathname] the default config home directory
-      private def default_config_home_dir
-        path.app_data
-      end
+      private def default_config_home_dir = path.app_data
 
       # Get the default data home directory for Windows
       #
       # @return [Pathname] the default data home directory
-      private def default_data_home_dir
-        path.local_app_data
-      end
+      private def default_data_home_dir = path.local_app_data
 
       # Windows-specific path provider
       class WindowsPath
@@ -84,9 +78,7 @@ module Factorix
         #
         # @param path_string [String] the path string with backslashes
         # @return [String] the path string with forward slashes
-        private def convert_separator(path_string)
-          path_string.tr(File::ALT_SEPARATOR, File::SEPARATOR)
-        end
+        private def convert_separator(path_string) = path_string.tr(File::ALT_SEPARATOR, File::SEPARATOR)
       end
     end
   end

@@ -26,7 +26,7 @@ RSpec.describe Factorix::Runtime::Linux do
   describe "#xdg_cache_home_dir" do
     context "when XDG_CACHE_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
@@ -39,7 +39,7 @@ RSpec.describe Factorix::Runtime::Linux do
   describe "#xdg_config_home_dir" do
     context "when XDG_CONFIG_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CONFIG_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CONFIG_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
@@ -52,7 +52,7 @@ RSpec.describe Factorix::Runtime::Linux do
   describe "#xdg_data_home_dir" do
     context "when XDG_DATA_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_DATA_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_DATA_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 

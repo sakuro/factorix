@@ -28,7 +28,7 @@ RSpec.describe Factorix::Runtime::MacOS do
   describe "#xdg_cache_home_dir" do
     context "when XDG_CACHE_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME") {|_, &block| block.call }
       end
 
       it "returns ~/Library/Caches" do
@@ -38,7 +38,6 @@ RSpec.describe Factorix::Runtime::MacOS do
 
     context "when XDG_CACHE_HOME is set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(true)
         allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME").and_return("/custom/cache")
       end
 
@@ -51,7 +50,7 @@ RSpec.describe Factorix::Runtime::MacOS do
   describe "#xdg_config_home_dir" do
     context "when XDG_CONFIG_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CONFIG_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CONFIG_HOME") {|_, &block| block.call }
       end
 
       it "returns ~/Library/Application Support" do
@@ -63,7 +62,7 @@ RSpec.describe Factorix::Runtime::MacOS do
   describe "#xdg_data_home_dir" do
     context "when XDG_DATA_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_DATA_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_DATA_HOME") {|_, &block| block.call }
       end
 
       it "returns ~/Library/Application Support" do
@@ -75,7 +74,7 @@ RSpec.describe Factorix::Runtime::MacOS do
   describe "#factorix_cache_dir" do
     context "when XDG_CACHE_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME") {|_, &block| block.call }
       end
 
       it "returns ~/Library/Caches/factorix" do

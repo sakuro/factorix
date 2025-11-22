@@ -15,12 +15,7 @@ module Factorix
       #
       # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_upload_started(event)
-        @presenter.start(
-          total: event[:total_size],
-          format: "Uploading [:bar] :percent :byte/:total_byte"
-        )
-      end
+      def on_upload_started(event) = @presenter.start(total: event[:total_size], format: "Uploading [:bar] :percent :byte/:total_byte")
 
       # Handle upload progress event
       #

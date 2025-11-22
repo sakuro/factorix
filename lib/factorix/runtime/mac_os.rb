@@ -33,26 +33,21 @@ module Factorix
       #
       # @return [Pathname] the Factorix log file path
       def factorix_log_path = Pathname(Dir.home).join("Library/Logs/factorix/factorix.log")
+
       # Get the default cache home directory for macOS
       #
       # @return [Pathname] the default cache home directory
-      private def default_cache_home_dir
-        Pathname(Dir.home).join("Library/Caches")
-      end
+      private def default_cache_home_dir = Pathname(Dir.home).join("Library/Caches")
 
       # Get the default config home directory for macOS
       #
       # @return [Pathname] the default config home directory
-      private def default_config_home_dir
-        Pathname(Dir.home).join("Library/Application Support")
-      end
+      private def default_config_home_dir = Pathname(Dir.home).join("Library/Application Support")
 
       # Get the default data home directory for macOS
       #
       # @return [Pathname] the default data home directory
-      private def default_data_home_dir
-        Pathname(Dir.home).join("Library/Application Support")
-      end
+      private def default_data_home_dir = Pathname(Dir.home).join("Library/Application Support")
     end
   end
 end

@@ -84,7 +84,6 @@ RSpec.describe Factorix::Runtime::Base do
   describe "#xdg_cache_home_dir" do
     context "when XDG_CACHE_HOME is set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(true)
         allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME").and_return("/custom/cache")
       end
 
@@ -95,7 +94,7 @@ RSpec.describe Factorix::Runtime::Base do
 
     context "when XDG_CACHE_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CACHE_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CACHE_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
@@ -108,7 +107,6 @@ RSpec.describe Factorix::Runtime::Base do
   describe "#xdg_config_home_dir" do
     context "when XDG_CONFIG_HOME is set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CONFIG_HOME").and_return(true)
         allow(ENV).to receive(:fetch).with("XDG_CONFIG_HOME").and_return("/custom/config")
       end
 
@@ -119,7 +117,7 @@ RSpec.describe Factorix::Runtime::Base do
 
     context "when XDG_CONFIG_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_CONFIG_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_CONFIG_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
@@ -132,7 +130,6 @@ RSpec.describe Factorix::Runtime::Base do
   describe "#xdg_data_home_dir" do
     context "when XDG_DATA_HOME is set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_DATA_HOME").and_return(true)
         allow(ENV).to receive(:fetch).with("XDG_DATA_HOME").and_return("/custom/data")
       end
 
@@ -143,7 +140,7 @@ RSpec.describe Factorix::Runtime::Base do
 
     context "when XDG_DATA_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_DATA_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_DATA_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
@@ -156,7 +153,6 @@ RSpec.describe Factorix::Runtime::Base do
   describe "#xdg_state_home_dir" do
     context "when XDG_STATE_HOME is set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(true)
         allow(ENV).to receive(:fetch).with("XDG_STATE_HOME").and_return("/custom/state")
       end
 
@@ -167,7 +163,7 @@ RSpec.describe Factorix::Runtime::Base do
 
     context "when XDG_STATE_HOME is not set" do
       before do
-        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(false)
+        allow(ENV).to receive(:fetch).with("XDG_STATE_HOME") {|_, &block| block.call }
         allow(Dir).to receive(:home).and_return("/home/wube")
       end
 
