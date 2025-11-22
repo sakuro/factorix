@@ -122,17 +122,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
     end
 
-    context "when errors occur" do
+    context "when mod not found" do
       before do
         allow(portal).to receive(:get_mod_full).and_raise(
-          Factorix::HTTPClientError.new("404 Not Found")
+          Factorix::MODNotOnPortalError.new("MOD 'non-existent-mod' not found on portal")
         )
       end
 
-      it "raises HTTPClientError" do
+      it "raises MODNotOnPortalError" do
         expect {
           command.call(mod_name: "non-existent-mod")
-        }.to raise_error(Factorix::HTTPClientError, /404 Not Found/)
+        }.to raise_error(Factorix::MODNotOnPortalError, /not found on portal/)
       end
     end
   end

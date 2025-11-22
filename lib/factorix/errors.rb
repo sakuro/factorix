@@ -14,7 +14,20 @@ module Factorix
 
   # HTTP errors
   class HTTPError < InfrastructureError; end
-  class HTTPClientError < HTTPError; end
+
+  # HTTP client error (4xx) with optional API error details
+  class HTTPClientError < HTTPError
+    attr_reader :api_error
+    attr_reader :api_message
+
+    def initialize(message=nil, api_error: nil, api_message: nil)
+      @api_error = api_error
+      @api_message = api_message
+      super(message)
+    end
+  end
+
+  class HTTPNotFoundError < HTTPClientError; end
   class HTTPServerError < HTTPError; end
 
   # File format related errors
@@ -36,6 +49,7 @@ module Factorix
 
   # MOD errors
   class MODNotFoundError < DomainError; end
+  class MODNotOnPortalError < MODNotFoundError; end
 
   # Dependency validation errors
   class ValidationError < DomainError; end

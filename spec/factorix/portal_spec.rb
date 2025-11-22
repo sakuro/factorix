@@ -144,7 +144,7 @@ RSpec.describe Factorix::Portal do
     context "when mod does not exist (new mod)" do
       before do
         allow(mod_portal_api).to receive(:get_mod).with("test-mod")
-          .and_raise(Factorix::HTTPClientError.new("404 Not Found"))
+          .and_raise(Factorix::MODNotOnPortalError.new("MOD 'test-mod' not found on portal"))
         allow(mod_management_api).to receive(:init_publish).with("test-mod").and_return(upload_url)
         allow(mod_management_api).to receive(:finish_upload)
       end

@@ -102,9 +102,7 @@ module Factorix
         get_mod(mod_name)
         logger.info("Uploading new release to existing mod", mod: mod_name)
         true
-      rescue HTTPClientError => e
-        raise unless e.message.include?("404")
-
+      rescue MODNotOnPortalError
         logger.info("Publishing new mod", mod: mod_name)
         false
       end

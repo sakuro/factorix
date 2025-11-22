@@ -16,6 +16,13 @@ module Factorix
   end
 
   class HTTPClientError < HTTPError
+    attr_reader api_error: String?
+    attr_reader api_message: String?
+
+    def initialize: (?String? message, ?api_error: String?, ?api_message: String?) -> void
+  end
+
+  class HTTPNotFoundError < HTTPClientError
   end
 
   class HTTPServerError < HTTPError
@@ -43,5 +50,8 @@ module Factorix
   end
 
   class MODNotFoundError < DomainError
+  end
+
+  class MODNotOnPortalError < MODNotFoundError
   end
 end

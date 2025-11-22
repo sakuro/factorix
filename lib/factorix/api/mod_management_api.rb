@@ -72,7 +72,8 @@ module Factorix
       #
       # @param mod_name [String] the mod name
       # @return [URI::HTTPS] upload URL
-      # @raise [HTTPClientError] for 4xx errors (e.g., mod doesn't exist)
+      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def init_upload(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_upload")
@@ -82,6 +83,8 @@ module Factorix
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
 
         parse_upload_url(response)
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
       end
 
       # Complete upload (works for both publish and update scenarios)
@@ -123,7 +126,8 @@ module Factorix
       # @option metadata [String] :faq FAQ text
       # @option metadata [Boolean] :deprecated Deprecation flag
       # @return [void]
-      # @raise [HTTPClientError] for 4xx errors
+      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def edit_details(mod_name, **metadata)
         validate_metadata!(metadata, ALLOWED_EDIT_METADATA, "edit_details")
@@ -141,13 +145,16 @@ module Factorix
         logger.info("Editing mod details", mod: mod_name, fields: metadata.keys)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Edit completed successfully")
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
       end
 
       # Initialize image upload for a mod
       #
       # @param mod_name [String] the mod name
       # @return [URI::HTTPS] upload URL
-      # @raise [HTTPClientError] for 4xx errors
+      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def init_image_upload(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/images/add")
@@ -157,6 +164,8 @@ module Factorix
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
 
         parse_upload_url(response)
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
       end
 
       # Complete image upload
@@ -183,7 +192,8 @@ module Factorix
       # @param mod_name [String] the mod name
       # @param image_ids [Array<String>] array of image IDs (SHA1 hashes)
       # @return [void]
-      # @raise [HTTPClientError] for 4xx errors
+      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def edit_images(mod_name, image_ids)
         raise ArgumentError, "image_ids must be an array" unless image_ids.is_a?(Array)
@@ -197,6 +207,8 @@ module Factorix
         logger.info("Editing mod images", mod: mod_name, image_count: image_ids.size)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Images updated successfully")
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
       end
 
       private def api_credential

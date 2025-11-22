@@ -219,16 +219,29 @@ RSpec.describe Factorix::HTTP::Client do
   end
 
   describe "error handling" do
-    context "with 404 client error" do
+    context "with 404 not found error" do
       before do
         stub_request(:get, "https://example.com/api/endpoint")
           .to_return(status: [404, "Not Found"], body: "Not Found")
       end
 
+      it "raises HTTPNotFoundError" do
+        expect {
+          client.get(uri)
+        }.to raise_error(Factorix::HTTPNotFoundError, "404 Not Found")
+      end
+    end
+
+    context "with 400 bad request error" do
+      before do
+        stub_request(:get, "https://example.com/api/endpoint")
+          .to_return(status: [400, "Bad Request"], body: "Bad Request")
+      end
+
       it "raises HTTPClientError" do
         expect {
           client.get(uri)
-        }.to raise_error(Factorix::HTTPClientError, "404 Not Found")
+        }.to raise_error(Factorix::HTTPClientError, "400 Bad Request")
       end
     end
 
@@ -255,6 +268,86 @@ RSpec.describe Factorix::HTTP::Client do
         expect {
           client.get(uri)
         }.to raise_error(Factorix::HTTPServerError, "503 Service Unavailable")
+      end
+    end
+
+    context "with JSON error response containing message" do
+      before do
+        stub_request(:get, "https://example.com/api/endpoint")
+          .to_return(
+            status: [404, "Not Found"],
+            body: '{"message": "Mod not found"}',
+            headers: {"Content-Type" => "application/json"}
+          )
+      end
+
+      it "parses api_message from JSON response" do
+        expect {
+          client.get(uri)
+        }.to raise_error(Factorix::HTTPNotFoundError) do |error|
+          expect(error.api_message).to eq("Mod not found")
+          expect(error.api_error).to be_nil
+        end
+      end
+    end
+
+    context "with JSON error response containing error and message" do
+      before do
+        stub_request(:get, "https://example.com/api/endpoint")
+          .to_return(
+            status: [400, "Bad Request"],
+            body: '{"error": "InvalidApiKey", "message": "Missing or invalid API key"}',
+            headers: {"Content-Type" => "application/json"}
+          )
+      end
+
+      it "parses both api_error and api_message from JSON response" do
+        expect {
+          client.get(uri)
+        }.to raise_error(Factorix::HTTPClientError) do |error|
+          expect(error.api_error).to eq("InvalidApiKey")
+          expect(error.api_message).to eq("Missing or invalid API key")
+        end
+      end
+    end
+
+    context "with non-JSON error response" do
+      before do
+        stub_request(:get, "https://example.com/api/endpoint")
+          .to_return(
+            status: [404, "Not Found"],
+            body: "<html>Not Found</html>",
+            headers: {"Content-Type" => "text/html"}
+          )
+      end
+
+      it "does not set api_error or api_message" do
+        expect {
+          client.get(uri)
+        }.to raise_error(Factorix::HTTPNotFoundError) do |error|
+          expect(error.api_error).to be_nil
+          expect(error.api_message).to be_nil
+        end
+      end
+    end
+
+    context "with invalid JSON error response" do
+      before do
+        stub_request(:get, "https://example.com/api/endpoint")
+          .to_return(
+            status: [400, "Bad Request"],
+            body: "not valid json",
+            headers: {"Content-Type" => "application/json"}
+          )
+      end
+
+      it "does not set api_error or api_message" do
+        expect {
+          client.get(uri)
+        }.to raise_error(Factorix::HTTPClientError) do |error|
+          expect(error.api_error).to be_nil
+          expect(error.api_message).to be_nil
+        end
       end
     end
   end

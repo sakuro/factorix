@@ -67,22 +67,28 @@ module Factorix
       #
       # @param name [String] mod name
       # @return [Hash{Symbol => untyped}] parsed JSON response with mod metadata and releases
+      # @raise [MODNotOnPortalError] if mod not found on portal
       def get_mod(name)
         logger.debug "Fetching mod: name=#{name}"
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}")
         fetch_with_cache(uri)
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
       end
 
       # Retrieve detailed information for a specific mod
       #
       # @param name [String] mod name
       # @return [Hash{Symbol => untyped}] parsed JSON response with full mod details including dependencies
+      # @raise [MODNotOnPortalError] if mod not found on portal
       def get_mod_full(name)
         logger.debug "Fetching full mod info: name=#{name}"
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}/full")
         fetch_with_cache(uri)
+      rescue HTTPNotFoundError => e
+        raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
       end
 
       private def build_uri(path, **params)

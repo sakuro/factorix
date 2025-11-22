@@ -90,9 +90,15 @@ module Factorix
           # Follow redirect (always as GET)
           perform_request(:get, redirect_url, redirect_count: redirect_count + 1, headers: {}, body: nil, &block)
 
+        when Net::HTTPNotFound
+          api_error, api_message = parse_api_error(response)
+          logger.error("HTTP not found", code: response.code, message: response.message, api_message:)
+          raise HTTPNotFoundError.new("#{response.code} #{response.message}", api_error:, api_message:)
+
         when Net::HTTPClientError
-          logger.error("HTTP client error", code: response.code, message: response.message)
-          raise HTTPClientError, "#{response.code} #{response.message}"
+          api_error, api_message = parse_api_error(response)
+          logger.error("HTTP client error", code: response.code, message: response.message, api_message:)
+          raise HTTPClientError.new("#{response.code} #{response.message}", api_error:, api_message:)
 
         when Net::HTTPServerError
           logger.error("HTTP server error", code: response.code, message: response.message)
@@ -103,6 +109,22 @@ module Factorix
         end
       rescue URI::InvalidURIError
         raise HTTPError, "Invalid redirect URI: #{response["Location"]}"
+      end
+
+      # Parse API error response body for error and message fields
+      #
+      # @param response [Net::HTTPResponse] HTTP response
+      # @return [Array(String, String), Array(nil, nil)] tuple of [api_error, api_message]
+      private def parse_api_error(response)
+        return [nil, nil] unless response.content_type&.include?("application/json")
+
+        body = response.body
+        return [nil, nil] if body.nil? || body.empty?
+
+        json = JSON.parse(body, symbolize_names: true)
+        [json[:error], json[:message]]
+      rescue JSON::ParserError
+        [nil, nil]
       end
 
       private def build_request(method, uri, headers:, body:)

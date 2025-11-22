@@ -115,21 +115,21 @@ RSpec.describe Factorix::Transfer::Downloader do
       end
     end
 
-    context "when download fails" do
+    context "when download fails with 404" do
       before do
         allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
         allow(cache).to receive(:with_lock).with(cache_key).and_yield
-        allow(client).to receive(:get).and_raise(Factorix::HTTPClientError.new("404 Not Found"))
+        allow(client).to receive(:get).and_raise(Factorix::HTTPNotFoundError.new("404 Not Found"))
       end
 
-      it "raises HTTPClientError" do
-        expect { downloader.download(uri, output) }.to raise_error(Factorix::HTTPClientError)
+      it "raises HTTPNotFoundError" do
+        expect { downloader.download(uri, output) }.to raise_error(Factorix::HTTPNotFoundError)
       end
 
       it "cleans up temporary files" do
         begin
           downloader.download(uri, output)
-        rescue Factorix::HTTPClientError
+        rescue Factorix::HTTPNotFoundError
           # Expected exception
         end
 
