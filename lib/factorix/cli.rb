@@ -26,6 +26,7 @@ module Factorix
     register "mod download", Commands::MOD::Download
     register "mod upload", Commands::MOD::Upload
     register "mod edit", Commands::MOD::Edit
+    register "mod search", Commands::MOD::Search
     register "mod sync", Commands::MOD::Sync
     register "mod image list", Commands::MOD::Image::List
     register "mod image add", Commands::MOD::Image::Add
