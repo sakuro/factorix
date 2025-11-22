@@ -77,7 +77,12 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            installed_mods = InstalledMOD.all
+            presenter = Progress::Presenter.new(
+              title: "\u{1F50D}\u{FE0E} Scanning MODs",
+              output: $stderr
+            )
+            handler = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
 
             # Build list of MOD info

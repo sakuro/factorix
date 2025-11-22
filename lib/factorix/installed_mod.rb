@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/events"
+
 module Factorix
   InstalledMOD = Data.define(:mod, :version, :form, :path, :info)
 
@@ -37,8 +39,15 @@ module Factorix
 
     # Get all installed MODs
     #
+    # @param handler [Progress::ScanHandler, nil] optional event handler for progress tracking
     # @return [Array<InstalledMOD>] Array of all installed MODs
-    def self.all = Scanner.new.scan
+    def self.all(handler: nil)
+      scanner = Scanner.new
+      scanner.subscribe(handler) if handler
+      result = scanner.scan
+      scanner.unsubscribe(handler) if handler
+      result
+    end
 
     # Enumerate over all installed MODs
     #
@@ -92,14 +101,21 @@ module Factorix
     #
     # Scans mod directory and data directory for installed MODs.
     # Gets directory paths from Runtime automatically.
+    # Publishes progress events during scan.
     class Scanner
       include Import[:runtime, :logger]
+      include Dry::Events::Publisher[:scanner]
+
+      register_event("scan.started")
+      register_event("scan.progress")
+      register_event("scan.completed")
 
       # Scan directories for installed MODs
       #
       # Scans the mod directory for both ZIP and directory form MODs.
       # Also scans the data directory for base/expansion MODs.
       # Invalid packages are skipped with debug logging.
+      # Publishes scan.started, scan.progress, and scan.completed events.
       #
       # @return [Array<InstalledMOD>] Array of installed MODs
       def scan
@@ -107,8 +123,23 @@ module Factorix
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
+        # Collect all paths to scan
+        mod_paths = mod_dir.children
+        data_paths = data_dir.children.select {|path|
+          next false unless path.directory?
+
+          mod_name = path.basename.to_s
+          candidate_mod = MOD[name: mod_name]
+          candidate_mod.base? || candidate_mod.expansion?
+        }
+
+        total = mod_paths.size + data_paths.size
+        current = 0
+
+        publish("scan.started", total:)
+
         # Scan user MOD directory
-        mod_dir.children.each do |path|
+        mod_paths.each do |path|
           if path.file? && path.extname == ".zip"
             begin
               installed_mods << InstalledMOD.from_zip(path)
@@ -126,17 +157,12 @@ module Factorix
               logger.debug("Skipping invalid directory MOD package", path: path.to_s, error: e.message)
             end
           end
+          current += 1
+          publish("scan.progress", current:, total:)
         end
 
         # Scan data directory for base/expansion MODs only
-        data_dir.children.each do |path|
-          next unless path.directory?
-
-          # Skip non-base/expansion directories to avoid unnecessary error logs
-          mod_name = path.basename.to_s
-          candidate_mod = MOD[name: mod_name]
-          next unless candidate_mod.base? || candidate_mod.expansion?
-
+        data_paths.each do |path|
           begin
             installed_mods << InstalledMOD.from_directory(path)
           rescue ArgumentError => e
@@ -144,7 +170,11 @@ module Factorix
           rescue => e
             logger.debug("Skipping invalid directory MOD package", path: path.to_s, error: e.message)
           end
+          current += 1
+          publish("scan.progress", current:, total:)
         end
+
+        publish("scan.completed", total: installed_mods.size)
 
         # Resolve duplicates and sort by version descending
         resolved = resolve_duplicates(installed_mods)
