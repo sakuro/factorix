@@ -29,6 +29,13 @@ module Factorix
       # @return [Pathname] the Factorio user directory
       def user_dir = path.app_data.join("Factorio")
 
+      # Get the Factorio data directory path
+      #
+      # This directory contains the base game data and built-in expansion MODs.
+      #
+      # @return [Pathname] the Factorio data directory
+      def data_dir = path.program_files_x86.join("Steam/steamapps/common/Factorio/data")
+
       private attr_reader :path
 
       # Get the default cache home directory for Windows

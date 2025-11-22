@@ -19,7 +19,9 @@ Component that abstracts various runtime environments.
 
 Each Runtime class provides methods such as:
 
+- `executable_path` - Get Factorio executable path (platform-specific, abstract)
 - `user_dir` - Get Factorio user directory path (platform-specific, abstract)
+- `data_dir` - Get Factorio data directory path (platform-specific, abstract)
 - `mods_dir` - Get MOD directory path (derived from user_dir)
 - `player_data_path` - Get player-data.json path (derived from user_dir)
 - `xdg_cache_home_dir` - Get XDG cache home directory (platform-aware)
