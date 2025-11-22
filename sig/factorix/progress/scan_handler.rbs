@@ -1,0 +1,16 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Progress
+    class ScanHandler
+      @presenter: Presenter | PresenterAdapter
+
+      def initialize: (Presenter | PresenterAdapter presenter) -> void
+      def on_scan_started: (Hash[Symbol, untyped] event) -> void
+      def on_scan_progress: (Hash[Symbol, untyped] event) -> void
+      def on_scan_completed: (Hash[Symbol, untyped] event) -> void
+    end
+  end
+end
