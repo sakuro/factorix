@@ -105,7 +105,7 @@ module Factorix
               title: "\u{1F50D}\u{FE0E} Checking for updates",
               output: $stderr
             )
-            presenter.start
+            presenter.start(total: target_mods.size)
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 
@@ -118,6 +118,7 @@ module Factorix
             }
 
             results = futures.filter_map(&:value!)
+            presenter.finish
             results
           ensure
             pool&.shutdown
