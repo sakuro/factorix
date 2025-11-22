@@ -29,26 +29,6 @@ Factorix simplifies Factorio mod management by providing:
 - Factorio API Key (required for uploading mods and editing mod metadata)
   - Obtain your API key from [Factorio Profile](https://factorio.com/profile)
 
-## Installation
-
-Install the gem:
-
-```bash
-gem install factorix
-```
-
-Or add to your Gemfile:
-
-```ruby
-gem 'factorix'
-```
-
-Then execute:
-
-```bash
-bundle install
-```
-
 ## Setup
 
 For uploading mods or editing mod metadata, set the `FACTORIO_API_KEY` environment variable:
