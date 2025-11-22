@@ -66,7 +66,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
       end
 
       it "re-raises the error" do
-        expect { command.call(json: false) }.to raise_error(StandardError, "Runtime error")
+        expect { capture_stdout { command.call(json: false) } }.to raise_error(StandardError, "Runtime error")
       end
     end
   end
