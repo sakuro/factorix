@@ -17,26 +17,11 @@ module Factorix
 
           desc "List installed MODs"
 
-          option :enabled,
-            type: :boolean,
-            default: false,
-            desc: "Show only enabled MODs"
-          option :disabled,
-            type: :boolean,
-            default: false,
-            desc: "Show only disabled MODs"
-          option :errors,
-            type: :boolean,
-            default: false,
-            desc: "Show only MODs with dependency errors"
-          option :outdated,
-            type: :boolean,
-            default: false,
-            desc: "Show only MODs with available updates"
-          option :json,
-            type: :boolean,
-            default: false,
-            desc: "Output in JSON format"
+          option :enabled, type: :boolean, default: false, desc: "Show only enabled MODs"
+          option :disabled, type: :boolean, default: false, desc: "Show only disabled MODs"
+          option :errors, type: :boolean, default: false, desc: "Show only MODs with dependency errors"
+          option :outdated, type: :boolean, default: false, desc: "Show only MODs with available updates"
+          option :json, type: :boolean, default: false, desc: "Output in JSON format"
 
           # MOD information for display
           MODInfo = Data.define(:name, :version, :enabled, :error, :latest_version)

@@ -16,11 +16,7 @@ module Factorix
         # @param base [Class] the class including this module
         def self.included(base)
           base.class_eval do
-            option :yes,
-              type: :boolean,
-              default: false,
-              aliases: ["-y"],
-              desc: "Skip confirmation prompts"
+            option :yes, type: :boolean, default: false, aliases: ["-y"], desc: "Skip confirmation prompts"
           end
         end
 

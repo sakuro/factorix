@@ -21,10 +21,7 @@ module Factorix
           desc "Uninstall MODs from mod directory"
 
           argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
-          option :all,
-            type: :boolean,
-            default: false,
-            desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
+          option :all, type: :boolean, default: false, desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
 
           # Internal structure to represent an uninstall target
           UninstallTarget = Data.define(:mod, :version) {
