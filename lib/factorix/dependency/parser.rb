@@ -133,12 +133,7 @@ module Factorix
         Types::MODVersionRequirement[operator:, version:]
       rescue RangeError => e
         # Skip version requirements with out-of-range version components
-        logger = begin
-          Application[:logger]
-        rescue
-          nil
-        end
-        logger&.warn("Skipping version requirement '#{version_string}': #{e.message}")
+        Application[:logger].warn("Skipping version requirement '#{version_string}': #{e.message}")
         nil
       rescue ArgumentError => e
         raise ArgumentError, "Invalid version requirement: #{e.message}"

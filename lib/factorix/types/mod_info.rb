@@ -150,12 +150,7 @@ module Factorix
 
           URI(value)
         rescue URI::InvalidURIError => e
-          logger = begin
-            Application[:logger]
-          rescue
-            nil
-          end
-          logger&.warn("Skipping invalid URI '#{value}': #{e.message}")
+          Application[:logger].warn("Skipping invalid URI '#{value}': #{e.message}")
           nil
         end
       end
@@ -197,12 +192,7 @@ module Factorix
             Release[**r]
           rescue RangeError => e
             # Skip releases with invalid version numbers
-            logger = begin
-              Application[:logger]
-            rescue
-              nil
-            end
-            logger&.warn("Skipping release #{name}@#{r[:version]}: #{e.message}")
+            Application[:logger].warn("Skipping release #{name}@#{r[:version]}: #{e.message}")
             nil
           end
         }
