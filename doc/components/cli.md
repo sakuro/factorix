@@ -45,7 +45,6 @@ factorix launch -- --verbose --benchmark save.zip
 
 **Features**:
 - Pass options to Factorio (after `--`)
-- Prevent multiple simultaneous launches
 - Automatically wait for termination for certain commands
 
 ### MOD::Enable
@@ -71,7 +70,7 @@ factorix mod download some-mod --directory=/tmp/mods
 
 **Behavior**:
 - Download to any location (specify with `--directory` or `-d`, defaults to current directory)
-- Don't consider dependencies
+- Dependencies are not included by default (use `--recursive` to include them, but not yet implemented)
 - Don't modify `mod-list.json`
 - Use cache
 
@@ -133,7 +132,7 @@ factorix mod uninstall some-mod
 
 **Error Example**:
 ```
-Error: Cannot uninstall base
+Error: Cannot uninstall some-library-mod
   - Required by: some-mod@1.2.0, another-mod@3.0.0
   - Uninstall these mods first, or disable them
 ```

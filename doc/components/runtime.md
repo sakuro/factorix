@@ -78,8 +78,6 @@ end
 2. Platform-specific auto-detection
 3. Raises `ConfigurationError` if neither is available
 
-All path resolution decisions are logged at DEBUG level.
-
 ## File Structure
 
 ```

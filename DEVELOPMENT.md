@@ -110,7 +110,7 @@ factorix/
 - **`Factorix::Portal`** - High-level API facade
 - **`Factorix::CLI`** - Command registry (Dry::CLI)
 - **`Factorix::MOD`** - Mod entity representation
-- **`Factorix::Dependency::Resolver`** - Dependency resolution
+- **`Factorix::Dependency`** - Dependency resolution
 - **`Factorix::SaveFile`** - Save file information
 
 ### Design Patterns
@@ -407,9 +407,9 @@ bundle exec exe/factorix path
 ```
 
 **Log file locations:**
-- **Factorix log**: `factorix-log-path` - Factorix application logs
-- **Factorio current log**: `current-log-path` - Current Factorio session log
-- **Factorio previous log**: `previous-log-path` - Previous Factorio session log
+- **Factorix log**: `factorix_log_path` - Factorix application logs
+- **Factorio current log**: `current_log_path` - Current Factorio session log
+- **Factorio previous log**: `previous_log_path` - Previous Factorio session log
 
 **Accessing log paths programmatically:**
 ```ruby

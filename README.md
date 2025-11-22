@@ -1,11 +1,11 @@
 # Factorix
 
-A comprehensive Ruby gem for managing Factorio mods, providing both a command-line interface and a library API for programmatic mod management.
+A Ruby gem for managing Factorio mods, providing both a command-line interface and a library API for programmatic mod management.
 
 ## Overview
 
 Factorix simplifies Factorio mod management by providing:
-- A powerful CLI tool for everyday mod operations
+- A CLI tool for everyday mod operations
 - A library API for building custom mod management tools
 - Automatic dependency resolution and validation
 - JSON-based mod settings export/import
@@ -63,7 +63,7 @@ API key is not required for downloading, installing, or managing local mods.
 
 ### Path Configuration
 
-Factorix auto-detects Factorio installation paths on most platforms. If auto-detection fails or you want to override the detected paths, create a configuration file.
+Factorix auto-detects Factorio installation paths for Steam installations. For other environments or to override the detected paths, create a configuration file.
 
 **Find configuration file location:**
 ```bash
@@ -121,7 +121,7 @@ Check MOD dependencies:
 factorix mod check
 ```
 
-Install MODs from Factorio MOD Portal:
+Install MODs and their dependencies from Factorio MOD Portal:
 ```bash
 factorix mod install MOD_NAME
 factorix mod install MOD_NAME@VERSION

@@ -45,7 +45,6 @@ end
 
 ## Container Registration
 
-- `cache` - Cache instance
 - `logger` - Logger instance
 - `retry_strategy` - Retry strategy
 - `service_credential` - Factorio service credentials
@@ -75,7 +74,7 @@ end
 Import = Dry::AutoInject(Factorix::Application)
 
 class SomeClass
-  include Import[:cache, :logger]
+  include Import[:logger, cache: :api_cache]
 end
 ```
 

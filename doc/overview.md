@@ -13,7 +13,6 @@ Provide both command-line and programmatic interfaces for Factorio mod managemen
 ### 1. Game Information and Control
 - Retrieve Factorio installation paths and directories
 - Launch Factorio with custom options
-- Prevent multiple simultaneous launches
 - Automatic process management for certain commands
 
 ### 2. MOD Management
@@ -32,13 +31,10 @@ Provide both command-line and programmatic interfaces for Factorio mod managemen
 
 ### 4. Settings Management
 - Export/import mod settings in JSON format
-- Binary format support (mod-settings.dat)
-- Three setting types: startup, runtime-global, runtime-per-user
 
 ### 5. Save File Analysis
 - Extract MOD information from Factorio save files
 - Parse startup settings from save files
-- Support for both level.dat0 and level-init.dat formats
 
 ### 6. MOD Portal Integration
 - **Upload**: Publish new MODs or updates
@@ -48,12 +44,10 @@ Provide both command-line and programmatic interfaces for Factorio mod managemen
 
 ## Key Technical Features
 
-- **Cross-platform**: Windows, Linux, macOS, WSL support
 - **Dependency Injection**: Clean architecture using dry-rb
 - **HTTP Caching**: File system-based cache with decorator pattern
 - **Retry Strategy**: Automatic retry for network operations
 - **Progress Tracking**: Multi-presenter progress bars for downloads
-- **Type Safety**: RBS type signatures
 - **Concurrent Downloads**: Parallel processing for bulk operations
 
 ## Related Documentation

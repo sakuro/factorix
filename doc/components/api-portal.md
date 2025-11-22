@@ -197,7 +197,6 @@ Class that wraps the API for more object-oriented handling.
 ### Design Policy
 
 - Convert Hash received from API layer to Types::*
-- Use argument forwarding (`...`) to pass parameters transparently to API layer
 - Implement business logic
 - Used directly from CLI layer
 

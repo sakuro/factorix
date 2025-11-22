@@ -23,7 +23,10 @@ Authentication credentials for MOD downloads (username + token). Used for authen
 ### Usage Example
 
 ```ruby
-credential = ServiceCredential.new
+credential = ServiceCredential.from_env
+# or
+credential = ServiceCredential.from_player_data(runtime:)
+
 credential.username  # => "myusername"
 credential.token     # => "mytoken123"
 ```
@@ -62,8 +65,9 @@ Set in Authorization header as `Bearer {api_key}`.
 ### Usage Example
 
 ```ruby
-credential = APICredential.new
-credential.key  # => "sk_live_xxxxxxxxxx"
+credential = APICredential.from_env
+
+credential.api_key  # => "xxxxxxxxxx"
 ```
 
 ### Consumers
@@ -73,8 +77,21 @@ credential.key  # => "sk_live_xxxxxxxxxx"
 ## dry-container Registration
 
 ```ruby
-Application.register "service_credential" { ServiceCredential.new }
-Application.register "api_credential" { APICredential.new }
+register(:service_credential, memoize: true) do
+  runtime = resolve(:runtime)
+  case config.credential.source
+  when :env
+    ServiceCredential.from_env
+  when :player_data
+    ServiceCredential.from_player_data(runtime:)
+  else
+    raise ArgumentError, "Invalid credential source: #{config.credential.source}"
+  end
+end
+
+register(:api_credential, memoize: true) do
+  APICredential.from_env
+end
 ```
 
 ## Related Documentation

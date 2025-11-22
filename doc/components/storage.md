@@ -13,15 +13,13 @@ Filesystem-based cache (Cache::FileSystem).
 - Define interface to allow backend replacement
 - Cache expiration management
 - API cache and download cache can be created independently
-- They are not shared (separate cache instances)
 
 ### Compression Support
 
 Optional zlib compression for cached data:
 
 - `compression_threshold: nil` - No compression (default)
-- `compression_threshold: 0` - Always compress
-- `compression_threshold: N` - Compress if data >= N bytes
+- `compression_threshold: N` - Compress if data >= N bytes (0 means always compress)
 
 Detection on read uses zlib magic byte (`0x78`) to handle mixed compressed/uncompressed entries within the same cache.
 
@@ -29,7 +27,7 @@ Detection on read uses zlib magic byte (`0x78`) to handle mixed compressed/uncom
 - API cache: `compression_threshold: 0` (JSON responses compress well)
 - Download cache: `compression_threshold: nil` (ZIP files are already compressed)
 
-### Concurrent Access Countermeasures (reference existing implementation)
+### Concurrent Access Countermeasures
 
 - Use file locking (flock)
 - Acquire exclusive lock with `with_lock` method
