@@ -46,13 +46,7 @@ module Factorix
               end
             end
 
-            private
-
-            # Output images in table format
-            #
-            # @param images [Array<Hash>] image data
-            # @return [void]
-            def output_table(images)
+            private def output_table(images)
               if images.empty?
                 say "No images found"
                 return

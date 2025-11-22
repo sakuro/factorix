@@ -61,13 +61,7 @@ module Factorix
           end
         end
 
-        private
-
-        # Output paths in table format
-        #
-        # @param result [Hash<String, String>] path type to path value mapping
-        # @return [void]
-        def output_table(result)
+        private def output_table(result)
           key_width = result.keys.map(&:length).max
           result.each do |key, value|
             say "%-#{key_width}s  %s" % [key, value]
