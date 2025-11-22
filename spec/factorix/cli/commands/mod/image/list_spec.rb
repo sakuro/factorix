@@ -52,17 +52,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
         expect(portal).to have_received(:get_mod_full).with("test-mod")
 
         expected_json = JSON.pretty_generate([
-                                               {
-                                                 id: "abc123",
-                                                 thumbnail: "https://example.com/thumb1.jpg",
-                                                 url: "https://example.com/image1.jpg"
-                                               },
-                                               {
-                                                 id: "def456",
-                                                 thumbnail: "https://example.com/thumb2.jpg",
-                                                 url: "https://example.com/image2.jpg"
-                                               }
-                                             ])
+          {
+            id: "abc123",
+            thumbnail: "https://example.com/thumb1.jpg",
+            url: "https://example.com/image1.jpg"
+          },
+          {
+            id: "def456",
+            thumbnail: "https://example.com/thumb2.jpg",
+            url: "https://example.com/image2.jpg"
+          }
+        ])
         expect(command).to have_received(:puts).with(expected_json)
       end
     end

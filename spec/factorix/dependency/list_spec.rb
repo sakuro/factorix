@@ -25,12 +25,12 @@ RSpec.describe Factorix::Dependency::List do
 
     it "parses all dependency types correctly" do
       deps = Factorix::Dependency::List.from_strings([
-                                                       "base",
-                                                       "? optional-mod",
-                                                       "(?) hidden-mod",
-                                                       "! incompatible-mod",
-                                                       "~ neutral-mod"
-                                                     ])
+        "base",
+        "? optional-mod",
+        "(?) hidden-mod",
+        "! incompatible-mod",
+        "~ neutral-mod"
+      ])
 
       expect(deps.required.size).to eq(1)
       expect(deps.optional.size).to eq(2)
@@ -124,12 +124,12 @@ RSpec.describe Factorix::Dependency::List do
   describe "filter methods" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional],
-                                       Factorix::Dependency::Entry[mod: hidden_mod, type: :hidden],
-                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
-                                       Factorix::Dependency::Entry[mod: neutral_mod, type: :load_neutral]
-                                     ])
+        Factorix::Dependency::Entry[mod: required_mod, type: :required],
+        Factorix::Dependency::Entry[mod: optional_mod, type: :optional],
+        Factorix::Dependency::Entry[mod: hidden_mod, type: :hidden],
+        Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
+        Factorix::Dependency::Entry[mod: neutral_mod, type: :load_neutral]
+      ])
     end
 
     describe "#required" do
@@ -169,9 +169,9 @@ RSpec.describe Factorix::Dependency::List do
   describe "#depends_on?" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
-                                     ])
+        Factorix::Dependency::Entry[mod: required_mod, type: :required],
+        Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
+      ])
     end
 
     it "returns true for required dependency (String argument)" do
@@ -194,9 +194,9 @@ RSpec.describe Factorix::Dependency::List do
   describe "#incompatible_with?" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
-                                     ])
+        Factorix::Dependency::Entry[mod: required_mod, type: :required],
+        Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible]
+      ])
     end
 
     it "returns true for incompatible dependency (String argument)" do
@@ -243,10 +243,10 @@ RSpec.describe Factorix::Dependency::List do
   describe "#satisfied_by?" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0],
-                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
-                                     ])
+        Factorix::Dependency::Entry[mod: base_mod, type: :required],
+        Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0],
+        Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
+      ])
     end
 
     context "when all required dependencies are satisfied" do
@@ -292,9 +292,9 @@ RSpec.describe Factorix::Dependency::List do
   describe "#conflicts_with?" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
-                                       Factorix::Dependency::Entry[mod: Factorix::MOD[name: "another-bad-mod"], type: :incompatible]
-                                     ])
+        Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
+        Factorix::Dependency::Entry[mod: Factorix::MOD[name: "another-bad-mod"], type: :incompatible]
+      ])
     end
 
     it "returns empty array when no conflicts" do
@@ -322,10 +322,10 @@ RSpec.describe Factorix::Dependency::List do
   describe "#missing_required" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
-                                     ])
+        Factorix::Dependency::Entry[mod: base_mod, type: :required],
+        Factorix::Dependency::Entry[mod: required_mod, type: :required],
+        Factorix::Dependency::Entry[mod: optional_mod, type: :optional]
+      ])
     end
 
     it "returns empty array when all required deps are available" do
@@ -352,9 +352,9 @@ RSpec.describe Factorix::Dependency::List do
   describe "#unsatisfied_versions" do
     let(:deps) do
       Factorix::Dependency::List.new([
-                                       Factorix::Dependency::Entry[mod: base_mod, type: :required],
-                                       Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0]
-                                     ])
+        Factorix::Dependency::Entry[mod: base_mod, type: :required],
+        Factorix::Dependency::Entry[mod: required_mod, type: :required, version_requirement: requirement_ge_1_2_0]
+      ])
     end
 
     it "returns empty hash when all versions are satisfied" do

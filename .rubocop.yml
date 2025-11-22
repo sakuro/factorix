@@ -40,6 +40,12 @@ inherit_gem:
 inherit_from: .rubocop_todo.yml
 
 # Project-specific settings
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
 Layout/LineLength:
   Enabled: false
 
