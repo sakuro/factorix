@@ -8,8 +8,9 @@ module Factorix
       module MOD
         class Download < Base
           attr_reader portal: Portal
+          attr_reader logger: Dry::Logger::Dispatcher
 
-          def call: (mod_specs: Array[String], ?directory: String, ?jobs: Integer) -> void
+          def call: (mod_specs: Array[String], ?directory: String, ?jobs: Integer, ?recursive: bool) -> void
         end
       end
     end

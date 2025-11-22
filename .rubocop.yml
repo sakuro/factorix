@@ -65,6 +65,7 @@ Metrics/PerceivedComplexity:
     - lib/factorix/dependency/parser.rb
     - lib/factorix/dependency/list.rb
     - lib/factorix/dependency/resolver.rb
+    - lib/factorix/cli/commands/mod/download.rb
     - lib/factorix/cli/commands/mod/edit.rb
     - lib/factorix/installed_mod.rb
     - lib/factorix/cli/commands/mod/enable.rb

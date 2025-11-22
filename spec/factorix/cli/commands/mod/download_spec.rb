@@ -59,7 +59,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "#call" do
     it "downloads a single mod" do
-      command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
+      capture_stdout { command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1) }
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
@@ -67,20 +67,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
     it "creates download directory if it does not exist" do
       download_dir = File.join(tmpdir, "mods")
-      command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1)
+      capture_stdout { command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1) }
 
       expect(Dir.exist?(download_dir)).to be true
     end
 
     it "handles mod with version specification" do
-      command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1)
+      capture_stdout { command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1) }
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
     it "handles latest version specification" do
-      command.call(mod_specs: ["test-mod@latest"], directory: tmpdir, jobs: 1)
+      capture_stdout { command.call(mod_specs: ["test-mod@latest"], directory: tmpdir, jobs: 1) }
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
@@ -127,7 +127,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       allow(portal).to receive(:get_mod_full).with("mod1").and_return(mod1_info)
       allow(portal).to receive(:get_mod_full).with("mod2").and_return(mod2_info)
 
-      command.call(mod_specs: %w[mod1 mod2], directory: tmpdir, jobs: 2)
+      capture_stdout { command.call(mod_specs: %w[mod1 mod2], directory: tmpdir, jobs: 2) }
 
       expect(portal).to have_received(:get_mod_full).with("mod1")
       expect(portal).to have_received(:get_mod_full).with("mod2")
@@ -138,7 +138,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       it "raises error for non-existent release version" do
         expect {
           capture_stdout { command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1) }
-        }.to raise_error(ArgumentError, /Release not found/)
+        }.to raise_error(Factorix::Error, /Release not found/)
       end
     end
 
@@ -289,7 +289,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       )
     end
 
-    it "raises error when --recursive is true (not yet implemented)" do
+    it "downloads dependencies recursively when --recursive is true" do
       Dir.mktmpdir do |tmpdir|
         Pathname.new(tmpdir)
 
@@ -298,20 +298,26 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
         allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
 
-        # Mock portal responses
+        # Mock portal responses for both the main mod and its dependency
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
+        allow(portal).to receive(:get_mod_full).with("dep-mod").and_return(dep_mod)
+        allow(portal).to receive(:download_mod).and_return(true)
 
-        # Should raise error as --recursive is not yet implemented
-        expect {
-          capture_stdout do
-            command.call(
-              mod_specs: ["mod-with-dep"],
-              directory: tmpdir,
-              jobs: 1,
-              recursive: true
-            )
-          end
-        }.to raise_error(Factorix::Error, /--recursive option is not yet implemented/)
+        # Stub Progress::Presenter to avoid tty-progressbar issues in test environment
+        presenter = instance_double(Factorix::Progress::Presenter, start: nil, update: nil, increase_total: nil)
+        allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
+
+        capture_stdout do
+          command.call(
+            mod_specs: ["mod-with-dep"],
+            directory: tmpdir,
+            jobs: 1,
+            recursive: true
+          )
+        end
+
+        # Verify both mods were downloaded
+        expect(portal).to have_received(:download_mod).twice
       end
     end
 
@@ -325,12 +331,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         # Mock download method
         allow(portal).to receive(:download_mod).and_return(true)
 
-        command.call(
-          mod_specs: ["mod-with-dep"],
-          directory: tmpdir,
-          jobs: 1,
-          recursive: false
-        )
+        capture_stdout do
+          command.call(
+            mod_specs: ["mod-with-dep"],
+            directory: tmpdir,
+            jobs: 1,
+            recursive: false
+          )
+        end
 
         # Verify only the specified mod was downloaded
         expect(portal).to have_received(:download_mod).once

@@ -66,11 +66,12 @@ Disable the specified MOD(s).
 factorix mod download some-mod              # Latest version
 factorix mod download some-mod@1.2.0        # Specify version
 factorix mod download some-mod --directory=/tmp/mods
+factorix mod download some-mod --recursive  # Include dependencies
 ```
 
 **Behavior**:
 - Download to any location (specify with `--directory` or `-d`, defaults to current directory)
-- Dependencies are not included by default (use `--recursive` to include them, but not yet implemented)
+- Dependencies are not included by default (use `--recursive` or `-r` to include required dependencies)
 - Don't modify `mod-list.json`
 - Use cache
 
