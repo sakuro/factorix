@@ -4,6 +4,7 @@ require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
   include_context "with suppressed output"
+  include_context "with suppressed progress bar"
 
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
@@ -43,10 +44,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   end
 
   before do
-    # Suppress progress bar output
-    allow($stdout).to receive(:tty?).and_return(false)
-    allow($stderr).to receive(:tty?).and_return(false)
-
     allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
     allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)

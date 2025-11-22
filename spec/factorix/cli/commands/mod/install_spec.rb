@@ -2,6 +2,7 @@
 
 RSpec.describe Factorix::CLI::Commands::MOD::Install do
   include_context "with suppressed output"
+  include_context "with suppressed progress bar"
 
   let(:runtime) do
     instance_double(
@@ -60,17 +61,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
 
     allow(Factorix::Application).to receive(:load_config)
-
-    # Mock Progress::Presenter to avoid tty-progressbar issues in tests
-    presenter = instance_double(Factorix::Progress::Presenter)
-    allow(presenter).to receive(:start)
-    allow(presenter).to receive(:update)
-    allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
-
-    # Mock Progress::MultiPresenter for download progress
-    multi_presenter = instance_double(Factorix::Progress::MultiPresenter)
-    allow(multi_presenter).to receive(:register).and_return(presenter)
-    allow(Factorix::Progress::MultiPresenter).to receive(:new).and_return(multi_presenter)
 
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)

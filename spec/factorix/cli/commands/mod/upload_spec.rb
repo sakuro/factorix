@@ -5,6 +5,7 @@ require "zip"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   include_context "with suppressed output"
+  include_context "with suppressed progress bar"
 
   let(:portal) { instance_double(Factorix::Portal) }
   let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
@@ -15,11 +16,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   let(:zip_path) { Pathname(temp_dir) / "test-mod_1.0.0.zip" }
 
   before do
-    # Suppress progress bar output
-    allow($stdout).to receive(:tty?).and_return(false)
-    allow($stderr).to receive(:tty?).and_return(false)
-    allow($stdout).to receive(:puts)
-
     # Create a test zip file with info.json
     info_json_content = {
       "name" => "test-mod",
