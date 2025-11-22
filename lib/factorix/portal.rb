@@ -90,7 +90,7 @@ module Factorix
     # @param file_path [Pathname] path to mod zip file
     # @param metadata [Hash] optional metadata
     # @option metadata [String] :description Markdown description
-    # @option metadata [String] :category Mod category
+    # @option metadata [String] :category MOD category
     # @option metadata [String] :license License identifier
     # @option metadata [String] :source_url Repository URL
     # @return [void]
@@ -133,8 +133,8 @@ module Factorix
     # @param metadata [Hash] metadata to update
     # @option metadata [String] :description Markdown description
     # @option metadata [String] :summary Brief description
-    # @option metadata [String] :title Mod title
-    # @option metadata [String] :category Mod category
+    # @option metadata [String] :title MOD title
+    # @option metadata [String] :category MOD category
     # @option metadata [Array<String>] :tags Array of tags
     # @option metadata [String] :license License identifier
     # @option metadata [String] :homepage Homepage URL

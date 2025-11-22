@@ -40,7 +40,7 @@ module Factorix
             str("~").as(:load_neutral)
         end
 
-        # Mod name: starts with alphanumeric, can contain spaces
+        # MOD name: starts with alphanumeric, can contain spaces
         # Cannot start with operators or contain only operators
         rule(:mod_name_start) { match["a-zA-Z0-9_-"] }
         rule(:mod_name_char) { match["a-zA-Z0-9_-"] | (space >> match["a-zA-Z0-9_-"].repeat(1)) }
