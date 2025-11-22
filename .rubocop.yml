@@ -49,6 +49,10 @@ Layout/FirstHashElementIndentation:
 Layout/LineLength:
   Enabled: false
 
+Style/StaticClass:
+  Exclude:
+    - lib/factorix/types/info_json.rb
+
 Metrics/AbcSize:
   Enabled: false
 

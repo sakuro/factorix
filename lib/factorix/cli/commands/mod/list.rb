@@ -77,10 +77,7 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Scanning MODs",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MODs", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
@@ -208,10 +205,7 @@ module Factorix
             }
 
             # Only show progress for MODs that need API calls
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Checking for updates",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Checking for updates", output: $stderr)
             presenter.start(total: regular_mods.size)
 
             pool = Concurrent::FixedThreadPool.new(DEFAULT_JOBS)

@@ -30,18 +30,7 @@ module Factorix
       private_constant :ALLOWED_UPLOAD_METADATA
 
       # Metadata fields allowed in edit_details
-      ALLOWED_EDIT_METADATA = %w[
-        description
-        summary
-        title
-        category
-        tags
-        license
-        homepage
-        source_url
-        faq
-        deprecated
-      ].freeze
+      ALLOWED_EDIT_METADATA = %w[description summary title category tags license homepage source_url faq deprecated].freeze
       private_constant :ALLOWED_EDIT_METADATA
 
       # Initialize with thread-safe credential loading
@@ -229,9 +218,7 @@ module Factorix
         invalid_keys = metadata.keys.map(&:to_s) - allowed_keys
         return if invalid_keys.empty?
 
-        raise ArgumentError,
-          "Invalid metadata for #{context}: #{invalid_keys.join(", ")}. " \
-          "Allowed keys: #{allowed_keys.join(", ")}"
+        raise ArgumentError, "Invalid metadata for #{context}: #{invalid_keys.join(", ")}. Allowed keys: #{allowed_keys.join(", ")}"
       end
 
       private def parse_upload_url(response)

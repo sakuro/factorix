@@ -5,19 +5,7 @@ require "uri"
 
 module Factorix
   module Types
-    MODInfo = Data.define(
-      :name,
-      :title,
-      :owner,
-      :summary,
-      :downloads_count,
-      :category,
-      :score,
-      :thumbnail,
-      :latest_release,
-      :releases,
-      :detail
-    )
+    MODInfo = Data.define(:name, :title, :owner, :summary, :downloads_count, :category, :score, :thumbnail, :latest_release, :releases, :detail)
 
     # MOD information from Mod Portal API
     #
@@ -51,20 +39,9 @@ module Factorix
       # @!attribute [r] detail
       #   @return [Detail, nil] detailed information (Full API only)
 
-      Detail = Data.define(
-        :changelog,
-        :created_at,
-        :updated_at,
-        :last_highlighted_at,
-        :description,
-        :source_url,
-        :homepage,
-        :faq,
-        :tags,
-        :license,
-        :images,
-        :deprecated
-      )
+      Detail = Data.define(:changelog, :created_at, :updated_at, :last_highlighted_at, :description, :source_url, :homepage, :faq, :tags, :license, :images, :deprecated)
+      DETAIL_ALLOWED_KEYS = %i[changelog created_at updated_at last_highlighted_at description source_url homepage faq tags license images deprecated].freeze
+      private_constant :DETAIL_ALLOWED_KEYS
 
       # Detailed MOD information from Full API endpoint
       #
@@ -110,20 +87,7 @@ module Factorix
         # @param images [Array<Hash>, nil] images data
         # @param deprecated [Boolean, nil] deprecated flag
         # @return [Detail] new Detail instance
-        def initialize(
-          created_at:,
-          updated_at:,
-          homepage:,
-          changelog: nil,
-          last_highlighted_at: nil,
-          description: nil,
-          source_url: nil,
-          faq: nil,
-          tags: nil,
-          license: nil,
-          images: nil,
-          deprecated: nil
-        )
+        def initialize(created_at:, updated_at:, homepage:, changelog: nil, last_highlighted_at: nil, description: nil, source_url: nil, faq: nil, tags: nil, license: nil, images: nil, deprecated: nil)
           changelog ||= ""
           created_at = Time.parse(created_at).utc
           updated_at = Time.parse(updated_at).utc
@@ -169,19 +133,7 @@ module Factorix
       # @param releases [Array<Hash>, nil] releases data
       # @param detail [Hash, nil] detail data
       # @return [MODInfo] new MODInfo instance
-      def initialize(
-        name:,
-        title:,
-        owner:,
-        downloads_count:,
-        summary: nil,
-        category: nil,
-        score: nil,
-        thumbnail: nil,
-        latest_release: nil,
-        releases: nil,
-        **detail_fields
-      )
+      def initialize(name:, title:, owner:, downloads_count:, summary: nil, category: nil, score: nil, thumbnail: nil, latest_release: nil, releases: nil, **detail_fields)
         summary ||= ""
         category = Category.for(category || "")
         score ||= 0.0
@@ -200,48 +152,15 @@ module Factorix
 
         # Filter detail_fields to only include keys that Detail.new accepts
         # Exclude deprecated fields like github_path
-        detail = if all_required_detail_fields?(detail_fields)
-                   allowed_keys = %i[
-                     changelog
-                     created_at
-                     updated_at
-                     last_highlighted_at
-                     description
-                     source_url
-                     homepage
-                     faq
-                     tags
-                     license
-                     images
-                     deprecated
-                   ]
-                   filtered_fields = detail_fields.slice(*allowed_keys)
-                   Detail.new(**filtered_fields)
-                 end
+        detail = Detail.new(**detail_fields.slice(*DETAIL_ALLOWED_KEYS)) if all_required_detail_fields?(detail_fields)
 
-        super(
-          name:,
-          title:,
-          owner:,
-          summary:,
-          downloads_count:,
-          category:,
-          score:,
-          thumbnail:,
-          latest_release:,
-          releases:,
-          detail:
-        )
+        super(name:, title:, owner:, summary:, downloads_count:, category:, score:, thumbnail:, latest_release:, releases:, detail:)
       end
 
-      private def build_thumbnail_uri(path)
-        URI("https://assets-mod.factorio.com#{path}")
-      end
+      private def build_thumbnail_uri(path) = URI("https://assets-mod.factorio.com#{path}")
 
       # Check if detail_fields contains all required fields for Detail
-      private def all_required_detail_fields?(detail_fields)
-        %i[created_at updated_at homepage].all? {|field| detail_fields.key?(field) }
-      end
+      private def all_required_detail_fields?(detail_fields) = %i[created_at updated_at homepage].all? {|field| detail_fields.key?(field) }
     end
   end
 end

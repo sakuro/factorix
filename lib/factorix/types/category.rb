@@ -2,11 +2,7 @@
 
 module Factorix
   module Types
-    Category = Data.define(
-      :value,
-      :name,
-      :description
-    )
+    Category = Data.define(:value, :name, :description)
 
     # Category object from Mod Portal API
     #

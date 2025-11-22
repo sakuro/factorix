@@ -66,10 +66,7 @@ module Factorix
           # @return [Array<Hash>] Download targets with MOD info and releases
           private def plan_download(mod_specs, download_dir, jobs, recursive)
             # Create progress presenter for info fetching
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Fetching MOD info",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: $stderr)
 
             # Phase 1: Fetch info for target MODs
             target_infos = fetch_target_mod_info(mod_specs, jobs, presenter)
@@ -334,9 +331,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
           private def download_mods(targets, jobs)
-            multi_presenter = Progress::MultiPresenter.new(
-              title: "\u{1F4E5}\u{FE0E} Downloads"
-            )
+            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Types::InfoJSON do
-  describe ".from_hash" do
+  describe ".from_json" do
     let(:valid_data) do
       {
         "name" => "test-mod",
@@ -14,8 +14,8 @@ RSpec.describe Factorix::Types::InfoJSON do
       }
     end
 
-    it "creates InfoJSON from valid hash" do
-      info = Factorix::Types::InfoJSON.from_hash(valid_data)
+    it "creates InfoJSON from valid JSON" do
+      info = Factorix::Types::InfoJSON.from_json(valid_data.to_json)
 
       expect(info.name).to eq("test-mod")
       expect(info.version).to eq(Factorix::Types::MODVersion.from_string("1.2.3"))
@@ -28,7 +28,7 @@ RSpec.describe Factorix::Types::InfoJSON do
     end
 
     it "parses dependencies correctly" do
-      info = Factorix::Types::InfoJSON.from_hash(valid_data)
+      info = Factorix::Types::InfoJSON.from_json(valid_data.to_json)
 
       expect(info.dependencies[0]).to be_a(Factorix::Dependency::Entry)
       expect(info.dependencies[0].mod.name).to eq("base")
@@ -47,7 +47,7 @@ RSpec.describe Factorix::Types::InfoJSON do
         "author" => "Author"
       }
 
-      info = Factorix::Types::InfoJSON.from_hash(minimal_data)
+      info = Factorix::Types::InfoJSON.from_json(minimal_data.to_json)
 
       expect(info.description).to eq("")
       expect(info.factorio_version).to be_nil
@@ -62,7 +62,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       }
 
       expect {
-        Factorix::Types::InfoJSON.from_hash(incomplete_data)
+        Factorix::Types::InfoJSON.from_json(incomplete_data.to_json)
       }.to raise_error(ArgumentError, /Missing required fields: title, author/)
     end
 
@@ -70,26 +70,8 @@ RSpec.describe Factorix::Types::InfoJSON do
       invalid_version_data = valid_data.merge("version" => "invalid")
 
       expect {
-        Factorix::Types::InfoJSON.from_hash(invalid_version_data)
+        Factorix::Types::InfoJSON.from_json(invalid_version_data.to_json)
       }.to raise_error(ArgumentError, /invalid version string/)
-    end
-  end
-
-  describe ".from_json" do
-    it "parses JSON string" do
-      json_string = <<~JSON
-        {
-          "name": "json-mod",
-          "version": "2.0.0",
-          "title": "JSON Mod",
-          "author": "JSON Author"
-        }
-      JSON
-
-      info = Factorix::Types::InfoJSON.from_json(json_string)
-
-      expect(info.name).to eq("json-mod")
-      expect(info.version.to_s).to eq("2.0.0")
     end
 
     it "raises ArgumentError for invalid JSON" do

@@ -33,29 +33,13 @@ module Factorix
       # @param sort_order [String, nil] sort order (asc, desc)
       # @param version [String, nil] Factorio version filter
       # @return [Hash{Symbol => untyped}] parsed JSON response with :results and :pagination keys
-      def get_mods(
-        *namelist,
-        hide_deprecated: nil,
-        page: nil,
-        page_size: nil,
-        sort: nil,
-        sort_order: nil,
-        version: nil
-      )
+      def get_mods(*namelist, hide_deprecated: nil, page: nil, page_size: nil, sort: nil, sort_order: nil, version: nil)
         validate_page_size!(page_size) if page_size
         validate_sort!(sort) if sort
         validate_sort_order!(sort_order) if sort_order
         validate_version!(version) if version
 
-        params = {
-          namelist: namelist.sort,
-          hide_deprecated:,
-          page:,
-          page_size:,
-          sort:,
-          sort_order:,
-          version:
-        }
+        params = {namelist: namelist.sort, hide_deprecated:, page:, page_size:, sort:, sort_order:, version:}
         params.reject! {|_k, v| v.is_a?(Array) && v.empty? }
         params.compact!
         logger.debug "Fetching mod list: params=#{params.inspect}"
@@ -92,9 +76,7 @@ module Factorix
       end
 
       private def build_uri(path, **params)
-        uri = URI.join(BASE_URL, path)
-        uri.query = URI.encode_www_form(params.sort.to_h) unless params.empty?
-        uri
+        URI.join(BASE_URL, path).tap {|uri| uri.query = URI.encode_www_form(params.sort.to_h) unless params.empty? }
       end
 
       # Fetch data with cache support

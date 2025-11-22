@@ -55,10 +55,7 @@ module Factorix
 
       private def build_download_uri(download_url)
         uri = URI.join(BASE_URL, download_url)
-        params = {
-          username: service_credential.username,
-          token: service_credential.token
-        }
+        params = {username: service_credential.username, token: service_credential.token}
         uri.query = URI.encode_www_form(params)
         uri
       end

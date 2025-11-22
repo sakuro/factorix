@@ -6,27 +6,9 @@ module Factorix
     #
     # Holds errors and warnings found during validation.
     class ValidationResult
-      # Validation error
-      Error = Data.define(
-        :type,        # Symbol - error type
-        :message,     # String - error message
-        :mod,         # MOD (optional) - related MOD
-        :dependency   # MOD (optional) - dependency MOD
-      )
-
-      # Validation warning
-      Warning = Data.define(
-        :type,        # Symbol - warning type
-        :message,     # String - warning message
-        :mod          # MOD (optional) - related MOD
-      )
-
-      # Validation suggestion
-      Suggestion = Data.define(
-        :message,     # String - suggestion message
-        :mod,         # MOD - related MOD
-        :version      # Types::MODVersion - suggested version
-      )
+      Error = Data.define(:type, :message, :mod, :dependency)
+      Warning = Data.define(:type, :message, :mod)
+      Suggestion = Data.define(:message, :mod, :version)
 
       # Error types
       MISSING_DEPENDENCY = :missing_dependency

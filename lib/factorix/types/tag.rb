@@ -2,11 +2,7 @@
 
 module Factorix
   module Types
-    Tag = Data.define(
-      :value,
-      :name,
-      :description
-    )
+    Tag = Data.define(:value, :name, :description)
 
     # Tag object from Mod Portal API
     #

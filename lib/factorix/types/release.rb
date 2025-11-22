@@ -5,15 +5,7 @@ require "uri"
 
 module Factorix
   module Types
-    Release = Data.define(
-      :download_url,
-      :file_name,
-      :info_json,
-      :released_at,
-      :version,
-      :sha1,
-      :feature_flags
-    )
+    Release = Data.define(:download_url, :file_name, :info_json, :released_at, :version, :sha1, :feature_flags)
 
     # Release object from Mod Portal API
     #

@@ -40,10 +40,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
           def call(mod_names: [], jobs: 4, **)
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Scanning MODs",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MODs", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
@@ -106,10 +103,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [Array<Hash>] Update targets with current and latest versions
           private def find_update_targets(target_mods, installed_mods, jobs)
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Checking for updates",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Checking for updates", output: $stderr)
             presenter.start(total: target_mods.size)
 
             pool = Concurrent::FixedThreadPool.new(jobs)
@@ -205,9 +199,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
           private def download_mods(targets, jobs)
-            multi_presenter = Progress::MultiPresenter.new(
-              title: "\u{1F4E5}\u{FE0E} Downloads"
-            )
+            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 

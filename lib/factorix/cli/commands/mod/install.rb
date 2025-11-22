@@ -76,10 +76,7 @@ module Factorix
           # @return [Array<Hash>] Installation targets with MOD info and releases
           private def plan_installation(mod_specs, graph, jobs)
             # Create progress presenter for info fetching
-            presenter = Progress::Presenter.new(
-              title: "\u{1F50D}\u{FE0E} Fetching MOD info",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: $stderr)
 
             # Phase 1: Fetch info for target MODs
             target_infos = fetch_target_mod_info(mod_specs, jobs, presenter)
@@ -428,9 +425,7 @@ module Factorix
           # @return [void]
           private def download_mods(targets, jobs)
             # Set up multi-progress presenter
-            multi_presenter = Progress::MultiPresenter.new(
-              title: "\u{1F4E5}\u{FE0E} Downloads"
-            )
+            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
 
             # Use thread pool for controlled parallelism
             pool = Concurrent::FixedThreadPool.new(jobs)

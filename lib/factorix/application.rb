@@ -46,11 +46,7 @@ module Factorix
       # Dispatcher level set to DEBUG to allow all messages through
       # Backend controls filtering based on --log-level option
       Dry.Logger(:factorix, level: :debug) do |dispatcher|
-        dispatcher.add_backend(
-          level: config.log_level,
-          stream: log_path.to_s,
-          template: "[%<time>s] %<severity>s: %<message>s %<payload>s"
-        )
+        dispatcher.add_backend(level: config.log_level, stream: log_path.to_s, template: "[%<time>s] %<severity>s: %<message>s %<payload>s")
       end
     end
 
@@ -61,21 +57,12 @@ module Factorix
 
     # Register download cache
     register(:download_cache, memoize: true) do
-      Cache::FileSystem.new(
-        config.cache.download.dir,
-        ttl: config.cache.download.ttl,
-        max_file_size: config.cache.download.max_file_size
-      )
+      Cache::FileSystem.new(config.cache.download.dir, ttl: config.cache.download.ttl, max_file_size: config.cache.download.max_file_size)
     end
 
     # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
-      Cache::FileSystem.new(
-        config.cache.api.dir,
-        ttl: config.cache.api.ttl,
-        max_file_size: config.cache.api.max_file_size,
-        compression_threshold: 0
-      )
+      Cache::FileSystem.new(config.cache.api.dir, ttl: config.cache.api.ttl, max_file_size: config.cache.api.max_file_size, compression_threshold: 0)
     end
 
     # Register base HTTP client

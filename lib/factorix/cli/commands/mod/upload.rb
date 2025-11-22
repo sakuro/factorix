@@ -47,10 +47,7 @@ module Factorix
             metadata = build_metadata(description:, category:, license:, source_url:)
 
             # Set up progress presenter
-            presenter = Progress::Presenter.new(
-              title: "\u{1F4E4} Uploading #{file_path.basename}",
-              output: $stderr
-            )
+            presenter = Progress::Presenter.new(title: "\u{1F4E4} Uploading #{file_path.basename}", output: $stderr)
 
             # Get uploader and register progress handler
             uploader = portal.mod_management_api.uploader

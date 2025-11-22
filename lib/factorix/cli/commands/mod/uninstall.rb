@@ -355,18 +355,10 @@ module Factorix
 
             if installed_mod.form == InstalledMOD::ZIP_FORM
               path.delete
-              logger.info(
-                "Removed ZIP file",
-                mod_name: installed_mod.mod.name,
-                version: installed_mod.version.to_s
-              )
+              logger.info("Removed ZIP file", mod_name: installed_mod.mod.name, version: installed_mod.version.to_s)
             elsif installed_mod.form == InstalledMOD::DIRECTORY_FORM
               path.rmtree
-              logger.info(
-                "Removed directory",
-                mod_name: installed_mod.mod.name,
-                version: installed_mod.version.to_s
-              )
+              logger.info("Removed directory", mod_name: installed_mod.mod.name, version: installed_mod.version.to_s)
             end
           end
         end

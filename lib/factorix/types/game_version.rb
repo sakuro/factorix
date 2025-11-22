@@ -79,13 +79,7 @@ module Factorix
       # Convert to string representation
       #
       # @return [String] Version string in format "X.Y.Z-B" or "X.Y.Z" if build is 0
-      def to_s
-        if build.zero?
-          "#{major}.#{minor}.#{patch}"
-        else
-          "#{major}.#{minor}.#{patch}-#{build}"
-        end
-      end
+      def to_s = build.zero? ? "#{major}.#{minor}.#{patch}" : "#{major}.#{minor}.#{patch}-#{build}"
 
       # Convert to array of integers
       #

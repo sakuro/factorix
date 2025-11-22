@@ -50,15 +50,7 @@ module Factorix
           def call(mod_names: [], hide_deprecated: true, page: 1, page_size: 25, sort: nil, sort_order: nil, version: nil, json: false, **)
             version ||= default_factorio_version
 
-            mods = portal.list_mods(
-              *mod_names,
-              hide_deprecated: hide_deprecated || nil,
-              page:,
-              page_size:,
-              sort:,
-              sort_order:,
-              version:
-            )
+            mods = portal.list_mods(*mod_names, hide_deprecated: hide_deprecated || nil, page:, page_size:, sort:, sort_order:, version:)
 
             if json
               output_json(mods)

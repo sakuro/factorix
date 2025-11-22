@@ -86,12 +86,7 @@ module Factorix
         end
 
         # POST with the multipart stream
-        client.post(
-          url,
-          body: progress_stream,
-          headers: {"Content-Length" => total_size.to_s},
-          content_type: "multipart/form-data; boundary=#{boundary}"
-        )
+        client.post(url, body: progress_stream, headers: {"Content-Length" => total_size.to_s}, content_type: "multipart/form-data; boundary=#{boundary}")
 
         publish("upload.completed", total_size:)
       end

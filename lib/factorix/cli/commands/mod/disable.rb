@@ -157,11 +157,7 @@ module Factorix
 
               # Add dependents to process queue
               dependents.each do |dependent_mod|
-                logger.debug(
-                  "Found dependent MOD",
-                  dependent: dependent_mod.name,
-                  dependency: mod.name
-                )
+                logger.debug("Found dependent MOD", dependent: dependent_mod.name, dependency: mod.name)
                 to_process << dependent_mod unless mods_to_disable.include?(dependent_mod)
               end
 

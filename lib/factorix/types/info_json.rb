@@ -5,39 +5,23 @@ require "zip"
 
 module Factorix
   module Types
+    InfoJSON = Data.define(:name, :version, :title, :author, :description, :factorio_version, :dependencies)
+
     # Factorio mod info.json representation
     #
     # Represents the metadata file that must be present in every Factorio mod.
     # Only required fields (name, version, title, author) are enforced.
     #
     # @see https://lua-api.factorio.com/latest/auxiliary/mod-structure.html
-    InfoJSON = Data.define(
-      :name,
-      :version,
-      :title,
-      :author,
-      :description,
-      :factorio_version,
-      :dependencies
-    ) {
+    class InfoJSON
       # Parse info.json from JSON string
       #
       # @param json_string [String] JSON content
       # @return [InfoJSON] parsed info.json
-      # @raise [ArgumentError] if required fields are missing
+      # @raise [ArgumentError] if required fields are missing or JSON is invalid
       def self.from_json(json_string)
         data = JSON.parse(json_string)
-        from_hash(data)
-      rescue JSON::ParserError => e
-        raise ArgumentError, "Invalid JSON: #{e.message}"
-      end
 
-      # Create InfoJSON from hash
-      #
-      # @param data [Hash] hash containing info.json fields
-      # @return [InfoJSON] new instance
-      # @raise [ArgumentError] if required fields are missing
-      def self.from_hash(data)
         # Validate required fields
         required_fields = %w[name version title author]
         missing = required_fields - data.keys
@@ -47,15 +31,9 @@ module Factorix
         parser = Dependency::Parser.new
         dependencies = (data["dependencies"] || []).map {|dep_str| parser.parse(dep_str) }
 
-        new(
-          name: data["name"],
-          version: MODVersion.from_string(data["version"]),
-          title: data["title"],
-          author: data["author"],
-          description: data["description"] || "",
-          factorio_version: data["factorio_version"],
-          dependencies:
-        )
+        new(name: data["name"], version: MODVersion.from_string(data["version"]), title: data["title"], author: data["author"], description: data["description"] || "", factorio_version: data["factorio_version"], dependencies:)
+      rescue JSON::ParserError => e
+        raise ArgumentError, "Invalid JSON: #{e.message}"
       end
 
       # Extract from zip file
@@ -75,6 +53,6 @@ module Factorix
       rescue Zip::Error => e
         raise ArgumentError, "Invalid zip file: #{e.message}"
       end
-    }
+    end
   end
 end
