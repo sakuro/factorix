@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Runtime::Windows do
-  subject(:runtime) { Factorix::Runtime::Windows.new(path:) }
+  let(:runtime) { Factorix::Runtime::Windows.new(path:) }
 
   let(:path) {
     instance_double(

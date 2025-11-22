@@ -4,8 +4,9 @@ require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:portal) { instance_double(Factorix::Portal) }
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
-  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, logger:) }
   let(:mod_info) do
     Factorix::Types::MODInfo.new(
       name: "test-mod",
@@ -44,14 +45,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     allow($stdout).to receive(:tty?).and_return(false)
     allow($stderr).to receive(:tty?).and_return(false)
 
-    # Mock the Application container to return the same instances
+    allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
     allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(portal).to receive(:download_mod)
     allow(downloader).to receive(:subscribe)
     allow(downloader).to receive(:unsubscribe)
 
-    # Mock the downloader chain for download
     mod_download_api = instance_double(Factorix::API::MODDownloadAPI)
     allow(portal).to receive(:mod_download_api).and_return(mod_download_api)
     allow(mod_download_api).to receive(:downloader).and_return(downloader)
@@ -293,12 +294,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       Dir.mktmpdir do |tmpdir|
         Pathname.new(tmpdir)
 
-        # Mock Application container
-        logger = instance_double(Logger, info: nil, warn: nil, debug: nil, error: nil)
-        allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
-        allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
-
-        # Mock portal responses for both the main mod and its dependency
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
         allow(portal).to receive(:get_mod_full).with("dep-mod").and_return(dep_mod)
         allow(portal).to receive(:download_mod).and_return(true)
@@ -325,10 +320,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       Dir.mktmpdir do |tmpdir|
         Pathname.new(tmpdir)
 
-        # Mock portal response
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
-
-        # Mock download method
         allow(portal).to receive(:download_mod).and_return(true)
 
         capture_stdout do

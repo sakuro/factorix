@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Check do
-  let(:command) { Factorix::CLI::Commands::MOD::Check.new }
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      mod_list_path:,
+      mod_dir: Pathname("/fake/path/mods"),
+      data_dir: Pathname("/fake/path/data"),
+      running?: false
+    )
+  end
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:command) { Factorix::CLI::Commands::MOD::Check.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_list) { instance_spy(Factorix::MODList) }
   let(:graph) { instance_spy(Factorix::Dependency::Graph) }
@@ -9,22 +20,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
   let(:validation_result) { instance_double(Factorix::Dependency::ValidationResult) }
 
   before do
-    allow(runtime).to receive(:mod_list_path).and_return(mod_list_path)
-
-    # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
-
-    # Mock MODList
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
-
-    # Mock InstalledMOD.all
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
-
-    # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:nodes).and_return([])
-
-    # Mock Validator
     allow(Factorix::Dependency::Validator).to receive(:new).and_return(validator)
     allow(validator).to receive(:validate).and_return(validation_result)
   end

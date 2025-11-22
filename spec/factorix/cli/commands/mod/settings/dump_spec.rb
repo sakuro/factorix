@@ -3,13 +3,13 @@
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
-  subject(:command) do
+  let(:command) do
     Factorix::CLI::Commands::MOD::Settings::Dump.new(
-      runtime: runtime_double
+      runtime:
     )
   end
 
-  let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base) }
   let(:default_settings_path) { Pathname("/default/mod-settings.dat") }
   let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.0-42") }
   let(:startup_section) do
@@ -25,7 +25,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
   let(:settings) { Factorix::MODSettings.new(game_version, sections) }
 
   before do
-    allow(runtime_double).to receive(:mod_settings_path).and_return(default_settings_path)
+    allow(runtime).to receive(:mod_settings_path).and_return(default_settings_path)
     allow(Factorix::MODSettings).to receive(:load).and_return(settings)
   end
 

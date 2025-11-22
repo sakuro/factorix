@@ -7,7 +7,7 @@ RSpec.describe Factorix::SaveFile do
     let(:save_file_path) { Pathname("spec/fixtures/test-save.zip") }
 
     context "with a valid save file" do
-      subject(:save_data) { Factorix::SaveFile.load(save_file_path) }
+      let(:save_data) { Factorix::SaveFile.load(save_file_path) }
 
       it "returns SaveFile" do
         expect(save_data).to be_a(Factorix::SaveFile)

@@ -7,6 +7,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
 
   before do
     allow($stdout).to receive(:puts)
+    allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
   end
 

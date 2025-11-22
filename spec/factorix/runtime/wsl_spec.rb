@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Runtime::WSL do
-  subject(:runtime) { Factorix::Runtime::WSL.new(path:) }
+  let(:runtime) { Factorix::Runtime::WSL.new(path:) }
 
   let(:path) {
     instance_double(

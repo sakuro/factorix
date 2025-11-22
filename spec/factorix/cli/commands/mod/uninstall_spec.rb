@@ -1,9 +1,16 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
-  include_context "with mock runtime"
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      running?: false
+    )
+  end
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
 
-  let(:command) { Factorix::CLI::Commands::MOD::Uninstall.new }
+  let(:command) { Factorix::CLI::Commands::MOD::Uninstall.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_dir) { Pathname("/fake/path/mods") }
   let(:data_dir) { Pathname("/fake/path/data") }
@@ -27,21 +34,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
   end
 
   before do
+    allow(Factorix::Application).to receive(:[]).and_call_original
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+
     allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
 
-    # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
-
-    # Mock MODList
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:remove)
     allow(mod_list).to receive(:exist?)
-
-    # Mock InstalledMOD.all
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
-
-    # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive_messages(nodes: [], topological_order: [])

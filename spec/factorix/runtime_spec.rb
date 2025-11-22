@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::Runtime do
   describe ".detect" do
-    subject(:runtime) { Factorix::Runtime.detect }
+    let(:runtime) { Factorix::Runtime.detect }
 
     context "when running on macOS" do
       before do

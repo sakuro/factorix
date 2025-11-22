@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::Launch do
-  subject(:command) { Factorix::CLI::Commands::Launch.new(runtime: runtime_double) }
+  let(:command) { Factorix::CLI::Commands::Launch.new(runtime:) }
 
-  let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base) }
 
   before do
-    allow(runtime_double).to receive(:executable_path).and_return(Pathname("/path/to/factorio"))
-    allow(runtime_double).to receive(:launch)
+    allow(runtime).to receive(:executable_path).and_return(Pathname("/path/to/factorio"))
+    allow(runtime).to receive(:launch)
     allow(command).to receive(:wait_while)
   end
 
   describe "#call" do
     context "when the game is already running" do
       before do
-        allow(runtime_double).to receive(:launch).and_raise("The game is already running")
+        allow(runtime).to receive(:launch).and_raise("The game is already running")
       end
 
       it "raises exception" do
@@ -26,19 +26,19 @@ RSpec.describe Factorix::CLI::Commands::Launch do
 
     context "when the game is not running with no special args" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false, true, false)
+        allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
       it "launches the game asynchronously" do
         command.call
 
-        expect(runtime_double).to have_received(:launch).with(async: true)
+        expect(runtime).to have_received(:launch).with(async: true)
       end
     end
 
     context "when the game is not running with no special args and wait option" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false, true, false)
+        allow(runtime).to receive(:running?).and_return(false, true, false)
       end
 
       it "waits for the game to start and finish" do
@@ -50,7 +50,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
 
     context "when the game is not running without wait option" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "does not wait for the game" do
@@ -62,19 +62,19 @@ RSpec.describe Factorix::CLI::Commands::Launch do
 
     context "when the game is not running with synchronous args" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "launches the game synchronously" do
         command.call(args: %w[--dump-data])
 
-        expect(runtime_double).to have_received(:launch).with("--dump-data", async: false)
+        expect(runtime).to have_received(:launch).with("--dump-data", async: false)
       end
     end
 
     context "when the game is not running with synchronous args and wait option" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "does not wait for the game" do
@@ -86,37 +86,37 @@ RSpec.describe Factorix::CLI::Commands::Launch do
 
     context "when the game is not running with --help option" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "launches the game synchronously" do
         command.call(args: %w[--help])
 
-        expect(runtime_double).to have_received(:launch).with("--help", async: false)
+        expect(runtime).to have_received(:launch).with("--help", async: false)
       end
     end
 
     context "when the game is not running with --version option" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "launches the game synchronously" do
         command.call(args: %w[--version])
 
-        expect(runtime_double).to have_received(:launch).with("--version", async: false)
+        expect(runtime).to have_received(:launch).with("--version", async: false)
       end
     end
 
     context "when the game is not running with other args" do
       before do
-        allow(runtime_double).to receive(:running?).and_return(false)
+        allow(runtime).to receive(:running?).and_return(false)
       end
 
       it "passes the args to the runtime with async: true" do
         command.call(args: %w[--start-server save.zip])
 
-        expect(runtime_double).to have_received(:launch).with("--start-server", "save.zip", async: true)
+        expect(runtime).to have_received(:launch).with("--start-server", "save.zip", async: true)
       end
     end
   end

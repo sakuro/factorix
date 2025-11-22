@@ -3,17 +3,17 @@
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Sync do
-  subject(:command) do
+  let(:command) do
     Factorix::CLI::Commands::MOD::Sync.new(
-      runtime: runtime_double,
-      portal: portal_double,
-      logger: logger_double
+      runtime:,
+      portal:,
+      logger:
     )
   end
 
-  let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
-  let(:portal_double) { instance_double(Factorix::Portal) }
-  let(:logger_double) { instance_double(Dry::Logger::Dispatcher) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base) }
+  let(:portal) { instance_double(Factorix::Portal) }
+  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
   let(:save_file_path) { Pathname("spec/fixtures/test-save.zip") }
   let(:mod_dir) { Pathname("/tmp/mods") }
   let(:mod_list_path) { Pathname("/tmp/mod-list.json") }
@@ -33,19 +33,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
   let(:mod_list) { Factorix::MODList.new }
   let(:installed_mods) { [] }
-  let(:graph_double) { instance_double(Factorix::Dependency::Graph) }
+  let(:graph) { instance_double(Factorix::Dependency::Graph) }
 
   before do
-    allow(runtime_double).to receive_messages(running?: false, mod_dir:, mod_list_path:, mod_settings_path:)
+    allow(runtime).to receive_messages(running?: false, mod_dir:, mod_list_path:, mod_settings_path:)
     allow(Factorix::SaveFile).to receive(:load).and_return(save_data)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(Factorix::InstalledMOD).to receive(:all).and_return(installed_mods)
-    allow(Factorix::Dependency::Graph).to receive(:from_installed_mods).and_return(graph_double)
-    allow(graph_double).to receive_messages(edges_from: [], edges_to: [])
+    allow(Factorix::Dependency::Graph).to receive(:from_installed_mods).and_return(graph)
+    allow(graph).to receive_messages(edges_from: [], edges_to: [])
     allow(mod_list).to receive(:save)
     allow(mod_dir).to receive(:mkpath)
     allow(mod_dir).to receive(:exist?).and_return(false)
-    allow(logger_double).to receive(:debug)
+    allow(logger).to receive(:debug)
 
     # Create a mock MODSettings if needed
     mod_settings = Factorix::MODSettings.new(

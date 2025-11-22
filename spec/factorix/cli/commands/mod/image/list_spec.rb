@@ -8,7 +8,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
     # Suppress stdout
     allow($stdout).to receive(:puts)
 
-    # Mock the Application container
+    allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
   end
 

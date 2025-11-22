@@ -30,10 +30,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       zipfile.get_output_stream("test-mod/info.json") {|f| f.write(info_json_content) }
     end
 
-    # Mock the Application container
+    allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
-
-    # Mock portal and API chain
     allow(portal).to receive(:mod_management_api).and_return(mod_management_api)
     allow(mod_management_api).to receive(:uploader).and_return(uploader)
     allow(uploader).to receive(:subscribe)

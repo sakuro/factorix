@@ -3,13 +3,12 @@
 require "json"
 
 RSpec.describe Factorix::CLI::Commands::Path do
-  subject(:command) { Factorix::CLI::Commands::Path.new(runtime: runtime_double) }
+  let(:command) { Factorix::CLI::Commands::Path.new(runtime:) }
 
-  let(:runtime_double) { instance_double(Factorix::Runtime::Base) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base) }
 
   before do
-    # Setup runtime method stubs
-    allow(runtime_double).to receive_messages(
+    allow(runtime).to receive_messages(
       executable_path: Pathname("/path/to/factorio"),
       user_dir: Pathname("/path/to/user"),
       mod_dir: Pathname("/path/to/mods"),
@@ -52,7 +51,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
     context "when runtime raises an error" do
       before do
-        allow(runtime_double).to receive(:executable_path).and_raise(StandardError, "Runtime error")
+        allow(runtime).to receive(:executable_path).and_raise(StandardError, "Runtime error")
       end
 
       it "re-raises the error" do

@@ -1,15 +1,30 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Install do
-  include_context "with mock runtime"
-
-  let(:command) { Factorix::CLI::Commands::MOD::Install.new }
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      mod_list_path:,
+      mod_dir:,
+      data_dir:,
+      running?: false
+    )
+  end
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:portal) { instance_spy(Factorix::Portal) }
+  let(:command) do
+    Factorix::CLI::Commands::MOD::Install.new(
+      runtime:,
+      logger:,
+      portal:
+    )
+  end
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_dir) { Pathname("/fake/path/mods") }
   let(:data_dir) { Pathname("/fake/path/data") }
   let(:mod_list) { instance_spy(Factorix::MODList) }
   let(:graph) { instance_spy(Factorix::Dependency::Graph) }
-  let(:portal) { instance_spy(Factorix::Portal) }
 
   # Test MODs
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
@@ -37,9 +52,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   end
 
   before do
-    allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
+    allow(Factorix::Application).to receive(:[]).and_call_original
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
 
-    # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
 
     # Mock Progress::Presenter to avoid tty-progressbar issues in tests
@@ -53,36 +70,22 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(multi_presenter).to receive(:register).and_return(presenter)
     allow(Factorix::Progress::MultiPresenter).to receive(:new).and_return(multi_presenter)
 
-    # Mock MODList
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:add)
     allow(mod_list).to receive(:enable)
     allow(mod_list).to receive(:exist?)
     allow(mod_list).to receive(:enabled?)
-
-    # Mock InstalledMOD.all
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
-
-    # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:add_uninstalled_mod)
     allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false, topological_order: [])
-
-    # Stub load_current_state to return mocked state
-    allow(command).to receive_messages(portal:, load_current_state: [graph, mod_list, []])
-
-    # Mock mod_dir
+    allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
     allow(mod_dir).to receive(:mkpath)
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
-
-    # Mock portal
     allow(portal).to receive(:download_mod)
-
-    # Mock Application[:portal]
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
 
-    # Mock downloader for parallel downloads
     downloader = instance_double(Factorix::Transfer::Downloader)
     allow(downloader).to receive(:subscribe)
     allow(downloader).to receive(:unsubscribe)
@@ -306,9 +309,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     end
 
     context "when game is running" do
-      before do
-        allow(runtime).to receive(:running?).and_return(true)
+      let(:runtime) do
+        instance_double(
+          Factorix::Runtime::Base,
+          factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+          mod_list_path:,
+          mod_dir:,
+          data_dir:,
+          running?: true
+        )
       end
+      let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, error: nil) }
 
       it "raises GameRunningError" do
         expect { command.call(mod_specs: ["mod-a"], yes: true) }

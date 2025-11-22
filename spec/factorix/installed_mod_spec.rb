@@ -4,12 +4,20 @@ require "tempfile"
 require "zip"
 
 RSpec.describe Factorix::InstalledMOD do
-  include_context "with mock runtime"
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      running?: false
+    )
+  end
 
   let(:temp_dir) { Pathname(Dir.mktmpdir) }
   let(:data_dir) { Pathname(Dir.mktmpdir) }
 
   before do
+    allow(Factorix::Application).to receive(:[]).and_call_original
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
     allow(runtime).to receive_messages(mod_dir: temp_dir, data_dir:)
   end
 

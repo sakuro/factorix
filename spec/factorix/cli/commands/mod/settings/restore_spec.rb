@@ -4,9 +4,15 @@ require "fileutils"
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
-  subject(:command) { Factorix::CLI::Commands::MOD::Settings::Restore.new }
+  let(:command) { Factorix::CLI::Commands::MOD::Settings::Restore.new(runtime:) }
 
-  include_context "with mock runtime"
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      running?: false
+    )
+  end
 
   let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.0-42") }
   let(:startup_section) do
@@ -34,6 +40,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
   end
 
   before do
+    allow(Factorix::Application).to receive(:[]).and_call_original
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
     allow(settings).to receive(:save)
     allow(runtime).to receive(:mod_settings_path).and_return(Pathname("/default/mod-settings.dat"))
     allow(Factorix::MODSettings).to receive(:new).and_return(settings)

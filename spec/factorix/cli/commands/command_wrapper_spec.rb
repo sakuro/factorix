@@ -3,7 +3,13 @@
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::CommandWrapper do
-  include_context "with mock runtime"
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      running?: false
+    )
+  end
 
   # Create a test command class that includes BeforeCallSetup
   let(:test_command_class) do
@@ -24,6 +30,8 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
   let(:default_config_path) { Pathname("/tmp/factorix/config.rb") }
 
   before do
+    allow(Factorix::Application).to receive(:[]).and_call_original
+    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
     allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
     allow(Factorix::Application).to receive(:load_config)
     allow(logger).to receive(:backends).and_return([file_backend])

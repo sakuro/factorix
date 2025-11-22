@@ -1,7 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Disable do
-  let(:command) { Factorix::CLI::Commands::MOD::Disable.new }
+  let(:runtime) do
+    instance_double(
+      Factorix::Runtime::Base,
+      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      mod_list_path:,
+      mod_dir:,
+      data_dir:,
+      running?: false
+    )
+  end
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:command) { Factorix::CLI::Commands::MOD::Disable.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_dir) { Pathname("/fake/path/mods") }
   let(:data_dir) { Pathname("/fake/path/data") }
@@ -14,20 +25,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
 
   before do
-    allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
-
-    # Mock Application.load_config
     allow(Factorix::Application).to receive(:load_config)
-
-    # Mock MODList
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:disable)
-
-    # Mock InstalledMOD.all
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
-
-    # Mock Graph::Builder
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive(:node)
@@ -170,10 +172,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
     end
 
     context "when game is running" do
+      let(:runtime) do
+        instance_double(
+          Factorix::Runtime::Base,
+          factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+          mod_list_path:,
+          mod_dir:,
+          data_dir:,
+          running?: true
+        )
+      end
+      let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, error: nil) }
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
 
       before do
-        allow(runtime).to receive(:running?).and_return(true)
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
       end
