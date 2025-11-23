@@ -14,12 +14,6 @@ module Factorix
     # - Handle redirects (up to MAX_REDIRECTS)
     # - Parse response codes and raise appropriate errors
     # - Stream reading/writing for large files
-    #
-    # Does NOT handle:
-    # - Retry logic (delegated to RetryDecorator)
-    # - Progress events (delegated to EventDecorator)
-    # - Caching (delegated to CacheDecorator)
-    # - JSON parsing (handled by API clients)
     class Client
       include Import[:logger]
 
@@ -150,13 +144,13 @@ module Factorix
       end
 
       private def create_http(uri)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = uri.scheme == "https"
-        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        http.open_timeout = Application.config.http.connect_timeout
-        http.read_timeout = Application.config.http.read_timeout
-        http.write_timeout = Application.config.http.write_timeout if http.respond_to?(:write_timeout=)
-        http
+        Net::HTTP.new(uri.host, uri.port).tap do |http|
+          http.use_ssl = uri.scheme == "https"
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          http.open_timeout = Application.config.http.connect_timeout
+          http.read_timeout = Application.config.http.read_timeout
+          http.write_timeout = Application.config.http.write_timeout if http.respond_to?(:write_timeout=)
+        end
       end
     end
   end
