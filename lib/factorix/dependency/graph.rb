@@ -60,14 +60,7 @@ module Factorix
         return if node?(mod)
 
         # Create node for uninstalled MOD
-        node = Node.new(
-          mod:,
-          version: release.version,
-          enabled: false,
-          installed: false,
-          operation:
-        )
-
+        node = Node.new(mod:, version: release.version, enabled: false, installed: false, operation:)
         add_node(node)
 
         # Add edges from dependencies in info.json
@@ -80,12 +73,7 @@ module Factorix
           # Skip base MOD (always available)
           next if dependency.mod.base?
 
-          edge = Edge.new(
-            from_mod: mod,
-            to_mod: dependency.mod,
-            type: dependency.type,
-            version_requirement: dependency.version_requirement
-          )
+          edge = Edge.new(from_mod: mod, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement)
 
           add_edge(edge)
         end
