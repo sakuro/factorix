@@ -113,11 +113,7 @@ module Factorix
           type = data.dig(:prefix, :type) || Entry::REQUIRED
           version_requirement = build_version_requirement(data[:requirement])
 
-          Entry[
-            mod:,
-            type:,
-            version_requirement:
-          ]
+          Entry[mod:, type:, version_requirement:]
         rescue Parslet::ParseFailed => e
           raise ArgumentError, parse_error_message(dependency_string, e)
         end
