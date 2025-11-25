@@ -15,19 +15,19 @@ module Factorix
           #   attr_reader :mod_portal_api
           include Import[:logger, :runtime, :mod_portal_api]
 
-          desc "List installed MODs"
+          desc "List installed MOD(s)"
 
           example [
-            "             # List all installed MODs",
-            "--enabled    # List only enabled MODs",
-            "--outdated   # List MODs with available updates",
+            "             # List all installed MOD(s)",
+            "--enabled    # List only enabled MOD(s)",
+            "--outdated   # List MOD(s) with available updates",
             "--json       # Output in JSON format"
           ]
 
-          option :enabled, type: :boolean, default: false, desc: "Show only enabled MODs"
-          option :disabled, type: :boolean, default: false, desc: "Show only disabled MODs"
-          option :errors, type: :boolean, default: false, desc: "Show only MODs with dependency errors"
-          option :outdated, type: :boolean, default: false, desc: "Show only MODs with available updates"
+          option :enabled, type: :boolean, default: false, desc: "Show only enabled MOD(s)"
+          option :disabled, type: :boolean, default: false, desc: "Show only disabled MOD(s)"
+          option :errors, type: :boolean, default: false, desc: "Show only MOD(s) with dependency errors"
+          option :outdated, type: :boolean, default: false, desc: "Show only MOD(s) with available updates"
           option :json, type: :boolean, default: false, desc: "Output in JSON format"
 
           # MOD information for display
@@ -77,7 +77,7 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MODs", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
@@ -207,7 +207,7 @@ module Factorix
               mod.base? || mod.expansion?
             }
 
-            # Only show progress for MODs that need API calls
+            # Only show progress for MOD(s) that need API calls
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Checking for updates", output: $stderr)
             presenter.start(total: regular_mods.size)
 
@@ -274,8 +274,8 @@ module Factorix
           # @return [void]
           private def output_table(mod_infos, show_latest: false, filter_active: false)
             if mod_infos.empty?
-              message = filter_active ? "No MODs match the specified criteria" : "No MODs found"
-              say message
+              message = filter_active ? "No MOD(s) match the specified criteria" : "No MOD(s) found"
+              say message, prefix: :info
               return
             end
 

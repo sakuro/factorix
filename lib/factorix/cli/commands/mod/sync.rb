@@ -26,7 +26,7 @@ module Factorix
           desc "Sync MOD states and startup settings from a save file"
 
           example [
-            "save.zip           # Sync MODs from save file",
+            "save.zip           # Sync MOD(s) from save file",
             "-j 8 save.zip      # Use 8 parallel downloads"
           ]
 
@@ -42,7 +42,7 @@ module Factorix
             # Load save file
             say "Loading save file: #{save_file}", prefix: :info
             save_data = SaveFile.load(Pathname(save_file))
-            say "Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})", prefix: :info
+            say "Loaded save file (version: #{save_data.version}, MOD(s): #{save_data.mods.size})", prefix: :info
 
             # Load current state
             graph, mod_list, installed_mods = load_current_state
@@ -61,7 +61,7 @@ module Factorix
 
               # Show plan
               show_install_plan(install_targets)
-              return unless confirm?("Do you want to install these MODs?")
+              return unless confirm?("Do you want to install these MOD(s)?")
 
               # Execute installation
               execute_installation(install_targets, jobs)

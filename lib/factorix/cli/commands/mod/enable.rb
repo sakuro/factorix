@@ -18,11 +18,11 @@ module Factorix
           #   attr_reader :runtime
           include Import[:logger, :runtime]
 
-          desc "Enable MODs in mod-list.json (recursively enables dependencies)"
+          desc "Enable MOD(s) in mod-list.json (recursively enables dependencies)"
 
           example [
             "some-mod         # Enable single MOD",
-            "mod-a mod-b      # Enable multiple MODs"
+            "mod-a mod-b      # Enable multiple MOD(s)"
           ]
 
           argument :mod_names, type: :array, required: true, desc: "MOD names to enable"
@@ -54,7 +54,7 @@ module Factorix
             return if mods_to_enable.empty?
 
             # Ask for confirmation
-            return unless confirm?("Do you want to enable these MODs?")
+            return unless confirm?("Do you want to enable these MOD(s)?")
 
             # Execute the plan
             execute_plan(mods_to_enable, mod_list)

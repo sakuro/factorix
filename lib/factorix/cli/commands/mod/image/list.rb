@@ -53,7 +53,7 @@ module Factorix
 
             private def output_table(images)
               if images.empty?
-                say "No images found"
+                say "No images found", prefix: :info
                 return
               end
 

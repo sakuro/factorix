@@ -18,17 +18,17 @@ module Factorix
           #   attr_reader :runtime
           include Import[:logger, :runtime]
 
-          desc "Disable MODs in mod-list.json (recursively disables dependent MODs)"
+          desc "Disable MOD(s) in mod-list.json (recursively disables dependent MOD(s))"
 
           example [
             "some-mod         # Disable single MOD",
-            "mod-a mod-b      # Disable multiple MODs",
-            "--all            # Disable all MODs except base"
+            "mod-a mod-b      # Disable multiple MOD(s)",
+            "--all            # Disable all MOD(s) except base"
           ]
 
           argument :mod_names, type: :array, required: false, desc: "MOD names to disable"
 
-          option :all, type: :boolean, default: false, desc: "Disable all MODs (except base)"
+          option :all, type: :boolean, default: false, desc: "Disable all MOD(s) (except base)"
 
           # Execute the disable command
           #
@@ -61,7 +61,7 @@ module Factorix
             return if mods_to_disable.empty?
 
             # Ask for confirmation
-            return unless confirm?("Do you want to disable these MODs?")
+            return unless confirm?("Do you want to disable these MOD(s)?")
 
             # Execute the plan
             execute_plan(mods_to_disable, mod_list)

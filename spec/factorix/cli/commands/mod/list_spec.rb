@@ -54,9 +54,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         allow(mod_list).to receive(:exist?).and_return(false)
       end
 
-      it "displays 'No MODs found'" do
+      it "displays 'No MOD(s) found'" do
         output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("No MODs found")
+        expect(output).to include("No MOD(s) found")
       end
     end
 
@@ -142,10 +142,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
           allow(mod_list).to receive_messages(exist?: true, version: nil)
         end
 
-        it "displays 'No MODs match the specified criteria'" do
+        it "displays 'No MOD(s) match the specified criteria'" do
           output = capture_stdout { command.call(enabled: false, disabled: true, errors: false, outdated: false, json: false) }
-          expect(output).to include("No MODs match the specified criteria")
-          expect(output).not_to include("No MODs found")
+          expect(output).to include("No MOD(s) match the specified criteria")
+          expect(output).not_to include("No MOD(s) found")
         end
       end
     end
@@ -157,10 +157,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         allow(mod_list).to receive_messages(exist?: true, version: nil)
       end
 
-      it "displays 'No MODs match the specified criteria'" do
+      it "displays 'No MOD(s) match the specified criteria'" do
         output = capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("No MODs match the specified criteria")
-        expect(output).not_to include("No MODs found")
+        expect(output).to include("No MOD(s) match the specified criteria")
+        expect(output).not_to include("No MOD(s) found")
       end
     end
 
@@ -225,10 +225,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
           })
         end
 
-        it "displays 'No MODs match the specified criteria'" do
+        it "displays 'No MOD(s) match the specified criteria'" do
           output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
-          expect(output).to include("No MODs match the specified criteria")
-          expect(output).not_to include("No MODs found")
+          expect(output).to include("No MOD(s) match the specified criteria")
+          expect(output).not_to include("No MOD(s) found")
         end
       end
     end

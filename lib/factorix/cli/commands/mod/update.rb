@@ -22,12 +22,12 @@ module Factorix
           #   attr_reader :runtime
           include Import[:portal, :logger, :runtime]
 
-          desc "Update MODs to their latest versions"
+          desc "Update MOD(s) to their latest versions"
 
           example [
-            "                   # Update all installed MODs",
+            "                   # Update all installed MOD(s)",
             "some-mod           # Update specific MOD",
-            "mod-a mod-b        # Update multiple MODs",
+            "mod-a mod-b        # Update multiple MOD(s)",
             "-j 8 mod-a mod-b   # Use 8 parallel downloads"
           ]
 
@@ -40,7 +40,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
           def call(mod_names: [], jobs: 4, **)
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MODs", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
@@ -72,7 +72,7 @@ module Factorix
 
             # Show plan
             show_plan(update_targets)
-            return unless confirm?("Do you want to update these MODs?")
+            return unless confirm?("Do you want to update these MOD(s)?")
 
             # Execute updates
             execute_updates(update_targets, mod_list, jobs)

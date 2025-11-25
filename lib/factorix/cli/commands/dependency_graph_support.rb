@@ -68,11 +68,11 @@ module Factorix
 
             Please fix these issues first:
               1. Run 'factorix mod check' to see all issues
-              2. Fix the issues (disable conflicting MODs, install missing dependencies, etc.)
+              2. Fix the issues (disable conflicting MOD(s), install missing dependencies, etc.)
               3. Verify: factorix mod check
               4. Then retry your command
 
-            Alternatively, you can start fresh by reinstalling MODs.
+            Alternatively, you can start fresh by reinstalling MOD(s).
           MESSAGE
         end
       end

@@ -111,7 +111,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
 
       it "raises an error" do
         expect { command.call(mod_specs: ["mod-a"], yes: true) }
-          .to raise_error(Factorix::Error, /following enabled MODs depend on it/)
+          .to raise_error(Factorix::Error, /following enabled MOD\(s\) depend on it/)
       end
     end
 

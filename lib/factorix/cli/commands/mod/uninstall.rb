@@ -18,16 +18,16 @@ module Factorix
           #   attr_reader :runtime
           include Import[:logger, :runtime]
 
-          desc "Uninstall MODs from mod directory"
+          desc "Uninstall MOD(s) from mod directory"
 
           example [
             "some-mod         # Uninstall all versions of MOD",
             "some-mod@1.2.0   # Uninstall specific version",
-            "--all            # Uninstall all MODs"
+            "--all            # Uninstall all MOD(s)"
           ]
 
           argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
-          option :all, type: :boolean, default: false, desc: "Uninstall all MODs (base remains enabled, expansions disabled, others removed)"
+          option :all, type: :boolean, default: false, desc: "Uninstall all MOD(s) (base remains enabled, expansions disabled, others removed)"
 
           UninstallTarget = Data.define(:mod, :version)
 
@@ -89,7 +89,7 @@ module Factorix
 
             # Show plan and confirm
             show_plan(targets_to_uninstall, all:, graph:, mod_list:)
-            return unless confirm?("Do you want to uninstall these MODs?")
+            return unless confirm?("Do you want to uninstall these MOD(s)?")
 
             # Execute uninstall
             execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
@@ -229,7 +229,7 @@ module Factorix
 
             raise Error,
               "Cannot uninstall #{target}: " \
-              "the following enabled MODs depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
+              "the following enabled MOD(s) depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
           end
 
           # Find all enabled MODs that have a required dependency on the given MOD
@@ -277,7 +277,7 @@ module Factorix
 
             return if expansions_to_disable.none?
 
-            say "Expansion MODs to be disabled:", prefix: :info
+            say "Expansion MOD(s) to be disabled:", prefix: :info
             expansions_to_disable.each do |mod|
               say "  - #{mod}"
             end

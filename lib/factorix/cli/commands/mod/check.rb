@@ -58,9 +58,9 @@ module Factorix
           end
 
           private def display_success_messages
-            say "All enabled MODs have their required dependencies satisfied", prefix: :success
+            say "All enabled MOD(s) have their required dependencies satisfied", prefix: :success
             say "No circular dependencies detected", prefix: :success
-            say "No conflicting MODs are enabled simultaneously", prefix: :success
+            say "No conflicting MOD(s) are enabled simultaneously", prefix: :success
           end
 
           private def display_warnings(result)
@@ -96,7 +96,7 @@ module Factorix
               parts << "#{result.warnings.size} warning#{"s" unless result.warnings.size == 1}"
             end
 
-            say "Summary: #{parts.join(", ")}"
+            say "Summary: #{parts.join(", ")}", prefix: :info
           end
         end
       end

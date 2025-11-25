@@ -15,20 +15,20 @@ module Factorix
           #   attr_reader :runtime
           include Import[:portal, :runtime]
 
-          desc "Search MODs on Factorio MOD Portal"
+          desc "Search MOD(s) on Factorio MOD Portal"
 
           example [
-            "                           # List MODs for current Factorio version",
-            "mod-a mod-b                # Search specific MODs by name",
-            "--sort name                # List MODs sorted by name",
+            "                           # List MOD(s) for current Factorio version",
+            "mod-a mod-b                # Search specific MOD(s) by name",
+            "--sort name                # List MOD(s) sorted by name",
             "--page 2 --page-size 25    # Paginate results",
-            "--no-hide-deprecated       # Include deprecated MODs",
+            "--no-hide-deprecated       # Include deprecated MOD(s)",
             "--version 1.1              # Filter by specific Factorio version"
           ]
 
           argument :mod_names, type: :array, required: false, default: [], desc: "MOD names to search"
 
-          option :hide_deprecated, type: :boolean, default: true, desc: "Hide deprecated MODs"
+          option :hide_deprecated, type: :boolean, default: true, desc: "Hide deprecated MOD(s)"
           option :page, type: :integer, default: 1, desc: "Page number"
           option :page_size, type: :integer, default: 25, desc: "Results per page (max 500)"
           option :sort, type: :string, values: %w[name created_at updated_at], desc: "Sort field"
@@ -90,7 +90,7 @@ module Factorix
 
           private def output_table(mods)
             if mods.empty?
-              say "No MODs found"
+              say "No MOD(s) found", prefix: :info
               return
             end
 

@@ -23,7 +23,7 @@ module Factorix
           #   attr_reader :runtime
           include Import[:portal, :logger, :runtime]
 
-          desc "Install MODs from Factorio MOD Portal (downloads to mod directory and enables)"
+          desc "Install MOD(s) from Factorio MOD Portal (downloads to mod directory and enables)"
 
           example [
             "some-mod            # Install latest version",
@@ -57,7 +57,7 @@ module Factorix
 
             # Show plan
             show_plan(install_targets)
-            return unless confirm?("Do you want to install these MODs?")
+            return unless confirm?("Do you want to install these MOD(s)?")
 
             # Execute installation
             execute_installation(install_targets, graph, mod_list, jobs)
@@ -327,7 +327,7 @@ module Factorix
                 logger.error("  Cycle: #{cycle.join(" <-> ")}")
               end
 
-              raise Error, "Circular dependency detected in MODs to install"
+              raise Error, "Circular dependency detected in MOD(s) to install"
             end
 
             # Check for conflicts
