@@ -27,7 +27,10 @@ module Factorix
         #   Returns a tuple of [graph, mod_list, installed_mods]
         private def load_current_state
           mod_list = MODList.load(runtime.mod_list_path)
-          installed_mods = InstalledMOD.all
+
+          presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+          handler = Progress::ScanHandler.new(presenter)
+          installed_mods = InstalledMOD.all(handler:)
 
           graph = Dependency::Graph::Builder.build(
             installed_mods:,
