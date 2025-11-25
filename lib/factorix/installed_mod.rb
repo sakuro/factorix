@@ -127,8 +127,10 @@ module Factorix
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
-        # Collect all paths to scan
-        mod_paths = mod_dir.children
+        # Collect all paths to scan (only ZIP files and directories)
+        mod_paths = mod_dir.children.select {|path|
+          (path.file? && path.extname == ".zip") || path.directory?
+        }
         data_paths = data_dir.children.select {|path|
           next false unless path.directory?
 
