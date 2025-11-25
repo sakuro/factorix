@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "concurrent/executor/fixed_thread_pool"
+require "concurrent/future"
 require "dry/events"
 
 module Factorix
@@ -110,6 +112,9 @@ module Factorix
       register_event("scan.progress")
       register_event("scan.completed")
 
+      DEFAULT_PARALLEL_JOBS = 4
+      private_constant :DEFAULT_PARALLEL_JOBS
+
       # Scan directories for installed MODs
       #
       # Scans the mod directory for both ZIP and directory form MODs.
@@ -119,7 +124,6 @@ module Factorix
       #
       # @return [Array<InstalledMOD>] Array of installed MODs
       def scan
-        installed_mods = []
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
@@ -135,41 +139,36 @@ module Factorix
 
         total = mod_paths.size + data_paths.size
         current = 0
+        mutex = Mutex.new
 
         publish("scan.started", total:)
 
-        # Scan user MOD directory
-        mod_paths.each do |path|
-          if path.file? && path.extname == ".zip"
-            begin
-              installed_mods << InstalledMOD.from_zip(path)
-            rescue ArgumentError => e
-              logger.debug("Skipping invalid ZIP MOD package", path: path.to_s, reason: e.message)
-            rescue => e
-              logger.debug("Skipping invalid ZIP MOD package", path: path.to_s, error: e.message)
+        # Scan MOD packages in parallel using Concurrent::Future
+        pool = Concurrent::FixedThreadPool.new(DEFAULT_PARALLEL_JOBS)
+
+        begin
+          futures = mod_paths.map {|path|
+            Concurrent::Future.execute(executor: pool) do
+              result = scan_mod_path(path)
+              mutex.synchronize do
+                current += 1
+                publish("scan.progress", current:, total:)
+              end
+              result
             end
-          elsif path.directory?
-            begin
-              installed_mods << InstalledMOD.from_directory(path)
-            rescue ArgumentError => e
-              logger.debug("Skipping invalid directory MOD package", path: path.to_s, reason: e.message)
-            rescue => e
-              logger.debug("Skipping invalid directory MOD package", path: path.to_s, error: e.message)
-            end
-          end
-          current += 1
-          publish("scan.progress", current:, total:)
+          }
+
+          # Collect results (filtering out nils from skipped packages)
+          installed_mods = futures.filter_map(&:value)
+        ensure
+          pool.shutdown
+          pool.wait_for_termination
         end
 
-        # Scan data directory for base/expansion MODs only
+        # Scan data directory for base/expansion MODs only (sequential, few items)
         data_paths.each do |path|
-          begin
-            installed_mods << InstalledMOD.from_directory(path)
-          rescue ArgumentError => e
-            logger.debug("Skipping invalid directory MOD package", path: path.to_s, reason: e.message)
-          rescue => e
-            logger.debug("Skipping invalid directory MOD package", path: path.to_s, error: e.message)
-          end
+          result = scan_mod_path(path)
+          installed_mods << result if result
           current += 1
           publish("scan.progress", current:, total:)
         end
@@ -179,6 +178,24 @@ module Factorix
         # Resolve duplicates and sort by version descending
         resolved = resolve_duplicates(installed_mods)
         resolved.sort_by(&:version).reverse
+      end
+
+      # Scan a single MOD path (ZIP file or directory)
+      #
+      # @param path [Pathname] Path to scan
+      # @return [InstalledMOD, nil] The installed MOD, or nil if invalid
+      private def scan_mod_path(path)
+        if path.file? && path.extname == ".zip"
+          InstalledMOD.from_zip(path)
+        elsif path.directory?
+          InstalledMOD.from_directory(path)
+        end
+      rescue ArgumentError => e
+        logger.debug("Skipping invalid MOD package", path: path.to_s, reason: e.message)
+        nil
+      rescue => e
+        logger.debug("Skipping invalid MOD package", path: path.to_s, error: e.message)
+        nil
       end
 
       # Resolve duplicate MODs (same name and version)
