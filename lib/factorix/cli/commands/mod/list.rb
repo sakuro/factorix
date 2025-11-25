@@ -84,9 +84,7 @@ module Factorix
 
             # Build list of MOD info
             mod_infos = build_mod_infos(installed_mods, mod_list)
-
-            # Detect if any filter is active
-            filter_active = enabled || disabled || errors || outdated
+            total_count = mod_infos.size
 
             # Apply filters
             mod_infos = apply_filters(mod_infos, enabled:, disabled:, errors:, outdated:)
@@ -94,11 +92,18 @@ module Factorix
             # Sort
             mod_infos = sort_mods(mod_infos)
 
+            # Determine active filter for summary
+            active_filter = if enabled then :enabled
+                            elsif disabled then :disabled
+                            elsif errors then :errors
+                            elsif outdated then :outdated
+                            end
+
             # Output
             if json
               output_json(mod_infos)
             else
-              output_table(mod_infos, show_latest: outdated, filter_active:)
+              output_table(mod_infos, show_latest: outdated, active_filter:, total_count:)
             end
           end
 
@@ -271,10 +276,12 @@ module Factorix
           #
           # @param mod_infos [Array<MODInfo>] MOD info list
           # @param show_latest [Boolean] show LATEST column for outdated MODs
+          # @param active_filter [Symbol, nil] active filter (:enabled, :disabled, :errors, :outdated, or nil)
+          # @param total_count [Integer] total MOD count before filtering
           # @return [void]
-          private def output_table(mod_infos, show_latest: false, filter_active: false)
+          private def output_table(mod_infos, show_latest: false, active_filter: nil, total_count: 0)
             if mod_infos.empty?
-              message = filter_active ? "No MOD(s) match the specified criteria" : "No MOD(s) found"
+              message = active_filter ? "No MOD(s) match the specified criteria" : "No MOD(s) found"
               say message, prefix: :info
               return
             end
@@ -301,6 +308,29 @@ module Factorix
               mod_infos.each do |info|
                 puts "%-#{name_width}s  %-#{version_width}s  %s" % [info.name, info.version, info.status]
               end
+            end
+
+            say format_summary(mod_infos.size, active_filter, total_count), prefix: :info
+          end
+
+          # Format summary message based on active filter
+          #
+          # @param count [Integer] filtered MOD count
+          # @param active_filter [Symbol, nil] active filter
+          # @param total_count [Integer] total MOD count
+          # @return [String] formatted summary message
+          private def format_summary(count, active_filter, total_count)
+            case active_filter
+            when :enabled
+              "Summary: #{count} enabled MOD(s), #{total_count} total MOD(s)"
+            when :disabled
+              "Summary: #{count} disabled MOD(s), #{total_count} total MOD(s)"
+            when :errors
+              "Summary: #{count} MOD(s) with errors, #{total_count} total MOD(s)"
+            when :outdated
+              "Summary: #{count} outdated MOD(s), #{total_count} total MOD(s)"
+            else
+              "Summary: #{count} MOD(s)"
             end
           end
 

@@ -98,8 +98,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       it "sorts base first, then expansions, then others alphabetically" do
         output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
         lines = output.lines.filter_map {|line| (stripped = line.strip).empty? ? nil : stripped }
-        # Skip header line
-        data_lines = lines[1..]
+        # Skip header line and summary line (last line)
+        data_lines = lines[1...-1]
         mod_names = data_lines.map {|line| line.split.first }
         # base first, then expansions (alphabetically), then others (alphabetically)
         expect(mod_names).to eq(%w[base quality space-age another-mod custom-mod])
