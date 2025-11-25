@@ -85,6 +85,9 @@ module Factorix
             # Build list of MOD info
             mod_infos = build_mod_infos(installed_mods, mod_list)
 
+            # Detect if any filter is active
+            filter_active = enabled || disabled || errors || outdated
+
             # Apply filters
             mod_infos = apply_filters(mod_infos, enabled:, disabled:, errors:, outdated:)
 
@@ -95,7 +98,7 @@ module Factorix
             if json
               output_json(mod_infos)
             else
-              output_table(mod_infos, show_latest: outdated)
+              output_table(mod_infos, show_latest: outdated, filter_active:)
             end
           end
 
@@ -269,9 +272,10 @@ module Factorix
           # @param mod_infos [Array<MODInfo>] MOD info list
           # @param show_latest [Boolean] show LATEST column for outdated MODs
           # @return [void]
-          private def output_table(mod_infos, show_latest: false)
+          private def output_table(mod_infos, show_latest: false, filter_active: false)
             if mod_infos.empty?
-              say "No MODs found"
+              message = filter_active ? "No MODs match the specified criteria" : "No MODs found"
+              say message
               return
             end
 

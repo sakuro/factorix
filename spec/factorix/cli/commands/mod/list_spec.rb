@@ -134,6 +134,34 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         expect(output).not_to include("custom-mod")
         expect(output).to include("another-mod")
       end
+
+      context "when no MODs match the filter" do
+        before do
+          allow(Factorix::InstalledMOD).to receive(:all).and_return([custom_installed])
+          allow(mod_list).to receive(:enabled?).with(custom_mod).and_return(true)
+          allow(mod_list).to receive_messages(exist?: true, version: nil)
+        end
+
+        it "displays 'No MODs match the specified criteria'" do
+          output = capture_stdout { command.call(enabled: false, disabled: true, errors: false, outdated: false, json: false) }
+          expect(output).to include("No MODs match the specified criteria")
+          expect(output).not_to include("No MODs found")
+        end
+      end
+    end
+
+    context "with --enabled option and no matches" do
+      before do
+        allow(Factorix::InstalledMOD).to receive(:all).and_return([another_installed])
+        allow(mod_list).to receive(:enabled?).with(another_mod).and_return(false)
+        allow(mod_list).to receive_messages(exist?: true, version: nil)
+      end
+
+      it "displays 'No MODs match the specified criteria'" do
+        output = capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: false, json: false) }
+        expect(output).to include("No MODs match the specified criteria")
+        expect(output).not_to include("No MODs found")
+      end
     end
 
     context "with --json option" do
@@ -184,6 +212,24 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
         expect(output).to include("LATEST")
         expect(output).to include("2.0.0")
+      end
+
+      context "when no MODs have available updates" do
+        before do
+          # Both MODs are up to date
+          allow(mod_portal_api).to receive(:get_mod).with("custom-mod").and_return({
+            releases: [{version: "1.0.0"}]
+          })
+          allow(mod_portal_api).to receive(:get_mod).with("another-mod").and_return({
+            releases: [{version: "0.5.0"}]
+          })
+        end
+
+        it "displays 'No MODs match the specified criteria'" do
+          output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
+          expect(output).to include("No MODs match the specified criteria")
+          expect(output).not_to include("No MODs found")
+        end
       end
     end
 
