@@ -124,3 +124,7 @@ Style/IpAddresses:
   Exclude:
     - spec/factorix/types/game_version_spec.rb
     - spec/factorix/types/mod_version_spec.rb
+
+ThreadSafety/NewThread:
+  Exclude:
+    - spec/factorix/runtime/wsl/wsl_path_spec.rb
