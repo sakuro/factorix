@@ -65,6 +65,11 @@ module Factorix
       Cache::FileSystem.new(config.cache.api.dir, ttl: config.cache.api.ttl, max_file_size: config.cache.api.max_file_size, compression_threshold: 0)
     end
 
+    # Register info.json cache (for MOD metadata from ZIP files)
+    register(:info_json_cache, memoize: true) do
+      Cache::FileSystem.new(config.cache.info_json.dir, ttl: config.cache.info_json.ttl, max_file_size: config.cache.info_json.max_file_size, compression_threshold: 0)
+    end
+
     # Register base HTTP client
     register(:http_client, memoize: true) do
       HTTP::Client.new
@@ -185,6 +190,13 @@ module Factorix
         setting :ttl, default: 3600 # 1 hour (API responses may change)
         setting :max_file_size, default: 10 * 1024 * 1024 # 10MB (JSON responses)
       end
+
+      # info.json cache settings (for MOD metadata from ZIP files)
+      setting :info_json do
+        setting :dir, constructor: ->(value) { Pathname(value) }
+        setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
+        setting :max_file_size, default: nil # nil for unlimited (info.json is small)
+      end
     end
 
     # Load configuration from file
@@ -210,5 +222,6 @@ module Factorix
     runtime = resolve(:runtime)
     config.cache.download.dir = runtime.factorix_cache_dir / "download"
     config.cache.api.dir = runtime.factorix_cache_dir / "api"
+    config.cache.info_json.dir = runtime.factorix_cache_dir / "info_json"
   end
 end
