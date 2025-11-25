@@ -287,19 +287,19 @@ module Factorix
               latest_width = [mod_infos.map {|m| m.latest_version&.to_s&.length || 0 }.max, 6].max
 
               # Header with LATEST column
-              say "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % %w[NAME VERSION LATEST STATUS]
+              puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % %w[NAME VERSION LATEST STATUS]
 
               # Rows with LATEST column
               mod_infos.each do |info|
-                say "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % [info.name, info.version, info.latest_version, info.status]
+                puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % [info.name, info.version, info.latest_version, info.status]
               end
             else
               # Header
-              say "%-#{name_width}s  %-#{version_width}s  %s" % %w[NAME VERSION STATUS]
+              puts "%-#{name_width}s  %-#{version_width}s  %s" % %w[NAME VERSION STATUS]
 
               # Rows
               mod_infos.each do |info|
-                say "%-#{name_width}s  %-#{version_width}s  %s" % [info.name, info.version, info.status]
+                puts "%-#{name_width}s  %-#{version_width}s  %s" % [info.name, info.version, info.status]
               end
             end
           end

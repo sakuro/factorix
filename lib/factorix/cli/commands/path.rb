@@ -69,7 +69,7 @@ module Factorix
         private def output_table(result)
           key_width = result.keys.map(&:length).max
           result.each do |key, value|
-            say "%-#{key_width}s  %s" % [key, value]
+            puts "%-#{key_width}s  %s" % [key, value]
           end
         end
       end

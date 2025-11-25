@@ -60,10 +60,10 @@ module Factorix
               id_width = [images.map {|i| i[:id].length }.max, 2].max
               thumb_width = [images.map {|i| i[:thumbnail].length }.max, 9].max
 
-              say "%-#{id_width}s  %-#{thumb_width}s  %s" % %w[ID THUMBNAIL URL]
+              puts "%-#{id_width}s  %-#{thumb_width}s  %s" % %w[ID THUMBNAIL URL]
 
               images.each do |image|
-                say "%-#{id_width}s  %-#{thumb_width}s  %s" % [image[:id], image[:thumbnail], image[:url]]
+                puts "%-#{id_width}s  %-#{thumb_width}s  %s" % [image[:id], image[:thumbnail], image[:url]]
               end
             end
           end
