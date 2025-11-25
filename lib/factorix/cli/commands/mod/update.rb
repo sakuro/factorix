@@ -58,7 +58,7 @@ module Factorix
                           end
 
             if target_mods.empty?
-              say "No MODs to update"
+              say "No MOD(s) to update", prefix: :info
               return
             end
 
@@ -66,7 +66,7 @@ module Factorix
             update_targets = find_update_targets(target_mods, installed_mods, jobs)
 
             if update_targets.empty?
-              say "All MODs are up to date"
+              say "All MOD(s) are up to date", prefix: :info
               return
             end
 
@@ -79,6 +79,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
+            say "Updated #{update_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
           end
 
@@ -160,7 +161,7 @@ module Factorix
           # @param targets [Array<Hash>] Update targets
           # @return [void]
           private def show_plan(targets)
-            say "Planning to update #{targets.size} MOD(s):"
+            say "Planning to update #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
               say "  - #{target[:mod]}: #{target[:current_version]} -> #{target[:latest_release].version}"
             end

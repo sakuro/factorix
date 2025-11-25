@@ -51,7 +51,7 @@ module Factorix
             install_targets = plan_installation(mod_specs, graph, jobs)
 
             if install_targets.empty?
-              say "All specified MODs are already installed and enabled"
+              say "All specified MOD(s) are already installed and enabled", prefix: :info
               return
             end
 
@@ -64,6 +64,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
+            say "Installed #{install_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
@@ -383,7 +384,7 @@ module Factorix
           # @param targets [Array<Hash>] Installation targets
           # @return [void]
           private def show_plan(targets)
-            say "Planning to install #{targets.size} MOD(s):"
+            say "Planning to install #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
               say "  - #{target[:mod]}@#{target[:release].version}"
             end

@@ -79,11 +79,11 @@ module Factorix
               }
 
               if targets_to_uninstall.empty? && expansions_to_disable.zero?
-                say "No MODs to uninstall or disable"
+                say "No MOD(s) to uninstall or disable", prefix: :info
                 return
               end
             elsif targets_to_uninstall.empty?
-              say "No MODs to uninstall"
+              say "No MOD(s) to uninstall", prefix: :info
               return
             end
 
@@ -101,6 +101,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
+            say "Uninstalled #{targets_to_uninstall.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
           end
 
@@ -261,7 +262,7 @@ module Factorix
           # @param mod_list [MODList] The MOD list
           # @return [void]
           private def show_plan(targets, all: false, graph: nil, mod_list: nil)
-            say "Planning to uninstall #{targets.size} MOD#{"s" unless targets.size == 1}:"
+            say "Planning to uninstall #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
               say "  - #{target}"
             end
@@ -276,7 +277,7 @@ module Factorix
 
             return if expansions_to_disable.none?
 
-            say "\nExpansion MODs to be disabled:"
+            say "Expansion MODs to be disabled:", prefix: :info
             expansions_to_disable.each do |mod|
               say "  - #{mod}"
             end

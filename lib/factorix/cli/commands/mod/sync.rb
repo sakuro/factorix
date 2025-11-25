@@ -40,9 +40,9 @@ module Factorix
           # @return [void]
           def call(save_file:, jobs: 4, **)
             # Load save file
-            say "Loading save file: #{save_file}"
+            say "Loading save file: #{save_file}", prefix: :info
             save_data = SaveFile.load(Pathname(save_file))
-            say "Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})", prefix: :success
+            say "Loaded save file (version: #{save_data.version}, MODs: #{save_data.mods.size})", prefix: :info
 
             # Load current state
             graph, mod_list, installed_mods = load_current_state
@@ -54,7 +54,7 @@ module Factorix
             mods_to_install = find_mods_to_install(save_data.mods, installed_mods)
 
             if mods_to_install.any?
-              say "#{mods_to_install.size} MOD(s) need to be installed"
+              say "#{mods_to_install.size} MOD(s) need to be installed", prefix: :info
 
               # Plan installation
               install_targets = plan_installation(mods_to_install, graph, jobs)
@@ -67,7 +67,7 @@ module Factorix
               execute_installation(install_targets, jobs)
               say "Installed #{install_targets.size} MOD(s)", prefix: :success
             else
-              say "All MODs from save file are already installed"
+              say "All MOD(s) from save file are already installed", prefix: :info
             end
 
             # Resolve conflicts: disable existing MODs that conflict with new ones
@@ -190,7 +190,7 @@ module Factorix
           # @param targets [Array<Hash>] Installation targets
           # @return [void]
           private def show_install_plan(targets)
-            say "Planning to install #{targets.size} MOD(s):"
+            say "Planning to install #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
               say "  - #{target[:mod]}@#{target[:release].version}"
             end

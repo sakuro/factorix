@@ -44,7 +44,7 @@ module Factorix
           end
 
           private def display_result(result, graph)
-            say "Validating MOD dependencies..."
+            say "Validating MOD dependencies...", prefix: :info
 
             if result.valid? && !result.warnings?
               display_success_messages

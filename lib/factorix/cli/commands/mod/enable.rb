@@ -61,6 +61,7 @@ module Factorix
 
             # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
+            say "Enabled #{mods_to_enable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
@@ -188,11 +189,11 @@ module Factorix
           # @return [void]
           private def show_plan(mods_to_enable)
             if mods_to_enable.empty?
-              say "All specified MODs are already enabled"
+              say "All specified MOD(s) are already enabled", prefix: :info
               return
             end
 
-            say "Planning to enable #{mods_to_enable.size} MOD(s):"
+            say "Planning to enable #{mods_to_enable.size} MOD(s):", prefix: :info
             mods_to_enable.each do |mod|
               say "  - #{mod}"
             end

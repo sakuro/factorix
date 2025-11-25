@@ -31,7 +31,7 @@ module Factorix
               portal.edit_mod_images(mod_name, image_ids)
 
               say "Image list updated successfully!", prefix: :success
-              say "Total images: #{image_ids.size}"
+              say "Total images: #{image_ids.size}", prefix: :info
             end
           end
         end

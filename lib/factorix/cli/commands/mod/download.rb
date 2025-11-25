@@ -47,7 +47,7 @@ module Factorix
             download_targets = plan_download(mod_specs, download_dir, jobs, recursive)
 
             if download_targets.empty?
-              say "No MODs to download"
+              say "No MOD(s) to download", prefix: :info
               return
             end
 
