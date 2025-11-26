@@ -304,8 +304,6 @@ module Factorix
                                installed_mods.select {|im| im.mod == mod }
                              end
 
-              say "Uninstalling #{mod_versions.size} version(s) of #{target}"
-
               # Remove versions from file system
               mod_versions.each do |installed_mod|
                 remove_mod_files(installed_mod)
