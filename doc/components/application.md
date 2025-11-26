@@ -40,6 +40,12 @@ setting :cache do
     setting :ttl, default: 3600
     setting :max_file_size, default: 10 * 1024 * 1024
   end
+
+  setting :info_json do
+    setting :dir, constructor: ->(value) { Pathname(value) }
+    setting :ttl, default: nil  # nil for unlimited (info.json is immutable within a MOD ZIP)
+    setting :max_file_size, default: nil
+  end
 end
 ```
 

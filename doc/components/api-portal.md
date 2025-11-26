@@ -248,4 +248,3 @@ Downloads a MOD file.
 
 - [Architecture](../architecture.md)
 - [Credentials Management](credentials.md)
-- [Transfer Layer](transfer.md)

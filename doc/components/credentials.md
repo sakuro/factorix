@@ -12,8 +12,8 @@ Authentication credentials for MOD downloads (username + token). Used for authen
 ### Data Sources (in priority order)
 
 1. **Environment variables (priority)**
-   - `FACTORIO_SERVICE_USERNAME`
-   - `FACTORIO_SERVICE_TOKEN`
+   - `FACTORIO_USERNAME`
+   - `FACTORIO_TOKEN`
 
 2. **File (fallback)**
    - `service-username` in `player-data.json`

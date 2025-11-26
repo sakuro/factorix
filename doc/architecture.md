@@ -19,18 +19,26 @@
 Factorix/
 ├── CLI
 │   └── Commands/
-│       ├── Info
-│       ├── Launch
+│       ├── Version              # Display Factorix version
+│       ├── Path                 # Display paths
+│       ├── Launch               # Launch Factorio
 │       └── MOD/
 │           ├── Check            # Validate dependencies
-│           ├── Enable           # Enable MODs with dependencies
 │           ├── Disable          # Disable MODs with dependents
 │           ├── Download         # Download MOD files
-│           ├── Install          # Download and enable MODs
-│           ├── Uninstall        # Remove MODs from disk
-│           ├── Upload           # Upload MODs to portal
 │           ├── Edit             # Edit MOD metadata
+│           ├── Enable           # Enable MODs with dependencies
+│           ├── Install          # Download and enable MODs
+│           ├── List             # List installed MODs
+│           ├── Search           # Search MODs on Portal
 │           ├── Sync             # Sync from save file
+│           ├── Uninstall        # Remove MODs from disk
+│           ├── Update           # Update MODs to latest versions
+│           ├── Upload           # Upload MODs to portal
+│           ├── Image/
+│           │   ├── Add          # Add image to MOD
+│           │   ├── Edit         # Edit MOD images
+│           │   └── List         # List MOD images
 │           └── Settings/
 │               ├── Dump         # Export settings to JSON
 │               └── Restore      # Import settings from JSON
@@ -83,7 +91,8 @@ Factorix/
 │   ├── PresenterAdapter       # Adapter for TTY::ProgressBar compatibility
 │   ├── MultiPresenter         # Multi-progress presenter (returns PresenterAdapter)
 │   ├── DownloadHandler        # Event handler for download progress
-│   └── UploadHandler          # Event handler for upload progress
+│   ├── UploadHandler          # Event handler for upload progress
+│   └── ScanHandler            # Event handler for scan progress
 │
 ├── MOD                        # Data.define - local MOD representation
 ├── MODList                    # mod-list.json management
@@ -97,6 +106,7 @@ Factorix/
 │   ├── Parser                 # Parslet-based dependency string parser
 │   ├── List                   # Collection of dependencies
 │   ├── Graph                  # Dependency graph (DAG with TSort)
+│   │   └── Builder            # Graph builder from installed MODs
 │   ├── Node                   # Graph node representation
 │   ├── Edge                   # Graph edge representation
 │   ├── Validator              # Dependency validator

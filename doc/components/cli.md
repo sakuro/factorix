@@ -8,6 +8,12 @@
 
 ## Command List
 
+### Version
+
+Display Factorix version.
+
+**Output**: Current version of the Factorix gem
+
 ### Path
 
 Display all Factorio and Factorix paths.
@@ -56,6 +62,11 @@ Disable the specified MOD(s).
 
 #### Download Command
 
+**Options**:
+- `-d`, `--directory` - Download directory (default: current directory)
+- `-r`, `--recursive` - Include required dependencies recursively
+- `-j`, `--jobs` - Number of parallel downloads (default: 4)
+
 **Behavior**:
 - Download to any location (specify with `--directory` or `-d`, defaults to current directory)
 - Dependencies are not included by default (use `--recursive` or `-r` to include required dependencies)
@@ -65,6 +76,9 @@ Disable the specified MOD(s).
 **Purpose**: When only retrieving MOD files is the goal
 
 #### Install Command
+
+**Options**:
+- `-j`, `--jobs` - Number of parallel downloads (default: 4)
 
 **Workflow**:
 
@@ -177,6 +191,26 @@ Validate dependency integrity of installed MODs.
 
 **Use case**: Verify MOD configuration before launching the game
 
+### MOD::Search
+
+Search MODs on Factorio MOD Portal.
+
+**Arguments**:
+- `mod_names` - MOD names to search (optional, array)
+
+**Options**:
+- `--hide-deprecated` - Hide deprecated MODs (default: true)
+- `--page` - Page number (default: 1)
+- `--page-size` - Results per page (default: 25, max 500)
+- `--sort` - Sort field (name, created_at, updated_at)
+- `--sort-order` - Sort order (asc, desc)
+- `--version` - Filter by Factorio version (default: installed version)
+- `--json` - Output in JSON format
+
+**Output**: Table format by default with NAME, TITLE, CATEGORY, OWNER, LATEST columns
+
+**Use case**: Search for MODs before downloading or installing
+
 ### MOD::Sync
 
 Synchronize MOD states from a save file.
@@ -260,6 +294,12 @@ Edit MOD image list on the portal.
 
 Export mod settings to JSON format.
 
+**Arguments**:
+- `settings_file` - Path to mod-settings.dat file (optional, defaults to runtime path)
+
+**Options**:
+- `-o`, `--output` - Output file path (defaults to stdout)
+
 **Output**: JSON format with game version and settings organized by section (startup, runtime-global, runtime-per-user)
 
 **File format**: The binary `mod-settings.dat` file is converted to human-readable JSON with proper indentation.
@@ -274,7 +314,6 @@ Restore mod settings from JSON format.
 
 ## Related Documentation
 
-- [MOD Dependency Management](dependencies.md)
 - [Storage Management](storage.md)
 - [API/Portal Layer](api-portal.md)
 - [Technology Stack](../technology-stack.md)
