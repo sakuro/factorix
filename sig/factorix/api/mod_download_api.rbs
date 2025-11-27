@@ -12,7 +12,7 @@ module Factorix
 
       def initialize: (**untyped deps) -> void
 
-      def download: (String download_url, Pathname output) -> void
+      def download: (String download_url, Pathname output, ?expected_sha1: String?) -> void
     end
   end
 end

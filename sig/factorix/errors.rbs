@@ -28,6 +28,9 @@ module Factorix
   class HTTPServerError < HTTPError
   end
 
+  class DigestMismatchError < InfrastructureError
+  end
+
   class FileFormatError < InfrastructureError
   end
 

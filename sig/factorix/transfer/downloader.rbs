@@ -9,7 +9,7 @@ module Factorix
       attr_reader cache: Cache::FileSystem
       attr_reader client: HTTP::Client
 
-      def download: (URI::HTTPS url, Pathname output) -> void
+      def download: (URI::HTTPS url, Pathname output, ?expected_sha1: String?) -> void
     end
   end
 end

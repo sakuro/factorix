@@ -127,13 +127,13 @@ RSpec.describe Factorix::Portal do
       ]
     end
 
-    it "downloads the MOD file to the specified path" do
+    it "downloads the MOD file to the specified path with SHA1 verification" do
       output_path = Pathname(Dir.tmpdir) / "test-mod.zip"
-      allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", output_path)
+      allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123")
 
       portal.download_mod(release, output_path)
 
-      expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", output_path)
+      expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123")
     end
   end
 

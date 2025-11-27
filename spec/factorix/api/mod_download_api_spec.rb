@@ -20,13 +20,18 @@ RSpec.describe Factorix::API::MODDownloadAPI do
 
     it "downloads the MOD file via downloader" do
       api.download(download_url, output)
-      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output)
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: nil)
+    end
+
+    it "passes expected_sha1 to downloader" do
+      api.download(download_url, output, expected_sha1: "abc123sha1")
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: "abc123sha1")
     end
 
     it "builds correct URI with authentication parameters" do
       api.download(download_url, output)
 
-      expect(downloader).to have_received(:download) do |uri, _output|
+      expect(downloader).to have_received(:download) do |uri, _output, **_opts|
         expect(uri.to_s).to eq("https://mods.factorio.com/download/example-mod/abc123?username=test_user&token=test_token")
       end
     end

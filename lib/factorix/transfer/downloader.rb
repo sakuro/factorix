@@ -39,11 +39,13 @@ module Factorix
       #
       # @param url [URI::HTTPS] URL to download from
       # @param output [Pathname] path to save the downloaded file
+      # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
       # @return [void]
       # @raise [ArgumentError] if the URL is not HTTPS
       # @raise [HTTPClientError] for 4xx HTTP errors
       # @raise [HTTPServerError] for 5xx HTTP errors
-      def download(url, output)
+      # @raise [DigestMismatchError] if SHA1 verification fails
+      def download(url, output, expected_sha1: nil)
         unless url.is_a?(URI::HTTPS)
           logger.error "Invalid URL: must be HTTPS"
           raise ArgumentError, "URL must be HTTPS"
@@ -73,6 +75,16 @@ module Factorix
           with_temporary_file do |temp_file|
             # Download with progress tracking
             download_file_with_progress(url, temp_file)
+
+            # Verify SHA1 digest if expected value is provided
+            if expected_sha1
+              actual_sha1 = Digest(:SHA1).file(temp_file).hexdigest
+              if actual_sha1 != expected_sha1
+                logger.error("SHA1 digest mismatch", expected: expected_sha1, actual: actual_sha1)
+                raise DigestMismatchError, "SHA1 mismatch: expected #{expected_sha1}, got #{actual_sha1}"
+              end
+              logger.debug("SHA1 digest verified", sha1: actual_sha1)
+            end
 
             # Download completed successfully - store in cache
             cache.store(key, temp_file)

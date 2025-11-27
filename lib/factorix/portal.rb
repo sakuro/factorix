@@ -70,14 +70,15 @@ module Factorix
 
     # Download a MOD release file
     #
-    # @param release [Types::Release] release object containing download_url
+    # @param release [Types::Release] release object containing download_url and sha1
     # @param output [Pathname] output file path
     # @return [void]
     # @raise [ArgumentError] if release download_url is not a URI
+    # @raise [DigestMismatchError] if SHA1 verification fails
     def download_mod(release, output)
       # Extract path from URI::HTTPS
       download_path = release.download_url.path
-      mod_download_api.download(download_path, output)
+      mod_download_api.download(download_path, output, expected_sha1: release.sha1)
     end
 
     # Upload a MOD file to the portal

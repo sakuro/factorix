@@ -33,16 +33,18 @@ module Factorix
       #
       # @param download_url [String] relative download URL from API response (e.g., "/download/mod-name/...")
       # @param output [Pathname] output file path
+      # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
       # @return [void]
       # @raise [ArgumentError] if download_url is not a relative path starting with "/"
-      def download(download_url, output)
+      # @raise [DigestMismatchError] if SHA1 verification fails
+      def download(download_url, output, expected_sha1: nil)
         unless download_url.start_with?("/")
           logger.error("Invalid download_url", url: download_url)
           raise ArgumentError, "download_url must be a relative path starting with '/'"
         end
 
         uri = build_download_uri(download_url)
-        downloader.download(uri, output)
+        downloader.download(uri, output, expected_sha1:)
       end
 
       private def service_credential

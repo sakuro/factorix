@@ -101,6 +101,42 @@ RSpec.describe Factorix::Transfer::Downloader do
           expect(client).not_to have_received(:get)
         end
       end
+
+      context "with SHA1 verification" do
+        let(:response_body) { "file content" }
+        let(:correct_sha1) { Digest(:SHA1).hexdigest(response_body) }
+        let(:wrong_sha1) { "0" * 40 }
+
+        it "succeeds when SHA1 matches" do
+          expect { downloader.download(uri, output, expected_sha1: correct_sha1) }.not_to raise_error
+          expect(cache).to have_received(:store)
+        end
+
+        it "raises DigestMismatchError when SHA1 does not match" do
+          expect { downloader.download(uri, output, expected_sha1: wrong_sha1) }
+            .to raise_error(Factorix::DigestMismatchError, /SHA1 mismatch/)
+        end
+
+        it "does not store in cache when SHA1 does not match" do
+          begin
+            downloader.download(uri, output, expected_sha1: wrong_sha1)
+          rescue Factorix::DigestMismatchError
+            # Expected exception
+          end
+          expect(cache).not_to have_received(:store)
+        end
+
+        it "cleans up temporary files when SHA1 does not match" do
+          begin
+            downloader.download(uri, output, expected_sha1: wrong_sha1)
+          rescue Factorix::DigestMismatchError
+            # Expected exception
+          end
+
+          temp_dirs = Dir.glob(File.join(Dir.tmpdir, "factorix*"))
+          expect(temp_dirs).to be_empty
+        end
+      end
     end
 
     context "with invalid URI" do

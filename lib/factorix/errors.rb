@@ -30,6 +30,9 @@ module Factorix
   class HTTPNotFoundError < HTTPClientError; end
   class HTTPServerError < HTTPError; end
 
+  # Digest verification errors
+  class DigestMismatchError < InfrastructureError; end
+
   # File format related errors
   class FileFormatError < InfrastructureError; end
 
