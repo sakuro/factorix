@@ -34,5 +34,6 @@ module Factorix
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore
     register "cache stat", Commands::Cache::Stat
+    register "cache evict", Commands::Cache::Evict
   end
 end

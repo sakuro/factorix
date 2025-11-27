@@ -23,6 +23,7 @@ module Factorix
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
           include Import[:logger]
+          include Formatting
 
           desc "Display cache statistics"
 
@@ -45,7 +46,7 @@ module Factorix
             stats = cache_names.to_h {|name| [name, collect_stats(name)] }
 
             if json
-              say JSON.pretty_generate(stats)
+              puts JSON.pretty_generate(stats)
             else
               output_text(stats)
             end
@@ -192,48 +193,6 @@ module Factorix
             when 0 then "enabled (always)"
             else "enabled (>= #{format_size(threshold)})"
             end
-          end
-
-          # Format size value for display using binary prefixes (IEC)
-          #
-          # @param size [Integer, nil] size in bytes
-          # @return [String] formatted size
-          private def format_size(size)
-            return "unlimited" if size.nil?
-            return "0 B" if size == 0
-
-            units = %w[B KiB MiB GiB TiB]
-            unit_index = 0
-            value = Float(size)
-
-            while value >= 1024 && unit_index < units.size - 1
-              value /= 1024
-              unit_index += 1
-            end
-
-            unit_index == 0 ? "#{size} B" : "#{"%.1f" % value} #{units[unit_index]}"
-          end
-
-          # Format duration value for display
-          #
-          # @param seconds [Float, nil] duration in seconds
-          # @return [String] formatted duration
-          private def format_duration(seconds)
-            return "-" if seconds.nil?
-
-            seconds = Integer(seconds)
-            return "#{seconds}s" if seconds < 60
-
-            minutes = seconds / 60
-            return "#{minutes}m" if minutes < 60
-
-            hours = minutes / 60
-            remaining_minutes = minutes % 60
-            return "#{hours}h #{remaining_minutes}m" if hours < 24
-
-            days = hours / 24
-            remaining_hours = hours % 24
-            "#{days}d #{remaining_hours}h"
           end
         end
       end
