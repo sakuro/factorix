@@ -57,6 +57,7 @@ module Factorix
 
         if cache.fetch(key, output)
           logger.info("Cache hit", url: masked_url)
+          verify_sha1(output, expected_sha1) if expected_sha1
           total_size = cache.size(key)
           publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
           return
@@ -67,6 +68,7 @@ module Factorix
         cache.with_lock(key) do
           if cache.fetch(key, output)
             logger.info("Cache hit", url: masked_url)
+            verify_sha1(output, expected_sha1) if expected_sha1
             total_size = cache.size(key)
             publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
             return
@@ -77,14 +79,7 @@ module Factorix
             download_file_with_progress(url, temp_file)
 
             # Verify SHA1 digest if expected value is provided
-            if expected_sha1
-              actual_sha1 = Digest(:SHA1).file(temp_file).hexdigest
-              if actual_sha1 != expected_sha1
-                logger.error("SHA1 digest mismatch", expected: expected_sha1, actual: actual_sha1)
-                raise DigestMismatchError, "SHA1 mismatch: expected #{expected_sha1}, got #{actual_sha1}"
-              end
-              logger.debug("SHA1 digest verified", sha1: actual_sha1)
-            end
+            verify_sha1(temp_file, expected_sha1) if expected_sha1
 
             # Download completed successfully - store in cache
             cache.store(key, temp_file)
@@ -129,6 +124,20 @@ module Factorix
         params["token"] = "*****" if params.key?("token")
         masked_url.query = URI.encode_www_form(params)
         masked_url.to_s
+      end
+
+      # Verify SHA1 digest of a file
+      #
+      # @param file [Pathname] file to verify
+      # @param expected_sha1 [String] expected SHA1 digest
+      # @return [void]
+      # @raise [DigestMismatchError] if digest does not match
+      private def verify_sha1(file, expected_sha1)
+        actual_sha1 = Digest(:SHA1).file(file).hexdigest
+        return if actual_sha1 == expected_sha1
+
+        logger.error("SHA1 digest mismatch", expected: expected_sha1, actual: actual_sha1)
+        raise DigestMismatchError, "SHA1 mismatch: expected #{expected_sha1}, got #{actual_sha1}"
       end
 
       # Create a temporary file for downloading, ensuring cleanup after use.

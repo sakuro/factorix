@@ -40,8 +40,13 @@ RSpec.describe Factorix::Transfer::Downloader do
 
   describe "#download" do
     context "when the file is cached" do
+      let(:cached_content) { "cached file content" }
+
       before do
-        allow(cache).to receive(:fetch).with(cache_key, output).and_return(true)
+        allow(cache).to receive(:fetch).with(cache_key, output) do
+          output.write(cached_content)
+          true
+        end
       end
 
       it "fetches the file from cache" do
@@ -52,6 +57,20 @@ RSpec.describe Factorix::Transfer::Downloader do
       it "does not download the file" do
         downloader.download(uri, output)
         expect(client).not_to have_received(:get)
+      end
+
+      context "with SHA1 verification" do
+        let(:correct_sha1) { Digest(:SHA1).hexdigest(cached_content) }
+        let(:wrong_sha1) { "0" * 40 }
+
+        it "succeeds when SHA1 matches" do
+          expect { downloader.download(uri, output, expected_sha1: correct_sha1) }.not_to raise_error
+        end
+
+        it "raises DigestMismatchError when SHA1 does not match" do
+          expect { downloader.download(uri, output, expected_sha1: wrong_sha1) }
+            .to raise_error(Factorix::DigestMismatchError, /SHA1 mismatch/)
+        end
       end
     end
 
