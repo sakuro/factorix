@@ -57,17 +57,20 @@ module Factorix
 
     # Register download cache
     register(:download_cache, memoize: true) do
-      Cache::FileSystem.new(config.cache.download.dir, ttl: config.cache.download.ttl, max_file_size: config.cache.download.max_file_size)
+      c = config.cache.download
+      Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
     end
 
     # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
-      Cache::FileSystem.new(config.cache.api.dir, ttl: config.cache.api.ttl, max_file_size: config.cache.api.max_file_size, compression_threshold: 0)
+      c = config.cache.api
+      Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
     end
 
     # Register info.json cache (for MOD metadata from ZIP files)
     register(:info_json_cache, memoize: true) do
-      Cache::FileSystem.new(config.cache.info_json.dir, ttl: config.cache.info_json.ttl, max_file_size: config.cache.info_json.max_file_size, compression_threshold: 0)
+      c = config.cache.info_json
+      Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
     end
 
     # Register base HTTP client
@@ -182,6 +185,7 @@ module Factorix
         setting :dir, constructor: ->(value) { Pathname(value) }
         setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
         setting :max_file_size, default: nil # nil for unlimited
+        setting :compression_threshold, default: nil # nil for no compression (binary files)
       end
 
       # API cache settings (for API responses)
@@ -189,6 +193,7 @@ module Factorix
         setting :dir, constructor: ->(value) { Pathname(value) }
         setting :ttl, default: 3600 # 1 hour (API responses may change)
         setting :max_file_size, default: 10 * 1024 * 1024 # 10MB (JSON responses)
+        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
 
       # info.json cache settings (for MOD metadata from ZIP files)
@@ -196,6 +201,7 @@ module Factorix
         setting :dir, constructor: ->(value) { Pathname(value) }
         setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
         setting :max_file_size, default: nil # nil for unlimited (info.json is small)
+        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
     end
 

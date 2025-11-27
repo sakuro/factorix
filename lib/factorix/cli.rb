@@ -33,5 +33,6 @@ module Factorix
     register "mod image edit", Commands::MOD::Image::Edit
     register "mod settings dump", Commands::MOD::Settings::Dump
     register "mod settings restore", Commands::MOD::Settings::Restore
+    register "cache stat", Commands::Cache::Stat
   end
 end
