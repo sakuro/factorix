@@ -115,8 +115,8 @@ module Factorix
               graph.add_uninstalled_mod(info[:mod_info], info[:release])
             end
 
-            # Extract install targets from graph
-            extract_install_targets(graph, target_infos)
+            # Extract install targets
+            extract_install_targets(target_infos)
           end
 
           # Fetch MOD information for MODs to install
@@ -169,12 +169,11 @@ module Factorix
             }
           end
 
-          # Extract install targets from the graph
+          # Extract install targets from MOD infos
           #
-          # @param graph [Dependency::Graph] Graph with install operations
           # @param all_mod_infos [Array<Hash>] All MOD infos
           # @return [Array<Hash>] Install targets
-          private def extract_install_targets(_graph, all_mod_infos)
+          private def extract_install_targets(all_mod_infos)
             all_mod_infos.map {|info|
               {
                 mod: Factorix::MOD[name: info[:mod_name]],

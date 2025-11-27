@@ -308,29 +308,22 @@ module Factorix
           #
           # @param graph [Dependency::Graph] Graph with install operations
           # @param all_mod_infos [Hash] All MOD infos by name
-          # @return [Array<Hash>] Install targets sorted in topological order
+          # @return [Array<Hash>] Install targets
           private def extract_install_targets(graph, all_mod_infos)
-            # Sort in topological order (dependencies first)
-            sorted_mods = graph.topological_order.select {|mod|
-              node = graph.node(mod)
-              node&.operation == :install
-            }
+            graph.nodes.filter_map {|node|
+              next unless node.operation == :install
 
-            # Build install targets with download information
-            sorted_mods.filter_map {|mod|
-              info = all_mod_infos[mod.name]
+              info = all_mod_infos[node.mod.name]
               unless info
-                logger.warn("No info found for #{mod}, skipping")
-                next nil
+                logger.warn("No info found for #{node.mod}, skipping")
+                next
               end
 
-              output_path = runtime.mod_dir / info[:release].file_name
-
               {
-                mod:,
+                mod: node.mod,
                 mod_info: info[:mod_info],
                 release: info[:release],
-                output_path:,
+                output_path: runtime.mod_dir / info[:release].file_name,
                 category: info[:mod_info].category
               }
             }
