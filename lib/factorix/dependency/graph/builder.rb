@@ -12,7 +12,7 @@ module Factorix
       class Builder
         # Build a dependency graph from current state
         #
-        # @param installed_mods [Array<Factorix::InstalledMOD>] Installed MODs from mod directory
+        # @param installed_mods [Array<Factorix::InstalledMOD>] Installed MODs from MOD directory
         # @param mod_list [Factorix::MODList] MOD list from mod-list.json
         # @return [Factorix::Dependency::Graph] The constructed graph
         def self.build(installed_mods:, mod_list:) = new(installed_mods:, mod_list:).build

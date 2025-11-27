@@ -4,7 +4,7 @@ module Factorix
   module Types
     Category = Data.define(:value, :name, :description)
 
-    # Category object from Mod Portal API
+    # Category object from MOD Portal API
     #
     # Represents a MOD category with value, name, and description.
     # Uses flyweight pattern - same category value returns same instance.

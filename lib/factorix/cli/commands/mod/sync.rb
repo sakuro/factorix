@@ -47,7 +47,7 @@ module Factorix
             # Load current state
             graph, mod_list, installed_mods = load_current_state
 
-            # Ensure mod directory exists
+            # Ensure MOD directory exists
             runtime.mod_dir.mkpath unless runtime.mod_dir.exist?
 
             # Find MODs that need to be installed

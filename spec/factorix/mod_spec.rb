@@ -97,7 +97,7 @@ RSpec.describe Factorix::MOD do
     end
 
     it "returns nil when comparing with non-MOD objects" do
-      expect(mod_a <=> "not a mod").to be_nil
+      expect(mod_a <=> "not a MOD").to be_nil
       expect(mod_a <=> 42).to be_nil
     end
   end

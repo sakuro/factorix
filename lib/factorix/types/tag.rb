@@ -4,7 +4,7 @@ module Factorix
   module Types
     Tag = Data.define(:value, :name, :description)
 
-    # Tag object from Mod Portal API
+    # Tag object from MOD Portal API
     #
     # Represents a MOD tag with value, name, and description.
     # Uses flyweight pattern - same tag value returns same instance.

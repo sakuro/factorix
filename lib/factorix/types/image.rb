@@ -6,7 +6,7 @@ module Factorix
   module Types
     Image = Data.define(:id, :thumbnail, :url)
 
-    # Image object from Mod Portal API
+    # Image object from MOD Portal API
     #
     # Represents a MOD screenshot or image
     #

@@ -9,9 +9,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   let(:mod_info) do
     Factorix::Types::MODInfo.new(
       name: "test-mod",
-      title: "Test Mod",
+      title: "Test MOD",
       owner: "test-owner",
-      summary: "A test mod",
+      summary: "A test MOD",
       downloads_count: 100,
       category: "utilities",
       score: 5.0,

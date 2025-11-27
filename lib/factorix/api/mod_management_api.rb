@@ -5,7 +5,7 @@ require "uri"
 
 module Factorix
   module API
-    # API client for mod management operations (upload, publish, edit)
+    # API client for MOD management operations (upload, publish, edit)
     #
     # Requires API key authentication via APICredential.
     # Uses api_credential lazy loading to avoid early environment variable evaluation.
@@ -41,34 +41,34 @@ module Factorix
         @api_credential_mutex = Mutex.new
       end
 
-      # Initialize new mod publication
+      # Initialize new MOD publication
       #
-      # @param mod_name [String] the mod name
+      # @param mod_name [String] the MOD name
       # @return [URI::HTTPS] upload URL
-      # @raise [HTTPClientError] for 4xx errors (e.g., mod already exists)
+      # @raise [HTTPClientError] for 4xx errors (e.g., MOD already exists)
       # @raise [HTTPServerError] for 5xx errors
       def init_publish(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_publish")
         body = JSON.generate({mod: mod_name})
 
-        logger.info("Initializing mod publication", mod: mod_name)
+        logger.info("Initializing MOD publication", mod: mod_name)
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
 
         parse_upload_url(response)
       end
 
-      # Initialize update to existing mod
+      # Initialize update to existing MOD
       #
-      # @param mod_name [String] the mod name
+      # @param mod_name [String] the MOD name
       # @return [URI::HTTPS] upload URL
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def init_upload(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_upload")
         body = JSON.generate({mod: mod_name})
 
-        logger.info("Initializing mod upload", mod: mod_name)
+        logger.info("Initializing MOD upload", mod: mod_name)
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
 
         parse_upload_url(response)
@@ -79,7 +79,7 @@ module Factorix
       # Complete upload (works for both publish and update scenarios)
       #
       # @param upload_url [URI::HTTPS] the upload URL from init_publish or init_upload
-      # @param file_path [Pathname] path to mod zip file
+      # @param file_path [Pathname] path to MOD zip file
       # @param metadata [Hash] optional metadata (only used for init_publish)
       # @option metadata [String] :description Markdown description
       # @option metadata [String] :category MOD category
@@ -91,7 +91,7 @@ module Factorix
       def finish_upload(upload_url, file_path, **metadata)
         validate_metadata!(metadata, ALLOWED_UPLOAD_METADATA, "finish_upload")
 
-        logger.info("Uploading mod file", file: file_path.to_s, metadata_count: metadata.size)
+        logger.info("Uploading MOD file", file: file_path.to_s, metadata_count: metadata.size)
 
         # Convert metadata keys to strings for form fields
         fields = metadata.transform_keys(&:to_s)
@@ -100,9 +100,9 @@ module Factorix
         logger.info("Upload completed successfully")
       end
 
-      # Edit mod details (for post-upload metadata changes)
+      # Edit MOD details (for post-upload metadata changes)
       #
-      # @param mod_name [String] the mod name
+      # @param mod_name [String] the MOD name
       # @param metadata [Hash] metadata to update
       # @option metadata [String] :description Markdown description
       # @option metadata [String] :summary Brief description
@@ -115,7 +115,7 @@ module Factorix
       # @option metadata [String] :faq FAQ text
       # @option metadata [Boolean] :deprecated Deprecation flag
       # @return [void]
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def edit_details(mod_name, **metadata)
@@ -131,18 +131,18 @@ module Factorix
         form_data = {mod: mod_name, **metadata}.transform_keys(&:to_s)
         body = URI.encode_www_form(form_data)
 
-        logger.info("Editing mod details", mod: mod_name, fields: metadata.keys)
+        logger.info("Editing MOD details", mod: mod_name, fields: metadata.keys)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Edit completed successfully")
       rescue HTTPNotFoundError => e
         raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
       end
 
-      # Initialize image upload for a mod
+      # Initialize image upload for a MOD
       #
-      # @param mod_name [String] the mod name
+      # @param mod_name [String] the MOD name
       # @return [URI::HTTPS] upload URL
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def init_image_upload(mod_name)
@@ -176,12 +176,12 @@ module Factorix
         raise HTTPError, "Invalid JSON response: #{e.message}"
       end
 
-      # Edit mod's image list
+      # Edit MOD's image list
       #
-      # @param mod_name [String] the mod name
+      # @param mod_name [String] the MOD name
       # @param image_ids [Array<String>] array of image IDs (SHA1 hashes)
       # @return [void]
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       # @raise [HTTPClientError] for other 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       def edit_images(mod_name, image_ids)
@@ -193,7 +193,7 @@ module Factorix
         form_data = {mod: mod_name, images: image_ids.join(",")}
         body = URI.encode_www_form(form_data)
 
-        logger.info("Editing mod images", mod: mod_name, image_count: image_ids.size)
+        logger.info("Editing MOD images", mod: mod_name, image_count: image_ids.size)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Images updated successfully")
       rescue HTTPNotFoundError => e

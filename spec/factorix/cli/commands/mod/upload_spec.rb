@@ -20,7 +20,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     info_json_content = {
       "name" => "test-mod",
       "version" => "1.0.0",
-      "title" => "Test Mod",
+      "title" => "Test MOD",
       "author" => "Test Author"
     }.to_json
 
@@ -42,13 +42,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   end
 
   describe "#call" do
-    it "uploads a mod without metadata" do
+    it "uploads a MOD without metadata" do
       command.call(file: zip_path.to_s)
 
       expect(portal).to have_received(:upload_mod).with("test-mod", zip_path)
     end
 
-    it "uploads a mod with description" do
+    it "uploads a MOD with description" do
       command.call(file: zip_path.to_s, description: "Test description")
 
       expect(portal).to have_received(:upload_mod).with(
@@ -58,7 +58,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       )
     end
 
-    it "uploads a mod with category" do
+    it "uploads a MOD with category" do
       command.call(file: zip_path.to_s, category: "content")
 
       expect(portal).to have_received(:upload_mod).with(
@@ -68,7 +68,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       )
     end
 
-    it "uploads a mod with license" do
+    it "uploads a MOD with license" do
       command.call(file: zip_path.to_s, license: "MIT")
 
       expect(portal).to have_received(:upload_mod).with(
@@ -78,7 +78,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       )
     end
 
-    it "uploads a mod with source_url" do
+    it "uploads a MOD with source_url" do
       command.call(file: zip_path.to_s, source_url: "https://github.com/user/repo")
 
       expect(portal).to have_received(:upload_mod).with(
@@ -88,7 +88,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       )
     end
 
-    it "uploads a mod with all metadata" do
+    it "uploads a MOD with all metadata" do
       command.call(
         file: zip_path.to_s,
         description: "Full description",
@@ -190,7 +190,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   end
 
   describe "#extract_mod_name" do
-    it "extracts mod name from zip file" do
+    it "extracts MOD name from zip file" do
       mod_name = command.__send__(:extract_mod_name, zip_path)
       expect(mod_name).to eq("test-mod")
     end

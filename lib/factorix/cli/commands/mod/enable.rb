@@ -35,7 +35,7 @@ module Factorix
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
-            # Convert mod names to MOD objects
+            # Convert MOD names to MOD objects
             target_mods = mod_names.map {|name| Factorix::MOD[name:] }
 
             # Validate target MODs exist

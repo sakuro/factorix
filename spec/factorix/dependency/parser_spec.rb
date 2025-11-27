@@ -115,17 +115,17 @@ RSpec.describe Factorix::Dependency::Parser do
     end
 
     context "with edge cases" do
-      it "handles mod names with hyphens" do
+      it "handles MOD names with hyphens" do
         dep = parser.parse("my-cool-mod >= 1.0.0")
         expect(dep.mod.name).to eq("my-cool-mod")
       end
 
-      it "handles mod names with numbers" do
+      it "handles MOD names with numbers" do
         dep = parser.parse("mod2 >= 3.0.0")
         expect(dep.mod.name).to eq("mod2")
       end
 
-      it "handles mod names with underscores" do
+      it "handles MOD names with underscores" do
         dep = parser.parse("my_mod >= 1.0.0")
         expect(dep.mod.name).to eq("my_mod")
       end
@@ -144,8 +144,8 @@ RSpec.describe Factorix::Dependency::Parser do
         expect { parser.parse("mod >= invalid") }.to raise_error(ArgumentError, /Invalid version requirement/)
       end
 
-      it "raises error for empty mod name" do
-        expect { parser.parse(">= 1.0.0") }.to raise_error(ArgumentError, /empty mod name/)
+      it "raises error for empty MOD name" do
+        expect { parser.parse(">= 1.0.0") }.to raise_error(ArgumentError, /empty MOD name/)
       end
 
       it "raises error for empty version" do

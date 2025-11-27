@@ -13,7 +13,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
   end
 
   describe "#init_publish" do
-    it "initializes new mod publication" do
+    it "initializes new MOD publication" do
       response = instance_double(Factorix::HTTP::Response, body: '{"upload_url":"https://example.com/upload/123"}')
       allow(client).to receive(:post).and_return(response)
 
@@ -40,7 +40,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
   end
 
   describe "#init_upload" do
-    it "initializes upload to existing mod" do
+    it "initializes upload to existing MOD" do
       response = instance_double(Factorix::HTTP::Response, body: '{"upload_url":"https://example.com/upload/456"}')
       allow(client).to receive(:post).and_return(response)
 
@@ -57,7 +57,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
       end
     end
 
-    context "when mod not found" do
+    context "when MOD not found" do
       it "raises MODNotOnPortalError with api_message" do
         error = Factorix::HTTPNotFoundError.new("404 Not Found", api_message: "Unknown Mod")
         allow(client).to receive(:post).and_raise(error)
@@ -98,12 +98,12 @@ RSpec.describe Factorix::API::MODManagementAPI do
     end
 
     it "uploads file with metadata" do
-      api.finish_upload(upload_url, file_path, description: "Test mod", category: "content")
+      api.finish_upload(upload_url, file_path, description: "Test MOD", category: "content")
 
       expect(uploader).to have_received(:upload).with(
         upload_url,
         file_path,
-        fields: {"description" => "Test mod", "category" => "content"}
+        fields: {"description" => "Test MOD", "category" => "content"}
       )
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
   end
 
   describe "#edit_details" do
-    it "edits mod metadata" do
+    it "edits MOD metadata" do
       response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
       allow(client).to receive(:post).and_return(response)
 
@@ -249,7 +249,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
   end
 
   describe "#edit_images" do
-    it "updates mod's image list" do
+    it "updates MOD's image list" do
       response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
       allow(client).to receive(:post).and_return(response)
 

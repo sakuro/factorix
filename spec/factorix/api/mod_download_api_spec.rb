@@ -18,7 +18,7 @@ RSpec.describe Factorix::API::MODDownloadAPI do
       allow(downloader).to receive(:download)
     end
 
-    it "downloads the mod file via downloader" do
+    it "downloads the MOD file via downloader" do
       api.download(download_url, output)
       expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output)
     end

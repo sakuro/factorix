@@ -33,7 +33,7 @@ module Factorix
 
           # Execute the edit command
           #
-          # @param mod_name [String] the mod name
+          # @param mod_name [String] the MOD name
           # @param description [String, nil] optional description
           # @param summary [String, nil] optional summary
           # @param title [String, nil] optional title

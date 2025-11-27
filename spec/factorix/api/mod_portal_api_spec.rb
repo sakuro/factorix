@@ -77,7 +77,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
         allow(client).to receive(:get).and_return(response)
       end
 
-      it "fetches mod info from API" do
+      it "fetches MOD info from API" do
         result = api.get_mod("example-mod")
         expect(result).to eq(parsed_response)
       end
@@ -100,7 +100,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
       end
     end
 
-    context "with mod name containing spaces" do
+    context "with MOD name containing spaces" do
       let(:response_body) { '{"name": "Explosive Excavation", "releases": []}' }
       let(:parsed_response) { {name: "Explosive Excavation", releases: []} }
 
@@ -132,7 +132,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
         allow(client).to receive(:get).and_return(response)
       end
 
-      it "fetches full mod info from API" do
+      it "fetches full MOD info from API" do
         result = api.get_mod_full("example-mod")
         expect(result).to eq(parsed_response)
       end
@@ -155,7 +155,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
       end
     end
 
-    context "with mod name containing spaces" do
+    context "with MOD name containing spaces" do
       let(:response_body) { '{"name": "Explosive Excavation", "changelog": "...", "releases": []}' }
       let(:parsed_response) { {name: "Explosive Excavation", changelog: "...", releases: []} }
 

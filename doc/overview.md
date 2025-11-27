@@ -2,11 +2,11 @@
 
 ## Overview
 
-Factorix is a comprehensive CLI tool and Ruby library for managing Factorio mods.
+Factorix is a comprehensive CLI tool and Ruby library for managing Factorio MODs.
 
 ## Purpose
 
-Provide both command-line and programmatic interfaces for Factorio mod management, including dependency resolution, settings management, and MOD Portal integration.
+Provide both command-line and programmatic interfaces for Factorio MOD management, including dependency resolution, settings management, and MOD Portal integration.
 
 ## Features
 
@@ -16,12 +16,12 @@ Provide both command-line and programmatic interfaces for Factorio mod managemen
 - Automatic process management for certain commands
 
 ### 2. MOD Management
-- **Discovery**: List and search mods from MOD Portal
-- **Installation**: Install mods with automatic dependency resolution
-- **State Management**: Enable/disable mods with dependency tracking
+- **Discovery**: List and search MODs from MOD Portal
+- **Installation**: Install MODs with automatic dependency resolution
+- **State Management**: Enable/disable MODs with dependency tracking
 - **Validation**: Check dependency integrity (`mod check`)
 - **Synchronization**: Sync MOD states from save files (`mod sync`)
-- **Uninstallation**: Remove mods from mod directory
+- **Uninstallation**: Remove MODs from MOD directory
 
 ### 3. Dependency Resolution
 - **Graph-based resolution**: Uses directed acyclic graph (DAG) with topological sorting
@@ -30,7 +30,7 @@ Provide both command-line and programmatic interfaces for Factorio mod managemen
 - **Version requirements**: Supports complex version constraints
 
 ### 4. Settings Management
-- Export/import mod settings in JSON format
+- Export/import MOD settings in JSON format
 
 ### 5. Save File Analysis
 - Extract MOD information from Factorio save files

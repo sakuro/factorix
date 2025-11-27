@@ -23,7 +23,7 @@ module Factorix
           #   attr_reader :runtime
           include Import[:portal, :logger, :runtime]
 
-          desc "Install MOD(s) from Factorio MOD Portal (downloads to mod directory and enables)"
+          desc "Install MOD(s) from Factorio MOD Portal (downloads to MOD directory and enables)"
 
           example [
             "some-mod            # Install latest version",
@@ -44,7 +44,7 @@ module Factorix
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
-            # Ensure mod directory exists
+            # Ensure MOD directory exists
             runtime.mod_dir.mkpath unless runtime.mod_dir.exist?
 
             # Plan installation (fetch info, extend graph, validate)

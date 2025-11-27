@@ -7,7 +7,7 @@ require "uri"
 
 module Factorix
   module API
-    # API client for retrieving mod list and details without authentication
+    # API client for retrieving MOD list and details without authentication
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
@@ -23,10 +23,10 @@ module Factorix
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
 
-      # Retrieve mod list with optional filters
+      # Retrieve MOD list with optional filters
       #
-      # @param namelist [Array<String>] mod names to filter (positional arguments, sorted for cache consistency)
-      # @param hide_deprecated [Boolean, nil] hide deprecated mods
+      # @param namelist [Array<String>] MOD names to filter (positional arguments, sorted for cache consistency)
+      # @param hide_deprecated [Boolean, nil] hide deprecated MODs
       # @param page [Integer, nil] page number (1-based)
       # @param page_size [Integer, String, nil] number of results per page (positive integer or "max")
       # @param sort [String, nil] sort field (name, created_at, updated_at)
@@ -42,18 +42,18 @@ module Factorix
         params = {namelist: namelist.sort, hide_deprecated:, page:, page_size:, sort:, sort_order:, version:}
         params.reject! {|_k, v| v.is_a?(Array) && v.empty? }
         params.compact!
-        logger.debug "Fetching mod list: params=#{params.inspect}"
+        logger.debug "Fetching MOD list: params=#{params.inspect}"
         uri = build_uri("/api/mods", **params)
         fetch_with_cache(uri)
       end
 
-      # Retrieve basic information for a specific mod
+      # Retrieve basic information for a specific MOD
       #
-      # @param name [String] mod name
-      # @return [Hash{Symbol => untyped}] parsed JSON response with mod metadata and releases
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @param name [String] MOD name
+      # @return [Hash{Symbol => untyped}] parsed JSON response with MOD metadata and releases
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       def get_mod(name)
-        logger.debug "Fetching mod: name=#{name}"
+        logger.debug "Fetching MOD: name=#{name}"
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}")
         fetch_with_cache(uri)
@@ -61,13 +61,13 @@ module Factorix
         raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
       end
 
-      # Retrieve detailed information for a specific mod
+      # Retrieve detailed information for a specific MOD
       #
-      # @param name [String] mod name
-      # @return [Hash{Symbol => untyped}] parsed JSON response with full mod details including dependencies
-      # @raise [MODNotOnPortalError] if mod not found on portal
+      # @param name [String] MOD name
+      # @return [Hash{Symbol => untyped}] parsed JSON response with full MOD details including dependencies
+      # @raise [MODNotOnPortalError] if MOD not found on portal
       def get_mod_full(name)
-        logger.debug "Fetching full mod info: name=#{name}"
+        logger.debug "Fetching full MOD info: name=#{name}"
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}/full")
         fetch_with_cache(uri)

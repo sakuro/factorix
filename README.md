@@ -1,43 +1,43 @@
 # Factorix
 
-A Ruby gem for managing Factorio mods, providing both a command-line interface and a library API for programmatic mod management.
+A Ruby gem for managing Factorio MODs, providing both a command-line interface and a library API for programmatic MOD management.
 
 ## Overview
 
-Factorix simplifies Factorio mod management by providing:
-- A CLI tool for everyday mod operations
-- A library API for building custom mod management tools
+Factorix simplifies Factorio MOD management by providing:
+- A CLI tool for everyday MOD operations
+- A library API for building custom MOD management tools
 - Automatic dependency resolution and validation
-- JSON-based mod settings export/import
+- JSON-based MOD settings export/import
 - Save file synchronization capabilities
 
 ## Features
 
-- **MOD Discovery & Download**: List, search, and download mods from the Factorio Mod Portal
+- **MOD Discovery & Download**: List, search, and download MODs from the Factorio MOD Portal
 - **Dependency Management**: Automatic dependency resolution and validation with graph-based analysis
-- **MOD State Management**: Enable/disable mods with automatic handling of dependencies and dependents
-- **Installation & Uninstallation**: Install mods directly from the portal or uninstall existing mods
+- **MOD State Management**: Enable/disable MODs with automatic handling of dependencies and dependents
+- **Installation & Uninstallation**: Install MODs directly from the portal or uninstall existing MODs
 - **Save File Sync**: Synchronize MOD states and startup settings from Factorio save files
-- **Settings Management**: Export/import mod settings in JSON format
-- **MOD Portal Integration**: Upload new mods or update existing ones, edit metadata
+- **Settings Management**: Export/import MOD settings in JSON format
+- **MOD Portal Integration**: Upload new MODs or update existing ones, edit metadata
 - **Game Control**: Launch Factorio from the command line
 - **Cross-platform Support**: Works on Windows, Linux, macOS, and WSL
 
 ## Requirements
 
 - Ruby >= 3.2
-- Factorio API Key (required for uploading mods and editing mod metadata)
+- Factorio API Key (required for uploading MODs and editing MOD metadata)
   - Obtain your API key from [Factorio Profile](https://factorio.com/profile)
 
 ## Setup
 
-For uploading mods or editing mod metadata, set the `FACTORIO_API_KEY` environment variable:
+For uploading MODs or editing MOD metadata, set the `FACTORIO_API_KEY` environment variable:
 
 ```bash
 export FACTORIO_API_KEY=your_api_key_here
 ```
 
-API key is not required for downloading, installing, or managing local mods.
+API key is not required for downloading, installing, or managing local MODs.
 
 ## Configuration
 
@@ -61,7 +61,7 @@ $EDITOR ~/.config/factorix/config.rb
 
 **Configurable paths:**
 - `executable_path` - Path to Factorio executable
-- `user_dir` - Path to Factorio user directory (mods, saves, settings)
+- `user_dir` - Path to Factorio user directory (MODs, saves, settings)
 - `data_dir` - Path to Factorio data directory
 
 **Example configuration:**

@@ -7,7 +7,7 @@ module Factorix
   module Types
     MODInfo = Data.define(:name, :title, :owner, :summary, :downloads_count, :category, :score, :thumbnail, :latest_release, :releases, :detail)
 
-    # MOD information from Mod Portal API
+    # MOD information from MOD Portal API
     #
     # Represents MOD metadata from various API endpoints:
     # - /api/mods (list)

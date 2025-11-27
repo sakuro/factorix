@@ -128,22 +128,22 @@ module Factorix
       end
     end
 
-    # Register mod portal API client
+    # Register MOD Portal API client
     register(:mod_portal_api, memoize: true) do
       API::MODPortalAPI.new
     end
 
-    # Register mod download API client
+    # Register MOD Download API client
     register(:mod_download_api, memoize: false) do
       API::MODDownloadAPI.new
     end
 
-    # Register API credential (for mod upload/management)
+    # Register API credential (for MOD upload/management)
     register(:api_credential, memoize: true) do
       APICredential.from_env
     end
 
-    # Register mod management API client
+    # Register MOD Management API client
     register(:mod_management_api, memoize: true) do
       API::MODManagementAPI.new
     end

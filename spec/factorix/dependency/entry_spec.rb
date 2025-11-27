@@ -142,12 +142,12 @@ RSpec.describe Factorix::Dependency::Entry do
   end
 
   describe "#to_s" do
-    it "returns mod name for required dependency without version" do
+    it "returns MOD name for required dependency without version" do
       dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "base"], type: :required]
       expect(dep.to_s).to eq("base")
     end
 
-    it "returns mod name with requirement for required dependency with version" do
+    it "returns MOD name with requirement for required dependency with version" do
       dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "some-mod"], type: :required, version_requirement: requirement]
       expect(dep.to_s).to eq("some-mod >= 1.2.0")
     end

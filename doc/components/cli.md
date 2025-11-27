@@ -105,7 +105,7 @@ Disable the specified MOD(s).
 **Error Example**:
 ```
 Error: Cannot install some-mod@1.2.0
-  - Incompatible with existing mod: conflicting-mod@2.0.0
+  - Incompatible with existing MOD: conflicting-mod@2.0.0
   - Required dependency base >= 2.0.0 not satisfied (current: 1.1.0)
 ```
 
@@ -292,7 +292,7 @@ Edit MOD image list on the portal.
 
 ### MOD::Settings::Dump
 
-Export mod settings to JSON format.
+Export MOD settings to JSON format.
 
 **Arguments**:
 - `settings_file` - Path to mod-settings.dat file (optional, defaults to runtime path)
@@ -306,7 +306,7 @@ Export mod settings to JSON format.
 
 ### MOD::Settings::Restore
 
-Restore mod settings from JSON format.
+Restore MOD settings from JSON format.
 
 **Backup**: Automatically creates a backup with `.bak` extension before overwriting (customizable with `--backup-extension`)
 

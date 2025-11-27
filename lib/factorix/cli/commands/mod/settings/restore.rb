@@ -82,7 +82,7 @@ module Factorix
             #
             # @param value [Object] The value to convert
             # @return [Object] Converted value
-            # @note Factorio mod settings use signed integers for int-setting type.
+            # @note Factorio MOD settings use signed integers for int-setting type.
             #       Since JSON doesn't preserve signed/unsigned distinction,
             #       we use SignedInteger for all integer values.
             # @see https://wiki.factorio.com/Tutorial:Mod_settings#int-setting

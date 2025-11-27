@@ -138,7 +138,7 @@ module Factorix
       private def parse_error_message(input, error)
         # Check for common error patterns
         if input.strip.match?(/^[><=]+/)
-          "Invalid dependency format: empty mod name (input: #{input.inspect})"
+          "Invalid dependency format: empty MOD name (input: #{input.inspect})"
         elsif input.match?(/[><=]\s*$/)
           "Invalid dependency format: empty version (input: #{input.inspect})"
         elsif input.match?(/[><=]\s+\S+$/) && !input.match?(/[><=]\s+\d+\.\d+\.\d+/)

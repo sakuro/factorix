@@ -8,9 +8,9 @@ module Factorix
   module Types
     InfoJSON = Data.define(:name, :version, :title, :author, :description, :factorio_version, :dependencies)
 
-    # Factorio mod info.json representation
+    # Factorio MOD info.json representation
     #
-    # Represents the metadata file that must be present in every Factorio mod.
+    # Represents the metadata file that must be present in every Factorio MOD.
     # Only required fields (name, version, title, author) are enforced.
     #
     # @see https://lua-api.factorio.com/latest/auxiliary/mod-structure.html
@@ -42,7 +42,7 @@ module Factorix
       # Uses caching to avoid repeated ZIP extraction for the same file.
       # Cache key is based on file path (MOD ZIPs are immutable after download).
       #
-      # @param zip_path [Pathname] path to mod zip file
+      # @param zip_path [Pathname] path to MOD zip file
       # @return [InfoJSON] parsed info.json from zip
       # @raise [ArgumentError] if zip is invalid or info.json not found
       def self.from_zip(zip_path)

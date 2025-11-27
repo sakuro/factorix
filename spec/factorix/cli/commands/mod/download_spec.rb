@@ -13,9 +13,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:mod_info) do
     Factorix::Types::MODInfo.new(
       name: "test-mod",
-      title: "Test Mod",
+      title: "Test MOD",
       owner: "test-owner",
-      summary: "Test mod",
+      summary: "Test MOD",
       downloads_count: 0,
       category: "utilities",
       score: 0.0,
@@ -58,7 +58,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   end
 
   describe "#call" do
-    it "downloads a single mod" do
+    it "downloads a single MOD" do
       command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
@@ -72,7 +72,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       expect(Dir.exist?(download_dir)).to be true
     end
 
-    it "handles mod with version specification" do
+    it "handles MOD with version specification" do
       command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1)
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
@@ -89,9 +89,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     it "downloads multiple mods" do
       mod1_info = Factorix::Types::MODInfo.new(
         name: "mod1",
-        title: "Mod 1",
+        title: "MOD 1",
         owner: "test-owner",
-        summary: "Test mod 1",
+        summary: "Test MOD 1",
         downloads_count: 0,
         category: "content",
         releases: [
@@ -107,9 +107,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       )
       mod2_info = Factorix::Types::MODInfo.new(
         name: "mod2",
-        title: "Mod 2",
+        title: "MOD 2",
         owner: "test-owner",
-        summary: "Test mod 2",
+        summary: "Test MOD 2",
         downloads_count: 0,
         category: "tweaks",
         releases: [
@@ -134,7 +134,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       expect(portal).to have_received(:download_mod).twice
     end
 
-    context "with invalid mod specification" do
+    context "with invalid MOD specification" do
       it "raises error for non-existent release version" do
         expect {
           command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1)
@@ -146,9 +146,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       let(:mod_info_with_bad_filename) do
         Factorix::Types::MODInfo.new(
           name: "evil-mod",
-          title: "Evil Mod",
+          title: "Evil MOD",
           owner: "test-owner",
-          summary: "Evil mod",
+          summary: "Evil MOD",
           downloads_count: 0,
           category: "internal",
           releases: [
@@ -175,25 +175,25 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   end
 
   describe "#parse_mod_spec" do
-    it "parses mod name without version" do
+    it "parses MOD name without version" do
       name, version = command.__send__(:parse_mod_spec, "test-mod")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
     end
 
-    it "parses mod name with version" do
+    it "parses MOD name with version" do
       name, version = command.__send__(:parse_mod_spec, "test-mod@1.2.3")
       expect(name).to eq("test-mod")
       expect(version).to eq("1.2.3")
     end
 
-    it "parses mod name with @latest" do
+    it "parses MOD name with @latest" do
       name, version = command.__send__(:parse_mod_spec, "test-mod@latest")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
     end
 
-    it "parses mod name with empty version as latest" do
+    it "parses MOD name with empty version as latest" do
       name, version = command.__send__(:parse_mod_spec, "test-mod@")
       expect(name).to eq("test-mod")
       expect(version).to eq("latest")
@@ -236,9 +236,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     let(:mod_with_dep) do
       Factorix::Types::MODInfo.new(
         name: "mod-with-dep",
-        title: "Mod With Dependency",
+        title: "MOD With Dependency",
         owner: "test-owner",
-        summary: "Test mod with dependency",
+        summary: "Test MOD with dependency",
         downloads_count: 0,
         category: "content",
         score: 0.0,
@@ -264,7 +264,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     let(:dep_mod) do
       Factorix::Types::MODInfo.new(
         name: "dep-mod",
-        title: "Dependency Mod",
+        title: "Dependency MOD",
         owner: "test-owner",
         summary: "Dependency",
         downloads_count: 1_000_000,

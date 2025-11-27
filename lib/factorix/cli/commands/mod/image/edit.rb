@@ -23,7 +23,7 @@ module Factorix
 
             # Execute the edit command
             #
-            # @param mod_name [String] the mod name
+            # @param mod_name [String] the MOD name
             # @param image_ids [Array<String>] array of image IDs
             # @return [void]
             def call(mod_name:, image_ids:, **)

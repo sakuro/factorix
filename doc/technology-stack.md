@@ -16,7 +16,7 @@
 - **tty-progressbar** (~> 0.18) - Progress display with multi-bar support
 - **parslet** (~> 2.0) - PEG parser for dependency string parsing
 - **rubyzip** (~> 3.2) - ZIP file handling for save file parsing
-- **concurrent-ruby** (~> 1.0) - Parallel processing for concurrent mod downloads
+- **concurrent-ruby** (~> 1.0) - Parallel processing for concurrent MOD downloads
 
 ## Standard Library
 

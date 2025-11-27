@@ -4,7 +4,7 @@ require "uri"
 
 module Factorix
   module API
-    # API client for downloading mod files with service authentication
+    # API client for downloading MOD files with service authentication
     #
     # Requires username and token authentication via ServiceCredential.
     class MODDownloadAPI
@@ -29,7 +29,7 @@ module Factorix
         @service_credential_mutex = Mutex.new
       end
 
-      # Download a mod file to the specified output path
+      # Download a MOD file to the specified output path
       #
       # @param download_url [String] relative download URL from API response (e.g., "/download/mod-name/...")
       # @param output [Pathname] output file path

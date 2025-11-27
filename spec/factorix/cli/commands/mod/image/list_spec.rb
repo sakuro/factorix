@@ -10,11 +10,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
   end
 
   describe "#call" do
-    context "when mod has images" do
+    context "when MOD has images" do
       let(:mod_info) do
         Factorix::Types::MODInfo[
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "test-user",
           summary: "Summary",
           downloads_count: 100,
@@ -76,11 +76,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
     end
 
-    context "when mod has no images" do
+    context "when MOD has no images" do
       let(:mod_info) do
         Factorix::Types::MODInfo[
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "test-user",
           summary: "Summary",
           downloads_count: 100,
@@ -114,11 +114,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
     end
 
-    context "when mod has no detail" do
+    context "when MOD has no detail" do
       let(:mod_info) do
         Factorix::Types::MODInfo[
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "test-user",
           summary: "Summary",
           downloads_count: 100,
@@ -145,7 +145,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
     end
 
-    context "when mod not found" do
+    context "when MOD not found" do
       before do
         allow(portal).to receive(:get_mod_full).and_raise(
           Factorix::MODNotOnPortalError.new("MOD 'non-existent-mod' not found on portal")

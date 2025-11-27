@@ -25,11 +25,11 @@ module Factorix
 
             # Execute the list command
             #
-            # @param mod_name [String] the mod name
+            # @param mod_name [String] the MOD name
             # @param json [Boolean] output in JSON format
             # @return [void]
             def call(mod_name:, json:, **)
-              # Get full mod info to retrieve images
+              # Get full MOD info to retrieve images
               mod_info = portal.get_mod_full(mod_name)
 
               images = if mod_info.detail&.images&.any?

@@ -23,7 +23,7 @@ module Factorix
 
             # Execute the add command
             #
-            # @param mod_name [String] the mod name
+            # @param mod_name [String] the MOD name
             # @param image_file [String] path to image file
             # @return [void]
             def call(mod_name:, image_file:, **)

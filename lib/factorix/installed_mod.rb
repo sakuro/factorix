@@ -7,10 +7,10 @@ require "dry/events"
 module Factorix
   InstalledMOD = Data.define(:mod, :version, :form, :path, :info)
 
-  # Represents a MOD installed in the mod directory or data directory
+  # Represents a MOD installed in the MOD directory or data directory
   #
   # InstalledMOD represents an actual MOD package found in either:
-  # - The mod directory (user-installed MODs as ZIP files or directories)
+  # - The MOD directory (user-installed MODs as ZIP files or directories)
   # - The data directory (base and expansion MODs bundled with the game)
   #
   # This is distinct from MOD (which is just a name identifier) and
@@ -101,7 +101,7 @@ module Factorix
 
     # Scanner for finding installed MODs
     #
-    # Scans mod directory and data directory for installed MODs.
+    # Scans MOD directory and data directory for installed MODs.
     # Gets directory paths from Runtime automatically.
     # Publishes progress events during scan.
     class Scanner
@@ -117,7 +117,7 @@ module Factorix
 
       # Scan directories for installed MODs
       #
-      # Scans the mod directory for both ZIP and directory form MODs.
+      # Scans the MOD directory for both ZIP and directory form MODs.
       # Also scans the data directory for base/expansion MODs.
       # Invalid packages are skipped with debug logging.
       # Publishes scan.started, scan.progress, and scan.completed events.

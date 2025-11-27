@@ -6,7 +6,7 @@ RSpec.describe Factorix::Types::MODInfo do
       it "creates MODInfo with default values for missing fields" do
         mod_info = Factorix::Types::MODInfo[
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "testuser",
           downloads_count: 1000,
           latest_release: {
@@ -20,7 +20,7 @@ RSpec.describe Factorix::Types::MODInfo do
         ]
 
         expect(mod_info.name).to eq("test-mod")
-        expect(mod_info.title).to eq("Test Mod")
+        expect(mod_info.title).to eq("Test MOD")
         expect(mod_info.owner).to eq("testuser")
         expect(mod_info.summary).to eq("") # Default empty string
         expect(mod_info.downloads_count).to eq(1000)
@@ -38,9 +38,9 @@ RSpec.describe Factorix::Types::MODInfo do
       it "creates MODInfo with provided values" do
         mod_info = Factorix::Types::MODInfo[
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "testuser",
-          summary: "A test mod",
+          summary: "A test MOD",
           downloads_count: 1000,
           category: "content",
           score: 0.85,
@@ -57,7 +57,7 @@ RSpec.describe Factorix::Types::MODInfo do
           ]
         ]
 
-        expect(mod_info.summary).to eq("A test mod")
+        expect(mod_info.summary).to eq("A test MOD")
         expect(mod_info.category.value).to eq("content")
         expect(mod_info.category.name).to eq("Content")
         expect(mod_info.score).to eq(0.85)
@@ -72,7 +72,7 @@ RSpec.describe Factorix::Types::MODInfo do
       it "creates MODInfo without detail" do
         mod_info = Factorix::Types::MODInfo[
           name: "short-mod",
-          title: "Short Mod",
+          title: "Short MOD",
           owner: "owner",
           summary: "Summary",
           downloads_count: 500,
@@ -90,7 +90,7 @@ RSpec.describe Factorix::Types::MODInfo do
       it "does not create detail when only some detail fields are present" do
         mod_info = Factorix::Types::MODInfo[
           name: "partial-mod",
-          title: "Partial Mod",
+          title: "Partial MOD",
           owner: "owner",
           downloads_count: 100,
           created_at: "2024-01-01T00:00:00.000000Z"
@@ -105,7 +105,7 @@ RSpec.describe Factorix::Types::MODInfo do
       it "creates MODInfo with Detail" do
         mod_info = Factorix::Types::MODInfo[
           name: "full-mod",
-          title: "Full Mod",
+          title: "Full MOD",
           owner: "owner",
           summary: "Summary",
           downloads_count: 2000,

@@ -14,7 +14,7 @@ RSpec.describe Factorix::Portal do
         results: [
           {
             name: "mod-a",
-            title: "Mod A",
+            title: "MOD A",
             owner: "user-a",
             summary: "Summary A",
             downloads_count: 100,
@@ -30,7 +30,7 @@ RSpec.describe Factorix::Portal do
           },
           {
             name: "mod-b",
-            title: "Mod B",
+            title: "MOD B",
             owner: "user-b",
             summary: "Summary B",
             downloads_count: 200,
@@ -46,7 +46,7 @@ RSpec.describe Factorix::Portal do
       expect(mods.size).to eq(2)
       expect(mods.first).to be_a(Factorix::Types::MODInfo)
       expect(mods.first.name).to eq("mod-a")
-      expect(mods.first.title).to eq("Mod A")
+      expect(mods.first.title).to eq("MOD A")
       expect(mods.first.latest_release).to be_a(Factorix::Types::Release)
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe Factorix::Portal do
     it "returns a MODInfo object without Detail" do
       api_response = {
         name: "test-mod",
-        title: "Test Mod",
+        title: "Test MOD",
         owner: "test-user",
         summary: "Test summary",
         downloads_count: 500,
@@ -78,7 +78,7 @@ RSpec.describe Factorix::Portal do
 
       expect(mod).to be_a(Factorix::Types::MODInfo)
       expect(mod.name).to eq("test-mod")
-      expect(mod.title).to eq("Test Mod")
+      expect(mod.title).to eq("Test MOD")
       expect(mod.detail).to be_nil
       expect(mod.releases.size).to eq(1)
     end
@@ -88,7 +88,7 @@ RSpec.describe Factorix::Portal do
     it "returns a MODInfo object with Detail" do
       api_response = {
         name: "full-mod",
-        title: "Full Mod",
+        title: "Full MOD",
         owner: "full-user",
         summary: "Full summary",
         downloads_count: 1000,
@@ -127,7 +127,7 @@ RSpec.describe Factorix::Portal do
       ]
     end
 
-    it "downloads the mod file to the specified path" do
+    it "downloads the MOD file to the specified path" do
       output_path = Pathname(Dir.tmpdir) / "test-mod.zip"
       allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", output_path)
 
@@ -141,7 +141,7 @@ RSpec.describe Factorix::Portal do
     let(:file_path) { Pathname("/tmp/test-mod_1.0.0.zip") }
     let(:upload_url) { URI("https://mods.factorio.com/upload/123") }
 
-    context "when mod does not exist (new mod)" do
+    context "when MOD does not exist (new MOD)" do
       before do
         allow(mod_portal_api).to receive(:get_mod).with("test-mod")
           .and_raise(Factorix::MODNotOnPortalError.new("MOD 'test-mod' not found on portal"))
@@ -169,11 +169,11 @@ RSpec.describe Factorix::Portal do
       end
     end
 
-    context "when mod exists (update)" do
+    context "when MOD exists (update)" do
       let(:existing_mod_data) do
         {
           name: "test-mod",
-          title: "Test Mod",
+          title: "Test MOD",
           owner: "test-user",
           summary: "Summary",
           downloads_count: 100,
@@ -291,7 +291,7 @@ RSpec.describe Factorix::Portal do
       allow(mod_management_api).to receive(:edit_images)
     end
 
-    it "updates mod's image list" do
+    it "updates MOD's image list" do
       portal.edit_mod_images("test-mod", %w[abc123 def456 ghi789])
 
       expect(mod_management_api).to have_received(:edit_images).with(

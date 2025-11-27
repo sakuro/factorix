@@ -13,73 +13,73 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
   end
 
   describe "#call" do
-    it "edits mod with description" do
+    it "edits MOD with description" do
       command.call(mod_name: "test-mod", description: "New description")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", description: "New description")
     end
 
-    it "edits mod with summary" do
+    it "edits MOD with summary" do
       command.call(mod_name: "test-mod", summary: "Brief summary")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", summary: "Brief summary")
     end
 
-    it "edits mod with title" do
+    it "edits MOD with title" do
       command.call(mod_name: "test-mod", title: "New Title")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", title: "New Title")
     end
 
-    it "edits mod with category" do
+    it "edits MOD with category" do
       command.call(mod_name: "test-mod", category: "utilities")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", category: "utilities")
     end
 
-    it "edits mod with tags" do
+    it "edits MOD with tags" do
       command.call(mod_name: "test-mod", tags: %w[combat logistics])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", tags: %w[combat logistics])
     end
 
-    it "edits mod with license" do
+    it "edits MOD with license" do
       command.call(mod_name: "test-mod", license: "MIT")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", license: "MIT")
     end
 
-    it "edits mod with homepage" do
+    it "edits MOD with homepage" do
       command.call(mod_name: "test-mod", homepage: "https://example.com")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", homepage: "https://example.com")
     end
 
-    it "edits mod with source_url" do
+    it "edits MOD with source_url" do
       command.call(mod_name: "test-mod", source_url: "https://github.com/user/repo")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", source_url: "https://github.com/user/repo")
     end
 
-    it "edits mod with faq" do
+    it "edits MOD with faq" do
       command.call(mod_name: "test-mod", faq: "Q: How?\nA: Easy.")
 
       expect(portal).to have_received(:edit_mod).with("test-mod", faq: "Q: How?\nA: Easy.")
     end
 
-    it "edits mod with deprecated flag set to true" do
+    it "edits MOD with deprecated flag set to true" do
       command.call(mod_name: "test-mod", deprecated: true)
 
       expect(portal).to have_received(:edit_mod).with("test-mod", deprecated: true)
     end
 
-    it "edits mod with deprecated flag set to false" do
+    it "edits MOD with deprecated flag set to false" do
       command.call(mod_name: "test-mod", deprecated: false)
 
       expect(portal).to have_received(:edit_mod).with("test-mod", deprecated: false)
     end
 
-    it "edits mod with multiple metadata fields" do
+    it "edits MOD with multiple metadata fields" do
       command.call(
         mod_name: "test-mod",
         description: "Full description",
@@ -97,7 +97,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
       )
     end
 
-    it "edits mod with all metadata fields" do
+    it "edits MOD with all metadata fields" do
       command.call(
         mod_name: "test-mod",
         description: "Description",

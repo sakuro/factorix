@@ -286,7 +286,7 @@ RSpec.describe Factorix::MODList do
       end
     end
 
-    context "when preserving version information for enabled mod" do
+    context "when preserving version information for enabled MOD" do
       it "has the correct version before disabling" do
         expect(list.version(enabled_mod)).to eq(Factorix::Types::MODVersion.from_string("1.0.0"))
       end

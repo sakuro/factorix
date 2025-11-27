@@ -27,7 +27,7 @@ RSpec.describe Factorix::InstalledMOD do
   end
 
   describe ".all" do
-    context "with empty mod directory" do
+    context "with empty MOD directory" do
       it "returns empty array" do
         expect(Factorix::InstalledMOD.all).to eq([])
       end

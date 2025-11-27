@@ -40,7 +40,7 @@ module Factorix
             raise ArgumentError, "Not a file: #{file}" unless file_path.file?
             raise ArgumentError, "File must be a .zip file" if file_path.extname.casecmp(".zip").nonzero?
 
-            # Extract mod name from info.json inside zip
+            # Extract MOD name from info.json inside zip
             mod_name = extract_mod_name(file_path)
 
             # Build metadata hash
@@ -63,10 +63,10 @@ module Factorix
             end
           end
 
-          # Extract mod name from info.json inside zip file
+          # Extract MOD name from info.json inside zip file
           #
           # @param file_path [Pathname] path to zip file
-          # @return [String] mod name from info.json
+          # @return [String] MOD name from info.json
           # @raise [ArgumentError] if info.json not found or invalid
           private def extract_mod_name(file_path)
             info = Types::InfoJSON.from_zip(file_path)

@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
 module Factorix
-  # High-level API wrapper for Factorio Mod Portal
+  # High-level API wrapper for Factorio MOD Portal
   #
   # Provides object-oriented interface by converting API responses (Hash)
   # to typed value objects (MODInfo, Release, etc.).
   #
-  # @example List all mods
+  # @example List all MODs
   #   portal = Factorix::Portal.new
   #   mods = portal.list_mods(page_size: 10)
   #   mods.each { |mod| puts "#{mod.name}: #{mod.title}" }
   #
-  # @example Get mod information
+  # @example Get MOD information
   #   mod = portal.get_mod("space-exploration")
   #   puts mod.summary
   #
-  # @example Get full mod details
+  # @example Get full MOD details
   #   mod = portal.get_mod_full("space-exploration")
   #   puts mod.detail.description if mod.detail
   #
-  # @example Download a mod
+  # @example Download a MOD
   #   mod = portal.get_mod_full("space-exploration")
   #   release = mod.releases.max_by(&:released_at)  # Get latest by release date
   #   portal.download_mod(release, Pathname("downloads/mod.zip")) if release
@@ -35,10 +35,10 @@ module Factorix
     #   attr_reader :logger
     include Import[:mod_portal_api, :mod_download_api, :mod_management_api, :logger]
 
-    # List mods from the Mod Portal
+    # List MODs from the MOD Portal
     #
-    # @param namelist [Array<String>] mod names to filter (positional arguments)
-    # @param hide_deprecated [Boolean, nil] hide deprecated mods
+    # @param namelist [Array<String>] MOD names to filter (positional arguments)
+    # @param hide_deprecated [Boolean, nil] hide deprecated MODs
     # @param page [Integer, nil] page number (1-based)
     # @param page_size [Integer, nil] number of results per page
     # @param sort [String, nil] sort field (name, created_at, updated_at)
@@ -50,25 +50,25 @@ module Factorix
       response[:results].map {|mod_data| Types::MODInfo[**mod_data] }
     end
 
-    # Get basic information for a specific mod (Short API)
+    # Get basic information for a specific MOD (Short API)
     #
-    # @param name [String] mod name
+    # @param name [String] MOD name
     # @return [Types::MODInfo] MODInfo object (without Detail)
     def get_mod(name)
       data = mod_portal_api.get_mod(name)
       Types::MODInfo[**data]
     end
 
-    # Get full information for a specific mod (Full API)
+    # Get full information for a specific MOD (Full API)
     #
-    # @param name [String] mod name
+    # @param name [String] MOD name
     # @return [Types::MODInfo] MODInfo object (with Detail if available)
     def get_mod_full(name)
       data = mod_portal_api.get_mod_full(name)
       Types::MODInfo[**data]
     end
 
-    # Download a mod release file
+    # Download a MOD release file
     #
     # @param release [Types::Release] release object containing download_url
     # @param output [Pathname] output file path
@@ -80,14 +80,14 @@ module Factorix
       mod_download_api.download(download_path, output)
     end
 
-    # Upload a mod file to the portal
+    # Upload a MOD file to the portal
     #
-    # Automatically detects if this is a new mod or update:
-    # - For new mods: uses init_publish and includes metadata in finish_upload
-    # - For existing mods: uses init_upload, then updates metadata via edit_details
+    # Automatically detects if this is a new MOD or update:
+    # - For new MODs: uses init_publish and includes metadata in finish_upload
+    # - For existing MODs: uses init_upload, then updates metadata via edit_details
     #
-    # @param mod_name [String] the mod name
-    # @param file_path [Pathname] path to mod zip file
+    # @param mod_name [String] the MOD name
+    # @param file_path [Pathname] path to MOD zip file
     # @param metadata [Hash] optional metadata
     # @option metadata [String] :description Markdown description
     # @option metadata [String] :category MOD category
@@ -97,13 +97,13 @@ module Factorix
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def upload_mod(mod_name, file_path, **metadata)
-      # Check if mod exists
+      # Check if MOD exists
       mod_exists = begin
         get_mod(mod_name)
-        logger.info("Uploading new release to existing mod", mod: mod_name)
+        logger.info("Uploading new release to existing MOD", mod: mod_name)
         true
       rescue MODNotOnPortalError
-        logger.info("Publishing new mod", mod: mod_name)
+        logger.info("Publishing new MOD", mod: mod_name)
         false
       end
 
@@ -116,20 +116,20 @@ module Factorix
 
       # Complete upload
       if mod_exists
-        # For existing mods: upload file, then edit metadata separately
+        # For existing MODs: upload file, then edit metadata separately
         mod_management_api.finish_upload(upload_url, file_path)
         mod_management_api.edit_details(mod_name, **metadata) unless metadata.empty?
       else
-        # For new mods: upload file with metadata
+        # For new MODs: upload file with metadata
         mod_management_api.finish_upload(upload_url, file_path, **metadata)
       end
 
       logger.info("Upload completed successfully", mod: mod_name)
     end
 
-    # Edit mod metadata without uploading new file
+    # Edit MOD metadata without uploading new file
     #
-    # @param mod_name [String] the mod name
+    # @param mod_name [String] the MOD name
     # @param metadata [Hash] metadata to update
     # @option metadata [String] :description Markdown description
     # @option metadata [String] :summary Brief description
@@ -148,20 +148,20 @@ module Factorix
     def edit_mod(mod_name, **metadata)
       raise ArgumentError, "No metadata provided" if metadata.empty?
 
-      logger.info("Editing mod metadata", mod: mod_name, fields: metadata.keys)
+      logger.info("Editing MOD metadata", mod: mod_name, fields: metadata.keys)
       mod_management_api.edit_details(mod_name, **metadata)
       logger.info("Metadata updated successfully", mod: mod_name)
     end
 
-    # Add an image to a mod
+    # Add an image to a MOD
     #
-    # @param mod_name [String] the mod name
+    # @param mod_name [String] the MOD name
     # @param image_file [Pathname] path to image file
     # @return [Types::Image] the uploaded image info
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def add_mod_image(mod_name, image_file)
-      logger.info("Adding image to mod", mod: mod_name, file: image_file.to_s)
+      logger.info("Adding image to MOD", mod: mod_name, file: image_file.to_s)
 
       # Initialize upload
       upload_url = mod_management_api.init_image_upload(mod_name)
@@ -176,15 +176,15 @@ module Factorix
       image
     end
 
-    # Edit mod's image list
+    # Edit MOD's image list
     #
-    # @param mod_name [String] the mod name
+    # @param mod_name [String] the MOD name
     # @param image_ids [Array<String>] array of image IDs in desired order
     # @return [void]
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def edit_mod_images(mod_name, image_ids)
-      logger.info("Editing mod images", mod: mod_name, image_count: image_ids.size)
+      logger.info("Editing MOD images", mod: mod_name, image_count: image_ids.size)
       mod_management_api.edit_images(mod_name, image_ids)
       logger.info("Images updated successfully", mod: mod_name)
     end

@@ -6,7 +6,7 @@ module Factorix
   module Types
     License = Data.define(:id, :name, :title, :description, :url)
 
-    # License object from Mod Portal API
+    # License object from MOD Portal API
     #
     # Represents a MOD license information
     #

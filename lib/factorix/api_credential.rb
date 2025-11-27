@@ -3,10 +3,10 @@
 module Factorix
   APICredential = Data.define(:api_key)
 
-  # API credentials for Factorio Mod Portal management
+  # API credentials for Factorio MOD Portal management
   #
   # @!attribute [r] api_key
-  #   @return [String] API key for Factorio Mod Portal
+  #   @return [String] API key for Factorio MOD Portal
   #
   # @see https://wiki.factorio.com/Mod_upload_API
   class APICredential

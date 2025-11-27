@@ -13,19 +13,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
   end
 
   describe "#call" do
-    it "edits mod images with multiple IDs" do
+    it "edits MOD images with multiple IDs" do
       command.call(mod_name: "test-mod", image_ids: %w[abc123 def456 ghi789])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123 def456 ghi789])
     end
 
-    it "edits mod images with single ID" do
+    it "edits MOD images with single ID" do
       command.call(mod_name: "test-mod", image_ids: %w[abc123])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123])
     end
 
-    it "edits mod images with empty array" do
+    it "edits MOD images with empty array" do
       command.call(mod_name: "test-mod", image_ids: [])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", [])

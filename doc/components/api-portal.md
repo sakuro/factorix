@@ -2,7 +2,7 @@
 
 ## API Layer (Low-level)
 
-Classes that wrap the Mod Portal API.
+Classes that wrap the MOD Portal API.
 
 - **Responsibility**: HTTP communication and JSON parsing
 - **Return value**: Hash (parsed JSON)
@@ -17,7 +17,7 @@ Split into three classes based on authentication method.
 - Retrieve MOD list
 - Retrieve MOD details
 - Return value example: `{"results" => [...], "pagination" => {...}}`
-- Corresponds to: [Mod portal API](https://wiki.factorio.com/Mod_portal_API)
+- Corresponds to: [MOD Portal API](https://wiki.factorio.com/Mod_portal_API)
 
 #### 2. MODDownloadAPI - username + token authentication
 
@@ -32,7 +32,7 @@ Split into three classes based on authentication method.
 - Edit MOD details
 - Manage MOD images
 - Uses `APICredential` for authentication
-- Corresponds to: [Mod upload API](https://wiki.factorio.com/Mod_upload_API)
+- Corresponds to: [MOD Upload API](https://wiki.factorio.com/Mod_upload_API)
 
 ### Benefits
 
@@ -140,7 +140,7 @@ This is the **only way** to retrieve dependency information via the API, making 
 #### 6. POST /v2/mods/init_publish - Initialize MOD publication
 
 - **Authentication**: API key (`ModPortal: Publish Mods` permission)
-- **Parameters**: mod name
+- **Parameters**: MOD name
 - **Response**: Upload URL
 
 #### 7. POST {upload_url} - Complete MOD publication
@@ -167,7 +167,7 @@ This is the **only way** to retrieve dependency information via the API, making 
 #### 11. POST /v2/mods/images/edit - Edit MOD images
 
 - **Authentication**: API key (`ModPortal: Edit Mods` permission)
-- **Parameters**: mod name, comma-separated image IDs
+- **Parameters**: MOD name, comma-separated image IDs
 
 ### Categories
 

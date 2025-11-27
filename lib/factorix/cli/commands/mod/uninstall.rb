@@ -4,7 +4,7 @@ module Factorix
   class CLI
     module Commands
       module MOD
-        # Uninstall MODs from mod directory
+        # Uninstall MODs from MOD directory
         class Uninstall < Base
           include Confirmable
           include DependencyGraphSupport
@@ -18,7 +18,7 @@ module Factorix
           #   attr_reader :runtime
           include Import[:logger, :runtime]
 
-          desc "Uninstall MOD(s) from mod directory"
+          desc "Uninstall MOD(s) from MOD directory"
 
           example [
             "some-mod         # Uninstall all versions of MOD",

@@ -6,9 +6,9 @@ RSpec.describe Factorix::Types::InfoJSON do
       {
         "name" => "test-mod",
         "version" => "1.2.3",
-        "title" => "Test Mod",
+        "title" => "Test MOD",
         "author" => "Test Author",
-        "description" => "A test mod",
+        "description" => "A test MOD",
         "factorio_version" => "1.1",
         "dependencies" => ["base >= 1.0.0", "? optional-mod"]
       }
@@ -19,9 +19,9 @@ RSpec.describe Factorix::Types::InfoJSON do
 
       expect(info.name).to eq("test-mod")
       expect(info.version).to eq(Factorix::Types::MODVersion.from_string("1.2.3"))
-      expect(info.title).to eq("Test Mod")
+      expect(info.title).to eq("Test MOD")
       expect(info.author).to eq("Test Author")
-      expect(info.description).to eq("A test mod")
+      expect(info.description).to eq("A test MOD")
       expect(info.factorio_version).to eq("1.1")
       expect(info.dependencies).to be_an(Array)
       expect(info.dependencies.size).to eq(2)
@@ -96,7 +96,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       info_json_content = {
         "name" => "zip-mod",
         "version" => "1.0.0",
-        "title" => "Zip Mod",
+        "title" => "Zip MOD",
         "author" => "Zip Author"
       }.to_json
 
@@ -108,7 +108,7 @@ RSpec.describe Factorix::Types::InfoJSON do
 
       expect(info.name).to eq("zip-mod")
       expect(info.version.to_s).to eq("1.0.0")
-      expect(info.title).to eq("Zip Mod")
+      expect(info.title).to eq("Zip MOD")
       expect(info.author).to eq("Zip Author")
     end
 
