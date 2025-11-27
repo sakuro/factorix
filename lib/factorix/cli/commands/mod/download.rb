@@ -9,6 +9,7 @@ module Factorix
       module MOD
         # Download MOD files from Factorio MOD Portal
         class Download < Base
+          include DownloadSupport
           # @!parse
           #   # @return [Portal]
           #   attr_reader :portal
@@ -316,46 +317,13 @@ module Factorix
               validate_filename(release.file_name)
 
               {
-                mod_name: info[:mod_name],
+                mod: Factorix::MOD[name: info[:mod_name]],
                 mod_info: info[:mod_info],
                 release:,
                 output_path: download_dir / release.file_name,
                 category: info[:mod_info].category
               }
             end
-          end
-
-          # Download MODs in parallel
-          #
-          # @param targets [Array<Hash>] Download targets
-          # @param jobs [Integer] Number of parallel jobs
-          # @return [void]
-          private def download_mods(targets, jobs)
-            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
-
-            pool = Concurrent::FixedThreadPool.new(jobs)
-
-            futures = targets.map {|target|
-              Concurrent::Future.execute(executor: pool) do
-                thread_portal = Application[:portal]
-                thread_downloader = thread_portal.mod_download_api.downloader
-
-                presenter = multi_presenter.register(
-                  target[:mod_name],
-                  title: target[:release].file_name
-                )
-                handler = Progress::DownloadHandler.new(presenter)
-
-                thread_downloader.subscribe(handler)
-                thread_portal.download_mod(target[:release], target[:output_path])
-                thread_downloader.unsubscribe(handler)
-              end
-            }
-
-            futures.each(&:wait!)
-          ensure
-            pool&.shutdown
-            pool&.wait_for_termination
           end
 
           # Validate filename for security

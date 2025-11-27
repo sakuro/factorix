@@ -11,6 +11,7 @@ module Factorix
         class Install < Base
           include Confirmable
           include DependencyGraphSupport
+          include DownloadSupport
 
           require_game_stopped!
 
@@ -417,48 +418,6 @@ module Factorix
                 logger.debug("Added to mod-list.json", mod_name: mod.name)
               end
             end
-          end
-
-          # Download MODs in parallel
-          #
-          # @param targets [Array<Hash>] Installation targets
-          # @param jobs [Integer] Number of parallel jobs
-          # @return [void]
-          private def download_mods(targets, jobs)
-            # Set up multi-progress presenter
-            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
-
-            # Use thread pool for controlled parallelism
-            pool = Concurrent::FixedThreadPool.new(jobs)
-
-            # Submit download tasks to the pool
-            futures = targets.map {|target|
-              Concurrent::Future.execute(executor: pool) do
-                # Get a new portal instance
-                thread_portal = Application[:portal]
-                thread_downloader = thread_portal.mod_download_api.downloader
-
-                # Register progress presenter and create handler
-                presenter = multi_presenter.register(
-                  target[:mod].name,
-                  title: target[:release].file_name
-                )
-                handler = Progress::DownloadHandler.new(presenter)
-
-                # Subscribe to downloader events
-                thread_downloader.subscribe(handler)
-
-                thread_portal.download_mod(target[:release], target[:output_path])
-
-                thread_downloader.unsubscribe(handler)
-              end
-            }
-
-            # Wait for all downloads to complete
-            futures.each(&:wait!)
-          ensure
-            pool&.shutdown
-            pool&.wait_for_termination
           end
         end
       end
