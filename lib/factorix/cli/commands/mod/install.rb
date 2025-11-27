@@ -310,7 +310,8 @@ module Factorix
           # @param all_mod_infos [Hash] All MOD infos by name
           # @return [Array<Hash>] Install targets
           private def extract_install_targets(graph, all_mod_infos)
-            graph.nodes.filter_map {|node|
+            # Filter MODs marked for installation and merge with their info
+            mod_infos = graph.nodes.filter_map {|node|
               next unless node.operation == :install
 
               info = all_mod_infos[node.mod.name]
@@ -319,14 +320,10 @@ module Factorix
                 next
               end
 
-              {
-                mod: node.mod,
-                mod_info: info[:mod_info],
-                release: info[:release],
-                output_path: runtime.mod_dir / info[:release].file_name,
-                category: info[:mod_info].category
-              }
+              info.merge(mod: node.mod)
             }
+
+            build_install_targets(mod_infos, runtime.mod_dir)
           end
 
           # Show the installation plan

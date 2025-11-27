@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       include Factorix::CLI::Commands::DownloadSupport
 
       # Make private methods public for testing
-      public :parse_mod_spec, :find_release, :find_compatible_release
+      public :parse_mod_spec, :find_release, :find_compatible_release, :build_install_targets
     end
   end
   let(:instance) { test_class.new }
@@ -170,6 +170,59 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
         result = instance.find_compatible_release(mod_info, requirement)
         expect(result).to be_nil
       end
+    end
+  end
+
+  describe "#build_install_targets" do
+    let(:output_dir) { Pathname("/mods") }
+
+    let(:release) do
+      Factorix::Types::Release.new(
+        download_url: "/download/test-mod/v1",
+        file_name: "test-mod_1.0.0.zip",
+        info_json: {},
+        released_at: "2024-01-01T00:00:00Z",
+        version: "1.0.0",
+        sha1: "abc123"
+      )
+    end
+
+    let(:mod_info) do
+      instance_double(Factorix::Types::MODInfo, category: "utilities")
+    end
+
+    context "when info has :mod key" do
+      let(:mod) { Factorix::MOD[name: "test-mod"] }
+      let(:mod_infos) { [{mod:, mod_info:, release:}] }
+
+      it "uses the provided MOD object" do
+        result = instance.build_install_targets(mod_infos, output_dir)
+        expect(result.first[:mod]).to eq(mod)
+      end
+    end
+
+    context "when info has :mod_name key" do
+      let(:mod_infos) { [{mod_name: "test-mod", mod_info:, release:}] }
+
+      it "creates a MOD object from mod_name" do
+        result = instance.build_install_targets(mod_infos, output_dir)
+        expect(result.first[:mod].name).to eq("test-mod")
+      end
+    end
+
+    it "builds correct target structure" do
+      mod = Factorix::MOD[name: "test-mod"]
+      mod_infos = [{mod:, mod_info:, release:}]
+
+      result = instance.build_install_targets(mod_infos, output_dir)
+
+      expect(result.first).to include(
+        mod: mod,
+        mod_info: mod_info,
+        release: release,
+        output_path: Pathname("/mods/test-mod_1.0.0.zip"),
+        category: "utilities"
+      )
     end
   end
 end

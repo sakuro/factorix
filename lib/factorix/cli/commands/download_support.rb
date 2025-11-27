@@ -64,6 +64,26 @@ module Factorix
           compatible_releases.max_by(&:released_at)
         end
 
+        # Build install targets from MOD infos
+        #
+        # @param mod_infos [Array<Hash>] MOD infos, each containing:
+        #   - :mod [Factorix::MOD] or :mod_name [String] MOD identifier
+        #   - :mod_info [Types::MODInfo] MOD information
+        #   - :release [Types::Release] Release to install
+        # @param output_dir [Pathname] Output directory for MOD files
+        # @return [Array<Hash>] Install targets
+        private def build_install_targets(mod_infos, output_dir)
+          mod_infos.map {|info|
+            {
+              mod: info[:mod] || Factorix::MOD[name: info[:mod_name]],
+              mod_info: info[:mod_info],
+              release: info[:release],
+              output_path: output_dir / info[:release].file_name,
+              category: info[:mod_info].category
+            }
+          }
+        end
+
         # Download MODs in parallel
         #
         # @param targets [Array<Hash>] Download targets, each containing:
