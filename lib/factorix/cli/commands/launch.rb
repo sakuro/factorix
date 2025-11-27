@@ -37,7 +37,7 @@ module Factorix
           "-- --benchmark save.zip       # Run benchmark"
         ]
 
-        option :wait, type: :boolean, default: false, aliases: ["-w"], desc: "Wait for the game to finish"
+        option :wait, type: :flag, default: false, aliases: ["-w"], desc: "Wait for the game to finish"
 
         # Execute the launch command
         #

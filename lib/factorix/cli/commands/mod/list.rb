@@ -24,11 +24,11 @@ module Factorix
             "--json       # Output in JSON format"
           ]
 
-          option :enabled, type: :boolean, default: false, desc: "Show only enabled MOD(s)"
-          option :disabled, type: :boolean, default: false, desc: "Show only disabled MOD(s)"
-          option :errors, type: :boolean, default: false, desc: "Show only MOD(s) with dependency errors"
-          option :outdated, type: :boolean, default: false, desc: "Show only MOD(s) with available updates"
-          option :json, type: :boolean, default: false, desc: "Output in JSON format"
+          option :enabled, type: :flag, default: false, desc: "Show only enabled MOD(s)"
+          option :disabled, type: :flag, default: false, desc: "Show only disabled MOD(s)"
+          option :errors, type: :flag, default: false, desc: "Show only MOD(s) with dependency errors"
+          option :outdated, type: :flag, default: false, desc: "Show only MOD(s) with available updates"
+          option :json, type: :flag, default: false, desc: "Output in JSON format"
 
           # MOD information for display
           MODInfo = Data.define(:name, :version, :enabled, :error, :latest_version)

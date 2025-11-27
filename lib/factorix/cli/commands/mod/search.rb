@@ -34,7 +34,7 @@ module Factorix
           option :sort, type: :string, values: %w[name created_at updated_at], desc: "Sort field"
           option :sort_order, type: :string, values: %w[asc desc], desc: "Sort order"
           option :version, type: :string, desc: "Filter by Factorio version (default: installed version)"
-          option :json, type: :boolean, default: false, desc: "Output in JSON format"
+          option :json, type: :flag, default: false, desc: "Output in JSON format"
 
           # Execute the search command
           #

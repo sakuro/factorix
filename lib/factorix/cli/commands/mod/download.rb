@@ -28,7 +28,7 @@ module Factorix
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
           option :directory, type: :string, aliases: ["-d"], default: ".", desc: "Download directory"
           option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
-          option :recursive, type: :boolean, aliases: ["-r"], default: false, desc: "Include required dependencies recursively"
+          option :recursive, type: :flag, aliases: ["-r"], default: false, desc: "Include required dependencies recursively"
 
           # Execute the download command
           #

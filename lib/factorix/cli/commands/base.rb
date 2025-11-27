@@ -62,7 +62,7 @@ module Factorix
         # Common options available to all commands
         option :config_path, type: :string, aliases: ["-c"], desc: "Path to configuration file"
         option :log_level, type: :string, values: %w[debug info warn error fatal], desc: "Set log level"
-        option :quiet, type: :boolean, default: false, aliases: ["-q"], desc: "Suppress non-essential output"
+        option :quiet, type: :flag, default: false, aliases: ["-q"], desc: "Suppress non-essential output"
 
         private def say(message, prefix: "")
           return if quiet?

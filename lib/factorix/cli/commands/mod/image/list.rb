@@ -21,7 +21,7 @@ module Factorix
 
             argument :mod_name, type: :string, required: true, desc: "MOD name"
 
-            option :json, type: :boolean, default: false, desc: "Output in JSON format"
+            option :json, type: :flag, default: false, desc: "Output in JSON format"
 
             # Execute the list command
             #

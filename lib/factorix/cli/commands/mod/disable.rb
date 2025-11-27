@@ -28,7 +28,7 @@ module Factorix
 
           argument :mod_names, type: :array, required: false, desc: "MOD names to disable"
 
-          option :all, type: :boolean, default: false, desc: "Disable all MOD(s) (except base)"
+          option :all, type: :flag, default: false, desc: "Disable all MOD(s) (except base)"
 
           # Execute the disable command
           #
