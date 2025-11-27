@@ -45,7 +45,7 @@ module Factorix
                        end
 
               if json
-                say JSON.pretty_generate(images)
+                puts JSON.pretty_generate(images)
               else
                 output_table(images)
               end

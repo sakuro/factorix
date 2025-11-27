@@ -60,7 +60,7 @@ module Factorix
           result = PATH_TYPES.transform_values {|method_name| runtime.public_send(method_name).to_s }
 
           if json
-            say JSON.pretty_generate(result)
+            puts JSON.pretty_generate(result)
           else
             output_table(result)
           end

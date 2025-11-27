@@ -350,7 +350,7 @@ module Factorix
               end
             }
 
-            say JSON.pretty_generate(data)
+            puts JSON.pretty_generate(data)
           end
         end
       end
