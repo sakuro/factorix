@@ -232,28 +232,6 @@ module Factorix
               "the following enabled MOD(s) depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
           end
 
-          # Find all enabled MODs that have a required dependency on the given MOD
-          #
-          # @param mod [MOD] The MOD to find dependents for
-          # @param graph [Dependency::Graph] Dependency graph
-          # @return [Array<MOD>] Array of MODs that depend on the given MOD
-          private def find_enabled_dependents(mod, graph)
-            dependents = []
-
-            graph.nodes.each do |node|
-              next unless node.enabled?
-
-              graph.edges_from(node.mod).each do |edge|
-                next unless edge.required? && edge.to_mod == mod
-
-                dependents << node.mod
-                break
-              end
-            end
-
-            dependents
-          end
-
           # Show the uninstall plan
           #
           # @param targets [Array<UninstallTarget>] Targets to uninstall

@@ -78,6 +78,28 @@ module Factorix
             Alternatively, you can start fresh by reinstalling MOD(s).
           MESSAGE
         end
+
+        # Find all enabled MODs that have a required dependency on the given MOD
+        #
+        # @param mod [Factorix::MOD] the MOD to find dependents for
+        # @param graph [Factorix::Dependency::Graph] dependency graph
+        # @return [Array<Factorix::MOD>] MODs that depend on the given MOD
+        private def find_enabled_dependents(mod, graph)
+          dependents = []
+
+          graph.nodes.each do |node|
+            next unless node.enabled?
+
+            graph.edges_from(node.mod).each do |edge|
+              next unless edge.required? && edge.to_mod == mod
+
+              dependents << node.mod
+              break
+            end
+          end
+
+          dependents
+        end
       end
     end
   end

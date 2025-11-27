@@ -169,31 +169,6 @@ module Factorix
             mods_to_disable.to_a
           end
 
-          # Find all enabled MODs that have a required dependency on the given MOD
-          #
-          # @param mod [Factorix::MOD] The MOD to find dependents for
-          # @param graph [Factorix::Dependency::Graph] Dependency graph
-          # @return [Array<Factorix::MOD>] MODs that depend on the given MOD
-          private def find_enabled_dependents(mod, graph)
-            dependents = []
-
-            # Check all nodes in the graph
-            graph.nodes.each do |node|
-              next unless node.enabled?
-
-              # Check if this node has a required dependency on the target MOD
-              graph.edges_from(node.mod).each do |edge|
-                next unless edge.required?
-                next unless edge.to_mod == mod
-
-                dependents << node.mod
-                break
-              end
-            end
-
-            dependents
-          end
-
           # Show the disable plan to user
           #
           # @param mods_to_disable [Array<Factorix::MOD>] MODs to disable
