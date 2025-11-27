@@ -29,19 +29,6 @@ module Factorix
           argument :mod_specs, type: :array, required: false, desc: "MOD specifications (name@version or name)"
           option :all, type: :flag, default: false, desc: "Uninstall all MOD(s) (base remains enabled, expansions disabled, others removed)"
 
-          UninstallTarget = Data.define(:mod, :version)
-
-          # Internal structure to represent an uninstall target
-          class UninstallTarget
-            # Check if a specific version is targeted
-            # @return [Boolean] true if version is specified
-            def versioned? = !version.nil?
-
-            # String representation of the uninstall target
-            # @return [String] MOD name with optional version (e.g., "mod-a@1.0.0" or "mod-a")
-            def to_s = versioned? ? "#{mod}@#{version}" : mod.to_s
-          end
-
           # Execute the uninstall command
           #
           # @param mod_specs [Array<String>] MOD specifications
@@ -109,7 +96,7 @@ module Factorix
           #
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
-          # @return [Array<UninstallTarget>] Uninstall targets in reverse dependency order
+          # @return [Array<Hash>] Uninstall targets in reverse dependency order
           private def plan_uninstall_all(graph, _installed_mods)
             # Get all MODs in reverse topological order (dependents first, then dependencies)
             # This ensures we uninstall dependents before their dependencies
@@ -122,9 +109,7 @@ module Factorix
 
               # For expansion MODs, we'll disable them in mod-list.json but not uninstall
               # For regular MODs, create uninstall target
-              unless mod.expansion?
-                UninstallTarget.new(mod:, version: nil)
-              end
+              {mod:, version: nil} unless mod.expansion?
             end
           end
 
@@ -133,10 +118,10 @@ module Factorix
               mod_name, version_str = mod_spec.split("@", 2)
               mod = Factorix::MOD[name: mod_name]
               version = Types::MODVersion.from_string(version_str)
-              UninstallTarget.new(mod:, version:)
+              {mod:, version:}
             else
               mod = Factorix::MOD[name: mod_spec]
-              UninstallTarget.new(mod:, version: nil)
+              {mod:, version: nil}
             end
           end
 
@@ -148,13 +133,13 @@ module Factorix
 
           # Validate a single uninstall target
           #
-          # @param target [UninstallTarget] Target to validate
+          # @param target [Hash] Target to validate ({mod:, version:})
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @param all [Boolean] Whether this is part of --all uninstall
-          # @return [UninstallTarget, nil] The target if valid, nil if should be skipped
+          # @return [Hash, nil] The target if valid, nil if should be skipped
           private def validate_uninstall_target(target, graph, installed_mods, all: false)
-            mod = target.mod
+            mod = target[:mod]
 
             # Check if base/expansion
             raise Error, "Cannot uninstall base MOD" if mod.base?
@@ -168,9 +153,9 @@ module Factorix
             end
 
             # For versioned uninstall, check if the specific version exists
-            if target.versioned? && !version_installed?(target, installed_mods)
-              say "MOD version not installed: #{target}", prefix: :warn
-              logger.debug("MOD version not installed", target: target.to_s)
+            if target[:version] && !version_installed?(target, installed_mods)
+              say "MOD version not installed: #{format_target(target)}", prefix: :warn
+              logger.debug("MOD version not installed", target: format_target(target))
               return nil
             end
 
@@ -182,28 +167,28 @@ module Factorix
 
           # Check if a specific version is installed
           #
-          # @param target [UninstallTarget] Target with version
+          # @param target [Hash] Target with version ({mod:, version:})
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @return [Boolean] true if version is installed
           private def version_installed?(target, installed_mods)
-            installed_mods.any? {|im| im.mod == target.mod && im.version == target.version }
+            installed_mods.any? {|im| im.mod == target[:mod] && im.version == target[:version] }
           end
 
           # Check for enabled dependents considering remaining versions
           #
-          # @param target [UninstallTarget] Target to check
+          # @param target [Hash] Target to check ({mod:, version:})
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @return [void]
           # @raise [Factorix::Error] if dependencies cannot be satisfied after uninstall
           private def check_dependents_with_version(target, graph, installed_mods)
-            mod = target.mod
+            mod = target[:mod]
             dependents = find_enabled_dependents(mod, graph)
             return if dependents.none?
 
             # Find versions that will remain after this uninstall
-            remaining_versions = if target.versioned?
-                                   installed_mods.select {|im| im.mod == mod && im.version != target.version }
+            remaining_versions = if target[:version]
+                                   installed_mods.select {|im| im.mod == mod && im.version != target[:version] }
                                  else
                                    [] # Uninstalling all versions
                                  end
@@ -228,13 +213,13 @@ module Factorix
             return if unsatisfied_dependents.empty?
 
             raise Error,
-              "Cannot uninstall #{target}: " \
+              "Cannot uninstall #{format_target(target)}: " \
               "the following enabled MOD(s) depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
           end
 
           # Show the uninstall plan
           #
-          # @param targets [Array<UninstallTarget>] Targets to uninstall
+          # @param targets [Array<Hash>] Targets to uninstall
           # @param all [Boolean] Whether --all was specified
           # @param graph [Dependency::Graph] Dependency graph
           # @param mod_list [MODList] The MOD list
@@ -242,7 +227,7 @@ module Factorix
           private def show_plan(targets, all: false, graph: nil, mod_list: nil)
             say "Planning to uninstall #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
-              say "  - #{target}"
+              say "  - #{format_target(target)}"
             end
 
             # If --all, also show expansion MODs to be disabled
@@ -263,19 +248,19 @@ module Factorix
 
           # Execute the uninstall
           #
-          # @param targets [Array<UninstallTarget>] Targets to uninstall
+          # @param targets [Array<Hash>] Targets to uninstall
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @param mod_list [MODList] The MOD list
           # @return [void]
           private def execute_uninstall(targets, installed_mods, mod_list)
             targets.each do |target|
-              mod = target.mod
+              mod = target[:mod]
 
               # Find versions to uninstall
-              mod_versions = if target.versioned?
+              mod_versions = if target[:version]
                                # Uninstall only the specified version
                                installed_mods.select {|im|
-                                 im.mod == mod && im.version == target.version
+                                 im.mod == mod && im.version == target[:version]
                                }
                              else
                                # Uninstall all versions
@@ -288,7 +273,7 @@ module Factorix
               end
 
               # Remove from mod-list.json if appropriate
-              should_remove_from_list = if target.versioned?
+              should_remove_from_list = if target[:version]
                                           # Only remove if mod-list references this version or if no versions remain
                                           remaining_versions = installed_mods.select {|im|
                                             im.mod == mod && !mod_versions.include?(im)
@@ -337,6 +322,14 @@ module Factorix
               path.rmtree
               logger.info("Removed directory", mod_name: installed_mod.mod.name, version: installed_mod.version.to_s)
             end
+          end
+
+          # Format uninstall target for display
+          #
+          # @param target [Hash] Target to format ({mod:, version:})
+          # @return [String] Formatted string (e.g., "mod-a@1.0.0" or "mod-a")
+          private def format_target(target)
+            target[:version] ? "#{target[:mod]}@#{target[:version]}" : target[:mod].to_s
           end
         end
       end
