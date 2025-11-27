@@ -134,13 +134,7 @@ module Factorix
             version_display = version == :latest ? "latest" : version.to_s
             raise Error, "Release not found for #{mod}@#{version_display}" unless release
 
-            {
-              mod:,
-              mod_name: mod.name,
-              mod_info:,
-              release:,
-              version:
-            }
+            {mod:, mod_name: mod.name, mod_info:, release:, version:}
           end
 
           # Recursively resolve dependencies and extend the graph
@@ -188,11 +182,7 @@ module Factorix
                   next if graph.node?(dep_mod)
 
                   # Need to fetch this dependency
-                  new_dependencies << {
-                    mod: dep_mod,
-                    version_requirement: edge.version_requirement,
-                    required_by: mod_name
-                  }
+                  new_dependencies << {mod: dep_mod, version_requirement: edge.version_requirement, required_by: mod_name}
                 end
               end
 
@@ -238,11 +228,7 @@ module Factorix
 
                 presenter.update
 
-                {
-                  mod_name: dep[:mod].name,
-                  mod_info:,
-                  release:
-                }
+                {mod_name: dep[:mod].name, mod_info:, release:}
               rescue HTTPClientError => e
                 # Skip dependencies that cannot be found (404, etc.)
                 logger.warn("Skipping dependency #{dep[:mod]} (required by #{dep[:required_by]}): #{e.message}")

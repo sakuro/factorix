@@ -161,12 +161,7 @@ module Factorix
               raise Error, "Release not found for #{mod_name}@#{version}"
             end
 
-            {
-              mod_name:,
-              mod_info:,
-              release:,
-              version:
-            }
+            {mod_name:, mod_info:, release:, version:}
           end
 
           # Show the installation plan

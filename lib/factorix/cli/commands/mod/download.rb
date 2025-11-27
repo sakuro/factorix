@@ -123,13 +123,7 @@ module Factorix
             version_display = version == :latest ? "latest" : version.to_s
             raise Error, "Release not found for #{mod}@#{version_display}" unless release
 
-            {
-              mod:,
-              mod_name: mod.name,
-              mod_info:,
-              release:,
-              version:
-            }
+            {mod:, mod_name: mod.name, mod_info:, release:, version:}
           end
 
           # Recursively resolve dependencies
@@ -210,10 +204,7 @@ module Factorix
 
             dep_list = Dependency::List.from_strings(raw_deps)
             dep_list.required.filter_map do |entry|
-              {
-                mod_name: entry.mod.name,
-                version_requirement: entry.version_requirement
-              }
+              {mod_name: entry.mod.name, version_requirement: entry.version_requirement}
             end
           end
 
@@ -246,11 +237,7 @@ module Factorix
 
                 presenter.update
 
-                {
-                  mod_name: dep[:mod_name],
-                  mod_info:,
-                  release:
-                }
+                {mod_name: dep[:mod_name], mod_info:, release:}
               rescue HTTPClientError => e
                 logger.warn("Skipping dependency #{dep[:mod_name]}: #{e.message}")
                 presenter.update
