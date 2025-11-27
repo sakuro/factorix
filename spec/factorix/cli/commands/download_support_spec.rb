@@ -217,9 +217,9 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       result = instance.build_install_targets(mod_infos, output_dir)
 
       expect(result.first).to include(
-        mod: mod,
-        mod_info: mod_info,
-        release: release,
+        mod:,
+        mod_info:,
+        release:,
         output_path: Pathname("/mods/test-mod_1.0.0.zip"),
         category: "utilities"
       )
