@@ -158,17 +158,9 @@ module Factorix
             # Calculate max width for alignment
             max_name_width = results.keys.map {|k| k.to_s.length }.max
 
-            total_count = 0
-            total_size = 0
-
             results.each do |name, data|
-              total_count += data[:count]
-              total_size += data[:size]
               say "%-#{max_name_width}s: %3d entries removed (%s)" % [name, data[:count], format_size(data[:size])], prefix: :info
             end
-
-            say "-" * 40, prefix: :info
-            say "%-#{max_name_width}s: %3d entries removed (%s)" % ["Total", total_count, format_size(total_size)], prefix: :info
           end
         end
       end

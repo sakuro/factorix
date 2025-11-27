@@ -167,12 +167,6 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       (download_dir / "ab" / "entry").write("x" * 2048) # 2 KiB
     end
 
-    it "shows total at the end" do
-      command.call(all: true)
-
-      expect(command).to have_received(:say).with(/Total.*1 entries removed/, prefix: :info)
-    end
-
     it "formats sizes using binary prefixes" do
       command.call(all: true)
 
