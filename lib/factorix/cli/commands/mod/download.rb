@@ -111,47 +111,25 @@ module Factorix
           # Fetch information for a single MOD specification
           #
           # @param mod_spec [String] MOD specification (name@version or name)
-          # @return [Hash] {mod_spec:, mod_name:, mod_info:, release:}
+          # @return [Hash] {mod:, mod_name:, mod_info:, release:, version:}
           private def fetch_single_mod_info(mod_spec)
-            mod_name, version_spec = parse_mod_spec(mod_spec)
+            parsed = parse_mod_spec(mod_spec)
+            mod = parsed[:mod]
+            version = parsed[:version]
 
-            mod_info = portal.get_mod_full(mod_name)
-            release = find_release(mod_info, version_spec)
+            mod_info = portal.get_mod_full(mod.name)
+            release = find_release(mod_info, version)
 
-            raise Error, "Release not found for #{mod_name}@#{version_spec}" unless release
+            version_display = version == :latest ? "latest" : version.to_s
+            raise Error, "Release not found for #{mod}@#{version_display}" unless release
 
             {
-              mod_spec:,
-              mod_name:,
+              mod:,
+              mod_name: mod.name,
               mod_info:,
-              release:
+              release:,
+              version:
             }
-          end
-
-          # Parse MOD specification into name and version
-          #
-          # @param mod_spec [String] MOD specification
-          # @return [Array<String, String>] [mod_name, version_spec]
-          private def parse_mod_spec(mod_spec)
-            parts = mod_spec.split("@", 2)
-            mod_name = parts[0]
-            version_spec = parts[1]
-            version_spec = "latest" if version_spec.nil? || version_spec.empty?
-            [mod_name, version_spec]
-          end
-
-          # Find the appropriate release for a version specification
-          #
-          # @param mod_info [Types::MODInfo] MOD information
-          # @param version_spec [String] Version specification ("latest" or specific version)
-          # @return [Types::Release, nil] The release, or nil if not found
-          private def find_release(mod_info, version_spec)
-            if version_spec == "latest"
-              mod_info.releases.max_by(&:released_at)
-            else
-              target_version = Types::MODVersion.from_string(version_spec)
-              mod_info.releases.find {|r| r.version == target_version }
-            end
           end
 
           # Recursively resolve dependencies

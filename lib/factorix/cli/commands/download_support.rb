@@ -21,6 +21,34 @@ module Factorix
       #     end
       #   end
       module DownloadSupport
+        # Parse MOD specification into mod and version
+        #
+        # @param mod_spec [String] MOD specification (name@version or name@latest or name)
+        # @return [Hash] {mod:, version:} where version is MODVersion or :latest
+        private def parse_mod_spec(mod_spec)
+          parts = mod_spec.split("@", 2)
+          mod = Factorix::MOD[name: parts[0]]
+          version_spec = parts[1]
+          version = case version_spec
+                    when nil, "", "latest" then :latest
+                    else Types::MODVersion.from_string(version_spec)
+                    end
+          {mod:, version:}
+        end
+
+        # Find the appropriate release for a version
+        #
+        # @param mod_info [Types::MODInfo] MOD information
+        # @param version [Types::MODVersion, Symbol] Version or :latest
+        # @return [Types::Release, nil] The release, or nil if not found
+        private def find_release(mod_info, version)
+          if version == :latest
+            mod_info.releases.max_by(&:released_at)
+          else
+            mod_info.releases.find {|r| r.version == version }
+          end
+        end
+
         # Download MODs in parallel
         #
         # @param targets [Array<Hash>] Download targets, each containing:

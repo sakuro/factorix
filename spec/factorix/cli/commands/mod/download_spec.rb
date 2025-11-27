@@ -176,27 +176,27 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "#parse_mod_spec" do
     it "parses MOD name without version" do
-      name, version = command.__send__(:parse_mod_spec, "test-mod")
-      expect(name).to eq("test-mod")
-      expect(version).to eq("latest")
+      result = command.__send__(:parse_mod_spec, "test-mod")
+      expect(result[:mod].name).to eq("test-mod")
+      expect(result[:version]).to eq(:latest)
     end
 
     it "parses MOD name with version" do
-      name, version = command.__send__(:parse_mod_spec, "test-mod@1.2.3")
-      expect(name).to eq("test-mod")
-      expect(version).to eq("1.2.3")
+      result = command.__send__(:parse_mod_spec, "test-mod@1.2.3")
+      expect(result[:mod].name).to eq("test-mod")
+      expect(result[:version]).to eq(Factorix::Types::MODVersion.from_string("1.2.3"))
     end
 
     it "parses MOD name with @latest" do
-      name, version = command.__send__(:parse_mod_spec, "test-mod@latest")
-      expect(name).to eq("test-mod")
-      expect(version).to eq("latest")
+      result = command.__send__(:parse_mod_spec, "test-mod@latest")
+      expect(result[:mod].name).to eq("test-mod")
+      expect(result[:version]).to eq(:latest)
     end
 
     it "parses MOD name with empty version as latest" do
-      name, version = command.__send__(:parse_mod_spec, "test-mod@")
-      expect(name).to eq("test-mod")
-      expect(version).to eq("latest")
+      result = command.__send__(:parse_mod_spec, "test-mod@")
+      expect(result[:mod].name).to eq("test-mod")
+      expect(result[:version]).to eq(:latest)
     end
   end
 
