@@ -49,6 +49,21 @@ module Factorix
           end
         end
 
+        # Find a release compatible with a version requirement
+        #
+        # @param mod_info [Types::MODInfo] MOD information
+        # @param version_requirement [Types::MODVersionRequirement, nil] Version requirement
+        # @return [Types::Release, nil] Compatible release or nil
+        private def find_compatible_release(mod_info, version_requirement)
+          return mod_info.releases.max_by(&:released_at) if version_requirement.nil?
+
+          compatible_releases = mod_info.releases.select {|r|
+            version_requirement.satisfied_by?(r.version)
+          }
+
+          compatible_releases.max_by(&:released_at)
+        end
+
         # Download MODs in parallel
         #
         # @param targets [Array<Hash>] Download targets, each containing:

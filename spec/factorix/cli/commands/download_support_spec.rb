@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       include Factorix::CLI::Commands::DownloadSupport
 
       # Make private methods public for testing
-      public :parse_mod_spec, :find_release
+      public :parse_mod_spec, :find_release, :find_compatible_release
     end
   end
   let(:instance) { test_class.new }
@@ -90,6 +90,84 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       it "returns nil when no release matches" do
         version = Factorix::Types::MODVersion.from_string("3.0.0")
         result = instance.find_release(mod_info, version)
+        expect(result).to be_nil
+      end
+    end
+  end
+
+  describe "#find_compatible_release" do
+    let(:release_v1) do
+      Factorix::Types::Release.new(
+        download_url: "/download/test-mod/v1",
+        file_name: "test-mod_1.0.0.zip",
+        info_json: {},
+        released_at: "2024-01-01T00:00:00Z",
+        version: "1.0.0",
+        sha1: "abc123"
+      )
+    end
+
+    let(:release_v2) do
+      Factorix::Types::Release.new(
+        download_url: "/download/test-mod/v2",
+        file_name: "test-mod_2.0.0.zip",
+        info_json: {},
+        released_at: "2024-06-01T00:00:00Z",
+        version: "2.0.0",
+        sha1: "def456"
+      )
+    end
+
+    let(:release_v3) do
+      Factorix::Types::Release.new(
+        download_url: "/download/test-mod/v3",
+        file_name: "test-mod_3.0.0.zip",
+        info_json: {},
+        released_at: "2024-12-01T00:00:00Z",
+        version: "3.0.0",
+        sha1: "ghi789"
+      )
+    end
+
+    let(:mod_info) do
+      instance_double(
+        Factorix::Types::MODInfo,
+        releases: [release_v1, release_v2, release_v3]
+      )
+    end
+
+    context "when version_requirement is nil" do
+      it "returns the latest release" do
+        result = instance.find_compatible_release(mod_info, nil)
+        expect(result).to eq(release_v3)
+      end
+    end
+
+    context "when version_requirement is specified" do
+      it "returns the latest compatible release" do
+        requirement = Factorix::Types::MODVersionRequirement.new(
+          operator: ">=",
+          version: Factorix::Types::MODVersion.from_string("2.0.0")
+        )
+        result = instance.find_compatible_release(mod_info, requirement)
+        expect(result).to eq(release_v3)
+      end
+
+      it "returns the matching release when only one matches" do
+        requirement = Factorix::Types::MODVersionRequirement.new(
+          operator: "=",
+          version: Factorix::Types::MODVersion.from_string("1.0.0")
+        )
+        result = instance.find_compatible_release(mod_info, requirement)
+        expect(result).to eq(release_v1)
+      end
+
+      it "returns nil when no release matches" do
+        requirement = Factorix::Types::MODVersionRequirement.new(
+          operator: ">=",
+          version: Factorix::Types::MODVersion.from_string("4.0.0")
+        )
+        result = instance.find_compatible_release(mod_info, requirement)
         expect(result).to be_nil
       end
     end

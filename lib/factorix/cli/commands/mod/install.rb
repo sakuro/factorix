@@ -268,23 +268,6 @@ module Factorix
             pool&.wait_for_termination
           end
 
-          # Find a release compatible with a version requirement
-          #
-          # @param mod_info [Types::MODInfo] MOD information
-          # @param version_requirement [Types::MODVersionRequirement, nil] Version requirement
-          # @return [Types::MODRelease, nil] Compatible release or nil
-          private def find_compatible_release(mod_info, version_requirement)
-            # If no requirement, use latest
-            return mod_info.releases.max_by(&:released_at) if version_requirement.nil?
-
-            # Find latest release that satisfies requirement
-            compatible_releases = mod_info.releases.select {|r|
-              version_requirement.satisfied_by?(r.version)
-            }
-
-            compatible_releases.max_by(&:released_at)
-          end
-
           # Validate the installation graph
           #
           # @param graph [Dependency::Graph] Graph to validate
