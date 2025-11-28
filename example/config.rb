@@ -24,10 +24,10 @@ Factorix::Application.configure do |config|
   # config.runtime.user_dir = "#{Dir.home}/.factorio"
   # config.runtime.data_dir = "/opt/factorio/data"
 
-  # Steam installation
-  # config.runtime.executable_path = "#{Dir.home}/.local/share/Steam/steamapps/common/Factorio/bin/x64/factorio"
+  # Steam installation (default, usually no configuration needed)
+  # config.runtime.executable_path = "#{Dir.home}/.steam/steam/steamapps/common/Factorio/bin/x64/factorio"
   # config.runtime.user_dir = "#{Dir.home}/.factorio"
-  # config.runtime.data_dir = "#{Dir.home}/.local/share/Steam/steamapps/common/Factorio/data"
+  # config.runtime.data_dir = "#{Dir.home}/.steam/steam/steamapps/common/Factorio/data"
 
   # Flatpak installation
   # config.runtime.executable_path = "/var/lib/flatpak/app/com.valvesoftware.Steam/current/active/files/extra/steam/steamapps/common/Factorio/bin/x64/factorio"

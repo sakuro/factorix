@@ -4,10 +4,16 @@ Component that abstracts various runtime environments.
 
 ## Supported Platforms
 
-- **macOS** - Runtime::MacOS
-- **Linux** - Runtime::Linux
-- **Windows** - Runtime::Windows
-- **WSL** - Runtime::WSL
+All platforms provide auto-detection for Steam installations by default.
+
+| Platform | Class | Default Installation |
+|----------|-------|---------------------|
+| macOS | Runtime::MacOS | Steam (`~/Library/Application Support/Steam/...`) |
+| Linux | Runtime::Linux | Steam (`~/.steam/steam/steamapps/common/Factorio/...`) |
+| Windows | Runtime::Windows | Steam (`C:\Program Files (x86)\Steam\...`) |
+| WSL | Runtime::WSL | Windows Steam via `/mnt/c/...` |
+
+For non-Steam installations (standalone, Flatpak, Snap, etc.), configure paths via the configuration file.
 
 ## Design Policy
 
@@ -77,8 +83,7 @@ end
 
 **Resolution order**:
 1. User-configured value (via `config.runtime.*`)
-2. Platform-specific auto-detection
-3. Raises `ConfigurationError` if neither is available
+2. Platform-specific auto-detection (Steam installation paths)
 
 ## File Structure
 

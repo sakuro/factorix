@@ -4,25 +4,29 @@ module Factorix
   class Runtime
     # Linux runtime environment
     #
-    # This is a partial implementation that only provides XDG directory support.
-    # The user_dir and executable_path methods are not implemented because Factorio
-    # can be installed in various locations on Linux (Steam, standalone, Flatpak,
-    # Snap, etc.) and there is no standard path.
-    #
-    # Users must configure paths via the configuration file. See Runtime::UserConfigurable
-    # for configuration instructions.
+    # Provides default paths for Steam installation on Linux.
+    # Users with non-Steam installations (standalone, Flatpak, Snap, etc.)
+    # should configure paths via the configuration file.
+    # See Runtime::UserConfigurable for configuration instructions.
     class Linux < Base
+      # Get the Factorio executable path
+      #
+      # Returns the default Steam installation path on Linux.
+      #
+      # @return [Pathname] the Factorio executable path
+      def executable_path = Pathname(Dir.home) + ".steam/steam/steamapps/common/Factorio/bin/x64/factorio"
+
       # Get the Factorio user directory path
       #
       # @return [Pathname] the Factorio user directory
-      # @raise [NotImplementedError] Linux implementation requires configuration
-      def user_dir = raise NotImplementedError, "Auto-detection not supported on Linux"
+      def user_dir = Pathname(Dir.home) + ".factorio"
 
-      # Get the Factorio executable path
+      # Get the Factorio data directory path
       #
-      # @return [Pathname] the Factorio executable path
-      # @raise [NotImplementedError] Linux implementation requires configuration
-      def executable_path = raise NotImplementedError, "Auto-detection not supported on Linux"
+      # This directory contains the base game data and built-in expansion MODs.
+      #
+      # @return [Pathname] the Factorio data directory
+      def data_dir = Pathname(Dir.home) + ".steam/steam/steamapps/common/Factorio/data"
     end
   end
 end

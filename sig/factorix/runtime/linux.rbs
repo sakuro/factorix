@@ -8,6 +8,8 @@ module Factorix
       def executable_path: () -> Pathname
 
       def user_dir: () -> Pathname
+
+      def data_dir: () -> Pathname
     end
   end
 end

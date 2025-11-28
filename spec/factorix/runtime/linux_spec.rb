@@ -12,14 +12,26 @@ RSpec.describe Factorix::Runtime::Linux do
   end
 
   describe "#executable_path" do
-    it "raises ConfigurationError when auto-detection is not supported" do
-      expect { runtime.executable_path }.to raise_error(Factorix::ConfigurationError, /executable_path not configured/)
+    before { allow(Dir).to receive(:home).and_return("/home/wube") }
+
+    it "returns the Steam installation path" do
+      expect(runtime.executable_path).to eq(Pathname("/home/wube/.steam/steam/steamapps/common/Factorio/bin/x64/factorio"))
     end
   end
 
   describe "#user_dir" do
-    it "raises ConfigurationError when auto-detection is not supported" do
-      expect { runtime.user_dir }.to raise_error(Factorix::ConfigurationError, /user_dir not configured/)
+    before { allow(Dir).to receive(:home).and_return("/home/wube") }
+
+    it "returns ~/.factorio" do
+      expect(runtime.user_dir).to eq(Pathname("/home/wube/.factorio"))
+    end
+  end
+
+  describe "#data_dir" do
+    before { allow(Dir).to receive(:home).and_return("/home/wube") }
+
+    it "returns the Steam data directory path" do
+      expect(runtime.data_dir).to eq(Pathname("/home/wube/.steam/steam/steamapps/common/Factorio/data"))
     end
   end
 
