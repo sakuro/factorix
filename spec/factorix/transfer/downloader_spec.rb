@@ -67,9 +67,49 @@ RSpec.describe Factorix::Transfer::Downloader do
           expect { downloader.download(uri, output, expected_sha1: correct_sha1) }.not_to raise_error
         end
 
-        it "raises DigestMismatchError when SHA1 does not match" do
-          expect { downloader.download(uri, output, expected_sha1: wrong_sha1) }
-            .to raise_error(Factorix::DigestMismatchError, /SHA1 mismatch/)
+        context "when SHA1 does not match" do
+          let(:fresh_content) { "fresh file content" }
+          let(:fresh_sha1) { Digest(:SHA1).hexdigest(fresh_content) }
+
+          before do
+            allow(cache).to receive(:delete).with(cache_key)
+            allow(cache).to receive(:with_lock).with(cache_key).and_yield
+            allow(cache).to receive(:store)
+
+            # After cache invalidation, fetch returns false
+            fetch_count = 0
+            allow(cache).to receive(:fetch).with(cache_key, output) do
+              fetch_count += 1
+              if fetch_count == 1
+                # First call: cached content (corrupted)
+                output.write(cached_content)
+                true
+              else
+                # Subsequent calls: cache miss (after invalidation)
+                false
+              end
+            end
+
+            # Mock client.get for re-download
+            allow(client).to receive(:get) do |&block|
+              response = instance_double(Net::HTTPResponse)
+              allow(response).to receive(:[]).with("Content-Length").and_return(fresh_content.bytesize.to_s)
+              allow(response).to receive(:read_body).and_yield(fresh_content)
+              block&.call(response)
+            end
+          end
+
+          it "invalidates cache and re-downloads" do
+            downloader.download(uri, output, expected_sha1: fresh_sha1)
+
+            expect(cache).to have_received(:delete).with(cache_key)
+            expect(client).to have_received(:get).with(uri)
+          end
+
+          it "raises DigestMismatchError when re-downloaded file also fails verification" do
+            expect { downloader.download(uri, output, expected_sha1: wrong_sha1) }
+              .to raise_error(Factorix::DigestMismatchError, /SHA1 mismatch/)
+          end
         end
       end
     end

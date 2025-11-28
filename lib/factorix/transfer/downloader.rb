@@ -33,6 +33,7 @@ module Factorix
       # Download a file from the given URL with caching support.
       #
       # If the file exists in cache, it will be copied from cache instead of downloading.
+      # If the cached file fails SHA1 verification, it will be invalidated and re-downloaded.
       # If multiple processes attempt to download the same file, only one will download
       # while others wait for the download to complete.
       # HTTP redirects are followed automatically by the HTTP layer.
@@ -55,24 +56,21 @@ module Factorix
         logger.info("Starting download", url: masked_url, output: output.to_s)
         key = cache.key_for(url.to_s)
 
-        if cache.fetch(key, output)
-          logger.info("Cache hit", url: masked_url)
-          verify_sha1(output, expected_sha1) if expected_sha1
-          total_size = cache.size(key)
-          publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
+        case try_cache_hit(key, output, expected_sha1:, masked_url:)
+        when :hit
           return
+        when :miss
+          logger.debug("Cache miss, downloading", url: masked_url)
+          publish("cache.miss", url: masked_url)
+        when :corrupted
+          logger.debug("Re-downloading after cache invalidation", url: masked_url)
+          publish("cache.miss", url: masked_url)
+        else
+          raise RuntimeError, "Unexpected cache state"
         end
 
-        logger.debug("Cache miss, downloading", url: masked_url)
-        publish("cache.miss", url: masked_url)
         cache.with_lock(key) do
-          if cache.fetch(key, output)
-            logger.info("Cache hit", url: masked_url)
-            verify_sha1(output, expected_sha1) if expected_sha1
-            total_size = cache.size(key)
-            publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
-            return
-          end
+          return if try_cache_hit(key, output, expected_sha1:, masked_url:) == :hit
 
           with_temporary_file do |temp_file|
             # Download with progress tracking
@@ -124,6 +122,30 @@ module Factorix
         params["token"] = "*****" if params.key?("token")
         masked_url.query = URI.encode_www_form(params)
         masked_url.to_s
+      end
+
+      # Attempt to retrieve file from cache with SHA1 verification.
+      #
+      # If the cached file exists but fails SHA1 verification, the cache entry
+      # is invalidated and :corrupted is returned to trigger re-download.
+      #
+      # @param key [String] cache key
+      # @param output [Pathname] path to save the cached file
+      # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
+      # @param masked_url [String] URL with credentials masked (for logging)
+      # @return [Symbol] :hit if cache hit with valid SHA1, :miss if not cached, :corrupted if SHA1 mismatch
+      private def try_cache_hit(key, output, expected_sha1:, masked_url:)
+        return :miss unless cache.fetch(key, output)
+
+        logger.info("Cache hit", url: masked_url)
+        verify_sha1(output, expected_sha1) if expected_sha1
+        total_size = cache.size(key)
+        publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
+        :hit
+      rescue DigestMismatchError => e
+        logger.warn("Cache corrupted, invalidating", url: masked_url, error: e.message)
+        cache.delete(key)
+        :corrupted
       end
 
       # Verify SHA1 digest of a file
