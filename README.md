@@ -92,7 +92,3 @@ For development setup and detailed contribution guidelines, please see [DEVELOPM
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 Copyright (c) 2025 OZAWA Sakuro
-
-## Author
-
-OZAWA Sakuro
