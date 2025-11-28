@@ -9,7 +9,7 @@ RSpec.describe Factorix::Cache::FileSystem do
   let(:cache) { Factorix::Cache::FileSystem.new(cache_dir) }
   let(:url) { "https://example.com/file.zip" }
   let(:key) { cache.key_for(url) }
-  let(:cache_path) { cache_dir.join(key[0, 2], key[2..]) }
+  let(:cache_path) { cache_dir + key[0, 2] + key[2..] }
   let(:lock_path) { cache_path.sub_ext(".lock") }
 
   after do
@@ -85,7 +85,7 @@ RSpec.describe Factorix::Cache::FileSystem do
   end
 
   describe "#fetch" do
-    let(:output_file) { Pathname(Dir.mktmpdir("output")).join("file.zip") }
+    let(:output_file) { Pathname(Dir.mktmpdir("output")) + "file.zip" }
 
     after do
       FileUtils.remove_entry(output_file.dirname)
@@ -200,7 +200,7 @@ RSpec.describe Factorix::Cache::FileSystem do
   end
 
   describe "#store" do
-    let(:source_file) { Pathname(Dir.mktmpdir("source")).join("file.zip") }
+    let(:source_file) { Pathname(Dir.mktmpdir("source")) + "file.zip" }
 
     before do
       File.write(source_file, "source content")
@@ -226,7 +226,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, max_file_size: 10) }
 
       it "stores files within the limit" do
-        small_file = Pathname(Dir.mktmpdir("small")).join("small.txt")
+        small_file = Pathname(Dir.mktmpdir("small")) + "small.txt"
         File.write(small_file, "small")
 
         expect(cache.store(key, small_file)).to be true
@@ -236,7 +236,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       end
 
       it "skips caching files exceeding the limit" do
-        large_file = Pathname(Dir.mktmpdir("large")).join("large.txt")
+        large_file = Pathname(Dir.mktmpdir("large")) + "large.txt"
         File.write(large_file, "a" * 100)
 
         expect(cache.store(key, large_file)).to be false
@@ -260,7 +260,7 @@ RSpec.describe Factorix::Cache::FileSystem do
 
       it "stores data smaller than original" do
         # Create a file with repetitive content that compresses well
-        compressible_file = Pathname(Dir.mktmpdir("compress")).join("data.txt")
+        compressible_file = Pathname(Dir.mktmpdir("compress")) + "data.txt"
         File.write(compressible_file, "a" * 1000)
 
         cache.store(key, compressible_file)
@@ -275,7 +275,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       let(:cache) { Factorix::Cache::FileSystem.new(cache_dir, compression_threshold: 100) }
 
       it "compresses files meeting the threshold" do
-        large_file = Pathname(Dir.mktmpdir("large")).join("large.txt")
+        large_file = Pathname(Dir.mktmpdir("large")) + "large.txt"
         File.write(large_file, "a" * 200)
 
         cache.store(key, large_file)
@@ -287,7 +287,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       end
 
       it "does not compress files below the threshold" do
-        small_file = Pathname(Dir.mktmpdir("small")).join("small.txt")
+        small_file = Pathname(Dir.mktmpdir("small")) + "small.txt"
         File.write(small_file, "small data")
 
         cache.store(key, small_file)
@@ -304,7 +304,7 @@ RSpec.describe Factorix::Cache::FileSystem do
 
       it "uses compressed size for max_file_size check" do
         # Create a file that exceeds 50 bytes uncompressed but compresses to under 50
-        compressible_file = Pathname(Dir.mktmpdir("compress")).join("data.txt")
+        compressible_file = Pathname(Dir.mktmpdir("compress")) + "data.txt"
         File.write(compressible_file, "a" * 200)
 
         expect(cache.store(key, compressible_file)).to be true
@@ -340,7 +340,7 @@ RSpec.describe Factorix::Cache::FileSystem do
       # Create multiple cache entries
       3.times do |i|
         test_key = cache.key_for("https://example.com/file#{i}.zip")
-        test_path = cache_dir.join(test_key[0, 2], test_key[2..])
+        test_path = cache_dir + test_key[0, 2] + test_key[2..]
         test_path.dirname.mkpath
         FileUtils.touch(test_path)
       end

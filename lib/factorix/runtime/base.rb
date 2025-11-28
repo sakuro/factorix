@@ -205,7 +205,7 @@ module Factorix
       # to provide appropriate defaults.
       #
       # @return [Pathname] the default cache home directory
-      private def default_cache_home_dir = Pathname(Dir.home).join(".cache")
+      private def default_cache_home_dir = Pathname(Dir.home) + ".cache"
 
       # Get the default config home directory for this platform
       #
@@ -213,7 +213,7 @@ module Factorix
       # to provide appropriate defaults.
       #
       # @return [Pathname] the default config home directory
-      private def default_config_home_dir = Pathname(Dir.home).join(".config")
+      private def default_config_home_dir = Pathname(Dir.home) + ".config"
 
       # Get the default data home directory for this platform
       #
@@ -221,7 +221,7 @@ module Factorix
       # to provide appropriate defaults.
       #
       # @return [Pathname] the default data home directory
-      private def default_data_home_dir = Pathname(Dir.home).join(".local/share")
+      private def default_data_home_dir = Pathname(Dir.home) + ".local/share"
 
       # Get the default state home directory for this platform
       #
@@ -229,7 +229,7 @@ module Factorix
       # to provide appropriate defaults.
       #
       # @return [Pathname] the default state home directory
-      private def default_state_home_dir = Pathname(Dir.home).join(".local/state")
+      private def default_state_home_dir = Pathname(Dir.home) + ".local/state"
     end
   end
 end
