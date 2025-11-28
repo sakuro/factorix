@@ -18,6 +18,7 @@ module Factorix
         # Mapping from path type keys to runtime method names
         PATH_TYPES = {
           "executable_path" => :executable_path,
+          "data_dir" => :data_dir,
           "user_dir" => :user_dir,
           "mod_dir" => :mod_dir,
           "save_dir" => :save_dir,

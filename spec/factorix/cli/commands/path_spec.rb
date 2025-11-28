@@ -10,6 +10,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
   before do
     allow(runtime).to receive_messages(
       executable_path: Pathname("/path/to/factorio"),
+      data_dir: Pathname("/path/to/factorio/data"),
       user_dir: Pathname("/path/to/user"),
       mod_dir: Pathname("/path/to/mods"),
       save_dir: Pathname("/path/to/saves"),
@@ -43,6 +44,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
         json = JSON.parse(output)
         expect(json).to include(
           "executable_path" => "/path/to/factorio",
+          "data_dir" => "/path/to/factorio/data",
           "user_dir" => "/path/to/user",
           "mod_dir" => "/path/to/mods",
           "save_dir" => "/path/to/saves",
