@@ -13,7 +13,7 @@ Factorix simplifies Factorio MOD management by providing:
 
 ## Features
 
-- **MOD Discovery & Download**: List, search, and download MODs from the Factorio MOD Portal
+- **MOD Discovery & Download**: Search and download MODs from the Factorio MOD Portal
 - **Dependency Management**: Automatic dependency resolution and validation with graph-based analysis
 - **MOD State Management**: Enable/disable MODs with automatic handling of dependencies and dependents
 - **Installation & Uninstallation**: Install MODs directly from the portal or uninstall existing MODs
