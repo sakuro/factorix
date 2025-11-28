@@ -1,4 +1,4 @@
-# Factorix
+# :gear: Factorix
 
 A Ruby gem for managing Factorio MODs, providing both a command-line interface and a library API for programmatic MOD management.
 
