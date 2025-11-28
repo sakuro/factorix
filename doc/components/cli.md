@@ -25,6 +25,7 @@ Display all Factorio and Factorix paths.
 
 **Included paths**:
 - `executable_path` - Factorio executable file
+- `data_dir` - Factorio data directory
 - `user_dir` - Factorio user directory
 - `mod_dir` - MODs directory
 - `save_dir` - Saves directory
@@ -38,6 +39,46 @@ Display all Factorio and Factorix paths.
 - `factorix_cache_dir` - Factorix cache directory
 - `factorix_config_path` - Factorix configuration file
 - `factorix_log_path` - Factorix log file
+
+### Cache::Stat
+
+Display cache statistics.
+
+**Options**:
+- `--json` - Output in JSON format
+
+**Output**: Text format by default showing:
+- Directory path
+- TTL (time-to-live) setting
+- Max file size limit
+- Compression threshold
+- Entry counts (valid/total)
+- Size statistics (total, avg)
+- Age statistics (oldest, newest, avg)
+- Stale lock count
+
+**Use case**: Monitor cache usage and health
+
+### Cache::Evict
+
+Remove cache entries.
+
+**Arguments**:
+- `caches` - Cache names to evict (download, api, info_json). If not specified, operates on all caches.
+
+**Options** (mutually exclusive, one required):
+- `--all` - Remove all entries
+- `--expired` - Remove expired entries only
+- `--older-than AGE` - Remove entries older than AGE (e.g., 30s, 5m, 2h, 7d)
+
+**Examples**:
+```bash
+factorix cache evict --expired              # Remove expired entries from all caches
+factorix cache evict api --all              # Remove all entries from api cache
+factorix cache evict download --older-than 7d  # Remove entries older than 7 days
+```
+
+**Use case**: Free up disk space or clear stale cache data
 
 ### Launch
 
