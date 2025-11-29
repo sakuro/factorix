@@ -73,13 +73,8 @@ module Factorix
           return if try_cache_hit(key, output, expected_sha1:, masked_url:) == :hit
 
           with_temporary_file do |temp_file|
-            # Download with progress tracking
             download_file_with_progress(url, temp_file)
-
-            # Verify SHA1 digest if expected value is provided
             verify_sha1(temp_file, expected_sha1) if expected_sha1
-
-            # Download completed successfully - store in cache
             cache.store(key, temp_file)
             cache.fetch(key, output)
           end

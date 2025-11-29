@@ -82,8 +82,6 @@ module Factorix
 
           # Plan enable with automatic dependency resolution
           #
-          # Uses graph traversal to find all dependencies recursively.
-          #
           # @param target_mods [Array<Factorix::MOD>] MODs to enable
           # @param graph [Factorix::Dependency::Graph] Dependency graph
           # @return [Array<Factorix::MOD>] MODs to enable (including dependencies)
@@ -95,32 +93,25 @@ module Factorix
             while (mod = to_process.shift)
               node = graph.node(mod)
 
-              # Skip if already enabled
               if node.enabled?
                 logger.debug("MOD already enabled", mod_name: mod.name)
                 next
               end
 
-              # Skip if already in the enable set
               next if mods_to_enable.include?(mod)
 
-              # Add to enable set
               mods_to_enable.add(mod)
 
-              # Add all required dependencies to process
               graph.edges_from(mod).select(&:required?).each do |edge|
-                next if edge.to_mod.base? # Base is always available
+                next if edge.to_mod.base?
 
                 dep_mod = edge.to_mod
                 dep_node = graph.node(dep_mod)
 
-                # Validate dependency exists
                 unless dep_node
                   raise Error,
                     "MOD '#{mod}' requires '#{dep_mod}' which is not installed"
                 end
-
-                # Validate version requirement
                 unless edge.satisfied_by?(dep_node.version)
                   raise Error,
                     "Cannot enable #{mod}: dependency #{dep_mod} version requirement not satisfied " \

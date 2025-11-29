@@ -38,35 +38,23 @@ module Factorix
           def call(mod_names: [], all: false, **)
             validate_arguments(mod_names, all)
 
-            # Load current state (without validation to allow fixing issues)
+            # Without validation to allow fixing issues
             graph, mod_list, _installed_mods = load_current_state
 
-            # Determine target MODs
             target_mods = if all
                             plan_disable_all(graph)
                           else
                             mod_names.map {|name| Factorix::MOD[name:] }
                           end
 
-            # Validate target MODs exist and can be disabled
             validate_target_mods(target_mods, graph)
-
-            # Determine MODs to disable
             mods_to_disable = plan_with_dependents(target_mods, graph)
 
-            # Show plan to user
             show_plan(mods_to_disable)
-
-            # Return early if nothing to disable
             return if mods_to_disable.empty?
-
-            # Ask for confirmation
             return unless confirm?("Do you want to disable these MOD(s)?")
 
-            # Execute the plan
             execute_plan(mods_to_disable, mod_list)
-
-            # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
             say "Disabled #{mods_to_disable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
@@ -111,12 +99,8 @@ module Factorix
           # @raise [Factorix::Error] if any MOD cannot be disabled
           private def validate_target_mods(target_mods, graph)
             target_mods.each do |mod|
-              # Check if base MOD
-              if mod.base?
-                raise Error, "Cannot disable base MOD"
-              end
+              raise Error, "Cannot disable base MOD" if mod.base?
 
-              # Check if MOD exists in graph (is installed)
               unless graph.node?(mod)
                 say "MOD not installed, skipping: #{mod}", prefix: :warn
                 logger.debug("MOD not installed", mod_name: mod.name)
@@ -138,31 +122,25 @@ module Factorix
             while (mod = to_process.shift)
               node = graph.node(mod)
 
-              # Skip if not installed
               unless node
                 logger.debug("MOD not installed", mod_name: mod.name)
                 next
               end
 
-              # Skip if already disabled
               unless node.enabled?
                 logger.debug("MOD already disabled", mod_name: mod.name)
                 next
               end
 
-              # Skip if already in the disable set
               next if mods_to_disable.include?(mod)
 
-              # Find all enabled MODs that depend on this MOD
               dependents = find_enabled_dependents(mod, graph)
 
-              # Add dependents to process queue
               dependents.each do |dependent_mod|
                 logger.debug("Found dependent MOD", dependent: dependent_mod.name, dependency: mod.name)
                 to_process << dependent_mod unless mods_to_disable.include?(dependent_mod)
               end
 
-              # Add this MOD to the disable set
               mods_to_disable.add(mod)
             end
 

@@ -45,15 +45,12 @@ module Factorix
             installed_mods = InstalledMOD.all(handler:)
             mod_list = MODList.load(runtime.mod_list_path)
 
-            # Determine target MODs
             target_mods = if mod_names.empty?
-                            # All installed MODs except base and expansion
                             mods = installed_mods.map(&:mod)
                             mods.uniq!
                             mods.reject! {|mod| mod.base? || mod.expansion? }
                             mods
                           else
-                            # Specified MODs only
                             mod_names.map {|name| validate_and_get_mod(name) }
                           end
 
@@ -62,7 +59,6 @@ module Factorix
               return
             end
 
-            # Find MODs with available updates
             update_targets = find_update_targets(target_mods, installed_mods, jobs)
 
             if update_targets.empty?
@@ -70,14 +66,11 @@ module Factorix
               return
             end
 
-            # Show plan
             show_plan(update_targets)
             return unless confirm?("Do you want to update these MOD(s)?")
 
-            # Execute updates
             execute_updates(update_targets, mod_list, jobs)
 
-            # Save mod-list.json
             mod_list.save(runtime.mod_list_path)
             say "Updated #{update_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
@@ -131,13 +124,11 @@ module Factorix
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @return [Hash, nil] Update target info or nil if no update available
           private def check_mod_for_update(mod, installed_mods)
-            # Find current installed version
             current_versions = installed_mods.select {|im| im.mod == mod }
             return nil if current_versions.empty?
 
             current_version = current_versions.map(&:version).max
 
-            # Fetch latest version from portal
             mod_info = portal.get_mod_full(mod.name)
             latest_release = mod_info.releases.max_by(&:released_at)
 
@@ -174,15 +165,12 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
           private def execute_updates(targets, mod_list, jobs)
-            # Download new versions
             download_mods(targets, jobs)
 
-            # Update mod-list.json (remove version pinning)
             targets.each do |target|
               mod = target[:mod]
 
               if mod_list.exist?(mod)
-                # Remove version pinning if present
                 current_enabled = mod_list.enabled?(mod)
                 mod_list.remove(mod)
                 mod_list.add(mod, enabled: current_enabled)

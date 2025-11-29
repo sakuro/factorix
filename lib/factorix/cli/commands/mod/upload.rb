@@ -35,27 +35,20 @@ module Factorix
           def call(file:, description: nil, category: nil, license: nil, source_url: nil, **)
             file_path = Pathname(file)
 
-            # Validate file exists
             raise ArgumentError, "File not found: #{file}" unless file_path.exist?
             raise ArgumentError, "Not a file: #{file}" unless file_path.file?
             raise ArgumentError, "File must be a .zip file" if file_path.extname.casecmp(".zip").nonzero?
 
-            # Extract MOD name from info.json inside zip
             mod_name = extract_mod_name(file_path)
-
-            # Build metadata hash
             metadata = build_metadata(description:, category:, license:, source_url:)
 
-            # Set up progress presenter
             presenter = Progress::Presenter.new(title: "\u{1F4E4} Uploading #{file_path.basename}", output: $stderr)
 
-            # Get uploader and register progress handler
             uploader = portal.mod_management_api.uploader
             handler = Progress::UploadHandler.new(presenter)
             uploader.subscribe(handler)
 
             begin
-              # Upload via Portal (auto-detects new vs update)
               portal.upload_mod(mod_name, file_path, **metadata)
               say "Upload completed successfully!", prefix: :success
             ensure

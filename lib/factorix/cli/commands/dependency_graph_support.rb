@@ -61,11 +61,9 @@ module Factorix
 
           return [graph, mod_list, installed_mods] unless result.errors?
 
-          # Log validation errors
           logger.error("Current MOD state is invalid")
           result.errors.each {|error| logger.error("  - #{error.message}") }
 
-          # Raise with helpful error message
           raise Error, <<~MESSAGE.chomp
             Cannot proceed because current MOD installation has validation errors.
 

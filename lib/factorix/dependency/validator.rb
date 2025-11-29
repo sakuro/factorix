@@ -38,7 +38,6 @@ module Factorix
       private def validate_circular_dependencies(result)
         return unless @graph.cyclic?
 
-        # Get strongly connected components (cycles)
         components = @graph.strongly_connected_components
         cycles = components.select {|component| component.size > 1 }
 
@@ -73,7 +72,6 @@ module Factorix
       private def validate_required_dependency(node, edge, result)
         dependency_node = @graph.node(edge.to_mod)
 
-        # Check if dependency is installed
         unless dependency_node
           result.add_error(
             type: ValidationResult::MISSING_DEPENDENCY,
@@ -84,7 +82,6 @@ module Factorix
           return
         end
 
-        # Check if dependency is enabled
         unless dependency_node.enabled?
           result.add_error(
             type: ValidationResult::DISABLED_DEPENDENCY,
@@ -95,7 +92,6 @@ module Factorix
           return
         end
 
-        # Check version requirement
         return if edge.satisfied_by?(dependency_node.version)
 
         result.add_error(
@@ -106,7 +102,6 @@ module Factorix
           dependency: edge.to_mod
         )
 
-        # Check for alternative installed versions that would satisfy the requirement
         check_alternative_versions(edge, result)
       end
 
@@ -178,10 +173,8 @@ module Factorix
       private def check_alternative_versions(edge, result)
         return if @all_installed_mods.empty?
 
-        # Find all installed versions of the required MOD
         alternative_versions = @all_installed_mods.select {|im| im.mod == edge.to_mod }
 
-        # Check if any alternative version satisfies the requirement
         alternative_versions.each do |installed_mod|
           next unless edge.satisfied_by?(installed_mod.version)
 

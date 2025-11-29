@@ -40,11 +40,8 @@ module Factorix
           # @return [void]
           def call(mod_specs:, directory: ".", jobs: 4, recursive: false, **)
             download_dir = Pathname(directory)
-
-            # Ensure download directory exists
             download_dir.mkpath unless download_dir.exist?
 
-            # Plan download (fetch info, optionally resolve dependencies)
             download_targets = plan_download(mod_specs, download_dir, jobs, recursive)
 
             if download_targets.empty?
@@ -52,7 +49,6 @@ module Factorix
               return
             end
 
-            # Download files
             download_mods(download_targets, jobs)
 
             say "Downloaded #{download_targets.size} MOD(s)", prefix: :success
@@ -66,20 +62,16 @@ module Factorix
           # @param recursive [Boolean] Include dependencies
           # @return [Array<Hash>] Download targets with MOD info and releases
           private def plan_download(mod_specs, download_dir, jobs, recursive)
-            # Create progress presenter for info fetching
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: $stderr)
 
-            # Phase 1: Fetch info for target MODs
             target_infos = fetch_target_mod_info(mod_specs, jobs, presenter)
 
-            # Phase 2: Optionally resolve dependencies
             all_mod_infos = if recursive
                               resolve_dependencies(target_infos, jobs, presenter)
                             else
                               target_infos.to_h {|info| [info[:mod_name], info] }
                             end
 
-            # Phase 3: Build download targets
             build_download_targets(all_mod_infos, download_dir)
           end
 
@@ -136,13 +128,11 @@ module Factorix
             all_mod_infos = {}
             to_process = []
 
-            # Add target MODs to processing queue
             target_infos.each do |info|
               all_mod_infos[info[:mod_name]] = info
               to_process << info[:mod_name]
             end
 
-            # Process dependencies recursively
             processed = Set.new
 
             until to_process.empty?

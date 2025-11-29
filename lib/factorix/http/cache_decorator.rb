@@ -52,7 +52,6 @@ module Factorix
 
         key = cache.key_for(uri.to_s)
 
-        # Try cache first
         cached_body = cache.read(key)
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
@@ -63,9 +62,9 @@ module Factorix
         logger.debug("Cache miss", uri: uri.to_s)
         publish("cache.miss", url: uri.to_s)
 
-        # Fetch with locking (prevents concurrent downloads)
+        # Locking prevents concurrent downloads of the same resource
         cache.with_lock(key) do
-          # Double-check cache (another thread might have filled it)
+          # Double-check: another thread might have filled the cache
           cached_body = cache.read(key)
           if cached_body
             publish("cache.hit", url: uri.to_s)
@@ -74,7 +73,6 @@ module Factorix
 
           response = client.get(uri, headers:)
 
-          # Cache successful responses
           if response.success?
             with_temporary_file do |temp|
               temp.write(response.body)

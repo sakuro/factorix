@@ -133,11 +133,9 @@ module Factorix
           # @param mod_list [MODList] MOD list with enabled status
           # @return [Array<MODInfo>] MOD info list
           private def build_mod_infos(installed_mods, mod_list)
-            # Group installed MODs by name to handle multiple versions
             grouped = installed_mods.group_by(&:mod)
 
             grouped.map {|mod, versions|
-              # Determine which version to display (enabled version or latest if disabled)
               display_version = determine_display_version(mod, versions, mod_list)
               enabled = mod_list.exist?(mod) && mod_list.enabled?(mod)
 
@@ -164,13 +162,11 @@ module Factorix
           # @param mod_list [MODList] MOD list with enabled status and version
           # @return [Types::MODVersion] the version to display
           private def determine_display_version(mod, versions, mod_list)
-            # If mod-list.json specifies a version, use that
             if mod_list.exist?(mod)
               specified_version = mod_list.version(mod)
               return specified_version if specified_version
             end
 
-            # Otherwise, use the latest installed version
             versions.map(&:version).max
           end
 

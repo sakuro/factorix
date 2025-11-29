@@ -107,7 +107,6 @@ module Factorix
           tree = @grammar.parse(dependency_string)
           data = @transform.apply(tree)
 
-          # Extract values from parsed data
           mod_name = data[:mod_name].to_s
           mod = MOD[name: mod_name]
           type = data.dig(:prefix, :type) || Entry::REQUIRED
@@ -136,7 +135,6 @@ module Factorix
       end
 
       private def parse_error_message(input, error)
-        # Check for common error patterns
         if input.strip.match?(/^[><=]+/)
           "Invalid dependency format: empty MOD name (input: #{input.inspect})"
         elsif input.match?(/[><=]\s*$/)

@@ -224,7 +224,6 @@ module Factorix
       instance_eval(config_path.read, config_path.to_s)
     end
 
-    # Set default values that depend on runtime
     runtime = resolve(:runtime)
     config.cache.download.dir = runtime.factorix_cache_dir / "download"
     config.cache.api.dir = runtime.factorix_cache_dir / "api"

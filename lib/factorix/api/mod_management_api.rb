@@ -93,7 +93,6 @@ module Factorix
 
         logger.info("Uploading MOD file", file: file_path.to_s, metadata_count: metadata.size)
 
-        # Convert metadata keys to strings for form fields
         fields = metadata.transform_keys(&:to_s)
 
         uploader.upload(upload_url, file_path, fields:)
@@ -121,13 +120,11 @@ module Factorix
       def edit_details(mod_name, **metadata)
         validate_metadata!(metadata, ALLOWED_EDIT_METADATA, "edit_details")
 
-        # Convert tags array to comma-separated string if needed
         metadata = metadata.dup
         metadata[:tags] = metadata[:tags].join(",") if metadata[:tags].is_a?(Array)
 
         uri = URI.join(BASE_URL, "/api/v2/mods/edit_details")
 
-        # Build form data
         form_data = {mod: mod_name, **metadata}.transform_keys(&:to_s)
         body = URI.encode_www_form(form_data)
 
@@ -189,7 +186,6 @@ module Factorix
 
         uri = URI.join(BASE_URL, "/api/v2/mods/images/edit")
 
-        # Build form data
         form_data = {mod: mod_name, images: image_ids.join(",")}
         body = URI.encode_www_form(form_data)
 

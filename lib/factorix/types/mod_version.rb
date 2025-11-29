@@ -41,12 +41,10 @@ module Factorix
       # @return [MODVersion]
       # @raise [ArgumentError] if string format is invalid
       def self.from_string(str)
-        # Try 3-part version first (X.Y.Z)
         if /\A(\d+)\.(\d+)\.(\d+)\z/ =~ str
           major = Integer($1, 10)
           minor = Integer($2, 10)
           patch = Integer($3, 10)
-        # Try 2-part version (X.Y), patch defaults to 0
         elsif /\A(\d+)\.(\d+)\z/ =~ str
           major = Integer($1, 10)
           minor = Integer($2, 10)

@@ -56,21 +56,16 @@ module Factorix
       def add_uninstalled_mod(mod_info, release, operation: :install)
         mod = MOD[name: mod_info.name]
 
-        # Skip if already in graph (might be installed or already added)
         return if node?(mod)
 
-        # Create node for uninstalled MOD
         node = Node.new(mod:, version: release.version, enabled: false, installed: false, operation:)
         add_node(node)
 
-        # Add edges from dependencies in info.json
         dependencies = release.info_json[:dependencies] || []
         parser = Dependency::Parser.new
 
         dependencies.each do |dep_string|
           dependency = parser.parse(dep_string)
-
-          # Skip base MOD (always available)
           next if dependency.mod.base?
 
           edge = Edge.new(from_mod: mod, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement)

@@ -81,7 +81,6 @@ module Factorix
           redirect_url = URI(location)
           logger.info("Following redirect", location: redirect_url.to_s)
 
-          # Follow redirect (always as GET)
           perform_request(:get, redirect_url, redirect_count: redirect_count + 1, headers: {}, body: nil, &block)
 
         when Net::HTTPNotFound

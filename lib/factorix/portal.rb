@@ -98,7 +98,6 @@ module Factorix
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def upload_mod(mod_name, file_path, **metadata)
-      # Check if MOD exists
       mod_exists = begin
         get_mod(mod_name)
         logger.info("Uploading new release to existing MOD", mod: mod_name)
@@ -108,14 +107,12 @@ module Factorix
         false
       end
 
-      # Initialize upload with appropriate endpoint
       upload_url = if mod_exists
                      mod_management_api.init_upload(mod_name)
                    else
                      mod_management_api.init_publish(mod_name)
                    end
 
-      # Complete upload
       if mod_exists
         # For existing MODs: upload file, then edit metadata separately
         mod_management_api.finish_upload(upload_url, file_path)

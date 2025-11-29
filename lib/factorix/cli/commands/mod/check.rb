@@ -25,10 +25,8 @@ module Factorix
           #
           # @return [void]
           def call(**)
-            # Load current state
             graph, mod_list, installed_mods = load_current_state
 
-            # Validate
             validator = Dependency::Validator.new(
               graph,
               mod_list:,
@@ -36,10 +34,8 @@ module Factorix
             )
             result = validator.validate
 
-            # Display results
             display_result(result, graph)
 
-            # Raise exception if validation failed
             raise ValidationError, "MOD dependency validation failed" unless result.valid?
           end
 

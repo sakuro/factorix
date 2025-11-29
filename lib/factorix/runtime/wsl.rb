@@ -117,10 +117,8 @@ module Factorix
         # @return [String] path to powershell.exe
         # @raise [RuntimeError] if powershell.exe is not found
         private def find_powershell_exe
-          # Check if powershell.exe is in PATH
           return "powershell.exe" if system("which", "powershell.exe", out: File::NULL, err: File::NULL)
 
-          # Fallback to absolute paths
           POWERSHELL_FALLBACK_PATHS.find {|path| File.exist?(path) } ||
             raise(RuntimeError, "powershell.exe not found in PATH or default locations")
         end

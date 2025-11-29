@@ -153,7 +153,6 @@ module Factorix
     def enable(mod)
       raise MODNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
-      # Create a new MODState with enabled=true and the same version
       current_state = @mods[mod]
       @mods[mod] = MODState[enabled: true, version: current_state.version]
     end
@@ -168,7 +167,6 @@ module Factorix
       raise ArgumentError, "can't disable the base MOD" if mod.base?
       raise MODNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
-      # Create a new MODState with enabled=false and the same version
       current_state = @mods[mod]
       @mods[mod] = MODState[enabled: false, version: current_state.version]
     end

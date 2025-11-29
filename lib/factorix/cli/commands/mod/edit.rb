@@ -46,7 +46,6 @@ module Factorix
           # @param deprecated [Boolean, nil] optional deprecation flag
           # @return [void]
           def call(mod_name:, description: nil, summary: nil, title: nil, category: nil, tags: nil, license: nil, homepage: nil, source_url: nil, faq: nil, deprecated: nil, **)
-            # Build metadata hash
             metadata = build_metadata(
               description:,
               summary:,
@@ -60,14 +59,12 @@ module Factorix
               deprecated:
             )
 
-            # Validate at least one metadata field is provided
             if metadata.empty?
               say "At least one metadata option must be provided", prefix: :error
               say "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
               raise Error, "No metadata options provided"
             end
 
-            # Edit metadata via Portal
             portal.edit_mod(mod_name, **metadata)
             say "Metadata updated successfully!", prefix: :success
           end

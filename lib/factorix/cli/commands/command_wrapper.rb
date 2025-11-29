@@ -21,7 +21,6 @@ module Factorix
           load_config!(options[:config_path])
           log_level!(options[:log_level]) if options[:log_level]
 
-          # Call the command's implementation
           super
         rescue Error => e
           # Expected errors (validation failures, missing dependencies, etc.)
@@ -49,13 +48,9 @@ module Factorix
         # @param explicit_path [String, nil] path specified via --config-path
         # @return [Pathname, nil] path to load, or nil if none should be loaded
         private def resolve_config_path(explicit_path)
-          # Explicitly specified path via --config-path - always use it
           return Pathname(explicit_path) if explicit_path
-
-          # Check environment variable
           return Pathname(ENV.fetch("FACTORIX_CONFIG")) if ENV["FACTORIX_CONFIG"]
 
-          # Use default path only if it exists
           default_path = Application[:runtime].factorix_config_path
           default_path.exist? ? default_path : nil
         end

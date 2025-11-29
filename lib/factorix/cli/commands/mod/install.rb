@@ -273,8 +273,6 @@ module Factorix
               raise Error, "Circular dependency detected in MOD(s) to install"
             end
 
-            # Check for conflicts
-            # For each node to be installed, check if it conflicts with existing enabled MODs
             graph.nodes.each do |node|
               next unless node.operation == :install
 

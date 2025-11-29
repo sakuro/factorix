@@ -55,10 +55,8 @@ module Factorix
                                   mod_specs.map {|spec| parse_mod_spec(spec) }
                                 end
 
-            # Plan uninstall
             targets_to_uninstall = plan_uninstall(uninstall_targets, graph, installed_mods, all:)
 
-            # For --all, check if there's anything to do (uninstall or disable)
             if all
               expansions_to_disable = graph.nodes.count {|node|
                 mod = node.mod
@@ -74,19 +72,11 @@ module Factorix
               return
             end
 
-            # Show plan and confirm
             show_plan(targets_to_uninstall, all:, graph:, mod_list:)
             return unless confirm?("Do you want to uninstall these MOD(s)?")
 
-            # Execute uninstall
             execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
-
-            # If --all, also disable expansion MODs
-            if all
-              disable_expansion_mods(graph, mod_list)
-            end
-
-            # Save mod-list.json
+            disable_expansion_mods(graph, mod_list) if all
             mod_list.save(runtime.mod_list_path)
             say "Uninstalled #{targets_to_uninstall.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
@@ -98,17 +88,14 @@ module Factorix
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @return [Array<Hash>] Uninstall targets in reverse dependency order
           private def plan_uninstall_all(graph, _installed_mods)
-            # Get all MODs in reverse topological order (dependents first, then dependencies)
-            # This ensures we uninstall dependents before their dependencies
+            # Reverse topological order ensures dependents are uninstalled before their dependencies
             ordered_mods = graph.topological_order
             mods_in_reverse_order = ordered_mods.reverse
 
             mods_in_reverse_order.filter_map do |mod|
-              # Skip base MOD (always keep enabled)
               next if mod.base?
 
-              # For expansion MODs, we'll disable them in mod-list.json but not uninstall
-              # For regular MODs, create uninstall target
+              # Expansion MODs are disabled but not uninstalled
               {mod:, version: nil} unless mod.expansion?
             end
           end
@@ -152,14 +139,13 @@ module Factorix
               return nil
             end
 
-            # For versioned uninstall, check if the specific version exists
             if target[:version] && !version_installed?(target, installed_mods)
               say "MOD version not installed: #{format_target(target)}", prefix: :warn
               logger.debug("MOD version not installed", target: format_target(target))
               return nil
             end
 
-            # Check for enabled dependents (skip for --all since all MODs are being uninstalled)
+            # Skip dependent check for --all since all MODs are being uninstalled
             check_dependents_with_version(target, graph, installed_mods) unless all
 
             target

@@ -125,13 +125,11 @@ module Factorix
         data = src.binread
         original_size = data.bytesize
 
-        # Compress if enabled and data meets threshold
         if should_compress?(original_size)
           data = Zlib.deflate(data)
           logger.debug("Compressed data", original_size:, compressed_size: data.bytesize)
         end
 
-        # Skip caching if (compressed) size exceeds limit
         if @max_file_size && data.bytesize > @max_file_size
           logger.warn("File size exceeds cache limit, skipping", size_bytes: data.bytesize, limit_bytes: @max_file_size)
           return false

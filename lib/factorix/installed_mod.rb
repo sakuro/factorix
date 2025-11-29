@@ -65,7 +65,6 @@ module Factorix
     def self.from_zip(path)
       info = Types::InfoJSON.from_zip(path)
 
-      # Validate ZIP filename matches {name}_{version}.zip
       expected_filename = "#{info.name}_#{info.version}.zip"
       actual_filename = path.basename.to_s
 
@@ -87,7 +86,6 @@ module Factorix
 
       info = Types::InfoJSON.from_json(info_path.read)
 
-      # Validate directory name matches {name}_{version} or {name}
       dirname = path.basename.to_s
       expected_unversioned = info.name
       expected_versioned = "#{info.name}_#{info.version}"
@@ -127,7 +125,6 @@ module Factorix
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
-        # Collect all paths to scan (only ZIP files and directories)
         mod_paths = mod_dir.children.select {|path|
           (path.file? && path.extname == ".zip") || path.directory?
         }
@@ -145,7 +142,6 @@ module Factorix
 
         publish("scan.started", total:)
 
-        # Scan MOD packages in parallel using Concurrent::Future
         pool = Concurrent::FixedThreadPool.new(DEFAULT_PARALLEL_JOBS)
 
         begin
@@ -160,14 +156,12 @@ module Factorix
             end
           }
 
-          # Collect results (filtering out nils from skipped packages)
           installed_mods = futures.filter_map(&:value)
         ensure
           pool.shutdown
           pool.wait_for_termination
         end
 
-        # Scan data directory for base/expansion MODs only (sequential, few items)
         data_paths.each do |path|
           result = scan_mod_path(path)
           installed_mods << result if result
@@ -177,7 +171,6 @@ module Factorix
 
         publish("scan.completed", total: installed_mods.size)
 
-        # Resolve duplicates and sort by version descending
         resolved = resolve_duplicates(installed_mods)
         resolved.sort_by(&:version).reverse
       end
@@ -208,10 +201,7 @@ module Factorix
       # @param mods [Array<InstalledMOD>] Array of installed MODs
       # @return [Array<InstalledMOD>] Array with duplicates resolved
       private def resolve_duplicates(mods)
-        # Group by MOD and version
         groups = mods.group_by {|mod| [mod.mod, mod.version] }
-
-        # For each group, select the highest priority (uses InstalledMOD#<=>)
         groups.map do |_key, group_mods|
           group_mods.max
         end

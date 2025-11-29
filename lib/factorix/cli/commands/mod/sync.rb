@@ -192,19 +192,15 @@ module Factorix
           # @param graph [Dependency::Graph] Dependency graph
           # @return [void]
           private def resolve_conflicts(mod_list, save_mods, graph)
-            # For each MOD in save file that will be enabled
             save_mods.each do |mod_name, mod_state|
               next unless mod_state.enabled?
 
               mod = Factorix::MOD[name: mod_name]
 
-              # Find incompatible MODs from the graph
               graph.edges_from(mod).each do |edge|
                 next unless edge.incompatible?
 
                 conflicting_mod = edge.to_mod
-
-                # If the conflicting MOD is currently enabled, disable it
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)
@@ -212,13 +208,10 @@ module Factorix
                 logger.debug("Disabled conflicting MOD", mod_name: conflicting_mod.name, conflicts_with: mod.name)
               end
 
-              # Also check incoming incompatibility edges
               graph.edges_to(mod).each do |edge|
                 next unless edge.incompatible?
 
                 conflicting_mod = edge.from_mod
-
-                # If the conflicting MOD is currently enabled, disable it
                 next unless mod_list.exist?(conflicting_mod) && mod_list.enabled?(conflicting_mod)
 
                 mod_list.disable(conflicting_mod)

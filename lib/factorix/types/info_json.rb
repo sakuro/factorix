@@ -23,12 +23,10 @@ module Factorix
       def self.from_json(json_string)
         data = JSON.parse(json_string)
 
-        # Validate required fields
         required_fields = %w[name version title author]
         missing = required_fields - data.keys
         raise ArgumentError, "Missing required fields: #{missing.join(", ")}" unless missing.empty?
 
-        # Parse dependencies
         parser = Dependency::Parser.new
         dependencies = (data["dependencies"] || []).map {|dep_str| parser.parse(dep_str) }
 
@@ -50,7 +48,6 @@ module Factorix
         logger = Application.resolve(:logger)
         cache_key = cache.key_for(zip_path.to_s)
 
-        # Try to read from cache
         if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
           logger.debug("info.json cache hit", path: zip_path.to_s)
           return from_json(cached_json)
@@ -58,7 +55,6 @@ module Factorix
 
         logger.debug("info.json cache miss", path: zip_path.to_s)
 
-        # Extract from ZIP
         json_string = Zip::File.open(zip_path) {|zip_file|
           info_entry = zip_file.find {|entry| entry.name.end_with?("/info.json") }
           raise ArgumentError, "info.json not found in #{zip_path}" unless info_entry
@@ -66,7 +62,6 @@ module Factorix
           info_entry.get_input_stream.read
         }
 
-        # Store in cache
         temp_file = Tempfile.new("info_json_cache")
         begin
           temp_file.write(json_string)

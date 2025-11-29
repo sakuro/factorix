@@ -96,14 +96,11 @@ module Factorix
 
             rows = mods.map {|mod| format_row(mod) }
 
-            # Calculate column widths
             headers = %w[NAME TITLE CATEGORY OWNER LATEST]
             widths = headers.map.with_index {|h, i| [h.length, *rows.map {|r| r[i].to_s.length }].max }
 
-            # Print header
             puts format_table_row(headers, widths)
 
-            # Print rows
             rows.each do |row|
               puts format_table_row(row, widths)
             end
