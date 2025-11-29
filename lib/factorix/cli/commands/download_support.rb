@@ -57,9 +57,7 @@ module Factorix
         private def find_compatible_release(mod_info, version_requirement)
           return mod_info.releases.max_by(&:released_at) if version_requirement.nil?
 
-          compatible_releases = mod_info.releases.select {|r|
-            version_requirement.satisfied_by?(r.version)
-          }
+          compatible_releases = mod_info.releases.select {|r| version_requirement.satisfied_by?(r.version) }
 
           compatible_releases.max_by(&:released_at)
         end
