@@ -32,7 +32,11 @@ Split into three classes based on authentication method.
 - Edit MOD details
 - Manage MOD images
 - Uses `APICredential` for authentication
-- Corresponds to: [MOD Upload API](https://wiki.factorio.com/Mod_upload_API)
+- Corresponds to:
+  - [MOD Upload API](https://wiki.factorio.com/Mod_upload_API)
+  - [MOD Publish API](https://wiki.factorio.com/Mod_publish_API)
+  - [MOD Details API](https://wiki.factorio.com/Mod_details_API)
+  - [MOD Images API](https://wiki.factorio.com/Mod_images_API)
 
 ### Benefits
 
