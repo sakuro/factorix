@@ -194,13 +194,13 @@ automation, content, balance, blueprints, combat, fixes, graphics, gui, logistic
 
 Class that wraps the API for more object-oriented handling.
 
-- **Responsibility**: Convert JSON to Types objects, domain logic
-- **Return value**: Data.define objects under Types
+- **Responsibility**: Convert JSON to domain objects, domain logic
+- **Return value**: `Data.define` objects under `API` namespace
 - Return value example: `Portal#list_mods` → `Array[API::MODInfo]`
 
 ### Design Policy
 
-- Convert Hash received from API layer to Types::*
+- Convert Hash received from API layer to `API::*`
 - Implement business logic
 - Used directly from CLI layer
 
