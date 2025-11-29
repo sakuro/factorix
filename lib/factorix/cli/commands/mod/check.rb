@@ -27,11 +27,7 @@ module Factorix
           def call(**)
             graph, mod_list, installed_mods = load_current_state
 
-            validator = Dependency::Validator.new(
-              graph,
-              mod_list:,
-              all_installed_mods: installed_mods
-            )
+            validator = Dependency::Validator.new(graph, mod_list:, installed_mods:)
             result = validator.validate
 
             display_result(result, graph)

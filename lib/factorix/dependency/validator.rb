@@ -14,11 +14,11 @@ module Factorix
       #
       # @param graph [Factorix::Dependency::Graph] The dependency graph to validate
       # @param mod_list [Factorix::MODList, nil] Optional MOD list for additional validation
-      # @param all_installed_mods [Array<Factorix::InstalledMOD>, nil] All installed MODs (all versions) for suggestions
-      def initialize(graph, mod_list: nil, all_installed_mods: nil)
+      # @param installed_mods [Array<Factorix::InstalledMOD>, nil] Installed MODs for alternative version suggestions
+      def initialize(graph, mod_list: nil, installed_mods: nil)
         @graph = graph
         @mod_list = mod_list
-        @all_installed_mods = all_installed_mods || []
+        @installed_mods = installed_mods || []
       end
 
       # Validate the graph
@@ -171,9 +171,9 @@ module Factorix
       # @param result [Factorix::Dependency::ValidationResult] The validation result to add suggestions to
       # @return [void]
       private def check_alternative_versions(edge, result)
-        return if @all_installed_mods.empty?
+        return if @installed_mods.empty?
 
-        alternative_versions = @all_installed_mods.select {|im| im.mod == edge.to_mod }
+        alternative_versions = @installed_mods.select {|im| im.mod == edge.to_mod }
 
         alternative_versions.each do |installed_mod|
           next unless edge.satisfied_by?(installed_mod.version)

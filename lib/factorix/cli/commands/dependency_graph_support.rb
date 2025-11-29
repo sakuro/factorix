@@ -32,10 +32,7 @@ module Factorix
           handler = Progress::ScanHandler.new(presenter)
           installed_mods = InstalledMOD.all(handler:)
 
-          graph = Dependency::Graph::Builder.build(
-            installed_mods:,
-            mod_list:
-          )
+          graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
           [graph, mod_list, installed_mods]
         end
@@ -52,11 +49,7 @@ module Factorix
         private def ensure_valid_state!
           graph, mod_list, installed_mods = load_current_state
 
-          validator = Dependency::Validator.new(
-            graph,
-            mod_list:,
-            all_installed_mods: installed_mods
-          )
+          validator = Dependency::Validator.new(graph, mod_list:, installed_mods:)
           result = validator.validate
 
           return [graph, mod_list, installed_mods] unless result.errors?
