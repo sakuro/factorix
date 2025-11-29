@@ -22,10 +22,10 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(upload_url).to be_a(URI::HTTPS)
       expect(upload_url.to_s).to eq("https://example.com/upload/123")
       expect(client).to have_received(:post) do |uri, **options|
-        expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/releases/init_publish")
+        expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/init_publish")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
-        expect(options[:content_type]).to eq("application/json")
-        body = JSON.parse(options[:body])
+        expect(options[:content_type]).to eq("application/x-www-form-urlencoded")
+        body = URI.decode_www_form(options[:body]).to_h
         expect(body["mod"]).to eq("my-mod")
       end
     end
@@ -51,8 +51,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(client).to have_received(:post) do |uri, **options|
         expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/releases/init_upload")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
-        expect(options[:content_type]).to eq("application/json")
-        body = JSON.parse(options[:body])
+        expect(options[:content_type]).to eq("application/x-www-form-urlencoded")
+        body = URI.decode_www_form(options[:body]).to_h
         expect(body["mod"]).to eq("my-mod")
       end
     end
@@ -198,8 +198,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(client).to have_received(:post) do |uri, **options|
         expect(uri.to_s).to eq("https://mods.factorio.com/api/v2/mods/images/add")
         expect(options[:headers]["Authorization"]).to eq("Bearer test_api_key")
-        expect(options[:content_type]).to eq("application/json")
-        body = JSON.parse(options[:body])
+        expect(options[:content_type]).to eq("application/x-www-form-urlencoded")
+        body = URI.decode_www_form(options[:body]).to_h
         expect(body["mod"]).to eq("my-mod")
       end
     end

@@ -48,11 +48,11 @@ module Factorix
       # @raise [HTTPClientError] for 4xx errors (e.g., MOD already exists)
       # @raise [HTTPServerError] for 5xx errors
       def init_publish(mod_name)
-        uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_publish")
-        body = JSON.generate({mod: mod_name})
+        uri = URI.join(BASE_URL, "/api/v2/mods/init_publish")
+        body = URI.encode_www_form({mod: mod_name})
 
         logger.info("Initializing MOD publication", mod: mod_name)
-        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
 
         parse_upload_url(response)
       end
@@ -66,10 +66,10 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       def init_upload(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/releases/init_upload")
-        body = JSON.generate({mod: mod_name})
+        body = URI.encode_www_form({mod: mod_name})
 
         logger.info("Initializing MOD upload", mod: mod_name)
-        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
 
         parse_upload_url(response)
       rescue HTTPNotFoundError => e
@@ -144,10 +144,10 @@ module Factorix
       # @raise [HTTPServerError] for 5xx errors
       def init_image_upload(mod_name)
         uri = URI.join(BASE_URL, "/api/v2/mods/images/add")
-        body = JSON.generate({mod: mod_name})
+        body = URI.encode_www_form({mod: mod_name})
 
         logger.info("Initializing image upload", mod: mod_name)
-        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/json")
+        response = client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
 
         parse_upload_url(response)
       rescue HTTPNotFoundError => e

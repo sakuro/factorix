@@ -1,0 +1,9 @@
+{
+  "name": "upload-test",
+  "version": "0.1.1",
+  "title": "Upload Test",
+  "author": "sakuro",
+  "description": "A minimal MOD for testing upload functionality.",
+  "factorio_version": "0.13",
+  "dependencies": ["base >= 0.13"]
+}
