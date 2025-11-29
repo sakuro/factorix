@@ -15,7 +15,9 @@ module Factorix
           #   attr_reader :portal
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
-          include Import[:portal, :logger]
+          #   # @return [Runtime]
+          #   attr_reader :runtime
+          include Import[:portal, :logger, :runtime]
 
           desc "Download MOD files from Factorio MOD Portal"
 
@@ -39,8 +41,13 @@ module Factorix
           # @param recursive [Boolean] Include required dependencies recursively
           # @return [void]
           def call(mod_specs:, directory: ".", jobs: 4, recursive: false, **)
-            download_dir = Pathname(directory)
-            download_dir.mkpath unless download_dir.exist?
+            download_dir = Pathname(directory).expand_path
+
+            raise Error, "Download directory does not exist: #{download_dir}" unless download_dir.exist?
+
+            if runtime.mod_dir.exist? && download_dir.realpath == runtime.mod_dir.realpath
+              raise Error, "Cannot download to MOD directory. Use 'mod install' instead."
+            end
 
             download_targets = plan_download(mod_specs, download_dir, jobs, recursive)
 

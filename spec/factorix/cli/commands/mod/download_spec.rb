@@ -8,8 +8,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
-  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, logger:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, logger:, runtime:) }
   let(:mod_info) do
     Factorix::API::MODInfo.new(
       name: "test-mod",
@@ -65,11 +66,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       expect(portal).to have_received(:download_mod).once
     end
 
-    it "creates download directory if it does not exist" do
-      download_dir = File.join(tmpdir, "mods")
-      command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1)
+    it "raises error if download directory does not exist" do
+      download_dir = File.join(tmpdir, "nonexistent")
 
-      expect(Dir.exist?(download_dir)).to be true
+      expect {
+        command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1)
+      }.to raise_error(Factorix::Error, /Download directory does not exist/)
     end
 
     it "handles MOD with version specification" do
@@ -139,6 +141,24 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         expect {
           command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1)
         }.to raise_error(Factorix::Error, /Release not found/)
+      end
+    end
+
+    context "with MOD directory as download target" do
+      let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname(tmpdir).expand_path) }
+
+      it "raises error when trying to download to MOD directory" do
+        expect {
+          command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
+        }.to raise_error(Factorix::Error, /Cannot download to MOD directory/)
+      end
+
+      it "raises error when using '.' in MOD directory" do
+        Dir.chdir(runtime.mod_dir) do
+          expect {
+            command.call(mod_specs: ["test-mod"], directory: ".", jobs: 1)
+          }.to raise_error(Factorix::Error, /Cannot download to MOD directory/)
+        end
       end
     end
 
