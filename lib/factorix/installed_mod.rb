@@ -30,9 +30,7 @@ module Factorix
     include Comparable
 
     # Make the class itself enumerable over all installed MODs
-    class << self
-      include Enumerable
-    end
+    extend Enumerable
 
     # Form constants
     ZIP_FORM = :zip
