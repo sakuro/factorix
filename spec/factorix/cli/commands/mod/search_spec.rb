@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Search do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Search.new(portal:) }
 
@@ -27,6 +25,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   end
 
   describe "#call" do
+    include_context "with suppressed output"
+
     before do
       allow(portal).to receive(:list_mods).and_return([mod_info])
     end
@@ -49,6 +49,39 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
         sort_order: "asc",
         version: "2.0"
       )
+    end
+  end
+
+  describe "table output" do
+    let(:mod_info_with_release) do
+      Factorix::API::MODInfo.new(
+        name: "test-mod",
+        title: "Test MOD",
+        owner: "test-owner",
+        summary: "A test MOD",
+        downloads_count: 100,
+        category: "utilities",
+        score: 5.0,
+        thumbnail: nil,
+        latest_release: {
+          version: "1.2.3",
+          download_url: "/download/test-mod/abc123",
+          file_name: "test-mod_1.2.3.zip",
+          info_json: {factorio_version: "2.0", dependencies: []},
+          released_at: "2024-01-01T00:00:00Z",
+          sha1: "abc123"
+        },
+        releases: []
+      )
+    end
+
+    before do
+      allow(portal).to receive(:list_mods).and_return([mod_info_with_release])
+    end
+
+    it "displays latest_release version in LATEST column" do
+      output = capture_stdout { command.call }
+      expect(output).to include("1.2.3")
     end
   end
 end

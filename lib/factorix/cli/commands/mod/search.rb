@@ -114,13 +114,12 @@ module Factorix
           end
 
           private def format_row(mod)
-            latest = mod.releases.max_by(&:released_at)
             [
               mod.name,
               mod.title,
               mod.category.name,
               mod.owner,
-              latest&.version&.to_s
+              mod.latest_release&.version&.to_s
             ]
           end
 
