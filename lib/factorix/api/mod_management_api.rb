@@ -164,7 +164,7 @@ module Factorix
       def finish_image_upload(upload_url, image_file)
         logger.info("Uploading image file", file: image_file.to_s)
 
-        response = uploader.upload(upload_url, image_file)
+        response = uploader.upload(upload_url, image_file, field_name: "image")
         data = JSON.parse(response.body)
 
         logger.info("Image upload completed successfully", image_id: data["id"])

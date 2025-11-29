@@ -234,7 +234,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
       result = api.finish_image_upload(upload_url, image_file)
 
-      expect(uploader).to have_received(:upload).with(upload_url, image_file)
+      expect(uploader).to have_received(:upload).with(upload_url, image_file, field_name: "image")
       expect(result).to eq(response_data)
     end
 
