@@ -2,7 +2,7 @@
 
 ## Cache
 
-Caches downloaded files and API call results.
+Caches downloaded files, API call results, and MOD metadata (info.json from ZIP files).
 
 ### Initial Implementation
 
@@ -12,7 +12,7 @@ Filesystem-based cache (Cache::FileSystem).
 
 - Define interface to allow backend replacement
 - Cache expiration management
-- API cache and download cache can be created independently
+- Caches are created independently (API, download, info.json)
 
 ### Compression Support
 
@@ -26,6 +26,7 @@ Detection on read uses zlib magic byte (`0x78`) to handle mixed compressed/uncom
 **Default Configuration**:
 - API cache: `compression_threshold: 0` (JSON responses compress well)
 - Download cache: `compression_threshold: nil` (ZIP files are already compressed)
+- Info.json cache: `compression_threshold: 0` (JSON data compresses well)
 
 ### Concurrent Access Countermeasures
 
