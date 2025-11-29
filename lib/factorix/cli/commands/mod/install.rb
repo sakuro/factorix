@@ -9,11 +9,11 @@ module Factorix
       module MOD
         # Install MODs from Factorio MOD Portal
         class Install < Base
-          prepend Confirmable
+          confirmable!
+          require_game_stopped!
+
           include DependencyGraphSupport
           include DownloadSupport
-
-          require_game_stopped!
 
           # @!parse
           #   # @return [Portal]

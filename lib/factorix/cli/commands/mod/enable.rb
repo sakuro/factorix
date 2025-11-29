@@ -6,10 +6,10 @@ module Factorix
       module MOD
         # Enable MODs in mod-list.json with dependency resolution
         class Enable < Base
-          prepend Confirmable
-          include DependencyGraphSupport
-
+          confirmable!
           require_game_stopped!
+
+          include DependencyGraphSupport
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]

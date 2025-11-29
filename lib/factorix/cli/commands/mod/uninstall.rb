@@ -6,10 +6,10 @@ module Factorix
       module MOD
         # Uninstall MODs from MOD directory
         class Uninstall < Base
-          prepend Confirmable
-          include DependencyGraphSupport
-
+          confirmable!
           require_game_stopped!
+
+          include DependencyGraphSupport
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]

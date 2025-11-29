@@ -59,6 +59,10 @@ module Factorix
         # @return [void]
         def self.require_game_stopped! = prepend RequiresGameStopped
 
+        # Enable confirmation prompts with --yes option
+        # @return [void]
+        def self.confirmable! = prepend Confirmable
+
         # Common options available to all commands
         option :config_path, type: :string, aliases: ["-c"], desc: "Path to configuration file"
         option :log_level, type: :string, values: %w[debug info warn error fatal], desc: "Set log level"

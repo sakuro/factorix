@@ -9,11 +9,11 @@ module Factorix
       module MOD
         # Sync MOD states and startup settings from a save file
         class Sync < Base
-          prepend Confirmable
+          confirmable!
+          require_game_stopped!
+
           include DependencyGraphSupport
           include DownloadSupport
-
-          require_game_stopped!
 
           # @!parse
           #   # @return [Portal]
