@@ -14,6 +14,7 @@
 - **dry-core** (>= 1.1.0) - Utilities
 - **retriable** (>= 3.1.2) - Retry logic for network operations
 - **tty-progressbar** (~> 0.18) - Progress display with multi-bar support
+- **tint_me** (~> 1.1) - Terminal text coloring
 - **parslet** (~> 2.0) - PEG parser for dependency string parsing
 - **rubyzip** (~> 3.2) - ZIP file handling for save file parsing
 - **concurrent-ruby** (~> 1.0) - Parallel processing for concurrent MOD downloads
@@ -32,6 +33,10 @@
 - **WebMock** - HTTP request stubbing and mocking
 - **SimpleCov** - Coverage measurement
 
+### Debugging
+- **debug** - Ruby debugger
+- **ruby-lsp** - Ruby Language Server Protocol for IDE integration
+
 ### Code Quality
 - **RuboCop** - Code style enforcement
   - `rubocop-performance` - Performance cops
@@ -46,6 +51,7 @@
 
 ### Documentation
 - **YARD** - Documentation generation
+  - `redcarpet` - Markdown rendering support
 
 ## Related Documentation
 
