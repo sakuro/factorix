@@ -25,25 +25,7 @@ module Factorix
       #
       # @return [Pathname] the Factorio executable path
       # @raise [ConfigurationError] if auto-detection is not supported and no configuration is provided
-      def executable_path
-        if (configured = Application.config.runtime.executable_path)
-          Application[:logger].debug("Using configured executable_path", path: configured.to_s)
-          configured
-        else
-          Application[:logger].debug("No configuration for executable_path, using auto-detection")
-          super.tap {|path| Application[:logger].debug("Auto-detected executable_path", path: path.to_s) }
-        end
-      rescue NotImplementedError => e
-        Application[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
-        raise ConfigurationError, <<~MESSAGE
-          executable_path not configured and auto-detection is not supported for this platform.
-          Please configure it in #{Application[:runtime].factorix_config_path}:
-
-            Factorix::Application.configure do |config|
-              config.runtime.executable_path = "/path/to/factorio"
-            end
-        MESSAGE
-      end
+      def executable_path = configurable_path(:executable_path, example_path: "/path/to/factorio") { super }
 
       # Get the Factorio user directory path
       #
@@ -52,25 +34,7 @@ module Factorix
       #
       # @return [Pathname] the Factorio user directory
       # @raise [ConfigurationError] if auto-detection is not supported and no configuration is provided
-      def user_dir
-        if (configured = Application.config.runtime.user_dir)
-          Application[:logger].debug("Using configured user_dir", path: configured.to_s)
-          configured
-        else
-          Application[:logger].debug("No configuration for user_dir, using auto-detection")
-          super.tap {|path| Application[:logger].debug("Auto-detected user_dir", path: path.to_s) }
-        end
-      rescue NotImplementedError => e
-        Application[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
-        raise ConfigurationError, <<~MESSAGE
-          user_dir not configured and auto-detection is not supported for this platform.
-          Please configure it in #{Application[:runtime].factorix_config_path}:
-
-            Factorix::Application.configure do |config|
-              config.runtime.user_dir = "/path/to/factorio/user/dir"
-            end
-        MESSAGE
-      end
+      def user_dir = configurable_path(:user_dir, example_path: "/path/to/factorio/user/dir") { super }
 
       # Get the Factorio data directory path
       #
@@ -79,22 +43,24 @@ module Factorix
       #
       # @return [Pathname] the Factorio data directory
       # @raise [ConfigurationError] if auto-detection is not supported and no configuration is provided
-      def data_dir
-        if (configured = Application.config.runtime.data_dir)
-          Application[:logger].debug("Using configured data_dir", path: configured.to_s)
+      def data_dir = configurable_path(:data_dir, example_path: "/path/to/factorio/data") { super }
+
+      private def configurable_path(name, example_path:)
+        if (configured = Application.config.runtime.public_send(name))
+          Application[:logger].debug("Using configured #{name}", path: configured.to_s)
           configured
         else
-          Application[:logger].debug("No configuration for data_dir, using auto-detection")
-          super.tap {|path| Application[:logger].debug("Auto-detected data_dir", path: path.to_s) }
+          Application[:logger].debug("No configuration for #{name}, using auto-detection")
+          yield.tap {|path| Application[:logger].debug("Auto-detected #{name}", path: path.to_s) }
         end
       rescue NotImplementedError => e
         Application[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
         raise ConfigurationError, <<~MESSAGE
-          data_dir not configured and auto-detection is not supported for this platform.
+          #{name} not configured and auto-detection is not supported for this platform.
           Please configure it in #{Application[:runtime].factorix_config_path}:
 
             Factorix::Application.configure do |config|
-              config.runtime.data_dir = "/path/to/factorio/data"
+              config.runtime.#{name} = "#{example_path}"
             end
         MESSAGE
       end
