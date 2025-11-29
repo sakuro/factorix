@@ -38,6 +38,7 @@ module Factorix
     #
     # Uses caching to avoid repeated ZIP extraction for the same file.
     # Cache key is based on file path (MOD ZIPs are immutable after download).
+    # Uses file locking to prevent concurrent extraction of the same file.
     #
     # @param zip_path [Pathname] path to MOD zip file
     # @return [InfoJSON] parsed info.json from zip
@@ -47,31 +48,33 @@ module Factorix
       logger = Application.resolve(:logger)
       cache_key = cache.key_for(zip_path.to_s)
 
-      if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
-        logger.debug("info.json cache hit", path: zip_path.to_s)
-        return from_json(cached_json)
+      cache.with_lock(cache_key) do
+        if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
+          logger.debug("info.json cache hit", path: zip_path.to_s)
+          return from_json(cached_json)
+        end
+
+        logger.debug("info.json cache miss", path: zip_path.to_s)
+
+        json_string = Zip::File.open(zip_path) {|zip_file|
+          info_entry = zip_file.find {|entry| entry.name.end_with?("/info.json") }
+          raise ArgumentError, "info.json not found in #{zip_path}" unless info_entry
+
+          info_entry.get_input_stream.read
+        }
+
+        temp_file = Tempfile.new("info_json_cache")
+        begin
+          temp_file.write(json_string)
+          temp_file.close
+          cache.store(cache_key, Pathname(temp_file.path))
+          logger.debug("Stored info.json in cache", path: zip_path.to_s)
+        ensure
+          temp_file.unlink
+        end
+
+        from_json(json_string)
       end
-
-      logger.debug("info.json cache miss", path: zip_path.to_s)
-
-      json_string = Zip::File.open(zip_path) {|zip_file|
-        info_entry = zip_file.find {|entry| entry.name.end_with?("/info.json") }
-        raise ArgumentError, "info.json not found in #{zip_path}" unless info_entry
-
-        info_entry.get_input_stream.read
-      }
-
-      temp_file = Tempfile.new("info_json_cache")
-      begin
-        temp_file.write(json_string)
-        temp_file.close
-        cache.store(cache_key, Pathname(temp_file.path))
-        logger.debug("Stored info.json in cache", path: zip_path.to_s)
-      ensure
-        temp_file.unlink
-      end
-
-      from_json(json_string)
     rescue Zip::Error => e
       raise ArgumentError, "Invalid zip file: #{e.message}"
     end
