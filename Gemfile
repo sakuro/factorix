@@ -16,9 +16,6 @@ group :development do
   gem "debug", require: false
   gem "ruby-lsp", require: false
 
-  # Profiling
-  gem "stackprof", require: false
-
   # RuboCop
   gem "docquet", require: false # An opionated RuboCop config tool
   gem "rubocop", require: false
