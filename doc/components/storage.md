@@ -167,11 +167,11 @@ Represents an installed MOD with its metadata (Data.define).
 
 ### Data Structure
 
-- `name` - MOD name
-- `version` - MOD version
-- `path` - Path to MOD file or directory
+- `mod` - MOD object
+- `version` - MOD version (MODVersion)
 - `form` - Installation form (`:zip` or `:directory`)
-- `metadata` - Hash of info.json contents
+- `path` - Path to MOD file or directory
+- `info` - InfoJSON object (parsed info.json)
 
 ### Main Features
 
