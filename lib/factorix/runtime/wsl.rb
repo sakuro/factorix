@@ -34,10 +34,9 @@ module Factorix
         POWERSHELL
         private_constant :POWERSHELL_SCRIPT
 
-        # Fallback paths for powershell.exe when not found in PATH
-        POWERSHELL_FALLBACK_PATHS = [
-          "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
-          "/mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe"
+        POWERSHELL_FALLBACK_PATHS = %w[
+          /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe
+          /mnt/c/Windows/system32/WindowsPowerShell/v1.0/powershell.exe
         ].freeze
         private_constant :POWERSHELL_FALLBACK_PATHS
 
@@ -65,8 +64,6 @@ module Factorix
 
         # Fetch and cache all Windows environment variables
         #
-        # Retrieves Windows environment variables via PowerShell in a single execution. Called lazily on first path access and memoized.
-        #
         # @return [Hash] the environment variables as a hash
         private def windows_paths
           return @windows_paths if @windows_paths
@@ -78,14 +75,11 @@ module Factorix
 
         # Fetch Windows environment variables via PowerShell
         #
-        # Executes PowerShell once to retrieve all required environment variables as JSON, avoiding multiple cmd.exe invocations.
-        #
         # @return [Hash] the environment variables as a hash
         # @raise [RuntimeError] if PowerShell execution fails
         private def fetch_windows_paths_via_powershell
           ps = find_powershell_exe
 
-          # Use Open3.capture2 for safe command execution
           stdout, status = Open3.capture2(ps, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", POWERSHELL_SCRIPT)
 
           raise RuntimeError, "PowerShell execution failed: #{status}" unless status.success?
@@ -94,8 +88,6 @@ module Factorix
         end
 
         # Convert Windows path to WSL path
-        #
-        # Converts Windows-style paths (e.g., "C:\Program Files") to WSL paths (e.g., "/mnt/c/Program Files")
         #
         # @param windows_path [String] Windows-style path to convert
         # @return [String] equivalent WSL path
@@ -111,8 +103,6 @@ module Factorix
         end
 
         # Find powershell.exe executable
-        #
-        # Searches for powershell.exe in PATH first, then falls back to typical absolute paths.
         #
         # @return [String] path to powershell.exe
         # @raise [RuntimeError] if powershell.exe is not found
