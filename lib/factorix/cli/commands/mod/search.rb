@@ -60,10 +60,10 @@ module Factorix
           end
 
           private def output_json(mods)
-            puts JSON.pretty_generate(mods.map {|mod| serialize_mod(mod) })
+            puts JSON.pretty_generate(mods.map {|mod| mod_to_hash(mod) })
           end
 
-          private def serialize_mod(mod)
+          private def mod_to_hash(mod)
             {
               name: mod.name,
               title: mod.title,
@@ -73,12 +73,12 @@ module Factorix
               category: mod.category.value,
               score: mod.score,
               thumbnail: mod.thumbnail&.to_s,
-              latest_release: mod.latest_release && serialize_release(mod.latest_release),
-              releases: mod.releases.map {|r| serialize_release(r) }
+              latest_release: mod.latest_release && release_to_hash(mod.latest_release),
+              releases: mod.releases.map {|r| release_to_hash(r) }
             }
           end
 
-          private def serialize_release(release)
+          private def release_to_hash(release)
             {
               version: release.version.to_s,
               file_name: release.file_name,
