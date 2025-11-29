@@ -9,7 +9,7 @@ module Factorix
 
       def add_node: (Node node) -> void
       def add_edge: (Edge edge) -> void
-      def add_uninstalled_mod: (Types::MODInfo mod_info, Types::Release release, ?operation: Symbol) -> void
+      def add_uninstalled_mod: (API::MODInfo mod_info, API::Release release, ?operation: Symbol) -> void
 
       def node: (MOD mod) -> Node?
       def nodes: () -> Array[Node]

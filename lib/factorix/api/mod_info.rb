@@ -4,7 +4,7 @@ require "time"
 require "uri"
 
 module Factorix
-  module Types
+  module API
     MODInfo = Data.define(:name, :title, :owner, :summary, :downloads_count, :category, :score, :thumbnail, :latest_release, :releases, :detail)
 
     # MOD information from MOD Portal API

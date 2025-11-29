@@ -60,7 +60,7 @@ module Factorix
 
       # Check if the given version satisfies this edge's version requirement
       #
-      # @param version [Factorix::Types::MODVersion] The version to check
+      # @param version [Factorix::MODVersion] The version to check
       # @return [Boolean] true if satisfied or no requirement exists
       def satisfied_by?(version)
         return true unless version_requirement

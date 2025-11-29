@@ -19,13 +19,13 @@ module Factorix
   # @!attribute [r] mod
   #   @return [Factorix::MOD] The MOD identifier
   # @!attribute [r] version
-  #   @return [Factorix::Types::MODVersion] The MOD version
+  #   @return [Factorix::MODVersion] The MOD version
   # @!attribute [r] form
   #   @return [Symbol] :zip or :directory
   # @!attribute [r] path
   #   @return [Pathname] The path to the ZIP file or directory
   # @!attribute [r] info
-  #   @return [Factorix::Types::InfoJSON] The parsed info.json metadata
+  #   @return [Factorix::InfoJSON] The parsed info.json metadata
   class InstalledMOD
     include Comparable
 
@@ -63,7 +63,7 @@ module Factorix
     # @return [InstalledMOD] New InstalledMOD instance
     # @raise [ArgumentError] if ZIP file is invalid
     def self.from_zip(path)
-      info = Types::InfoJSON.from_zip(path)
+      info = InfoJSON.from_zip(path)
 
       expected_filename = "#{info.name}_#{info.version}.zip"
       actual_filename = path.basename.to_s
@@ -84,7 +84,7 @@ module Factorix
       info_path = path + "info.json"
       raise ArgumentError, "Missing info.json" unless info_path.file?
 
-      info = Types::InfoJSON.from_json(info_path.read)
+      info = InfoJSON.from_json(info_path.read)
 
       dirname = path.basename.to_s
       expected_unversioned = info.name

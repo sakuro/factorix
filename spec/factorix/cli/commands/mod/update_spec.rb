@@ -34,8 +34,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   let(:space_age_mod) { Factorix::MOD[name: "space-age"] }
 
   # Versions
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
   # Installed MODs
   let(:installed_mod_a) do
@@ -45,9 +45,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   # Test MODInfo
   let(:mod_info_a) do
     instance_double(
-      Factorix::Types::MODInfo,
+      Factorix::API::MODInfo,
       name: "mod-a",
-      category: Factorix::Types::Category.for("content"),
+      category: Factorix::API::Category.for("content"),
       releases: [release_a_v1, release_a_v2]
     )
   end
@@ -55,7 +55,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   # Test Releases
   let(:release_a_v1) do
     instance_double(
-      Factorix::Types::Release,
+      Factorix::API::Release,
       version: version_1_0_0,
       file_name: "mod-a_1.0.0.zip",
       released_at: Time.new(2024, 1, 1)
@@ -63,7 +63,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   end
   let(:release_a_v2) do
     instance_double(
-      Factorix::Types::Release,
+      Factorix::API::Release,
       version: version_2_0_0,
       file_name: "mod-a_2.0.0.zip",
       released_at: Time.new(2024, 6, 1)

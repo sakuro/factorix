@@ -3,7 +3,7 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
+  module API
     class Release
       attr_reader download_url: URI::HTTPS
       attr_reader file_name: String

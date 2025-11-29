@@ -3,7 +3,7 @@
 require "uri"
 
 module Factorix
-  module Types
+  module API
     Image = Data.define(:id, :thumbnail, :url)
 
     # Image object from MOD Portal API

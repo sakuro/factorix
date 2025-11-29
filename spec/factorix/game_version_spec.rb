@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::GameVersion do
+RSpec.describe Factorix::GameVersion do
   describe ".from_string" do
     it "creates a version from a string with build number" do
-      version = Factorix::Types::GameVersion.from_string("1.2.3-4")
-      expect(version).to be_an_instance_of(Factorix::Types::GameVersion)
+      version = Factorix::GameVersion.from_string("1.2.3-4")
+      expect(version).to be_an_instance_of(Factorix::GameVersion)
       expect(version.major).to eq(1)
       expect(version.minor).to eq(2)
       expect(version.patch).to eq(3)
@@ -12,31 +12,31 @@ RSpec.describe Factorix::Types::GameVersion do
     end
 
     it "creates a version from a string without build number (defaults to 0)" do
-      version = Factorix::Types::GameVersion.from_string("1.2.3")
-      expect(version).to be_an_instance_of(Factorix::Types::GameVersion)
+      version = Factorix::GameVersion.from_string("1.2.3")
+      expect(version).to be_an_instance_of(Factorix::GameVersion)
       expect(version.build).to eq(0)
     end
 
     it "raises ArgumentError for invalid version strings" do
       aggregate_failures "invalid version strings" do
-        expect { Factorix::Types::GameVersion.from_string("1.2") }.to raise_error(ArgumentError)
-        expect { Factorix::Types::GameVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
-        expect { Factorix::Types::GameVersion.from_string("a.b.c-d") }.to raise_error(ArgumentError)
+        expect { Factorix::GameVersion.from_string("1.2") }.to raise_error(ArgumentError)
+        expect { Factorix::GameVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
+        expect { Factorix::GameVersion.from_string("a.b.c-d") }.to raise_error(ArgumentError)
       end
     end
 
     it "raises RangeError for component out of range" do
-      expect { Factorix::Types::GameVersion.from_string("65536.0.0-0") }.to raise_error(RangeError, /major/)
-      expect { Factorix::Types::GameVersion.from_string("0.65536.0-0") }.to raise_error(RangeError, /minor/)
-      expect { Factorix::Types::GameVersion.from_string("0.0.65536-0") }.to raise_error(RangeError, /patch/)
-      expect { Factorix::Types::GameVersion.from_string("0.0.0-65536") }.to raise_error(RangeError, /build/)
+      expect { Factorix::GameVersion.from_string("65536.0.0-0") }.to raise_error(RangeError, /major/)
+      expect { Factorix::GameVersion.from_string("0.65536.0-0") }.to raise_error(RangeError, /minor/)
+      expect { Factorix::GameVersion.from_string("0.0.65536-0") }.to raise_error(RangeError, /patch/)
+      expect { Factorix::GameVersion.from_string("0.0.0-65536") }.to raise_error(RangeError, /build/)
     end
   end
 
   describe ".from_numbers" do
     it "creates a version from integers" do
-      version = Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4)
-      expect(version).to be_an_instance_of(Factorix::Types::GameVersion)
+      version = Factorix::GameVersion.from_numbers(1, 2, 3, 4)
+      expect(version).to be_an_instance_of(Factorix::GameVersion)
       expect(version.major).to eq(1)
       expect(version.minor).to eq(2)
       expect(version.patch).to eq(3)
@@ -45,11 +45,11 @@ RSpec.describe Factorix::Types::GameVersion do
 
     it "raises RangeError for integers out of range" do
       aggregate_failures "invalid integers" do
-        expect { Factorix::Types::GameVersion.from_numbers(65536, 0, 0, 0) }.to raise_error(RangeError, /major/)
-        expect { Factorix::Types::GameVersion.from_numbers(0, 65536, 0, 0) }.to raise_error(RangeError, /minor/)
-        expect { Factorix::Types::GameVersion.from_numbers(0, 0, 65536, 0) }.to raise_error(RangeError, /patch/)
-        expect { Factorix::Types::GameVersion.from_numbers(0, 0, 0, 65536) }.to raise_error(RangeError, /build/)
-        expect { Factorix::Types::GameVersion.from_numbers(-1, 0, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::GameVersion.from_numbers(65536, 0, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::GameVersion.from_numbers(0, 65536, 0, 0) }.to raise_error(RangeError, /minor/)
+        expect { Factorix::GameVersion.from_numbers(0, 0, 65536, 0) }.to raise_error(RangeError, /patch/)
+        expect { Factorix::GameVersion.from_numbers(0, 0, 0, 65536) }.to raise_error(RangeError, /build/)
+        expect { Factorix::GameVersion.from_numbers(-1, 0, 0, 0) }.to raise_error(RangeError, /major/)
       end
     end
   end
@@ -57,44 +57,44 @@ RSpec.describe Factorix::Types::GameVersion do
   describe "private constructors" do
     it "does not allow direct instantiation via new" do
       expect {
-        Factorix::Types::GameVersion.new(major: 1, minor: 2, patch: 3, build: 4)
+        Factorix::GameVersion.new(major: 1, minor: 2, patch: 3, build: 4)
       }.to raise_error(NoMethodError, /private method/)
     end
 
     it "does not allow direct instantiation via []" do
       expect {
-        Factorix::Types::GameVersion[major: 1, minor: 2, patch: 3, build: 4]
+        Factorix::GameVersion[major: 1, minor: 2, patch: 3, build: 4]
       }.to raise_error(NoMethodError, /private method/)
     end
   end
 
   describe "#to_s" do
     it "returns a string representation" do
-      expect(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4).to_s).to eq("1.2.3-4")
+      expect(Factorix::GameVersion.from_numbers(1, 2, 3, 4).to_s).to eq("1.2.3-4")
     end
 
     it "omits build number when it is 0" do
-      expect(Factorix::Types::GameVersion.from_string("1.2.3").to_s).to eq("1.2.3")
+      expect(Factorix::GameVersion.from_string("1.2.3").to_s).to eq("1.2.3")
     end
   end
 
   describe "#to_a" do
     it "returns an array of integers" do
-      expect(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4).to_a).to eq([1, 2, 3, 4])
+      expect(Factorix::GameVersion.from_numbers(1, 2, 3, 4).to_a).to eq([1, 2, 3, 4])
     end
 
     it "returns a frozen array" do
-      expect(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4).to_a).to be_frozen
+      expect(Factorix::GameVersion.from_numbers(1, 2, 3, 4).to_a).to be_frozen
     end
   end
 
   describe "#<=>" do
-    let(:version_1234) { Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4) }
-    let(:version_1235) { Factorix::Types::GameVersion.from_numbers(1, 2, 3, 5) }
-    let(:version_1240) { Factorix::Types::GameVersion.from_numbers(1, 2, 4, 0) }
-    let(:version_1300) { Factorix::Types::GameVersion.from_numbers(1, 3, 0, 0) }
-    let(:version_2000) { Factorix::Types::GameVersion.from_numbers(2, 0, 0, 0) }
-    let(:version_1234_dup) { Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4) }
+    let(:version_1234) { Factorix::GameVersion.from_numbers(1, 2, 3, 4) }
+    let(:version_1235) { Factorix::GameVersion.from_numbers(1, 2, 3, 5) }
+    let(:version_1240) { Factorix::GameVersion.from_numbers(1, 2, 4, 0) }
+    let(:version_1300) { Factorix::GameVersion.from_numbers(1, 3, 0, 0) }
+    let(:version_2000) { Factorix::GameVersion.from_numbers(2, 0, 0, 0) }
+    let(:version_1234_dup) { Factorix::GameVersion.from_numbers(1, 2, 3, 4) }
 
     it "considers equal versions as equal" do
       expect(version_1234 <=> version_1234_dup).to eq(0)

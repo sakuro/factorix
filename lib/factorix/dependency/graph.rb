@@ -49,8 +49,8 @@ module Factorix
       # Creates a node for an uninstalled MOD and adds edges for its dependencies.
       # Used by the install command to extend the graph with MODs fetched from the Portal API.
       #
-      # @param mod_info [Types::MODInfo] MOD information from Portal API
-      # @param release [Types::Release] The release to install
+      # @param mod_info [API::MODInfo] MOD information from Portal API
+      # @param release [API::Release] The release to install
       # @param operation [Symbol] The operation to perform (default: :install)
       # @return [void]
       def add_uninstalled_mod(mod_info, release, operation: :install)

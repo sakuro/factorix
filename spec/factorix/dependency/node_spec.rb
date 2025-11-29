@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::Dependency::Node do
   let(:mod) { Factorix::MOD[name: "test-mod"] }
-  let(:version) { Factorix::Types::MODVersion.from_string("1.2.3") }
+  let(:version) { Factorix::MODVersion.from_string("1.2.3") }
 
   describe "#initialize" do
     it "creates a node with minimal parameters" do

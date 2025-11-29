@@ -104,7 +104,7 @@ module Factorix
             if mod_spec.include?("@")
               mod_name, version_str = mod_spec.split("@", 2)
               mod = Factorix::MOD[name: mod_name]
-              version = Types::MODVersion.from_string(version_str)
+              version = MODVersion.from_string(version_str)
               {mod:, version:}
             else
               mod = Factorix::MOD[name: mod_spec]

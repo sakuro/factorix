@@ -148,7 +148,7 @@ module Factorix
           # Fetch information for a single MOD
           #
           # @param mod_name [String] MOD name
-          # @param version [Types::MODVersion] Target version
+          # @param version [MODVersion] Target version
           # @return [Hash] {mod_name:, mod_info:, release:, version:}
           private def fetch_single_mod_info(mod_name, version)
             # Fetch full MOD info from portal
@@ -264,7 +264,7 @@ module Factorix
           # Update mod-settings.dat with startup settings from save file
           #
           # @param startup_settings [MODSettings::Section] Startup settings from save file
-          # @param game_version [Types::GameVersion] Game version from save file
+          # @param game_version [GameVersion] Game version from save file
           # @return [void]
           private def update_mod_settings(startup_settings, game_version)
             # Load existing settings or create new

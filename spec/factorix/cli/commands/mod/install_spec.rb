@@ -36,9 +36,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   # Test MODInfo
   let(:mod_info_a) do
     instance_double(
-      Factorix::Types::MODInfo,
+      Factorix::API::MODInfo,
       name: "mod-a",
-      category: Factorix::Types::Category.for("content"),
+      category: Factorix::API::Category.for("content"),
       releases: [release_a]
     )
   end
@@ -46,8 +46,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   # Test Release
   let(:release_a) do
     instance_double(
-      Factorix::Types::Release,
-      version: Factorix::Types::MODVersion.from_string("1.0.0"),
+      Factorix::API::Release,
+      version: Factorix::MODVersion.from_string("1.0.0"),
       file_name: "mod-a_1.0.0.zip",
       info_json: {dependencies: []},
       released_at: Time.now
@@ -91,7 +91,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         instance_double(
           Factorix::Dependency::Node,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           operation: :install
         )
       end
@@ -103,7 +103,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: Factorix::Types::Category.for("content")
+            category: Factorix::API::Category.for("content")
           }
         ]
 
@@ -135,7 +135,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         instance_double(
           Factorix::Dependency::Node,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           operation: :install
         )
       end
@@ -144,24 +144,24 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         instance_double(
           Factorix::Dependency::Node,
           mod: mod_b,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           operation: :install
         )
       end
 
       let(:mod_info_b) do
         instance_double(
-          Factorix::Types::MODInfo,
+          Factorix::API::MODInfo,
           name: "mod-b",
-          category: Factorix::Types::Category.for("internal"),
+          category: Factorix::API::Category.for("internal"),
           releases: [release_b]
         )
       end
 
       let(:release_b) do
         instance_double(
-          Factorix::Types::Release,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          Factorix::API::Release,
+          version: Factorix::MODVersion.from_string("1.0.0"),
           file_name: "mod-b_1.0.0.zip",
           info_json: {dependencies: []},
           released_at: Time.now
@@ -181,14 +181,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_b,
             release: release_b,
             output_path: mod_dir / "mod-b_1.0.0.zip",
-            category: Factorix::Types::Category.for("internal")
+            category: Factorix::API::Category.for("internal")
           },
           {
             mod: mod_a,
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: Factorix::Types::Category.for("content")
+            category: Factorix::API::Category.for("content")
           }
         ]
 
@@ -239,7 +239,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         instance_double(
           Factorix::Dependency::Node,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           operation: :install
         )
       end
@@ -251,7 +251,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
-            category: Factorix::Types::Category.for("content")
+            category: Factorix::API::Category.for("content")
           }
         ]
 

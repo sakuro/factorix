@@ -3,8 +3,8 @@
 RSpec.describe Factorix::Dependency::Edge do
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
   let(:mod_b) { Factorix::MOD[name: "mod-b"] }
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
   let(:requirement) do
     Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_0_0]
   end
@@ -102,7 +102,7 @@ RSpec.describe Factorix::Dependency::Edge do
       end
 
       it "returns false when version does not satisfy requirement" do
-        version_0_9_0 = Factorix::Types::MODVersion.from_string("0.9.0")
+        version_0_9_0 = Factorix::MODVersion.from_string("0.9.0")
         expect(edge.satisfied_by?(version_0_9_0)).to be false
       end
     end

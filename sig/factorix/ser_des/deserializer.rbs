@@ -29,9 +29,9 @@ module Factorix
 
       def read_double: () -> Float
 
-      def read_game_version: () -> Types::GameVersion
+      def read_game_version: () -> GameVersion
 
-      def read_mod_version: () -> Types::MODVersion
+      def read_mod_version: () -> MODVersion
 
       def read_long: () -> Integer
 

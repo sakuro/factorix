@@ -192,7 +192,7 @@ Class that wraps the API for more object-oriented handling.
 
 - **Responsibility**: Convert JSON to Types objects, domain logic
 - **Return value**: Data.define objects under Types
-- Return value example: `Portal#list_mods` → `Array[Types::MODInfo]`
+- Return value example: `Portal#list_mods` → `Array[API::MODInfo]`
 
 ### Design Policy
 
@@ -204,7 +204,7 @@ Class that wraps the API for more object-oriented handling.
 
 #### `Portal#list_mods(...)`
 
-Forwards all arguments to `MODPortalAPI#get_mods` and converts results to `Types::MODInfo` array.
+Forwards all arguments to `MODPortalAPI#get_mods` and converts results to `API::MODInfo` array.
 
 **Usage**:
 ```ruby
@@ -220,26 +220,26 @@ portal.list_mods("mod-a", "mod-b")
 portal.list_mods("mod-a", "mod-b", page_size: 10, sort: "updated_at", sort_order: "desc")
 ```
 
-**Return**: `Array[Types::MODInfo]` - Converts `response[:results]` to typed objects
+**Return**: `Array[API::MODInfo]` - Converts `response[:results]` to typed objects
 
 #### `Portal#get_mod(name)`
 
 Retrieves basic MOD information (Short API).
 
-**Return**: `Types::MODInfo` (without Detail)
+**Return**: `API::MODInfo` (without Detail)
 
 #### `Portal#get_mod_full(name)`
 
 Retrieves full MOD information including dependencies (Full API).
 
-**Return**: `Types::MODInfo` (with Detail if available)
+**Return**: `API::MODInfo` (with Detail if available)
 
 #### `Portal#download_mod(release, output)`
 
 Downloads a MOD file.
 
 **Parameters**:
-- `release`: `Types::Release` object with download_url
+- `release`: `API::Release` object with download_url
 - `output`: `Pathname` output path
 
 **Note**: Use `releases.max_by(&:released_at)` to get the latest release (order not guaranteed)

@@ -1,0 +1,24 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class GameVersion
+    include Comparable
+
+    attr_reader major: Integer
+    attr_reader minor: Integer
+    attr_reader patch: Integer
+    attr_reader build: Integer
+
+    def self.from_string: (String str) -> GameVersion
+
+    def self.from_numbers: (Integer major, Integer minor, Integer patch, ?Integer build) -> GameVersion
+
+    def to_s: () -> String
+
+    def to_a: () -> Array[Integer]
+
+    def <=>: (GameVersion other) -> Integer?
+  end
+end

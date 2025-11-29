@@ -29,7 +29,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     instance_double(
       Factorix::InstalledMOD,
       mod: mod_a,
-      version: Factorix::Types::MODVersion.from_string("1.0.0"),
+      version: Factorix::MODVersion.from_string("1.0.0"),
       path: Pathname("/fake/path/mods/mod-a_1.0.0"),
       form: Factorix::InstalledMOD::DIRECTORY_FORM
     )
@@ -158,7 +158,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           path: Pathname("/fake/path/mods/mod-a_1.0.0.zip"),
           form: Factorix::InstalledMOD::ZIP_FORM
         )
@@ -184,7 +184,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           path: Pathname("/fake/path/mods/mod-a_1.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -193,7 +193,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("2.0.0"),
+          version: Factorix::MODVersion.from_string("2.0.0"),
           path: Pathname("/fake/path/mods/mod-a_2.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -221,7 +221,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           path: Pathname("/fake/path/mods/mod-a_1.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -230,7 +230,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("2.0.0"),
+          version: Factorix::MODVersion.from_string("2.0.0"),
           path: Pathname("/fake/path/mods/mod-a_2.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -263,7 +263,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           path: Pathname("/fake/path/mods/mod-a_1.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -272,7 +272,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::InstalledMOD,
           mod: mod_a,
-          version: Factorix::Types::MODVersion.from_string("2.0.0"),
+          version: Factorix::MODVersion.from_string("2.0.0"),
           path: Pathname("/fake/path/mods/mod-a_2.0.0"),
           form: Factorix::InstalledMOD::DIRECTORY_FORM
         )
@@ -332,7 +332,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     end
 
     context "when game is running" do
-      let(:version) { Factorix::Types::MODVersion.from_string("1.0.0") }
+      let(:version) { Factorix::MODVersion.from_string("1.0.0") }
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false, version:) }
 
       before do

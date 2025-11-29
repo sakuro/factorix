@@ -6,12 +6,12 @@ module Factorix
   module Dependency
     class Node
       attr_reader mod: MOD
-      attr_reader version: Types::MODVersion
+      attr_reader version: MODVersion
       attr_accessor enabled: bool
       attr_accessor installed: bool
       attr_accessor operation: Symbol?
 
-      def initialize: (mod: MOD, version: Types::MODVersion, ?enabled: bool, ?installed: bool, ?operation: Symbol?) -> void
+      def initialize: (mod: MOD, version: MODVersion, ?enabled: bool, ?installed: bool, ?operation: Symbol?) -> void
 
       def enabled?: () -> bool
       def installed?: () -> bool

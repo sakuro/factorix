@@ -12,19 +12,19 @@ module Factorix
                      ?sort: ("name" | "created_at" | "updated_at")?,
                      ?sort_order: ("asc" | "desc")?,
                      ?version: ("0.13" | "0.14" | "0.15" | "0.16" | "0.17" | "0.18" | "1.0" | "1.1" | "2.0")?
-                   ) -> Array[Types::MODInfo]
+                   ) -> Array[API::MODInfo]
 
-    def get_mod: (String name) -> Types::MODInfo
+    def get_mod: (String name) -> API::MODInfo
 
-    def get_mod_full: (String name) -> Types::MODInfo
+    def get_mod_full: (String name) -> API::MODInfo
 
-    def download_mod: (Types::Release release, Pathname output) -> void
+    def download_mod: (API::Release release, Pathname output) -> void
 
     def upload_mod: (String mod_name, Pathname file_path, **untyped metadata) -> void
 
     def edit_mod: (String mod_name, **untyped metadata) -> void
 
-    def add_mod_image: (String mod_name, Pathname image_file) -> Types::Image
+    def add_mod_image: (String mod_name, Pathname image_file) -> API::Image
 
     def edit_mod_images: (String mod_name, Array[String] image_ids) -> void
 

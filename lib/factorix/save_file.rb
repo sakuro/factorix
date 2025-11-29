@@ -12,7 +12,7 @@ module Factorix
   # from Factorio save files (.zip format containing level.dat0 or level-init.dat).
   #
   # @!attribute [r] version
-  #   @return [Factorix::Types::GameVersion] Game version from the save file
+  #   @return [Factorix::GameVersion] Game version from the save file
   # @!attribute [r] mods
   #   @return [Hash<String, Factorix::MODState>] Hash of MOD name to MODState
   # @!attribute [r] startup_settings

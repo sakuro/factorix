@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::MODInfo do
+RSpec.describe Factorix::API::MODInfo do
   describe "#initialize" do
     context "with list API response (basic fields + latest_release)" do
       it "creates MODInfo with default values for missing fields" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test MOD",
           owner: "testuser",
@@ -28,7 +28,7 @@ RSpec.describe Factorix::Types::MODInfo do
         expect(mod_info.category.name).to eq("No category") # NO_CATEGORY
         expect(mod_info.score).to eq(0.0) # Default 0.0
         expect(mod_info.thumbnail).to be_nil
-        expect(mod_info.latest_release).to be_a(Factorix::Types::Release)
+        expect(mod_info.latest_release).to be_a(Factorix::API::Release)
         expect(mod_info.releases).to eq([]) # Default empty array
         expect(mod_info.detail).to be_nil
       end
@@ -36,7 +36,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with list API response including optional fields" do
       it "creates MODInfo with provided values" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test MOD",
           owner: "testuser",
@@ -64,13 +64,13 @@ RSpec.describe Factorix::Types::MODInfo do
         expect(mod_info.thumbnail).to be_a(URI::HTTPS)
         expect(mod_info.thumbnail.to_s).to eq("https://assets-mod.factorio.com/assets/.thumb.png")
         expect(mod_info.releases.size).to eq(1)
-        expect(mod_info.releases.first).to be_a(Factorix::Types::Release)
+        expect(mod_info.releases.first).to be_a(Factorix::API::Release)
       end
     end
 
     context "with Short API response" do
       it "creates MODInfo without detail" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "short-mod",
           title: "Short MOD",
           owner: "owner",
@@ -88,7 +88,7 @@ RSpec.describe Factorix::Types::MODInfo do
       end
 
       it "does not create detail when only some detail fields are present" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "partial-mod",
           title: "Partial MOD",
           owner: "owner",
@@ -103,7 +103,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with Full API response" do
       it "creates MODInfo with Detail" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "full-mod",
           title: "Full MOD",
           owner: "owner",
@@ -139,7 +139,7 @@ RSpec.describe Factorix::Types::MODInfo do
           deprecated: true
         ]
 
-        expect(mod_info.detail).to be_a(Factorix::Types::MODInfo::Detail)
+        expect(mod_info.detail).to be_a(Factorix::API::MODInfo::Detail)
         expect(mod_info.detail.changelog).to eq("Version 1.0.0:\n  - Initial release")
         expect(mod_info.detail.created_at).to be_a(Time)
         expect(mod_info.detail.updated_at).to be_a(Time)
@@ -150,11 +150,11 @@ RSpec.describe Factorix::Types::MODInfo do
         expect(mod_info.detail.homepage.to_s).to eq("https://example.com")
         expect(mod_info.detail.faq).to eq("Q: How to install?\nA: Just download it.")
         expect(mod_info.detail.tags.size).to eq(2)
-        expect(mod_info.detail.tags.first).to be_a(Factorix::Types::Tag)
+        expect(mod_info.detail.tags.first).to be_a(Factorix::API::Tag)
         expect(mod_info.detail.tags.map(&:value)).to eq(%w[combat logistics])
-        expect(mod_info.detail.license).to be_a(Factorix::Types::License)
+        expect(mod_info.detail.license).to be_a(Factorix::API::License)
         expect(mod_info.detail.images.size).to eq(1)
-        expect(mod_info.detail.images.first).to be_a(Factorix::Types::Image)
+        expect(mod_info.detail.images.first).to be_a(Factorix::API::Image)
         expect(mod_info.detail.deprecated).to be(true)
         expect(mod_info.detail.deprecated?).to be(true)
       end
@@ -162,7 +162,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with Full API response and missing optional Detail fields" do
       it "uses default values for missing fields" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "minimal-full",
           title: "Minimal Full",
           owner: "owner",
@@ -172,7 +172,7 @@ RSpec.describe Factorix::Types::MODInfo do
           homepage: "https://example.com"
         ]
 
-        expect(mod_info.detail).to be_a(Factorix::Types::MODInfo::Detail)
+        expect(mod_info.detail).to be_a(Factorix::API::MODInfo::Detail)
         expect(mod_info.detail.changelog).to eq("") # Default
         expect(mod_info.detail.last_highlighted_at).to be_nil # Optional
         expect(mod_info.detail.description).to eq("") # Default
@@ -188,7 +188,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
     context "with invalid homepage URL" do
       it "sets homepage to nil and logs a warning" do
-        mod_info = Factorix::Types::MODInfo[
+        mod_info = Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test",
           owner: "owner",
@@ -204,7 +204,7 @@ RSpec.describe Factorix::Types::MODInfo do
 
   describe "Detail#deprecated?" do
     it "returns true when deprecated is true" do
-      detail = Factorix::Types::MODInfo::Detail[
+      detail = Factorix::API::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
@@ -215,7 +215,7 @@ RSpec.describe Factorix::Types::MODInfo do
     end
 
     it "returns false when deprecated is false" do
-      detail = Factorix::Types::MODInfo::Detail[
+      detail = Factorix::API::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com",
@@ -226,7 +226,7 @@ RSpec.describe Factorix::Types::MODInfo do
     end
 
     it "returns false when deprecated is nil (default)" do
-      detail = Factorix::Types::MODInfo::Detail[
+      detail = Factorix::API::MODInfo::Detail[
         created_at: "2024-01-01T00:00:00.000000Z",
         updated_at: "2025-01-01T00:00:00.000000Z",
         homepage: "https://example.com"

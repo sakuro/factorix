@@ -3,13 +3,15 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
-    class Image
+  module API
+    class License
       attr_reader id: String
-      attr_reader thumbnail: URI::HTTPS
+      attr_reader name: String
+      attr_reader title: String
+      attr_reader description: String
       attr_reader url: URI::HTTPS
 
-      def initialize: (id: String, thumbnail: String, url: String) -> void
+      def initialize: (id: String, name: String, title: String, description: String, url: String) -> void
     end
   end
 end

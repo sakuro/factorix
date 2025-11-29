@@ -4,8 +4,8 @@ RSpec.describe Factorix::Dependency::Validator do
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
   let(:mod_b) { Factorix::MOD[name: "mod-b"] }
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
   describe "#validate" do
     context "with valid graph" do

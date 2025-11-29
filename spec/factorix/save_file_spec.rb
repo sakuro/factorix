@@ -14,7 +14,7 @@ RSpec.describe Factorix::SaveFile do
       end
 
       it "extracts game version" do
-        expect(save_data.version).to be_a(Factorix::Types::GameVersion)
+        expect(save_data.version).to be_a(Factorix::GameVersion)
         expect(save_data.version.to_s).to eq("2.0.72")
       end
 
@@ -36,7 +36,7 @@ RSpec.describe Factorix::SaveFile do
 
       it "includes MOD versions" do
         base_mod = save_data.mods["base"]
-        expect(base_mod.version).to be_a(Factorix::Types::MODVersion)
+        expect(base_mod.version).to be_a(Factorix::MODVersion)
         expect(base_mod.version.to_s).to eq("2.0.72")
       end
 

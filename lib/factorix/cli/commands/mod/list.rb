@@ -37,13 +37,13 @@ module Factorix
           #   class MODInfo
           #     # @return [String] MOD name
           #     attr_reader :name
-          #     # @return [Types::MODVersion] MOD version
+          #     # @return [MODVersion] MOD version
           #     attr_reader :version
           #     # @return [Boolean] enabled status
           #     attr_reader :enabled
           #     # @return [String, nil] error message if any
           #     attr_reader :error
-          #     # @return [Types::MODVersion, nil] latest version available on portal
+          #     # @return [MODVersion, nil] latest version available on portal
           #     attr_reader :latest_version
           #   end
           class MODInfo
@@ -160,7 +160,7 @@ module Factorix
           # @param mod [MOD] the MOD
           # @param versions [Array<InstalledMOD>] installed versions of the MOD
           # @param mod_list [MODList] MOD list with enabled status and version
-          # @return [Types::MODVersion] the version to display
+          # @return [MODVersion] the version to display
           private def determine_display_version(mod, versions, mod_list)
             if mod_list.exist?(mod)
               specified_version = mod_list.version(mod)
@@ -238,7 +238,7 @@ module Factorix
           # @return [MODInfo] MOD info with latest version
           private def fetch_latest_version_for_mod(info)
             portal_info = mod_portal_api.get_mod(info.name)
-            latest = portal_info[:releases]&.map {|r| Types::MODVersion.from_string(r[:version]) }&.max
+            latest = portal_info[:releases]&.map {|r| MODVersion.from_string(r[:version]) }&.max
             MODInfo.new(
               name: info.name,
               version: info.version,

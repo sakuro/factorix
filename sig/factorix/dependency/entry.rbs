@@ -22,7 +22,7 @@ module Factorix
       def incompatible?: () -> bool
       def load_neutral?: () -> bool
 
-      def satisfied_by?: (Types::MODVersion version) -> bool
+      def satisfied_by?: (MODVersion version) -> bool
 
       def to_s: () -> String
     end

@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::MODVersion do
+RSpec.describe Factorix::MODVersion do
   describe ".from_string" do
     it "creates a version from a string" do
-      version = Factorix::Types::MODVersion.from_string("1.2.3")
-      expect(version).to be_an_instance_of(Factorix::Types::MODVersion)
+      version = Factorix::MODVersion.from_string("1.2.3")
+      expect(version).to be_an_instance_of(Factorix::MODVersion)
       expect(version.major).to eq(1)
       expect(version.minor).to eq(2)
       expect(version.patch).to eq(3)
     end
 
     it "accepts 2-part version strings (X.Y)" do
-      version = Factorix::Types::MODVersion.from_string("1.2")
+      version = Factorix::MODVersion.from_string("1.2")
       expect(version.major).to eq(1)
       expect(version.minor).to eq(2)
       expect(version.patch).to eq(0)
@@ -20,23 +20,23 @@ RSpec.describe Factorix::Types::MODVersion do
 
     it "raises ArgumentError for invalid version strings" do
       aggregate_failures "invalid version strings" do
-        expect { Factorix::Types::MODVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
-        expect { Factorix::Types::MODVersion.from_string("a.b.c") }.to raise_error(ArgumentError)
-        expect { Factorix::Types::MODVersion.from_string("1") }.to raise_error(ArgumentError)
+        expect { Factorix::MODVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
+        expect { Factorix::MODVersion.from_string("a.b.c") }.to raise_error(ArgumentError)
+        expect { Factorix::MODVersion.from_string("1") }.to raise_error(ArgumentError)
       end
     end
 
     it "raises RangeError for component out of range" do
-      expect { Factorix::Types::MODVersion.from_string("256.0.0") }.to raise_error(RangeError, /major/)
-      expect { Factorix::Types::MODVersion.from_string("0.256.0") }.to raise_error(RangeError, /minor/)
-      expect { Factorix::Types::MODVersion.from_string("0.0.256") }.to raise_error(RangeError, /patch/)
+      expect { Factorix::MODVersion.from_string("256.0.0") }.to raise_error(RangeError, /major/)
+      expect { Factorix::MODVersion.from_string("0.256.0") }.to raise_error(RangeError, /minor/)
+      expect { Factorix::MODVersion.from_string("0.0.256") }.to raise_error(RangeError, /patch/)
     end
   end
 
   describe ".from_numbers" do
     it "creates a version from integers" do
-      version = Factorix::Types::MODVersion.from_numbers(1, 2, 3)
-      expect(version).to be_an_instance_of(Factorix::Types::MODVersion)
+      version = Factorix::MODVersion.from_numbers(1, 2, 3)
+      expect(version).to be_an_instance_of(Factorix::MODVersion)
       expect(version.major).to eq(1)
       expect(version.minor).to eq(2)
       expect(version.patch).to eq(3)
@@ -44,10 +44,10 @@ RSpec.describe Factorix::Types::MODVersion do
 
     it "raises RangeError for integers out of range" do
       aggregate_failures "invalid integers" do
-        expect { Factorix::Types::MODVersion.from_numbers(256, 0, 0) }.to raise_error(RangeError, /major/)
-        expect { Factorix::Types::MODVersion.from_numbers(0, 256, 0) }.to raise_error(RangeError, /minor/)
-        expect { Factorix::Types::MODVersion.from_numbers(0, 0, 256) }.to raise_error(RangeError, /patch/)
-        expect { Factorix::Types::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::MODVersion.from_numbers(256, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::MODVersion.from_numbers(0, 256, 0) }.to raise_error(RangeError, /minor/)
+        expect { Factorix::MODVersion.from_numbers(0, 0, 256) }.to raise_error(RangeError, /patch/)
+        expect { Factorix::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(RangeError, /major/)
       end
     end
   end
@@ -55,39 +55,39 @@ RSpec.describe Factorix::Types::MODVersion do
   describe "private constructors" do
     it "does not allow direct instantiation via new" do
       expect {
-        Factorix::Types::MODVersion.new(major: 1, minor: 2, patch: 3)
+        Factorix::MODVersion.new(major: 1, minor: 2, patch: 3)
       }.to raise_error(NoMethodError, /private method/)
     end
 
     it "does not allow direct instantiation via []" do
       expect {
-        Factorix::Types::MODVersion[major: 1, minor: 2, patch: 3]
+        Factorix::MODVersion[major: 1, minor: 2, patch: 3]
       }.to raise_error(NoMethodError, /private method/)
     end
   end
 
   describe "#to_s" do
     it "returns a string representation" do
-      expect(Factorix::Types::MODVersion.from_numbers(1, 2, 3).to_s).to eq("1.2.3")
+      expect(Factorix::MODVersion.from_numbers(1, 2, 3).to_s).to eq("1.2.3")
     end
   end
 
   describe "#to_a" do
     it "returns an array of integers" do
-      expect(Factorix::Types::MODVersion.from_numbers(1, 2, 3).to_a).to eq([1, 2, 3])
+      expect(Factorix::MODVersion.from_numbers(1, 2, 3).to_a).to eq([1, 2, 3])
     end
 
     it "returns a frozen array" do
-      expect(Factorix::Types::MODVersion.from_numbers(1, 2, 3).to_a).to be_frozen
+      expect(Factorix::MODVersion.from_numbers(1, 2, 3).to_a).to be_frozen
     end
   end
 
   describe "#<=>" do
-    let(:version_123) { Factorix::Types::MODVersion.from_numbers(1, 2, 3) }
-    let(:version_124) { Factorix::Types::MODVersion.from_numbers(1, 2, 4) }
-    let(:version_130) { Factorix::Types::MODVersion.from_numbers(1, 3, 0) }
-    let(:version_200) { Factorix::Types::MODVersion.from_numbers(2, 0, 0) }
-    let(:version_123_dup) { Factorix::Types::MODVersion.from_numbers(1, 2, 3) }
+    let(:version_123) { Factorix::MODVersion.from_numbers(1, 2, 3) }
+    let(:version_124) { Factorix::MODVersion.from_numbers(1, 2, 4) }
+    let(:version_130) { Factorix::MODVersion.from_numbers(1, 3, 0) }
+    let(:version_200) { Factorix::MODVersion.from_numbers(2, 0, 0) }
+    let(:version_123_dup) { Factorix::MODVersion.from_numbers(1, 2, 3) }
 
     it "considers equal versions as equal" do
       expect(version_123 <=> version_123_dup).to eq(0)

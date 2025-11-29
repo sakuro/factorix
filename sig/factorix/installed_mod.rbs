@@ -20,10 +20,10 @@ module Factorix
                  | () -> Enumerator[InstalledMOD, Array[InstalledMOD]]
 
     attr_reader mod: MOD
-    attr_reader version: Types::MODVersion
+    attr_reader version: MODVersion
     attr_reader form: Symbol
     attr_reader path: Pathname
-    attr_reader info: Types::InfoJSON
+    attr_reader info: InfoJSON
 
     def <=>: (InstalledMOD other) -> Integer?
 

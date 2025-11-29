@@ -46,20 +46,19 @@ Factorix/
 ├── API/
 │   ├── MODPortalAPI           # List/search/full MOD info (no auth)
 │   ├── MODDownloadAPI         # Download MODs (username + token)
-│   └── MODManagementAPI       # Upload/edit MODs (API key)
-│
-├── Portal                     # Object-oriented wrapper for API
-│
-├── Types/                     # Value objects using Data.define
+│   ├── MODManagementAPI       # Upload/edit MODs (API key)
 │   ├── MODInfo                # Unified info for all API endpoints
 │   ├── Release                # MOD release info
 │   ├── Image                  # MOD screenshot/image
 │   ├── License                # License info
-│   ├── InfoJson               # info.json metadata
 │   ├── Category               # MOD category (flyweight pattern)
-│   ├── Tag                    # MOD tags (flyweight pattern)
-│   ├── MODVersion             # MOD version (major.minor.patch)
-│   └── GameVersion            # Game version (major.minor.patch-build)
+│   └── Tag                    # MOD tags (flyweight pattern)
+│
+├── Portal                     # Object-oriented wrapper for API
+│
+├── MODVersion                 # MOD version (major.minor.patch)
+├── GameVersion                # Game version (major.minor.patch-build)
+├── InfoJSON                   # info.json metadata
 │
 ├── HTTP/                      # HTTP layer with decorators
 │   ├── Client                 # Base HTTP client (Net::HTTP wrapper)
@@ -141,16 +140,21 @@ loader.eager_load
 
 - `mod.rb` → `Factorix::MOD`
 - `mod_list.rb` → `Factorix::MODList`
-- `types/mod_info.rb` → `Factorix::Types::MODInfo` (with nested `MODInfo::Detail`)
-- `types/mod_version.rb` → `Factorix::Types::MODVersion`
-- `types/game_version.rb` → `Factorix::Types::GameVersion`
-- `types/category.rb` → `Factorix::Types::Category`
-- `types/release.rb` → `Factorix::Types::Release`
-- `types/image.rb` → `Factorix::Types::Image`
-- `types/license.rb` → `Factorix::Types::License`
+- `mod_version.rb` → `Factorix::MODVersion`
+- `game_version.rb` → `Factorix::GameVersion`
+- `info_json.rb` → `Factorix::InfoJSON`
+- `api/mod_info.rb` → `Factorix::API::MODInfo` (with nested `MODInfo::Detail`)
+- `api/category.rb` → `Factorix::API::Category`
+- `api/release.rb` → `Factorix::API::Release`
+- `api/image.rb` → `Factorix::API::Image`
+- `api/license.rb` → `Factorix::API::License`
+- `api/tag.rb` → `Factorix::API::Tag`
 - `api/mod_portal_api.rb` → `Factorix::API::MODPortalAPI`
 - `api/mod_download_api.rb` → `Factorix::API::MODDownloadAPI`
 - `portal.rb` → `Factorix::Portal`
+- `dependency/mod_version_requirement.rb` → `Factorix::Dependency::MODVersionRequirement`
+- `ser_des/signed_integer.rb` → `Factorix::SerDes::SignedInteger`
+- `ser_des/unsigned_integer.rb` → `Factorix::SerDes::UnsignedInteger`
 - `transfer/downloader.rb` → `Factorix::Transfer::Downloader`
 - `transfer/uploader.rb` → `Factorix::Transfer::Uploader`
 - `http/retry_strategy.rb` → `Factorix::HTTP::RetryStrategy`

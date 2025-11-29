@@ -50,7 +50,7 @@ module Factorix
       #
       # @param message [String] Suggestion message
       # @param mod [Factorix::MOD] Related MOD
-      # @param version [Factorix::Types::MODVersion] Suggested version
+      # @param version [Factorix::MODVersion] Suggested version
       # @return [void]
       def add_suggestion(message:, mod:, version:) = @suggestions << Suggestion.new(message:, mod:, version:)
 

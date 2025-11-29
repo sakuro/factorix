@@ -7,11 +7,11 @@ module Factorix
   class MODState < Data
     attr_reader enabled: bool
 
-    attr_reader version: Types::MODVersion?
+    attr_reader version: MODVersion?
 
-    def initialize: (enabled: bool, ?version: Types::MODVersion?) -> void
+    def initialize: (enabled: bool, ?version: MODVersion?) -> void
 
-    def self.[]: (enabled: bool, ?version: Types::MODVersion?) -> MODState
+    def self.[]: (enabled: bool, ?version: MODVersion?) -> MODState
 
     def enabled?: () -> bool
   end

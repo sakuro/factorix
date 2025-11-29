@@ -21,13 +21,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   let(:mod_list_path) { Pathname("/tmp/mod-list.json") }
   let(:mod_settings_path) { Pathname("/tmp/mod-settings.dat") }
 
-  let(:game_version) { Factorix::Types::GameVersion.from_string("2.0.72") }
-  let(:base_mod_version) { Factorix::Types::MODVersion.from_string("2.0.72") }
+  let(:game_version) { Factorix::GameVersion.from_string("2.0.72") }
+  let(:base_mod_version) { Factorix::MODVersion.from_string("2.0.72") }
 
   let(:save_data) do
     mods = {
       "base" => Factorix::MODState.new(enabled: true, version: base_mod_version),
-      "test-mod" => Factorix::MODState.new(enabled: true, version: Factorix::Types::MODVersion.from_string("1.0.0"))
+      "test-mod" => Factorix::MODState.new(enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
     }
     startup_settings = Factorix::MODSettings::Section.new("startup")
     Factorix::SaveFile.new(version: game_version, mods:, startup_settings:)
@@ -67,7 +67,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   describe "#call" do
     context "when all MODs from save file are already installed" do
       let(:base_info) do
-        Factorix::Types::InfoJSON.new(
+        Factorix::InfoJSON.new(
           name: "base",
           version: base_mod_version,
           title: "Base MOD",
@@ -79,9 +79,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
       end
 
       let(:test_mod_info) do
-        Factorix::Types::InfoJSON.new(
+        Factorix::InfoJSON.new(
           name: "test-mod",
-          version: Factorix::Types::MODVersion.from_string("1.0.0"),
+          version: Factorix::MODVersion.from_string("1.0.0"),
           title: "Test MOD",
           author: "Test Author",
           description: "Test description",
@@ -101,7 +101,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
           ),
           Factorix::InstalledMOD.new(
             mod: Factorix::MOD[name: "test-mod"],
-            version: Factorix::Types::MODVersion.from_string("1.0.0"),
+            version: Factorix::MODVersion.from_string("1.0.0"),
             form: Factorix::InstalledMOD::ZIP_FORM,
             path: Pathname("/path/to/test-mod_1.0.0.zip"),
             info: test_mod_info
@@ -111,7 +111,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
       before do
         mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
-        mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::Types::MODVersion.from_string("1.0.0"))
+        mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
       end
 
       it "updates mod-list.json" do

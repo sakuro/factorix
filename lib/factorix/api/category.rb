@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Factorix
-  module Types
+  module API
     Category = Data.define(:value, :name, :description)
 
     # Category object from MOD Portal API

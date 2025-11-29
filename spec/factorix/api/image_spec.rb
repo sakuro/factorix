@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::Image do
+RSpec.describe Factorix::API::Image do
   describe "#initialize" do
     it "creates an Image with URI objects for thumbnail and url" do
-      image = Factorix::Types::Image[
+      image = Factorix::API::Image[
         id: "12345",
         thumbnail: "https://assets-mod.factorio.com/assets/12345/thumb.png",
         url: "https://assets-mod.factorio.com/assets/12345/full.png"
@@ -17,7 +17,7 @@ RSpec.describe Factorix::Types::Image do
     end
 
     it "handles different URL formats" do
-      image = Factorix::Types::Image[
+      image = Factorix::API::Image[
         id: "abc",
         thumbnail: "https://example.com/thumb.jpg",
         url: "https://example.com/full.jpg"

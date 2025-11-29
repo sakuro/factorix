@@ -51,7 +51,7 @@ Layout/LineLength:
 
 Style/StaticClass:
   Exclude:
-    - lib/factorix/types/info_json.rb
+    - lib/factorix/info_json.rb
 
 Metrics/AbcSize:
   Enabled: false
@@ -71,7 +71,7 @@ Metrics/BlockLength:
 
 Metrics/PerceivedComplexity:
   Exclude:
-    - lib/factorix/types/mod_info.rb
+    - lib/factorix/api/mod_info.rb
     - lib/factorix/dependency/parser.rb
     - lib/factorix/dependency/list.rb
     - lib/factorix/dependency/resolver.rb
@@ -122,8 +122,8 @@ RSpec/SubjectStub:
 
 Style/IpAddresses:
   Exclude:
-    - spec/factorix/types/game_version_spec.rb
-    - spec/factorix/types/mod_version_spec.rb
+    - spec/factorix/game_version_spec.rb
+    - spec/factorix/mod_version_spec.rb
 
 ThreadSafety/NewThread:
   Exclude:

@@ -62,7 +62,7 @@ module Factorix
           # @return [String] MOD name from info.json
           # @raise [ArgumentError] if info.json not found or invalid
           private def extract_mod_name(file_path)
-            info = Types::InfoJSON.from_zip(file_path)
+            info = InfoJSON.from_zip(file_path)
             info.name
           end
 

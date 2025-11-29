@@ -9,7 +9,7 @@ module Factorix
     # :disable, :install, :uninstall).
     class Node
       attr_reader :mod          # MOD object (identifier)
-      attr_reader :version      # Types::MODVersion
+      attr_reader :version      # MODVersion
       attr_accessor :enabled    # Boolean - is the MOD enabled in mod-list.json?
       attr_accessor :installed  # Boolean - is the MOD installed in mod_dir?
       attr_accessor :operation  # Symbol - planned operation (:enable, :disable, :install, :uninstall, nil)
@@ -17,7 +17,7 @@ module Factorix
       # Create a new MOD node
       #
       # @param mod [Factorix::MOD] The MOD identifier
-      # @param version [Factorix::Types::MODVersion] The MOD version
+      # @param version [Factorix::MODVersion] The MOD version
       # @param enabled [Boolean] Whether the MOD is enabled (default: false)
       # @param installed [Boolean] Whether the MOD is installed (default: false)
       # @param operation [Symbol, nil] Planned operation (default: nil)

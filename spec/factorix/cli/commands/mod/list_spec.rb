@@ -22,9 +22,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
   let(:custom_mod) { Factorix::MOD[name: "custom-mod"] }
   let(:another_mod) { Factorix::MOD[name: "another-mod"] }
 
-  let(:version_2_0_28) { Factorix::Types::MODVersion.from_string("2.0.28") }
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_0_5_0) { Factorix::Types::MODVersion.from_string("0.5.0") }
+  let(:version_2_0_28) { Factorix::MODVersion.from_string("2.0.28") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_0_5_0) { Factorix::MODVersion.from_string("0.5.0") }
 
   let(:base_installed) do
     instance_double(Factorix::InstalledMOD, mod: base_mod, version: version_2_0_28)
@@ -180,7 +180,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
     end
 
     context "with --outdated option" do
-      let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+      let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
       before do
         allow(Factorix::InstalledMOD).to receive(:all).and_return([custom_installed, another_installed])

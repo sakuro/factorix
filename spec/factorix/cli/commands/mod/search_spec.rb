@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   let(:command) { Factorix::CLI::Commands::MOD::Search.new(portal:) }
 
   let(:mod_info) do
-    Factorix::Types::MODInfo.new(
+    Factorix::API::MODInfo.new(
       name: "test-mod",
       title: "Test MOD",
       owner: "test-owner",

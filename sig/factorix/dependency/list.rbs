@@ -45,16 +45,16 @@ module Factorix
       def size: () -> Integer
 
       # Check if all required dependencies are satisfied
-      def satisfied_by?: (Hash[String, Types::MODVersion] available_mods) -> bool
+      def satisfied_by?: (Hash[String, MODVersion] available_mods) -> bool
 
       # Get list of incompatible MODs that are present
-      def conflicts_with?: (Hash[String, Types::MODVersion] available_mods) -> Array[String]
+      def conflicts_with?: (Hash[String, MODVersion] available_mods) -> Array[String]
 
       # Get list of missing required dependencies
-      def missing_required: (Hash[String, Types::MODVersion] available_mods) -> Array[String]
+      def missing_required: (Hash[String, MODVersion] available_mods) -> Array[String]
 
       # Get list of dependencies with unsatisfied version requirements
-      def unsatisfied_versions: (Hash[String, Types::MODVersion] available_mods) -> Hash[String, Hash[Symbol, String]]
+      def unsatisfied_versions: (Hash[String, MODVersion] available_mods) -> Hash[String, Hash[Symbol, String]]
 
       # Detect circular dependencies in a collection of MOD dependencies
       def self.detect_circular: (Hash[String, List] mod_dependencies_map) -> Array[Array[String]]

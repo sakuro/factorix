@@ -4,7 +4,7 @@ RSpec.describe Factorix::Dependency::Graph do
   let(:mod_a) { Factorix::MOD[name: "mod-a"] }
   let(:mod_b) { Factorix::MOD[name: "mod-b"] }
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
-  let(:version) { Factorix::Types::MODVersion.from_string("1.0.0") }
+  let(:version) { Factorix::MODVersion.from_string("1.0.0") }
 
   let(:node_a) { Factorix::Dependency::Node.new(mod: mod_a, version:) }
   let(:node_b) { Factorix::Dependency::Node.new(mod: mod_b, version:) }

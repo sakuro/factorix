@@ -21,7 +21,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
       image_file = File.join(tmpdir, "test.png")
       FileUtils.touch(image_file)
 
-      image = Factorix::Types::Image[
+      image = Factorix::API::Image[
         id: "abc123",
         url: "https://example.com/image.png",
         thumbnail: "https://example.com/thumb.png"

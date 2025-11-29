@@ -183,7 +183,7 @@ module Factorix
 
           # Extract required dependencies from a release
           #
-          # @param release [Types::Release] Release object
+          # @param release [API::Release] Release object
           # @return [Array<Hash>] Array of {mod_name:, version_requirement:, required_by:}
           private def extract_required_dependencies(release)
             info_json = release.info_json

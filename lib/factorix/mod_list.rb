@@ -22,7 +22,7 @@ module Factorix
       raw_data = JSON.parse(path.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
         mod = MOD[name: entry[:name]]
-        version = entry[:version] ? Types::MODVersion.from_string(entry[:version]) : nil
+        version = entry[:version] ? MODVersion.from_string(entry[:version]) : nil
         state = MODState[enabled: entry[:enabled], version:]
 
         # Validate that base MOD is not disabled
@@ -96,7 +96,7 @@ module Factorix
     #
     # @param mod [Factorix::MOD] the MOD to add
     # @param enabled [Boolean] the enabled status. Default to true
-    # @param version [Factorix::Types::MODVersion, nil] the version of the MOD. Default to nil
+    # @param version [Factorix::MODVersion, nil] the version of the MOD. Default to nil
     # @return [void]
     # @raise [ArgumentError] if the MOD is the base MOD and the enabled status is false
     def add(mod, enabled: true, version: nil)
@@ -137,7 +137,7 @@ module Factorix
     # Get the version of the MOD
     #
     # @param mod [Factorix::MOD] the MOD to check
-    # @return [Factorix::Types::MODVersion, nil] the version of the MOD, or nil if not specified
+    # @return [Factorix::MODVersion, nil] the version of the MOD, or nil if not specified
     # @raise [Factorix::MODList::MODNotInListError] if the MOD is not in the list
     def version(mod)
       raise MODNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)

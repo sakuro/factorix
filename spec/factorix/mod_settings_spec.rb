@@ -6,7 +6,7 @@ RSpec.describe Factorix::MODSettings do
   let(:settings_path) { Pathname.new("spec/fixtures/mod-settings/settings.dat") }
   let(:settings) { Factorix::MODSettings.load(settings_path) }
   let(:deserializer) { instance_double(Factorix::SerDes::Deserializer, eof?: true) }
-  let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.110-0") }
+  let(:game_version) { Factorix::GameVersion.from_string("1.1.110-0") }
   let(:raw_settings) do
     {
       "startup" => {

@@ -22,7 +22,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     it "parses MOD name with specific version" do
       result = instance.parse_mod_spec("test-mod@1.2.3")
       expect(result[:mod].name).to eq("test-mod")
-      expect(result[:version]).to eq(Factorix::Types::MODVersion.from_string("1.2.3"))
+      expect(result[:version]).to eq(Factorix::MODVersion.from_string("1.2.3"))
     end
 
     it "parses MOD name with @latest as latest" do
@@ -45,7 +45,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
   describe "#find_release" do
     let(:release_v1) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v1",
         file_name: "test-mod_1.0.0.zip",
         info_json: {},
@@ -56,7 +56,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     end
 
     let(:release_v2) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v2",
         file_name: "test-mod_2.0.0.zip",
         info_json: {},
@@ -68,7 +68,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
     let(:mod_info) do
       instance_double(
-        Factorix::Types::MODInfo,
+        Factorix::API::MODInfo,
         releases: [release_v1, release_v2]
       )
     end
@@ -82,13 +82,13 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
     context "when version is a specific MODVersion" do
       it "returns the matching release" do
-        version = Factorix::Types::MODVersion.from_string("1.0.0")
+        version = Factorix::MODVersion.from_string("1.0.0")
         result = instance.find_release(mod_info, version)
         expect(result).to eq(release_v1)
       end
 
       it "returns nil when no release matches" do
-        version = Factorix::Types::MODVersion.from_string("3.0.0")
+        version = Factorix::MODVersion.from_string("3.0.0")
         result = instance.find_release(mod_info, version)
         expect(result).to be_nil
       end
@@ -97,7 +97,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
   describe "#find_compatible_release" do
     let(:release_v1) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v1",
         file_name: "test-mod_1.0.0.zip",
         info_json: {},
@@ -108,7 +108,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     end
 
     let(:release_v2) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v2",
         file_name: "test-mod_2.0.0.zip",
         info_json: {},
@@ -119,7 +119,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     end
 
     let(:release_v3) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v3",
         file_name: "test-mod_3.0.0.zip",
         info_json: {},
@@ -131,7 +131,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
     let(:mod_info) do
       instance_double(
-        Factorix::Types::MODInfo,
+        Factorix::API::MODInfo,
         releases: [release_v1, release_v2, release_v3]
       )
     end
@@ -147,7 +147,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       it "returns the latest compatible release" do
         requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: ">=",
-          version: Factorix::Types::MODVersion.from_string("2.0.0")
+          version: Factorix::MODVersion.from_string("2.0.0")
         )
         result = instance.find_compatible_release(mod_info, requirement)
         expect(result).to eq(release_v3)
@@ -156,7 +156,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       it "returns the matching release when only one matches" do
         requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: "=",
-          version: Factorix::Types::MODVersion.from_string("1.0.0")
+          version: Factorix::MODVersion.from_string("1.0.0")
         )
         result = instance.find_compatible_release(mod_info, requirement)
         expect(result).to eq(release_v1)
@@ -165,7 +165,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       it "returns nil when no release matches" do
         requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: ">=",
-          version: Factorix::Types::MODVersion.from_string("4.0.0")
+          version: Factorix::MODVersion.from_string("4.0.0")
         )
         result = instance.find_compatible_release(mod_info, requirement)
         expect(result).to be_nil
@@ -177,7 +177,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     let(:output_dir) { Pathname("/mods") }
 
     let(:release) do
-      Factorix::Types::Release.new(
+      Factorix::API::Release.new(
         download_url: "/download/test-mod/v1",
         file_name: "test-mod_1.0.0.zip",
         info_json: {},
@@ -188,7 +188,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
     end
 
     let(:mod_info) do
-      instance_double(Factorix::Types::MODInfo, category: "utilities")
+      instance_double(Factorix::API::MODInfo, category: "utilities")
     end
 
     context "when info has :mod key" do

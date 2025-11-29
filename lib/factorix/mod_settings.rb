@@ -118,7 +118,7 @@ module Factorix
     # Load settings from IO object
     #
     # @param io [IO] IO object to read from
-    # @return [Array<Factorix::Types::GameVersion, Hash<String, Section>>] Game version and hash of sections
+    # @return [Array<Factorix::GameVersion, Hash<String, Section>>] Game version and hash of sections
     def self.load_settings_from_io(io)
       deserializer = SerDes::Deserializer.new(io)
 
@@ -198,7 +198,7 @@ module Factorix
 
     # Create a new MODSettings instance
     #
-    # @param game_version [Factorix::Types::GameVersion] Game version
+    # @param game_version [Factorix::GameVersion] Game version
     # @param sections [Hash<String, Section>] Hash of section name to Section objects
     def initialize(game_version, sections)
       @game_version = game_version
@@ -207,7 +207,7 @@ module Factorix
 
     # Get the game version
     #
-    # @return [Factorix::Types::GameVersion] Game version
+    # @return [Factorix::GameVersion] Game version
     attr_reader :game_version
 
     # Get a section by name from the MOD settings

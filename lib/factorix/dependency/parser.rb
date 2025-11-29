@@ -124,7 +124,7 @@ module Factorix
         operator = requirement_data[:operator]
         version_string = requirement_data[:version]
 
-        version = Types::MODVersion.from_string(version_string)
+        version = MODVersion.from_string(version_string)
         MODVersionRequirement[operator:, version:]
       rescue RangeError => e
         # Skip version requirements with out-of-range version components

@@ -197,7 +197,7 @@ module Factorix
 
       # Check if all required dependencies are satisfied
       #
-      # @param available_mods [Hash<String, Types::MODVersion>] Available MODs and their versions
+      # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Boolean] true if all required dependencies are satisfied
       def satisfied_by?(available_mods)
         required.all? {|dep|
@@ -208,7 +208,7 @@ module Factorix
 
       # Get list of incompatible MODs that are present
       #
-      # @param available_mods [Hash<String, Types::MODVersion>] Available MODs and their versions
+      # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Array<String>] Array of conflicting MOD names
       def conflicts_with?(available_mods)
         incompatible.filter_map {|dep|
@@ -218,7 +218,7 @@ module Factorix
 
       # Get list of missing required dependencies
       #
-      # @param available_mods [Hash<String, Types::MODVersion>] Available MODs and their versions
+      # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Array<String>] Array of missing MOD names
       def missing_required(available_mods)
         required.filter_map {|dep|
@@ -228,7 +228,7 @@ module Factorix
 
       # Get list of dependencies with unsatisfied version requirements
       #
-      # @param available_mods [Hash<String, Types::MODVersion>] Available MODs and their versions
+      # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Hash<String, Hash<Symbol, String>>] Hash of {mod_name => {required: ..., actual: ...}}
       def unsatisfied_versions(available_mods)
         result = {}

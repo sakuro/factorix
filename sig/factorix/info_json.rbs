@@ -1,0 +1,19 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class InfoJSON < Data
+    attr_reader name: String
+    attr_reader version: MODVersion
+    attr_reader title: String
+    attr_reader author: String
+    attr_reader description: String
+    attr_reader factorio_version: String?
+    attr_reader dependencies: Array[Factorix::Dependency::Entry]
+
+    def self.from_json: (String json_string) -> InfoJSON
+    def self.from_hash: (Hash[String, untyped] data) -> InfoJSON
+    def self.from_zip: (Pathname | String zip_path) -> InfoJSON
+  end
+end

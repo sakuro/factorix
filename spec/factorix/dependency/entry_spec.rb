@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Dependency::Entry do
-  let(:version_1_2_0) { Factorix::Types::MODVersion.from_string("1.2.0") }
-  let(:version_1_3_0) { Factorix::Types::MODVersion.from_string("1.3.0") }
+  let(:version_1_2_0) { Factorix::MODVersion.from_string("1.2.0") }
+  let(:version_1_3_0) { Factorix::MODVersion.from_string("1.3.0") }
   let(:requirement) do
     Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_2_0]
   end
@@ -135,7 +135,7 @@ RSpec.describe Factorix::Dependency::Entry do
       end
 
       it "returns false when version does not satisfy requirement" do
-        version_1_0_0 = Factorix::Types::MODVersion.from_string("1.0.0")
+        version_1_0_0 = Factorix::MODVersion.from_string("1.0.0")
         expect(dep.satisfied_by?(version_1_0_0)).to be(false)
       end
     end

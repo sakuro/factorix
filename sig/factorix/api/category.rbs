@@ -3,15 +3,13 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
-    class License
-      attr_reader id: String
+  module API
+    class Category
+      attr_reader value: String
       attr_reader name: String
-      attr_reader title: String
       attr_reader description: String
-      attr_reader url: URI::HTTPS
 
-      def initialize: (id: String, name: String, title: String, description: String, url: String) -> void
+      def self.for: (String value) -> Category
     end
   end
 end

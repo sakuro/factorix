@@ -44,10 +44,10 @@ RSpec.describe Factorix::Portal do
 
       expect(mods).to be_an(Array)
       expect(mods.size).to eq(2)
-      expect(mods.first).to be_a(Factorix::Types::MODInfo)
+      expect(mods.first).to be_a(Factorix::API::MODInfo)
       expect(mods.first.name).to eq("mod-a")
       expect(mods.first.title).to eq("MOD A")
-      expect(mods.first.latest_release).to be_a(Factorix::Types::Release)
+      expect(mods.first.latest_release).to be_a(Factorix::API::Release)
     end
   end
 
@@ -76,7 +76,7 @@ RSpec.describe Factorix::Portal do
 
       mod = portal.get_mod("test-mod")
 
-      expect(mod).to be_a(Factorix::Types::MODInfo)
+      expect(mod).to be_a(Factorix::API::MODInfo)
       expect(mod.name).to eq("test-mod")
       expect(mod.title).to eq("Test MOD")
       expect(mod.detail).to be_nil
@@ -107,9 +107,9 @@ RSpec.describe Factorix::Portal do
 
       mod = portal.get_mod_full("full-mod")
 
-      expect(mod).to be_a(Factorix::Types::MODInfo)
+      expect(mod).to be_a(Factorix::API::MODInfo)
       expect(mod.name).to eq("full-mod")
-      expect(mod.detail).to be_a(Factorix::Types::MODInfo::Detail)
+      expect(mod.detail).to be_a(Factorix::API::MODInfo::Detail)
       expect(mod.detail.changelog).to eq("1.0.0:\n- Initial release")
       expect(mod.detail.description).to eq("Full description")
     end
@@ -117,7 +117,7 @@ RSpec.describe Factorix::Portal do
 
   describe "#download_mod" do
     let(:release) do
-      Factorix::Types::Release[
+      Factorix::API::Release[
         download_url: "/download/test-mod/1.0.0",
         file_name: "test-mod_1.0.0.zip",
         info_json: {},
@@ -270,7 +270,7 @@ RSpec.describe Factorix::Portal do
 
       expect(mod_management_api).to have_received(:init_image_upload).with("test-mod")
       expect(mod_management_api).to have_received(:finish_image_upload).with(upload_url, image_file)
-      expect(image).to be_a(Factorix::Types::Image)
+      expect(image).to be_a(Factorix::API::Image)
       expect(image.id).to eq("abc123def456")
       expect(image.url.to_s).to eq("https://assets-mod.factorio.com/assets/abc123def456.png")
       expect(image.thumbnail.to_s).to eq("https://assets-mod.factorio.com/assets/abc123def456.thumb.png")

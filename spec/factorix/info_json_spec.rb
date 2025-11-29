@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::InfoJSON do
+RSpec.describe Factorix::InfoJSON do
   describe ".from_json" do
     let(:valid_data) do
       {
@@ -15,10 +15,10 @@ RSpec.describe Factorix::Types::InfoJSON do
     end
 
     it "creates InfoJSON from valid JSON" do
-      info = Factorix::Types::InfoJSON.from_json(valid_data.to_json)
+      info = Factorix::InfoJSON.from_json(valid_data.to_json)
 
       expect(info.name).to eq("test-mod")
-      expect(info.version).to eq(Factorix::Types::MODVersion.from_string("1.2.3"))
+      expect(info.version).to eq(Factorix::MODVersion.from_string("1.2.3"))
       expect(info.title).to eq("Test MOD")
       expect(info.author).to eq("Test Author")
       expect(info.description).to eq("A test MOD")
@@ -28,7 +28,7 @@ RSpec.describe Factorix::Types::InfoJSON do
     end
 
     it "parses dependencies correctly" do
-      info = Factorix::Types::InfoJSON.from_json(valid_data.to_json)
+      info = Factorix::InfoJSON.from_json(valid_data.to_json)
 
       expect(info.dependencies[0]).to be_a(Factorix::Dependency::Entry)
       expect(info.dependencies[0].mod.name).to eq("base")
@@ -47,7 +47,7 @@ RSpec.describe Factorix::Types::InfoJSON do
         "author" => "Author"
       }
 
-      info = Factorix::Types::InfoJSON.from_json(minimal_data.to_json)
+      info = Factorix::InfoJSON.from_json(minimal_data.to_json)
 
       expect(info.description).to eq("")
       expect(info.factorio_version).to be_nil
@@ -62,7 +62,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       }
 
       expect {
-        Factorix::Types::InfoJSON.from_json(incomplete_data.to_json)
+        Factorix::InfoJSON.from_json(incomplete_data.to_json)
       }.to raise_error(ArgumentError, /Missing required fields: title, author/)
     end
 
@@ -70,7 +70,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       invalid_version_data = valid_data.merge("version" => "invalid")
 
       expect {
-        Factorix::Types::InfoJSON.from_json(invalid_version_data.to_json)
+        Factorix::InfoJSON.from_json(invalid_version_data.to_json)
       }.to raise_error(ArgumentError, /invalid version string/)
     end
 
@@ -78,7 +78,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       invalid_json = "{name: 'broken'"
 
       expect {
-        Factorix::Types::InfoJSON.from_json(invalid_json)
+        Factorix::InfoJSON.from_json(invalid_json)
       }.to raise_error(ArgumentError, /Invalid JSON/)
     end
   end
@@ -104,7 +104,7 @@ RSpec.describe Factorix::Types::InfoJSON do
         zipfile.get_output_stream("test-mod/info.json") {|f| f.write(info_json_content) }
       end
 
-      info = Factorix::Types::InfoJSON.from_zip(zip_path)
+      info = Factorix::InfoJSON.from_zip(zip_path)
 
       expect(info.name).to eq("zip-mod")
       expect(info.version.to_s).to eq("1.0.0")
@@ -119,7 +119,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       end
 
       expect {
-        Factorix::Types::InfoJSON.from_zip(zip_path)
+        Factorix::InfoJSON.from_zip(zip_path)
       }.to raise_error(ArgumentError, /info.json not found/)
     end
 
@@ -128,7 +128,7 @@ RSpec.describe Factorix::Types::InfoJSON do
       File.write(zip_path, "not a zip file")
 
       expect {
-        Factorix::Types::InfoJSON.from_zip(zip_path)
+        Factorix::InfoJSON.from_zip(zip_path)
       }.to raise_error(ArgumentError, /Invalid zip file/)
     end
   end

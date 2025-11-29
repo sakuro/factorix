@@ -3,7 +3,7 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
+  module API
     class MODInfo
       attr_reader name: String
       attr_reader title: String

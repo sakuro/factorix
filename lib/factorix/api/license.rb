@@ -3,7 +3,7 @@
 require "uri"
 
 module Factorix
-  module Types
+  module API
     License = Data.define(:id, :name, :title, :description, :url)
 
     # License object from MOD Portal API

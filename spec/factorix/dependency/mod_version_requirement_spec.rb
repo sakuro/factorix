@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Dependency::MODVersionRequirement do
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_1_2_0) { Factorix::Types::MODVersion.from_string("1.2.0") }
-  let(:version_1_3_0) { Factorix::Types::MODVersion.from_string("1.3.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_1_2_0) { Factorix::MODVersion.from_string("1.2.0") }
+  let(:version_1_3_0) { Factorix::MODVersion.from_string("1.3.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
   describe ".new" do
     context "with valid operator" do

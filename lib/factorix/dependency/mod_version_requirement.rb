@@ -36,7 +36,7 @@ module Factorix
           raise ArgumentError, "Invalid operator: #{operator}. Must be one of: #{VALID_OPERATORS.join(", ")}"
         end
 
-        unless version.is_a?(Types::MODVersion)
+        unless version.is_a?(MODVersion)
           raise ArgumentError, "version must be a MODVersion, got #{version.class}"
         end
 

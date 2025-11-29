@@ -6,13 +6,13 @@ RSpec.describe Factorix::Dependency::Graph::Builder do
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
   let(:base_mod) { Factorix::MOD[name: "base"] }
 
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
   # Helper to create mock InstalledMOD
   def create_installed_mod(mod:, version:, dependencies: [])
     info = instance_double(
-      Factorix::Types::InfoJSON,
+      Factorix::InfoJSON,
       name: mod.name,
       version:,
       dependencies:

@@ -25,9 +25,9 @@ module Factorix
       class Suggestion
         attr_reader message: String
         attr_reader mod: MOD
-        attr_reader version: Types::MODVersion
+        attr_reader version: MODVersion
 
-        def initialize: (message: String, mod: MOD, version: Types::MODVersion) -> void
+        def initialize: (message: String, mod: MOD, version: MODVersion) -> void
       end
 
       MISSING_DEPENDENCY: Symbol
@@ -46,7 +46,7 @@ module Factorix
       def initialize: () -> void
       def add_error: (type: Symbol, message: String, ?mod: MOD?, ?dependency: MOD?) -> void
       def add_warning: (type: Symbol, message: String, ?mod: MOD?) -> void
-      def add_suggestion: (message: String, mod: MOD, version: Types::MODVersion) -> void
+      def add_suggestion: (message: String, mod: MOD, version: MODVersion) -> void
       def errors?: () -> bool
       def warnings?: () -> bool
       def suggestions?: () -> bool

@@ -12,7 +12,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
   describe "#call" do
     context "when MOD has images" do
       let(:mod_info) do
-        Factorix::Types::MODInfo[
+        Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test MOD",
           owner: "test-user",
@@ -78,7 +78,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
 
     context "when MOD has no images" do
       let(:mod_info) do
-        Factorix::Types::MODInfo[
+        Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test MOD",
           owner: "test-user",
@@ -116,7 +116,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
 
     context "when MOD has no detail" do
       let(:mod_info) do
-        Factorix::Types::MODInfo[
+        Factorix::API::MODInfo[
           name: "test-mod",
           title: "Test MOD",
           owner: "test-user",

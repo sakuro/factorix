@@ -33,12 +33,12 @@ module Factorix
     end
 
     @sections: Hash[String, Section]
-    @game_version: Types::GameVersion
+    @game_version: GameVersion
 
     def self.load: (Pathname path) -> MODSettings
 
-    def initialize: (Types::GameVersion game_version, Hash[String, Section] sections) -> void
-    def game_version: () -> Types::GameVersion
+    def initialize: (GameVersion game_version, Hash[String, Section] sections) -> void
+    def game_version: () -> GameVersion
     def []: (String name) -> Section
     def each_section: () -> Enumerator[Section, self]
                     | () { (Section) -> void } -> self

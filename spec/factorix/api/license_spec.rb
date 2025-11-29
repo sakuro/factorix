@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::Types::License do
+RSpec.describe Factorix::API::License do
   describe "#initialize" do
     it "creates a License with URI object for url" do
-      license = Factorix::Types::License[
+      license = Factorix::API::License[
         id: "mit",
         name: "MIT",
         title: "MIT License",

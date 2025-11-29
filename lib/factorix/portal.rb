@@ -44,33 +44,33 @@ module Factorix
     # @param sort [String, nil] sort field (name, created_at, updated_at)
     # @param sort_order [String, nil] sort order (asc, desc)
     # @param version [String, nil] Factorio version filter
-    # @return [Array<Types::MODInfo>] array of MODInfo objects
+    # @return [Array<API::MODInfo>] array of MODInfo objects
     def list_mods(...)
       response = mod_portal_api.get_mods(...)
-      response[:results].map {|mod_data| Types::MODInfo[**mod_data] }
+      response[:results].map {|mod_data| API::MODInfo[**mod_data] }
     end
 
     # Get basic information for a specific MOD (Short API)
     #
     # @param name [String] MOD name
-    # @return [Types::MODInfo] MODInfo object (without Detail)
+    # @return [API::MODInfo] MODInfo object (without Detail)
     def get_mod(name)
       data = mod_portal_api.get_mod(name)
-      Types::MODInfo[**data]
+      API::MODInfo[**data]
     end
 
     # Get full information for a specific MOD (Full API)
     #
     # @param name [String] MOD name
-    # @return [Types::MODInfo] MODInfo object (with Detail if available)
+    # @return [API::MODInfo] MODInfo object (with Detail if available)
     def get_mod_full(name)
       data = mod_portal_api.get_mod_full(name)
-      Types::MODInfo[**data]
+      API::MODInfo[**data]
     end
 
     # Download a MOD release file
     #
-    # @param release [Types::Release] release object containing download_url and sha1
+    # @param release [API::Release] release object containing download_url and sha1
     # @param output [Pathname] output file path
     # @return [void]
     # @raise [ArgumentError] if release download_url is not a URI
@@ -151,7 +151,7 @@ module Factorix
     #
     # @param mod_name [String] the MOD name
     # @param image_file [Pathname] path to image file
-    # @return [Types::Image] the uploaded image info
+    # @return [API::Image] the uploaded image info
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def add_mod_image(mod_name, image_file)
@@ -163,8 +163,8 @@ module Factorix
       # Upload image
       response_data = mod_management_api.finish_image_upload(upload_url, image_file)
 
-      # Convert response to Types::Image
-      image = Types::Image[**response_data.transform_keys(&:to_sym)]
+      # Convert response to API::Image
+      image = API::Image[**response_data.transform_keys(&:to_sym)]
 
       logger.info("Image added successfully", mod: mod_name, image_id: image.id)
       image

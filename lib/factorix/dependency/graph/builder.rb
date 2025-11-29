@@ -60,7 +60,7 @@ module Factorix
         # Select which version to use for a MOD
         #
         # @param mod [Factorix::MOD] The MOD
-        # @return [Factorix::Types::MODVersion] The selected version
+        # @return [Factorix::MODVersion] The selected version
         private def select_version_for_mod(mod)
           if @mod_list.exist?(mod)
             specified_version = @mod_list.version(mod)

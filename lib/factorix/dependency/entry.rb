@@ -24,7 +24,7 @@ module Factorix
     #
     #   # Optional dependency with version requirement
     #   some_mod = MOD[name: "some-mod"]
-    #   requirement = MODVersionRequirement[operator: ">=", version: Types::MODVersion.from_string("1.2.0")]
+    #   requirement = MODVersionRequirement[operator: ">=", version: MODVersion.from_string("1.2.0")]
     #   dep2 = Dependency::Entry[mod: some_mod, type: :optional, version_requirement: requirement]
     #
     #   # Incompatible MOD
@@ -93,7 +93,7 @@ module Factorix
 
       # Check if a given version satisfies this dependency's version requirement
       #
-      # @param version [Types::MODVersion] Version to check
+      # @param version [MODVersion] Version to check
       # @return [Boolean] true if version requirement is satisfied, or true if no requirement exists
       def satisfied_by?(version)
         return true unless version_requirement

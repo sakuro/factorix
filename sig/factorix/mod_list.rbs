@@ -27,7 +27,7 @@ module Factorix
 
     alias each_key each_mod
 
-    def add: (MOD mod, ?enabled: bool, ?version: Types::MODVersion?) -> void
+    def add: (MOD mod, ?enabled: bool, ?version: MODVersion?) -> void
 
     def remove: (MOD mod) -> void
 
@@ -35,7 +35,7 @@ module Factorix
 
     def enabled?: (MOD mod) -> bool
 
-    def version: (MOD mod) -> Types::MODVersion?
+    def version: (MOD mod) -> MODVersion?
 
     def enable: (MOD mod) -> void
 

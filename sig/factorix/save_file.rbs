@@ -1,10 +1,10 @@
 module Factorix
   class SaveFile
-    attr_reader version: Types::GameVersion
+    attr_reader version: GameVersion
     attr_reader mods: Hash[String, MODState]
     attr_reader startup_settings: MODSettings::Section
 
-    def initialize: (version: Types::GameVersion, mods: Hash[String, MODState], startup_settings: MODSettings::Section) -> void
+    def initialize: (version: GameVersion, mods: Hash[String, MODState], startup_settings: MODSettings::Section) -> void
 
     LEVEL_FILE_NAMES: Array[String]
 
@@ -12,7 +12,7 @@ module Factorix
 
     class Parser
       @path: Pathname
-      @version: Types::GameVersion
+      @version: GameVersion
       @mods: Hash[String, MODState]
       @startup_settings: MODSettings::Section
 

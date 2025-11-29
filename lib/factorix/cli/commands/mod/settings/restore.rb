@@ -62,7 +62,7 @@ module Factorix
             # @param data [Hash] Parsed JSON data
             # @return [Factorix::MODSettings] The MOD settings
             private def build_settings(data)
-              game_version = Types::GameVersion.from_string(data["game_version"])
+              game_version = GameVersion.from_string(data["game_version"])
               sections = {}
 
               MODSettings::VALID_SECTIONS.each do |section_name|

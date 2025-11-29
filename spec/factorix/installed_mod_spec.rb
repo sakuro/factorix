@@ -421,9 +421,9 @@ RSpec.describe Factorix::InstalledMOD do
 
   def build_installed_mod(name, version, form)
     mod = Factorix::MOD[name:]
-    mod_version = Factorix::Types::MODVersion.from_string(version)
+    mod_version = Factorix::MODVersion.from_string(version)
     path = Pathname("/fake/path/#{name}_#{version}#{".zip" if form == :zip}")
-    info = Factorix::Types::InfoJSON.from_json({
+    info = Factorix::InfoJSON.from_json({
       "name" => name,
       "version" => version,
       "title" => "Test",

@@ -31,16 +31,16 @@ module Factorix
           version_spec = parts[1]
           version = case version_spec
                     when nil, "", "latest" then :latest
-                    else Types::MODVersion.from_string(version_spec)
+                    else MODVersion.from_string(version_spec)
                     end
           {mod:, version:}
         end
 
         # Find the appropriate release for a version
         #
-        # @param mod_info [Types::MODInfo] MOD information
-        # @param version [Types::MODVersion, Symbol] Version or :latest
-        # @return [Types::Release, nil] The release, or nil if not found
+        # @param mod_info [API::MODInfo] MOD information
+        # @param version [MODVersion, Symbol] Version or :latest
+        # @return [API::Release, nil] The release, or nil if not found
         private def find_release(mod_info, version)
           if version == :latest
             mod_info.releases.max_by(&:released_at)
@@ -51,9 +51,9 @@ module Factorix
 
         # Find a release compatible with a version requirement
         #
-        # @param mod_info [Types::MODInfo] MOD information
+        # @param mod_info [API::MODInfo] MOD information
         # @param version_requirement [Dependency::MODVersionRequirement, nil] Version requirement
-        # @return [Types::Release, nil] Compatible release or nil
+        # @return [API::Release, nil] Compatible release or nil
         private def find_compatible_release(mod_info, version_requirement)
           return mod_info.releases.max_by(&:released_at) if version_requirement.nil?
 
@@ -68,8 +68,8 @@ module Factorix
         #
         # @param mod_infos [Array<Hash>] MOD infos, each containing:
         #   - :mod [Factorix::MOD] or :mod_name [String] MOD identifier
-        #   - :mod_info [Types::MODInfo] MOD information
-        #   - :release [Types::Release] Release to install
+        #   - :mod_info [API::MODInfo] MOD information
+        #   - :release [API::Release] Release to install
         # @param output_dir [Pathname] Output directory for MOD files
         # @return [Array<Hash>] Install targets
         private def build_install_targets(mod_infos, output_dir)
@@ -88,7 +88,7 @@ module Factorix
         #
         # @param targets [Array<Hash>] Download targets, each containing:
         #   - :mod [Factorix::MOD] MOD object
-        #   - :release [Types::Release] Release to download
+        #   - :release [API::Release] Release to download
         #   - :output_path [Pathname] Output file path
         # @param jobs [Integer] Number of parallel downloads
         # @return [void]

@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
 
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
   let(:default_settings_path) { Pathname("/default/mod-settings.dat") }
-  let(:game_version) { Factorix::Types::GameVersion.from_string("1.1.0-42") }
+  let(:game_version) { Factorix::GameVersion.from_string("1.1.0-42") }
   let(:startup_section) do
     section = Factorix::MODSettings::Section.new("startup")
     section["string-value"] = "test"

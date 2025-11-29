@@ -15,10 +15,10 @@ module Factorix
 
           class MODInfo
             attr_reader name: String
-            attr_reader version: Types::MODVersion
+            attr_reader version: MODVersion
             attr_reader enabled: bool
             attr_reader error: String?
-            attr_reader latest_version: Types::MODVersion?
+            attr_reader latest_version: MODVersion?
 
             def status: () -> String
             def outdated?: () -> bool

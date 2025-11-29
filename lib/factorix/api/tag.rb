@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Factorix
-  module Types
+  module API
     Tag = Data.define(:value, :name, :description)
 
     # Tag object from MOD Portal API

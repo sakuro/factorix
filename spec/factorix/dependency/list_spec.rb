@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::Dependency::List do
-  let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
-  let(:version_1_2_0) { Factorix::Types::MODVersion.from_string("1.2.0") }
-  let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
+  let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
+  let(:version_1_2_0) { Factorix::MODVersion.from_string("1.2.0") }
+  let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
   let(:base_mod) { Factorix::MOD[name: "base"] }
   let(:required_mod) { Factorix::MOD[name: "required-mod"] }

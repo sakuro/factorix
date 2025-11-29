@@ -1,0 +1,15 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module API
+    class Image
+      attr_reader id: String
+      attr_reader thumbnail: URI::HTTPS
+      attr_reader url: URI::HTTPS
+
+      def initialize: (id: String, thumbnail: String, url: String) -> void
+    end
+  end
+end

@@ -143,7 +143,7 @@ RSpec.describe Factorix::SerDes::Deserializer do
     let(:binary_data) { "\x01\x00\x02\x00\x03\x00\x04\x00" }
 
     it "returns a GameVersion" do
-      expect(deserializer.read_game_version).to eq(Factorix::Types::GameVersion.from_numbers(1, 2, 3, 4))
+      expect(deserializer.read_game_version).to eq(Factorix::GameVersion.from_numbers(1, 2, 3, 4))
     end
   end
 
@@ -151,7 +151,7 @@ RSpec.describe Factorix::SerDes::Deserializer do
     let(:binary_data) { "\x01\x02\x03" }
 
     it "returns a MODVersion" do
-      expect(deserializer.read_mod_version).to eq(Factorix::Types::MODVersion.from_numbers(1, 2, 3))
+      expect(deserializer.read_mod_version).to eq(Factorix::MODVersion.from_numbers(1, 2, 3))
     end
   end
 
