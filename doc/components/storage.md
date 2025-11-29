@@ -28,13 +28,17 @@ Detection on read uses zlib magic byte (`0x78`) to handle mixed compressed/uncom
 - Download cache: `compression_threshold: nil` (ZIP files are already compressed)
 - Info.json cache: `compression_threshold: 0` (JSON data compresses well)
 
+### Directory Structure
+
+- Keys generated as SHA1 hash of URL/identifier
+- Two-level directory structure (first 2 characters of SHA1 hash as prefix)
+  - Avoids filesystem performance degradation from too many files in one directory
+
 ### Concurrent Access Countermeasures
 
 - Use file locking (flock)
 - Acquire exclusive lock with `with_lock` method
 - Cleanup old lock files (more than 1 hour old)
-- Keys generated as SHA1 hash
-- Two-level directory structure (first 2 characters of SHA1 hash as prefix)
 
 ## MODSettings
 
