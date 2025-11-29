@@ -3,7 +3,7 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
+  module SerDes
     class SignedInteger
       def initialize: (Integer value) -> void
 

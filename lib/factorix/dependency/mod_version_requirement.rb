@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Factorix
-  module Types
+  module Dependency
     # Define MODVersionRequirement as an immutable data class
     MODVersionRequirement = Data.define(:operator, :version)
 
@@ -36,7 +36,7 @@ module Factorix
           raise ArgumentError, "Invalid operator: #{operator}. Must be one of: #{VALID_OPERATORS.join(", ")}"
         end
 
-        unless version.is_a?(MODVersion)
+        unless version.is_a?(Types::MODVersion)
           raise ArgumentError, "version must be a MODVersion, got #{version.class}"
         end
 

@@ -176,7 +176,7 @@ RSpec.describe Factorix::Dependency::Graph::Builder do
 
     context "with version requirements" do
       let(:requirement) do
-        Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_0_0]
+        Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_0_0]
       end
       let(:dep_b) do
         Factorix::Dependency::Entry[

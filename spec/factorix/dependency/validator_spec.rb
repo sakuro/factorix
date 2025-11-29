@@ -125,7 +125,7 @@ RSpec.describe Factorix::Dependency::Validator do
         graph.add_node(node_b)
 
         # A requires B >= 2.0.0, but B is 1.0.0
-        requirement = Factorix::Types::MODVersionRequirement[operator: ">=", version: version_2_0_0]
+        requirement = Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_2_0_0]
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
         graph.add_edge(edge)
 
@@ -151,7 +151,7 @@ RSpec.describe Factorix::Dependency::Validator do
         graph.add_node(node_b)
 
         # A requires B >= 2.0.0, and B is 2.0.0 - should be valid
-        requirement = Factorix::Types::MODVersionRequirement[operator: ">=", version: version_2_0_0]
+        requirement = Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_2_0_0]
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
         graph.add_edge(edge)
 

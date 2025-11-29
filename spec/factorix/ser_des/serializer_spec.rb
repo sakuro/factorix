@@ -329,7 +329,7 @@ RSpec.describe Factorix::SerDes::Serializer do
       end
 
       it "writes as Type 6" do
-        signed_int = Factorix::Types::SignedInteger.new(-42)
+        signed_int = Factorix::SerDes::SignedInteger.new(-42)
         serializer.write_property_tree(signed_int)
 
         aggregate_failures "writing SignedInteger" do
@@ -346,7 +346,7 @@ RSpec.describe Factorix::SerDes::Serializer do
       end
 
       it "writes as Type 7" do
-        unsigned_int = Factorix::Types::UnsignedInteger.new(42)
+        unsigned_int = Factorix::SerDes::UnsignedInteger.new(42)
         serializer.write_property_tree(unsigned_int)
 
         aggregate_failures "writing UnsignedInteger" do

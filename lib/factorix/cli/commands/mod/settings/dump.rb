@@ -73,7 +73,7 @@ module Factorix
             # @return [Object] Converted value
             private def convert_value_for_output(value)
               case value
-              when Types::SignedInteger, Types::UnsignedInteger
+              when SerDes::SignedInteger, SerDes::UnsignedInteger
                 # Integer(...) does not accept Integer instance
                 Integer(value.to_s, 10)
               else

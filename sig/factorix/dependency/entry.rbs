@@ -13,9 +13,9 @@ module Factorix
 
       attr_reader mod: MOD
       attr_reader type: Symbol
-      attr_reader version_requirement: Types::MODVersionRequirement?
+      attr_reader version_requirement: MODVersionRequirement?
 
-      def initialize: (mod: MOD, type: Symbol, ?version_requirement: Types::MODVersionRequirement?) -> void
+      def initialize: (mod: MOD, type: Symbol, ?version_requirement: MODVersionRequirement?) -> void
 
       def required?: () -> bool
       def optional?: () -> bool

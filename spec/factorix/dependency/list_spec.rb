@@ -13,7 +13,7 @@ RSpec.describe Factorix::Dependency::List do
   let(:neutral_mod) { Factorix::MOD[name: "neutral-mod"] }
 
   let(:requirement_ge_1_2_0) do
-    Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_2_0]
+    Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_2_0]
   end
 
   describe ".from_strings" do

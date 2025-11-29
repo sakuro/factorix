@@ -6,7 +6,7 @@ RSpec.describe Factorix::Dependency::Edge do
   let(:version_1_0_0) { Factorix::Types::MODVersion.from_string("1.0.0") }
   let(:version_2_0_0) { Factorix::Types::MODVersion.from_string("2.0.0") }
   let(:requirement) do
-    Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_0_0]
+    Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_0_0]
   end
 
   describe "#initialize" do

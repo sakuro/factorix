@@ -52,7 +52,7 @@ module Factorix
         # Find a release compatible with a version requirement
         #
         # @param mod_info [Types::MODInfo] MOD information
-        # @param version_requirement [Types::MODVersionRequirement, nil] Version requirement
+        # @param version_requirement [Dependency::MODVersionRequirement, nil] Version requirement
         # @return [Types::Release, nil] Compatible release or nil
         private def find_compatible_release(mod_info, version_requirement)
           return mod_info.releases.max_by(&:released_at) if version_requirement.nil?

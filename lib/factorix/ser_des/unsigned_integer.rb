@@ -3,7 +3,7 @@
 require "delegate"
 
 module Factorix
-  module Types
+  module SerDes
     # Unsigned integer wrapper
     #
     # This class wraps a non-negative Integer value to indicate it was originally
@@ -59,7 +59,7 @@ module Factorix
       # String representation
       #
       # @return [String] String representation
-      def inspect = "#<Factorix::Types::UnsignedInteger:0x%016x value=#{value}>" % object_id
+      def inspect = "#<Factorix::SerDes::UnsignedInteger:0x%016x value=#{value}>" % object_id
     end
   end
 end

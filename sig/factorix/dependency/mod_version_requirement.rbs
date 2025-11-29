@@ -3,14 +3,14 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  module Types
+  module Dependency
     class MODVersionRequirement
       attr_reader operator: String
-      attr_reader version: MODVersion
+      attr_reader version: Types::MODVersion
 
-      def initialize: (operator: String, version: MODVersion) -> void
+      def initialize: (operator: String, version: Types::MODVersion) -> void
 
-      def satisfied_by?: (MODVersion mod_version) -> bool
+      def satisfied_by?: (Types::MODVersion mod_version) -> bool
 
       def to_s: () -> String
     end

@@ -15,7 +15,7 @@ module Factorix
     # @!attribute [r] type
     #   @return [Symbol] Type of dependency (:required, :optional, :hidden, :incompatible, :load_neutral)
     # @!attribute [r] version_requirement
-    #   @return [Types::MODVersionRequirement, nil] Version requirement (nil if no requirement)
+    #   @return [MODVersionRequirement, nil] Version requirement (nil if no requirement)
     #
     # @example Creating dependencies
     #   # Required dependency on base MOD
@@ -24,7 +24,7 @@ module Factorix
     #
     #   # Optional dependency with version requirement
     #   some_mod = MOD[name: "some-mod"]
-    #   requirement = Types::MODVersionRequirement[operator: ">=", version: Types::MODVersion.from_string("1.2.0")]
+    #   requirement = MODVersionRequirement[operator: ">=", version: Types::MODVersion.from_string("1.2.0")]
     #   dep2 = Dependency::Entry[mod: some_mod, type: :optional, version_requirement: requirement]
     #
     #   # Incompatible MOD
@@ -50,7 +50,7 @@ module Factorix
       #
       # @param mod [MOD] The dependent MOD
       # @param type [Symbol] Type of dependency (:required, :optional, :hidden, :incompatible, :load_neutral)
-      # @param version_requirement [Types::MODVersionRequirement, nil] Version requirement (nil if no requirement)
+      # @param version_requirement [MODVersionRequirement, nil] Version requirement (nil if no requirement)
       # @return [Entry]
       # @raise [ArgumentError] if mod is not a MOD instance
       # @raise [ArgumentError] if type is not valid
@@ -64,7 +64,7 @@ module Factorix
           raise ArgumentError, "Invalid dependency type: #{type}. Must be one of: #{VALID_TYPES.join(", ")}"
         end
 
-        if version_requirement && !version_requirement.is_a?(Types::MODVersionRequirement)
+        if version_requirement && !version_requirement.is_a?(MODVersionRequirement)
           raise ArgumentError, "version_requirement must be a MODVersionRequirement or nil, got #{version_requirement.class}"
         end
 

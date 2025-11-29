@@ -89,7 +89,7 @@ module Factorix
             private def convert_value_for_input(value)
               case value
               when Integer
-                Types::SignedInteger.new(value)
+                SerDes::SignedInteger.new(value)
               else
                 value
               end

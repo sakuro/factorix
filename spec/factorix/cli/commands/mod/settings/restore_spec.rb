@@ -20,7 +20,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
     section["string-value"] = "test"
     section["bool-value"] = true
     section["float-value"] = 1.5
-    section["int-value"] = Factorix::Types::SignedInteger.new(42)
+    section["int-value"] = Factorix::SerDes::SignedInteger.new(42)
     section
   end
   let(:sections) { {"startup" => startup_section} }

@@ -17,8 +17,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
     section["string-value"] = "test"
     section["bool-value"] = true
     section["float-value"] = 1.5
-    section["signed-int"] = Factorix::Types::SignedInteger.new(42)
-    section["unsigned-int"] = Factorix::Types::UnsignedInteger.new(100)
+    section["signed-int"] = Factorix::SerDes::SignedInteger.new(42)
+    section["unsigned-int"] = Factorix::SerDes::UnsignedInteger.new(100)
     section
   end
   let(:sections) { {"startup" => startup_section} }

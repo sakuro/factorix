@@ -17,7 +17,7 @@ module Factorix
     # @!attribute [r] type
     #   @return [Symbol] dependency type
     # @!attribute [r] version_requirement
-    #   @return [Factorix::Types::MODVersionRequirement, nil] version requirement
+    #   @return [MODVersionRequirement, nil] version requirement
     class Edge
       # Dependency types (from Factorix::Dependency::Entry)
       REQUIRED = Entry::REQUIRED
@@ -30,7 +30,7 @@ module Factorix
       # @param from_mod [Factorix::MOD] The dependent MOD
       # @param to_mod [Factorix::MOD] The dependency MOD
       # @param type [Symbol] The dependency type (:required, :optional, :hidden, :incompatible, :load_neutral)
-      # @param version_requirement [Factorix::Types::MODVersionRequirement, nil] Version requirement (optional)
+      # @param version_requirement [MODVersionRequirement, nil] Version requirement (optional)
       def initialize(from_mod:, to_mod:, type:, version_requirement: nil) = super
 
       # Check if this is a required dependency

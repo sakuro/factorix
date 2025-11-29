@@ -4,7 +4,7 @@ RSpec.describe Factorix::Dependency::Entry do
   let(:version_1_2_0) { Factorix::Types::MODVersion.from_string("1.2.0") }
   let(:version_1_3_0) { Factorix::Types::MODVersion.from_string("1.3.0") }
   let(:requirement) do
-    Factorix::Types::MODVersionRequirement[operator: ">=", version: version_1_2_0]
+    Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_2_0]
   end
 
   describe ".new" do

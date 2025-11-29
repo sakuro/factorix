@@ -3,7 +3,7 @@
 require "delegate"
 
 module Factorix
-  module Types
+  module SerDes
     # Signed integer wrapper
     #
     # This class wraps an Integer value to indicate it was originally stored
@@ -57,7 +57,7 @@ module Factorix
       # String representation
       #
       # @return [String] String representation
-      def inspect = "#<Factorix::Types::SignedInteger:0x%016x value=#{value}>" % object_id
+      def inspect = "#<Factorix::SerDes::SignedInteger:0x%016x value=#{value}>" % object_id
     end
   end
 end

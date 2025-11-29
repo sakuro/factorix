@@ -434,7 +434,7 @@ RSpec.describe Factorix::SerDes::Deserializer do
 
       it "returns a SignedInteger" do
         result = deserializer.read_property_tree
-        expect(result).to be_a(Factorix::Types::SignedInteger)
+        expect(result).to be_a(Factorix::SerDes::SignedInteger)
         expect(result.value).to eq(-42)
       end
     end
@@ -448,7 +448,7 @@ RSpec.describe Factorix::SerDes::Deserializer do
 
       it "returns an UnsignedInteger" do
         result = deserializer.read_property_tree
-        expect(result).to be_a(Factorix::Types::UnsignedInteger)
+        expect(result).to be_a(Factorix::SerDes::UnsignedInteger)
         expect(result.value).to eq(42)
       end
     end

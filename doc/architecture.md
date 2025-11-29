@@ -59,10 +59,7 @@ Factorix/
 │   ├── Category               # MOD category (flyweight pattern)
 │   ├── Tag                    # MOD tags (flyweight pattern)
 │   ├── MODVersion             # MOD version (major.minor.patch)
-│   ├── MODVersionRequirement  # Version requirement
-│   ├── GameVersion            # Game version (major.minor.patch-build)
-│   ├── SignedInteger          # Signed 64-bit integer
-│   └── UnsignedInteger        # Unsigned 64-bit integer
+│   └── GameVersion            # Game version (major.minor.patch-build)
 │
 ├── HTTP/                      # HTTP layer with decorators
 │   ├── Client                 # Base HTTP client (Net::HTTP wrapper)
@@ -77,7 +74,9 @@ Factorix/
 │
 ├── SerDes/
 │   ├── Serializer
-│   └── Deserializer
+│   ├── Deserializer
+│   ├── SignedInteger          # Signed 64-bit integer
+│   └── UnsignedInteger        # Unsigned 64-bit integer
 │
 ├── Runtime/                   # Runtime environment abstraction
 │   ├── Base                   # Abstract base class
@@ -102,6 +101,7 @@ Factorix/
 ├── SaveFile                   # Data.define - save file information
 │
 ├── Dependency/                # Dependency resolution system
+│   ├── MODVersionRequirement  # Version requirement
 │   ├── Entry                  # Data.define - single dependency entry
 │   ├── Parser                 # Parslet-based dependency string parser
 │   ├── List                   # Collection of dependencies

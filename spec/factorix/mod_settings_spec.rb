@@ -11,17 +11,17 @@ RSpec.describe Factorix::MODSettings do
     {
       "startup" => {
         "mod-a-setting-1" => {"value" => true},
-        "mod-a-setting-2" => {"value" => Factorix::Types::SignedInteger.new(42)},
+        "mod-a-setting-2" => {"value" => Factorix::SerDes::SignedInteger.new(42)},
         "mod-b-setting-1" => {"value" => "test"},
         "mod-b-setting-2" => {"value" => 3.14}
       },
       "runtime-global" => {
         "mod-c-setting-1" => {"value" => "value"},
         "mod-c-setting-2" => {"value" => {"r" => 1.0, "g" => 0.0, "b" => 0.0, "a" => 1.0}},
-        "mod-c-setting-3" => {"value" => Factorix::Types::UnsignedInteger.new(100)}
+        "mod-c-setting-3" => {"value" => Factorix::SerDes::UnsignedInteger.new(100)}
       },
       "runtime-per-user" => {
-        "mod-d-setting-1" => {"value" => Factorix::Types::UnsignedInteger.new(50)},
+        "mod-d-setting-1" => {"value" => Factorix::SerDes::UnsignedInteger.new(50)},
         "mod-d-setting-2" => {"value" => {"r" => 239 / 255.0, "g" => 102 / 255.0, "b" => 102 / 255.0, "a" => 1.0}},
         "mod-e-setting-1" => {"value" => {"r" => 0.0, "g" => 239 / 255.0, "b" => 0.0, "a" => 1.0}},
         "mod-e-setting-2" => {"value" => false},

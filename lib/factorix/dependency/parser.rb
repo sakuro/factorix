@@ -125,7 +125,7 @@ module Factorix
         version_string = requirement_data[:version]
 
         version = Types::MODVersion.from_string(version_string)
-        Types::MODVersionRequirement[operator:, version:]
+        MODVersionRequirement[operator:, version:]
       rescue RangeError => e
         # Skip version requirements with out-of-range version components
         Application[:logger].warn("Skipping version requirement '#{version_string}': #{e.message}")

@@ -145,7 +145,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
 
     context "when version_requirement is specified" do
       it "returns the latest compatible release" do
-        requirement = Factorix::Types::MODVersionRequirement.new(
+        requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: ">=",
           version: Factorix::Types::MODVersion.from_string("2.0.0")
         )
@@ -154,7 +154,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       end
 
       it "returns the matching release when only one matches" do
-        requirement = Factorix::Types::MODVersionRequirement.new(
+        requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: "=",
           version: Factorix::Types::MODVersion.from_string("1.0.0")
         )
@@ -163,7 +163,7 @@ RSpec.describe Factorix::CLI::Commands::DownloadSupport do
       end
 
       it "returns nil when no release matches" do
-        requirement = Factorix::Types::MODVersionRequirement.new(
+        requirement = Factorix::Dependency::MODVersionRequirement.new(
           operator: ">=",
           version: Factorix::Types::MODVersion.from_string("4.0.0")
         )

@@ -211,12 +211,12 @@ module Factorix
           write_u8(5)
           write_bool(false)
           write_dictionary(obj)
-        when Types::SignedInteger
+        when SignedInteger
           # Type 6 - Signed integer
           write_u8(6)
           write_bool(false)
           write_long(obj.__getobj__)
-        when Types::UnsignedInteger
+        when UnsignedInteger
           # Type 7 - Unsigned integer
           write_u8(7)
           write_bool(false)
