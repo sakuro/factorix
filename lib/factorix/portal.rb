@@ -107,11 +107,7 @@ module Factorix
         false
       end
 
-      upload_url = if mod_exists
-                     mod_management_api.init_upload(mod_name)
-                   else
-                     mod_management_api.init_publish(mod_name)
-                   end
+      upload_url = mod_exists ? mod_management_api.init_upload(mod_name) : mod_management_api.init_publish(mod_name)
 
       if mod_exists
         # For existing MODs: upload file, then edit metadata separately
