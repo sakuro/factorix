@@ -127,6 +127,7 @@ Manages pairs of MOD and MODState.
 ### Special Rules
 
 - `base` MOD is always enabled (cannot be disabled or removed)
+- Expansion MODs cannot be removed (can only be disabled)
 - Version information is optional (included in JSON only if exists)
 
 ### File Format (JSON)
