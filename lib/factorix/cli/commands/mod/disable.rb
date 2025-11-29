@@ -6,7 +6,7 @@ module Factorix
       module MOD
         # Disable MODs in mod-list.json with reverse dependency resolution
         class Disable < Base
-          include Confirmable
+          prepend Confirmable
           include DependencyGraphSupport
 
           require_game_stopped!

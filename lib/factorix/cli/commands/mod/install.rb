@@ -9,7 +9,7 @@ module Factorix
       module MOD
         # Install MODs from Factorio MOD Portal
         class Install < Base
-          include Confirmable
+          prepend Confirmable
           include DependencyGraphSupport
           include DownloadSupport
 

@@ -6,7 +6,7 @@ module Factorix
       module MOD
         # Enable MODs in mod-list.json with dependency resolution
         class Enable < Base
-          include Confirmable
+          prepend Confirmable
           include DependencyGraphSupport
 
           require_game_stopped!

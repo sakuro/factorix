@@ -16,7 +16,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     Class.new do
       prepend Factorix::CLI::Commands::CommandWrapper
 
-      attr_reader :called, :quiet, :yes
+      attr_reader :called, :quiet
 
       def call(**_options)
         @called = true
@@ -45,23 +45,6 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     it "sets @quiet from options" do
       command.call(quiet: true)
       expect(command.quiet).to be true
-    end
-
-    context "with yes option" do
-      it "sets @yes to truthy value when yes is true" do
-        command.call(yes: true)
-        expect(command.yes).to be_truthy
-      end
-
-      it "sets @yes to falsy value when yes is false" do
-        command.call(yes: false)
-        expect(command.yes).to be_falsy
-      end
-
-      it "does not set @yes when not present in options" do
-        command.call
-        expect(command.yes).to be_nil
-      end
     end
 
     it "calls the command's implementation via super" do

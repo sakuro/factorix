@@ -16,7 +16,6 @@ module Factorix
         # @param options [Hash] command options including :config_path and :log_level
         def call(**options)
           @quiet = options[:quiet]
-          @yes = options[:yes] if options.key?(:yes)
 
           load_config!(options[:config_path])
           log_level!(options[:log_level]) if options[:log_level]

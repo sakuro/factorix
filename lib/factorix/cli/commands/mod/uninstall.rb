@@ -6,7 +6,7 @@ module Factorix
       module MOD
         # Uninstall MODs from MOD directory
         class Uninstall < Base
-          include Confirmable
+          prepend Confirmable
           include DependencyGraphSupport
 
           require_game_stopped!

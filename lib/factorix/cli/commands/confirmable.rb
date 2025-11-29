@@ -9,15 +9,22 @@ module Factorix
       # - --yes option to skip confirmation prompts
       # - confirm? method to ask for user confirmation
       #
-      # Include this module in commands that need confirmation
+      # Prepend this module to commands that need confirmation
       # (e.g., enable, disable, install, uninstall)
       module Confirmable
-        # Hook called when this module is included in a class
-        # @param base [Class] the class including this module
-        def self.included(base)
+        # Hook called when this module is prepended to a class
+        # @param base [Class] the class prepending this module
+        def self.prepended(base)
           base.class_eval do
             option :yes, type: :flag, default: false, aliases: ["-y"], desc: "Skip confirmation prompts"
           end
+        end
+
+        # Store the --yes flag for use in confirm?
+        # @param options [Hash] command options
+        def call(**options)
+          @yes = options[:yes]
+          super
         end
 
         private def confirm?(message="Do you want to continue?")

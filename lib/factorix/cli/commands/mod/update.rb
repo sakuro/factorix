@@ -9,7 +9,7 @@ module Factorix
       module MOD
         # Update installed MODs to their latest versions
         class Update < Base
-          include Confirmable
+          prepend Confirmable
 
           require_game_stopped!
 

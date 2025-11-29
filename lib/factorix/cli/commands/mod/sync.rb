@@ -9,7 +9,7 @@ module Factorix
       module MOD
         # Sync MOD states and startup settings from a save file
         class Sync < Base
-          include Confirmable
+          prepend Confirmable
           include DependencyGraphSupport
           include DownloadSupport
 
