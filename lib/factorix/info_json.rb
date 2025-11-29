@@ -38,7 +38,8 @@ module Factorix
     #
     # Uses caching to avoid repeated ZIP extraction for the same file.
     # Cache key is based on file path (MOD ZIPs are immutable after download).
-    # Uses file locking to prevent concurrent extraction of the same file.
+    # Uses double-checked locking to prevent concurrent extraction while
+    # avoiding lock overhead on cache hits.
     #
     # @param zip_path [Pathname] path to MOD zip file
     # @return [InfoJSON] parsed info.json from zip
@@ -48,13 +49,18 @@ module Factorix
       logger = Application.resolve(:logger)
       cache_key = cache.key_for(zip_path.to_s)
 
+      if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
+        logger.debug("info.json cache hit", path: zip_path.to_s)
+        return from_json(cached_json)
+      end
+
+      logger.debug("info.json cache miss", path: zip_path.to_s)
+
       cache.with_lock(cache_key) do
         if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
-          logger.debug("info.json cache hit", path: zip_path.to_s)
+          logger.debug("info.json cache hit (after lock)", path: zip_path.to_s)
           return from_json(cached_json)
         end
-
-        logger.debug("info.json cache miss", path: zip_path.to_s)
 
         json_string = Zip::File.open(zip_path) {|zip_file|
           info_entry = zip_file.find {|entry| entry.name.end_with?("/info.json") }
