@@ -32,6 +32,8 @@ module Factorix
           # @param license [String, nil] optional license
           # @param source_url [String, nil] optional source URL
           # @return [void]
+          # @raise [ArgumentError] if file does not exist, is not a file, or is not a .zip file
+          # @raise [ArgumentError] if zip is invalid or info.json is missing/malformed
           def call(file:, description: nil, category: nil, license: nil, source_url: nil, **)
             file_path = Pathname(file)
 
