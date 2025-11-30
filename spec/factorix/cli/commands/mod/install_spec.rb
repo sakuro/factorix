@@ -71,7 +71,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:add_uninstalled_mod)
-    allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false, topological_order: [])
+    allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false)
     allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
     allow(mod_dir).to receive(:mkpath)
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
@@ -109,7 +109,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
 
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-        allow(graph).to receive_messages(nodes: [node_a], topological_order: [mod_a])
+        allow(graph).to receive(:nodes).and_return([node_a])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(false)
       end
@@ -192,7 +192,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           }
         ]
 
-        allow(graph).to receive_messages(nodes: [node_a, node_b], topological_order: [mod_b, mod_a])
+        allow(graph).to receive(:nodes).and_return([node_a, node_b])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).and_return(false)
       end
@@ -206,7 +206,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     context "when MOD is already installed and enabled" do
       before do
         # Empty install targets
-        allow(graph).to receive_messages(nodes: [], topological_order: [])
+        allow(graph).to receive(:nodes).and_return([])
       end
 
       it "does not download anything" do
@@ -257,7 +257,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
 
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
-        allow(graph).to receive_messages(nodes: [node_a], topological_order: [mod_a])
+        allow(graph).to receive(:nodes).and_return([node_a])
         allow(command).to receive(:plan_installation).and_return(install_targets)
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(false)
       end

@@ -50,7 +50,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
-    allow(graph).to receive_messages(nodes: [], topological_order: [])
+    allow(graph).to receive(:nodes).and_return([])
 
     # Stub load_current_state to return mocked state
     # (Validator is tested separately in validator_spec.rb)
@@ -355,7 +355,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       before do
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive_messages(nodes: [node_a, node_expansion], edges_from: [])
-        allow(graph).to receive(:topological_order).and_return([mod_a, expansion_mod])
         allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod_a])
         allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
         allow(mod_list).to receive(:exist?).with(expansion_mod).and_return(true)

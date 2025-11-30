@@ -118,15 +118,6 @@ module Factorix
       # @return [Boolean]
       def empty? = @nodes.empty?
 
-      # Get topological order of MODs
-      #
-      # This returns MODs in an order where dependencies come before dependents.
-      # Useful for determining installation or enabling order.
-      #
-      # @return [Array<Factorix::MOD>] MODs in topological order
-      # @raise [TSort::Cyclic] if the graph contains cycles
-      def topological_order = tsort
-
       # Check if the graph contains cycles
       #
       # @return [Boolean] true if the graph has cycles

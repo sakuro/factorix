@@ -151,7 +151,7 @@ RSpec.describe Factorix::Dependency::Graph do
     end
   end
 
-  describe "#topological_order" do
+  describe "#tsort" do
     let(:graph) { Factorix::Dependency::Graph.new }
 
     context "with simple dependency chain" do
@@ -165,7 +165,7 @@ RSpec.describe Factorix::Dependency::Graph do
       end
 
       it "returns MODs in dependency order" do
-        order = graph.topological_order
+        order = graph.tsort
         expect(order.index(mod_c)).to be < order.index(mod_b)
         expect(order.index(mod_b)).to be < order.index(mod_a)
       end
@@ -189,7 +189,7 @@ RSpec.describe Factorix::Dependency::Graph do
       end
 
       it "returns MODs in valid dependency order" do
-        order = graph.topological_order
+        order = graph.tsort
         expect(order.index(mod_d)).to be < order.index(mod_b)
         expect(order.index(mod_d)).to be < order.index(mod_c)
         expect(order.index(mod_b)).to be < order.index(mod_a)
@@ -228,10 +228,8 @@ RSpec.describe Factorix::Dependency::Graph do
         expect(graph.cyclic?).to be true
       end
 
-      it "raises error when getting topological order" do
-        expect {
-          graph.topological_order
-        }.to raise_error(TSort::Cyclic)
+      it "raises TSort::Cyclic when calling tsort" do
+        expect { graph.tsort }.to raise_error(TSort::Cyclic)
       end
     end
 
