@@ -10,14 +10,14 @@ module Factorix
   #
   # SaveFile provides functionality to extract MOD information and startup settings
   # from Factorio save files (.zip format containing level.dat0 or level-init.dat).
-  #
-  # @!attribute [r] version
-  #   @return [Factorix::GameVersion] Game version from the save file
-  # @!attribute [r] mods
-  #   @return [Hash<String, Factorix::MODState>] Hash of MOD name to MODState
-  # @!attribute [r] startup_settings
-  #   @return [Factorix::MODSettings::Section] Startup settings section
   class SaveFile
+    # @!attribute [r] version
+    #   @return [Factorix::GameVersion] Game version from the save file
+    # @!attribute [r] mods
+    #   @return [Hash<String, Factorix::MODState>] Hash of MOD name to MODState
+    # @!attribute [r] startup_settings
+    #   @return [Factorix::MODSettings::Section] Startup settings section
+
     # Level file names to search for, in priority order
     LEVEL_FILE_NAMES = %w[level.dat0 level-init.dat].freeze
     private_constant :LEVEL_FILE_NAMES

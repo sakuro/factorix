@@ -5,11 +5,11 @@ module Factorix
 
   # API credentials for Factorio MOD Portal management
   #
-  # @!attribute [r] api_key
-  #   @return [String] API key for Factorio MOD Portal
-  #
   # @see https://wiki.factorio.com/Mod_upload_API
   class APICredential
+    # @!attribute [r] api_key
+    #   @return [String] API key for Factorio MOD Portal
+
     # Environment variable name for API key
     ENV_API_KEY = "FACTORIO_API_KEY"
     private_constant :ENV_API_KEY

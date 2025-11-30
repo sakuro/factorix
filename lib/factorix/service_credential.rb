@@ -7,13 +7,13 @@ module Factorix
 
   # Service credentials for Factorio MOD downloads
   #
-  # @!attribute [r] username
-  #   @return [String] Factorio service username
-  # @!attribute [r] token
-  #   @return [String] Factorio service token
-  #
   # @see https://wiki.factorio.com/Mod_portal_API
   class ServiceCredential
+    # @!attribute [r] username
+    #   @return [String] Factorio service username
+    # @!attribute [r] token
+    #   @return [String] Factorio service token
+
     # Environment variable name for username
     ENV_USERNAME = "FACTORIO_USERNAME"
     private_constant :ENV_USERNAME

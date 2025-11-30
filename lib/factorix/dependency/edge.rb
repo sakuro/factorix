@@ -9,16 +9,16 @@ module Factorix
     # Each edge represents a dependency relationship from one MOD (dependent)
     # to another MOD (dependency). The edge type indicates the nature of the
     # relationship (required, optional, incompatible, etc.).
-    #
-    # @!attribute [r] from_mod
-    #   @return [Factorix::MOD] MOD object (the dependent)
-    # @!attribute [r] to_mod
-    #   @return [Factorix::MOD] MOD object (the dependency)
-    # @!attribute [r] type
-    #   @return [Symbol] dependency type
-    # @!attribute [r] version_requirement
-    #   @return [MODVersionRequirement, nil] version requirement
     class Edge
+      # @!attribute [r] from_mod
+      #   @return [Factorix::MOD] MOD object (the dependent)
+      # @!attribute [r] to_mod
+      #   @return [Factorix::MOD] MOD object (the dependency)
+      # @!attribute [r] type
+      #   @return [Symbol] dependency type
+      # @!attribute [r] version_requirement
+      #   @return [MODVersionRequirement, nil] version requirement
+
       # Dependency types (from Factorix::Dependency::Entry)
       REQUIRED = Entry::REQUIRED
       OPTIONAL = Entry::OPTIONAL

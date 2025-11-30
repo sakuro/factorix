@@ -15,18 +15,18 @@ module Factorix
   #
   # This is distinct from MOD (which is just a name identifier) and
   # MODState (which represents desired state in mod-list.json).
-  #
-  # @!attribute [r] mod
-  #   @return [Factorix::MOD] The MOD identifier
-  # @!attribute [r] version
-  #   @return [Factorix::MODVersion] The MOD version
-  # @!attribute [r] form
-  #   @return [Symbol] :zip or :directory
-  # @!attribute [r] path
-  #   @return [Pathname] The path to the ZIP file or directory
-  # @!attribute [r] info
-  #   @return [Factorix::InfoJSON] The parsed info.json metadata
   class InstalledMOD
+    # @!attribute [r] mod
+    #   @return [Factorix::MOD] The MOD identifier
+    # @!attribute [r] version
+    #   @return [Factorix::MODVersion] The MOD version
+    # @!attribute [r] form
+    #   @return [Symbol] :zip or :directory
+    # @!attribute [r] path
+    #   @return [Pathname] The path to the ZIP file or directory
+    # @!attribute [r] info
+    #   @return [Factorix::InfoJSON] The parsed info.json metadata
+
     include Comparable
 
     # Make the class itself enumerable over all installed MODs
