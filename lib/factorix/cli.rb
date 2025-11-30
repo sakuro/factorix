@@ -19,6 +19,7 @@ module Factorix
     register "path", Commands::Path
     register "mod check", Commands::MOD::Check
     register "mod list", Commands::MOD::List
+    register "mod show", Commands::MOD::Show
     register "mod enable", Commands::MOD::Enable
     register "mod disable", Commands::MOD::Disable
     register "mod install", Commands::MOD::Install

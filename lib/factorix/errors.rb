@@ -56,6 +56,7 @@ module Factorix
   # MOD errors
   class MODNotFoundError < DomainError; end
   class MODNotOnPortalError < MODNotFoundError; end
+  class BundledMODError < DomainError; end
 
   # Dependency validation errors
   class ValidationError < DomainError; end

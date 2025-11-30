@@ -279,6 +279,25 @@ Search MODs on Factorio MOD Portal.
 
 **Use case**: Search for MODs before downloading or installing
 
+### MOD::Show
+
+Show detailed MOD information from Factorio MOD Portal.
+
+**Arguments**:
+- `mod_name` - MOD name to show (required)
+
+**Output**: Text format showing:
+- Title, summary
+- Status (Enabled/Disabled/Not installed)
+- Version (latest from portal)
+- Author, category, license, Factorio version, downloads count
+- Installed version with update indicator (if installed)
+- Links (MOD Portal, source URL, homepage)
+- Dependencies (required and optional)
+- Incompatibilities
+
+**Use case**: View detailed MOD information before installing or to check for updates
+
 ### MOD::Sync
 
 Synchronize MOD states from a save file.
