@@ -21,5 +21,6 @@ See [components/](components/) directory for detailed documentation on each comp
 - [api-portal.md](components/api-portal.md) - API layer and Portal layer
 - [cli.md](components/cli.md) - CLI commands
 - [credentials.md](components/credentials.md) - Authentication credential management
+- [dependency.md](components/dependency.md) - Dependency resolution and validation
 - [runtime.md](components/runtime.md) - Platform abstraction
 - [storage.md](components/storage.md) - Cache, MODSettings, MODList, and InstalledMOD management
