@@ -63,11 +63,6 @@ RSpec/IndexedLet:
     - '^error\d+$'    # Allow error1, error2, etc.
     - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
 
-RSpec/SubjectStub:
-  Exclude:
-    - spec/factorix/cli/commands/launch_spec.rb
-    - spec/factorix/cli/commands/mod/sync_spec.rb
-
 Style/IpAddresses:
   Exclude:
     - spec/factorix/game_version_spec.rb
