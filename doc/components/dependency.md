@@ -67,20 +67,19 @@ Entry = Data.define(:mod, :type, :version_requirement)
 
 ### Graph
 
-Directed graph using Ruby's `TSort` module for topological sorting.
+Directed graph using Ruby's `TSort` module for cycle detection.
 
 ```ruby
 graph = Dependency::Graph.new
 graph.add_node(node)
 graph.add_edge(edge)
-graph.topological_order  # Returns MODs in dependency order
-graph.cyclic?            # Detect circular dependencies
+graph.cyclic?                        # Detect circular dependencies
+graph.strongly_connected_components  # Get cycles for error reporting
 ```
 
 **Key Features:**
 - Only required dependencies are followed for cycle detection
 - Optional cycles are allowed (Factorio permits them)
-- Provides strongly connected components for cycle reporting
 
 ### Node
 
