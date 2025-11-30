@@ -119,21 +119,23 @@ Commands should use two distinct output methods based on the nature of the outpu
 - Warnings: `say "Warning message", prefix: :warn`
 - Errors: `say "Error message", prefix: :error`
 
-#### `puts(data)` - Structured data output
+#### `puts(data)` - Data output
 
-**Purpose:** Machine-readable output for piping, scripting, or programmatic consumption
+**Purpose:** Primary command output for piping, scripting, or direct display
 
 **Behavior:**
 - Always outputs regardless of `--quiet` flag
 - No prefix or formatting added
-- Intended for machine/script consumption
+- The "main result" of the command
 
-**Format:** Typically JSON using `JSON.pretty_generate`
+**Formats:**
+- JSON (using `JSON.pretty_generate`) for machine consumption
+- Tables (text-based) for human-readable listings
 
 **Use cases:**
-- Command output that other tools will consume
-- Data export/listing operations (path, version, image list)
-- Structured information queries
+- Data export/listing operations (MOD list, search results, image list)
+- Structured information queries (path, version)
+- Any output that represents the command's primary result
 
 #### Selection Guidelines
 
@@ -178,60 +180,21 @@ All CLI commands inherit from `CLI::Commands::Base`, which automatically prepend
 
 #### CommandWrapper Exception Capture Mechanism
 
-When a command is executed, `CommandWrapper#call` wraps the actual command implementation with a two-tier exception handling strategy:
+When a command is executed, [`CommandWrapper#call`](lib/factorix/cli/commands/command_wrapper.rb) wraps the actual command implementation with a two-tier exception handling strategy:
 
-```ruby
-def call(**options)
-  @quiet = options[:quiet]
-  @yes = options[:yes] if options.key?(:yes)
+1. Perform common setup (options handling, configuration loading, log level)
+2. Call the actual command implementation via `super`
+3. Catch and handle exceptions based on their type
 
-  load_config!(options[:config_path])
-  log_level!(options[:log_level]) if options[:log_level]
+#### Exception Handling Tiers and Exit Codes
 
-  # Call the command's implementation
-  super
-rescue Factorix::Error => e
-  # Expected errors (domain/infrastructure errors)
-  log = Factorix::Application[:logger]
-  log.warn(e.message)
-  log.debug(e)
-  say "Error: #{e.message}", prefix: :error unless @quiet
-  raise # Re-raise for exe/factorix to handle exit code
-rescue => e
-  # Unexpected errors
-  log = Factorix::Application[:logger]
-  log.error(e)
-  say "Unexpected error: #{e.message}", prefix: :error unless @quiet
-  raise
-end
-```
+The top-level [`exe/factorix`](exe/factorix) script maps exceptions to exit codes:
 
-#### Exception Handling Tiers
-
-**Tier 1: Expected Domain/Infrastructure Errors** (`Factorix::Error`)
-- **Examples**: `ValidationError`, `GameRunningError`, `HTTPClientError`
-- **Logging**: Warning level for message, debug level for full exception
-- **User message**: "Error: {message}" with error prefix (unless `--quiet`)
-- **Exit code**: 1 (mapped in `exe/factorix`)
-
-**Tier 2: Unexpected Errors** (all other exceptions)
-- **Examples**: `StandardError`, `RuntimeError`, programming errors
-- **Logging**: Error level with full exception details
-- **User message**: "Unexpected error: {message}" with error prefix (unless `--quiet`)
-- **Exit code**: 2 (mapped in `exe/factorix`)
-
-#### Exit Code Mapping
-
-The top-level `exe/factorix` script maps exceptions to exit codes:
-
-```ruby
-exit_status = Factorix::CLI.call
-exit exit_status
-rescue Factorix::Error
-  exit 1  # Expected error
-rescue
-  exit 2  # Unexpected error
-```
+| Exit Code | Exception Type | Examples | Logging | User Message |
+|-----------|----------------|----------|---------|--------------|
+| 0 | (none) | Normal completion | - | - |
+| 1 | `Factorix::Error` | `ValidationError`, `GameRunningError`, `HTTPClientError` | Warning (message), Debug (full) | "Error: {message}" |
+| 2 | Other exceptions | `StandardError`, `RuntimeError`, programming errors | Error (full details) | "Unexpected error: {message}" |
 
 #### Implications for Command Implementation
 
