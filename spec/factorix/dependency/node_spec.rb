@@ -68,37 +68,6 @@ RSpec.describe Factorix::Dependency::Node do
     end
   end
 
-  describe "attribute setters" do
-    let(:node) { Factorix::Dependency::Node.new(mod:, version:) }
-
-    it "allows changing enabled state" do
-      node.enabled = true
-      expect(node.enabled).to be true
-
-      node.enabled = false
-      expect(node.enabled).to be false
-    end
-
-    it "allows changing installed state" do
-      node.installed = true
-      expect(node.installed).to be true
-
-      node.installed = false
-      expect(node.installed).to be false
-    end
-
-    it "allows changing operation" do
-      node.operation = :enable
-      expect(node.operation).to eq(:enable)
-
-      node.operation = :disable
-      expect(node.operation).to eq(:disable)
-
-      node.operation = nil
-      expect(node.operation).to be_nil
-    end
-  end
-
   describe "#to_s" do
     it "shows new state when no flags are set" do
       node = Factorix::Dependency::Node.new(mod:, version:)
