@@ -168,9 +168,7 @@ module Factorix
       def depends_on?(mod_name_or_mod)
         mod_name = mod_name_or_mod.is_a?(MOD) ? mod_name_or_mod.name : mod_name_or_mod.to_s
 
-        @dependencies.any? {|dep|
-          dep.mod.name == mod_name && !dep.incompatible?
-        }
+        @dependencies.any? {|dep| dep.mod.name == mod_name && !dep.incompatible? }
       end
 
       # Check if this collection marks a MOD as incompatible
@@ -180,9 +178,7 @@ module Factorix
       def incompatible_with?(mod_name_or_mod)
         mod_name = mod_name_or_mod.is_a?(MOD) ? mod_name_or_mod.name : mod_name_or_mod.to_s
 
-        @dependencies.any? {|dep|
-          dep.mod.name == mod_name && dep.incompatible?
-        }
+        @dependencies.any? {|dep| dep.mod.name == mod_name && dep.incompatible? }
       end
 
       # Check if the collection is empty
@@ -199,32 +195,19 @@ module Factorix
       #
       # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Boolean] true if all required dependencies are satisfied
-      def satisfied_by?(available_mods)
-        required.all? {|dep|
-          version = available_mods[dep.mod.name]
-          version && dep.satisfied_by?(version)
-        }
-      end
+      def satisfied_by?(available_mods) = required.all? {|dep| (version = available_mods[dep.mod.name]) && dep.satisfied_by?(version) }
 
       # Get list of incompatible MODs that are present
       #
       # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Array<String>] Array of conflicting MOD names
-      def conflicts_with?(available_mods)
-        incompatible.filter_map {|dep|
-          dep.mod.name if available_mods.key?(dep.mod.name)
-        }
-      end
+      def conflicts_with?(available_mods) = incompatible.filter_map {|dep| dep.mod.name if available_mods.key?(dep.mod.name) }
 
       # Get list of missing required dependencies
       #
       # @param available_mods [Hash<String, MODVersion>] Available MODs and their versions
       # @return [Array<String>] Array of missing MOD names
-      def missing_required(available_mods)
-        required.filter_map {|dep|
-          dep.mod.name unless available_mods.key?(dep.mod.name)
-        }
-      end
+      def missing_required(available_mods) = required.filter_map {|dep| dep.mod.name unless available_mods.key?(dep.mod.name) }
 
       # Get list of dependencies with unsatisfied version requirements
       #
@@ -241,10 +224,7 @@ module Factorix
 
           next if dep.satisfied_by?(version)
 
-          result[dep.mod.name] = {
-            required: dep.version_requirement.to_s,
-            actual: version.to_s
-          }
+          result[dep.mod.name] = {required: dep.version_requirement.to_s, actual: version.to_s}
         end
 
         result
