@@ -9,16 +9,17 @@ Authentication credentials for MOD downloads (username + token). Used for authen
 - `username`: Factorio service username
 - `token`: Factorio service token
 
-### Data Sources (in priority order)
+### Data Sources
 
-1. **Environment variables (priority)**
+1. **player-data.json (default)**
+   - `service-username` and `service-token` in `player-data.json`
+   - Path: Runtime#player_data_path
+   - Automatically saved when you log in to Factorio
+
+2. **Environment variables (alternative)**
    - `FACTORIO_USERNAME`
    - `FACTORIO_TOKEN`
-
-2. **File (fallback)**
-   - `service-username` in `player-data.json`
-   - `service-token` in `player-data.json`
-   - Path: Runtime#player_data_path
+   - Configure `credential.source: :env` to use this method
 
 ### Usage Example
 

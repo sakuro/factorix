@@ -232,19 +232,25 @@ Input file path (default: stdin).
 .TP
 .BR \-\-backup\-extension =\fIVALUE\fR
 Backup file extension (default: .bak).
-.SH ENVIRONMENT
+.SH AUTHENTICATION
+.SS Service Credentials (for MOD downloads)
+Service credentials (username and token) are read from player-data.json
+in the Factorio user data directory. These are automatically saved when
+you log in to Factorio.
+.PP
+Alternatively, you can set environment variables:
 .TP
 .B FACTORIO_USERNAME
-Factorio service username for MOD downloads.
+Factorio service username.
 .TP
 .B FACTORIO_TOKEN
-Factorio service token for MOD downloads.
+Factorio service token.
+.SS API Key (for MOD Portal management)
+API key is required for upload, edit, and image operations.
+Set the following environment variable:
 .TP
 .B FACTORIO_API_KEY
-API key for MOD Portal management (upload, edit, image operations).
-.PP
-Alternatively, credentials can be stored in player-data.json or configured
-via the configuration file.
+API key obtained from Factorio MOD Portal.
 .SH FILES
 .TP
 .I ~/.config/factorix/config.yml
