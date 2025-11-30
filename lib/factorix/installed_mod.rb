@@ -186,7 +186,7 @@ module Factorix
         logger.debug("Skipping invalid MOD package", path: path.to_s, reason: e.message)
         nil
       rescue => e
-        logger.debug("Skipping invalid MOD package", path: path.to_s, error: e.message)
+        logger.debug("Error loading MOD package", path: path.to_s, error: e.message)
         nil
       end
 
