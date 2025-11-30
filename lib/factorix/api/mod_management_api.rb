@@ -107,7 +107,7 @@ module Factorix
       # @option metadata [String] :summary Brief description
       # @option metadata [String] :title MOD title
       # @option metadata [String] :category MOD category
-      # @option metadata [Array<String>, String] :tags Array of tags or comma-separated string
+      # @option metadata [Array<String>] :tags Array of tags
       # @option metadata [String] :license License identifier
       # @option metadata [String] :homepage Homepage URL
       # @option metadata [String] :source_url Repository URL
@@ -120,11 +120,9 @@ module Factorix
       def edit_details(mod_name, **metadata)
         validate_metadata!(metadata, ALLOWED_EDIT_METADATA, "edit_details")
 
-        metadata = metadata.dup
-        metadata[:tags] = metadata[:tags].join(",") if metadata[:tags].is_a?(Array)
-
         uri = URI.join(BASE_URL, "/api/v2/mods/edit_details")
 
+        # URI.encode_www_form handles arrays as multiple params (tags=a&tags=b)
         form_data = {mod: mod_name, **metadata}.transform_keys(&:to_s)
         body = URI.encode_www_form(form_data)
 
