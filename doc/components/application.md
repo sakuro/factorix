@@ -55,10 +55,15 @@ end
 
 ## Configuration File Loading
 
-### File Path (XDG-compliant)
+### Loading Priority
 
-- `$XDG_CONFIG_HOME/factorix/config.rb` (if environment variable is set)
-- `~/.config/factorix/config.rb` (default)
+Configuration file is resolved in the following order:
+
+1. `--config-path` CLI option (if specified)
+2. `FACTORIX_CONFIG` environment variable (if set)
+3. Default path (XDG-compliant):
+   - `$XDG_CONFIG_HOME/factorix/config.rb` (if `XDG_CONFIG_HOME` is set)
+   - `~/.config/factorix/config.rb` (default)
 
 ### Configuration File Format (Ruby DSL)
 

@@ -6,6 +6,25 @@
 - Commands are placed under `CLI::Commands` module
 - **Output Guidelines**: Commands use `say()` for human-readable messages (respects `--quiet`) and `puts()` for structured data output (always outputs). See [CLI Output Guidelines](../../DEVELOPMENT.md#cli-output-guidelines) for detailed conventions.
 
+## Global Options
+
+The following options are available for all commands:
+
+| Option | Description |
+|--------|-------------|
+| `-c`, `--config-path=VALUE` | Path to configuration file |
+| `--log-level=VALUE` | Set log level: debug, info, warn, error, fatal |
+| `-q`, `--quiet` | Suppress non-essential output |
+| `-h`, `--help` | Print help information |
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `FACTORIX_CONFIG` | Path to configuration file. Overrides the default location. |
+
+See [Application Configuration](application.md) for configuration file loading priority.
+
 ## Command List
 
 ### Version

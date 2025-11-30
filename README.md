@@ -72,7 +72,19 @@ Factorix::Application.configure do |config|
 end
 ```
 
-See `example/config.rb` for platform-specific examples and additional configuration options.
+See [`example/config.rb`](example/config.rb) for platform-specific examples and additional configuration options.
+
+**Alternative configuration path:**
+
+You can specify a custom configuration file path using the `--config-path` option or `FACTORIX_CONFIG` environment variable:
+```bash
+# Using CLI option
+factorix mod list --config-path=/path/to/config.rb
+
+# Using environment variable
+export FACTORIX_CONFIG=/path/to/config.rb
+factorix mod list
+```
 
 ## Usage
 
