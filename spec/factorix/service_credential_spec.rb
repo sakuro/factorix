@@ -145,4 +145,47 @@ RSpec.describe Factorix::ServiceCredential do
       end
     end
   end
+
+  describe "#inspect" do
+    before do
+      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("test_user")
+      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("secret_token")
+    end
+
+    it "masks both username and token values" do
+      credential = Factorix::ServiceCredential.load
+      expect(credential.inspect).not_to include("test_user")
+      expect(credential.inspect).not_to include("secret_token")
+      expect(credential.inspect).to include("*****")
+    end
+  end
+
+  describe "#to_s" do
+    before do
+      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("test_user")
+      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("secret_token")
+    end
+
+    it "masks both username and token values" do
+      credential = Factorix::ServiceCredential.load
+      expect(credential.to_s).not_to include("test_user")
+      expect(credential.to_s).not_to include("secret_token")
+      expect(credential.to_s).to include("*****")
+    end
+  end
+
+  describe "#pretty_print" do
+    before do
+      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("test_user")
+      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("secret_token")
+    end
+
+    it "masks both username and token values" do
+      credential = Factorix::ServiceCredential.load
+      output = PP.pp(credential, +"")
+      expect(output).not_to include("test_user")
+      expect(output).not_to include("secret_token")
+      expect(output).to include("*****")
+    end
+  end
 end

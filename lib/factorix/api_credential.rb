@@ -41,5 +41,14 @@ module Factorix
     end
 
     private_class_method :new, :[]
+
+    # @return [String] string representation with masked API key
+    def inspect = "#<#{self.class} api_key=\"*****\">"
+
+    alias to_s inspect
+
+    # @param pp [PP] pretty printer
+    # @return [void]
+    def pretty_print(pp) = pp.text(inspect)
   end
 end

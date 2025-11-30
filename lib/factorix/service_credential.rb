@@ -114,5 +114,14 @@ module Factorix
     end
 
     private_class_method :new, :[], :from_env, :from_player_data
+
+    # @return [String] string representation with masked credentials
+    def inspect = "#<#{self.class} username=\"*****\" token=\"*****\">"
+
+    alias to_s inspect
+
+    # @param pp [PP] pretty printer
+    # @return [void]
+    def pretty_print(pp) = pp.text(inspect)
   end
 end
