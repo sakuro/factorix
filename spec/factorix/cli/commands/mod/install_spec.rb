@@ -73,7 +73,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(graph).to receive(:add_uninstalled_mod)
     allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false)
     allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
-    allow(mod_dir).to receive(:mkpath)
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
     allow(portal).to receive(:download_mod)
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)

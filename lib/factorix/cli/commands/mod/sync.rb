@@ -48,8 +48,7 @@ module Factorix
             # Load current state
             graph, mod_list, installed_mods = load_current_state
 
-            # Ensure MOD directory exists
-            runtime.mod_dir.mkpath unless runtime.mod_dir.exist?
+            raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 
             # Find MODs that need to be installed
             mods_to_install = find_mods_to_install(save_data.mods, installed_mods)

@@ -45,8 +45,7 @@ module Factorix
             # Load current state (without validation to allow fixing issues)
             graph, mod_list, _installed_mods = load_current_state
 
-            # Ensure MOD directory exists
-            runtime.mod_dir.mkpath unless runtime.mod_dir.exist?
+            raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 
             # Plan installation (fetch info, extend graph, validate)
             install_targets = plan_installation(mod_specs, graph, jobs)

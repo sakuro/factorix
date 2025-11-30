@@ -45,8 +45,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
     allow(Factorix::Dependency::Graph).to receive(:from_installed_mods).and_return(graph)
     allow(graph).to receive_messages(edges_from: [], edges_to: [])
     allow(mod_list).to receive(:save)
-    allow(mod_dir).to receive(:mkpath)
-    allow(mod_dir).to receive(:exist?).and_return(false)
+    allow(mod_dir).to receive(:exist?).and_return(true)
     allow(logger).to receive(:debug)
 
     # Create a mock MODSettings if needed
