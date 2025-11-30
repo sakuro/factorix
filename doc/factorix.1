@@ -46,6 +46,12 @@ Wait for the game to finish.
 Arguments after
 .B \-\-
 are passed directly to Factorio.
+.SS factorix completion zsh
+Generate zsh completion script. Output should be evaluated to enable completion.
+.PP
+.RS
+eval "$(factorix completion zsh)"
+.RE
 .SS factorix cache stat
 Display cache statistics.
 .TP
@@ -279,6 +285,12 @@ Cache directory for API responses and downloads.
 .I ~/.local/state/factorix/
 Log files.
 .SH EXAMPLES
+Enable zsh completion:
+.PP
+.RS
+eval "$(factorix completion zsh)"
+.RE
+.PP
 List all installed MODs:
 .PP
 .RS

@@ -17,6 +17,7 @@ module Factorix
     register "man", Commands::Man
     register "launch", Commands::Launch
     register "path", Commands::Path
+    register "completion zsh", Commands::Completion::Zsh
     register "mod check", Commands::MOD::Check
     register "mod list", Commands::MOD::List
     register "mod show", Commands::MOD::Show

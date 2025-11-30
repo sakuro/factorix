@@ -107,6 +107,19 @@ factorix cache evict download --older-than 7d  # Remove entries older than 7 day
 
 **Use case**: Free up disk space or clear stale cache data
 
+### Completion::Zsh
+
+Generate zsh completion script.
+
+**Output**: Zsh completion script that should be evaluated to enable command-line completion.
+
+**Example**:
+```bash
+eval "$(factorix completion zsh)"
+```
+
+**Use case**: Enable tab completion for factorix commands in zsh
+
 ### Launch
 
 Launch the game.
