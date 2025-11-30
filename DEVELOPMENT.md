@@ -32,14 +32,14 @@ This opens an IRB session where you can experiment with the Factorix API.
 
 ## Technology Stack
 
-See [doc/technology-stack.md](doc/technology-stack.md) for details.
+See [`doc/technology-stack.md`](doc/technology-stack.md) for details.
 
 - **Required Ruby version**: >= 3.2
 - **CI tested**: Ruby 3.2, 3.3, 3.4
 
 ## Project Structure
 
-See [doc/architecture.md](doc/architecture.md) for detailed class hierarchy and design patterns.
+See [`doc/architecture.md`](doc/architecture.md) for detailed class hierarchy and design patterns.
 
 ## Language Policy
 
@@ -87,7 +87,7 @@ end
 - `MOD` is always uppercase (not `Mod` or `mod`)
 - Other abbreviations: `API`, `CLI`, `HTTP`, `MacOS`, `WSL`
 
-See [doc/architecture.md](doc/architecture.md) for Zeitwerk configuration and file-to-class mapping details.
+See [`doc/architecture.md`](doc/architecture.md) for Zeitwerk configuration and file-to-class mapping details.
 
 ### Testing Style
 - **RSpec** with `expect` syntax (no should syntax)
@@ -336,12 +336,12 @@ Factorix follows [Semantic Versioning](https://semver.org/):
 
 ### Publishing a Release
 
-Releases are automated via GitHub Actions workflows. See `.github/workflows/README.md` for complete documentation.
+Releases are automated via GitHub Actions workflows. See [`.github/workflows/README.md`](.github/workflows/README.md) for complete documentation.
 
 #### Quick Release Steps
 
 1. **Prepare Changes**
-   - Update `CHANGELOG.md` with changes in the `[Unreleased]` section
+   - Update [`CHANGELOG.md`](CHANGELOG.md) with changes in the `[Unreleased]` section
    - Commit and push to `main` branch
 
 2. **Trigger Release**
@@ -353,7 +353,7 @@ Releases are automated via GitHub Actions workflows. See `.github/workflows/READ
 3. **Review Release PR**
    - Automated PR will be created with version updates
    - CI and validation workflows run automatically
-   - Review changes in `version.rb` and `CHANGELOG.md`
+   - Review changes in [`version.rb`](lib/factorix/version.rb) and [`CHANGELOG.md`](CHANGELOG.md)
 
 4. **Merge and Publish**
    ```bash
@@ -377,7 +377,7 @@ For the first release, configure RubyGems Trusted Publishing:
    - Workflow filename: `release-publish.yml`
    - Environment name: `release`
 
-See `.github/workflows/README.md` for detailed setup and troubleshooting.
+See [`.github/workflows/README.md`](.github/workflows/README.md) for detailed setup and troubleshooting.
 
 ## Additional Resources
 
