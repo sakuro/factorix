@@ -20,15 +20,23 @@ module Factorix
 
       # Predefined category instances
       NO_CATEGORY = new(value: "", name: "No category", description: "Unassigned category")
+      private_constant :NO_CATEGORY
       CONTENT = new(value: "content", name: "Content", description: "Mods introducing new content into the game")
+      private_constant :CONTENT
       OVERHAUL = new(value: "overhaul", name: "Overhaul", description: "Large total conversion mods")
+      private_constant :OVERHAUL
       TWEAKS = new(value: "tweaks", name: "Tweaks", description: "Small changes concerning balance, gameplay, or graphics")
+      private_constant :TWEAKS
       UTILITIES = new(value: "utilities", name: "Utilities", description: "Providing the player with new tools or adjusting the game interface")
+      private_constant :UTILITIES
       SCENARIOS = new(value: "scenarios", name: "Scenarios", description: "Scenarios, maps, and puzzles")
+      private_constant :SCENARIOS
       MOD_PACKS = new(value: "mod-packs", name: "Mod packs", description: "Collections of mods with tweaks to make them work together")
+      private_constant :MOD_PACKS
       LOCALIZATIONS = new(value: "localizations", name: "Localizations", description: "Translations for other mods")
+      private_constant :LOCALIZATIONS
       INTERNAL = new(value: "internal", name: "Internal", description: "Lua libraries for use by other mods")
-      private_constant :NO_CATEGORY, :CONTENT, :OVERHAUL, :TWEAKS, :UTILITIES, :SCENARIOS, :MOD_PACKS, :LOCALIZATIONS, :INTERNAL
+      private_constant :INTERNAL
 
       # Lookup table for flyweight pattern
       CATEGORIES = {
