@@ -19,113 +19,41 @@ module Factorix
       #   @return [String] tag description
 
       # Predefined tag instances
-      TRANSPORTATION = new(
-        value: "transportation",
-        name: "Transportation",
-        description: "Transportation of the player, be it vehicles or teleporters."
-      )
-      LOGISTICS = new(
-        value: "logistics",
-        name: "Logistics",
-        description: "Augmented or new ways of transporting materials - belts, inserters, pipes!"
-      )
-      TRAINS = new(
-        value: "trains",
-        name: "Trains",
-        description: "Trains are great, but what if they could do even more?"
-      )
-      COMBAT = new(
-        value: "combat",
-        name: "Combat",
-        description: "New ways to deal with enemies, be it attack or defense."
-      )
-      ARMOR = new(
-        value: "armor",
-        name: "Armor",
-        description: "Armors or armor equipment."
-      )
-      ENEMIES = new(
-        value: "enemies",
-        name: "Enemies",
-        description: "Changes to enemies or entirely new enemies to deal with."
-      )
-      CHARACTER = new(
-        value: "character",
-        name: "Character",
-        description: "Changes to the player's in-game appearance."
-      )
-      ENVIRONMENT = new(
-        value: "environment",
-        name: "Environment",
-        description: "Map generation and terrain modification."
-      )
-      PLANETS = new(
-        value: "planets",
-        name: "Planets",
-        description: "New places to build more factories."
-      )
-      MINING = new(
-        value: "mining",
-        name: "Mining",
-        description: "New ores and resources as well as machines."
-      )
-      FLUIDS = new(
-        value: "fluids",
-        name: "Fluids",
-        description: "Things related to oil and other fluids."
-      )
-      LOGISTIC_NETWORK = new(
-        value: "logistic-network",
-        name: "Logistics Network",
-        description: "Related to roboports and logistic robots"
-      )
-      CIRCUIT_NETWORK = new(
-        value: "circuit-network",
-        name: "Circuit network",
-        description: "Entities which interact with the circuit network."
-      )
-      MANUFACTURING = new(
-        value: "manufacturing",
-        name: "Manufacture",
-        description: "Furnaces, assembling machines, production chains"
-      )
-      POWER = new(
-        value: "power",
-        name: "Power Production",
-        description: "Changes to power production and distribution."
-      )
-      STORAGE = new(
-        value: "storage",
-        name: "Storage",
-        description: "More than just chests."
-      )
-      BLUEPRINTS = new(
-        value: "blueprints",
-        name: "Blueprints",
-        description: "Change blueprint behavior."
-      )
-      CHEATS = new(
-        value: "cheats",
-        name: "Cheats",
-        description: "Play it your way."
-      )
+      TRANSPORTATION = new(value: "transportation", name: "Transportation", description: "Transportation of the player, be it vehicles or teleporters.")
       private_constant :TRANSPORTATION
+      LOGISTICS = new(value: "logistics", name: "Logistics", description: "Augmented or new ways of transporting materials - belts, inserters, pipes!")
       private_constant :LOGISTICS
+      TRAINS = new(value: "trains", name: "Trains", description: "Trains are great, but what if they could do even more?")
       private_constant :TRAINS
+      COMBAT = new(value: "combat", name: "Combat", description: "New ways to deal with enemies, be it attack or defense.")
       private_constant :COMBAT
+      ARMOR = new(value: "armor", name: "Armor", description: "Armors or armor equipment.")
       private_constant :ARMOR
+      ENEMIES = new(value: "enemies", name: "Enemies", description: "Changes to enemies or entirely new enemies to deal with.")
       private_constant :ENEMIES
+      CHARACTER = new(value: "character", name: "Character", description: "Changes to the player's in-game appearance.")
       private_constant :CHARACTER
+      ENVIRONMENT = new(value: "environment", name: "Environment", description: "Map generation and terrain modification.")
       private_constant :ENVIRONMENT
+      PLANETS = new(value: "planets", name: "Planets", description: "New places to build more factories.")
       private_constant :PLANETS
+      MINING = new(value: "mining", name: "Mining", description: "New ores and resources as well as machines.")
       private_constant :MINING
+      FLUIDS = new(value: "fluids", name: "Fluids", description: "Things related to oil and other fluids.")
       private_constant :FLUIDS
+      LOGISTIC_NETWORK = new(value: "logistic-network", name: "Logistics Network", description: "Related to roboports and logistic robots")
       private_constant :LOGISTIC_NETWORK
+      CIRCUIT_NETWORK = new(value: "circuit-network", name: "Circuit network", description: "Entities which interact with the circuit network.")
       private_constant :CIRCUIT_NETWORK
+      MANUFACTURING = new(value: "manufacturing", name: "Manufacture", description: "Furnaces, assembling machines, production chains")
       private_constant :MANUFACTURING
+      POWER = new(value: "power", name: "Power Production", description: "Changes to power production and distribution.")
       private_constant :POWER
+      STORAGE = new(value: "storage", name: "Storage", description: "More than just chests.")
       private_constant :STORAGE
+      BLUEPRINTS = new(value: "blueprints", name: "Blueprints", description: "Change blueprint behavior.")
       private_constant :BLUEPRINTS
+      CHEATS = new(value: "cheats", name: "Cheats", description: "Play it your way.")
       private_constant :CHEATS
 
       # Lookup table for flyweight pattern
