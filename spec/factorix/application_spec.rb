@@ -99,14 +99,11 @@ RSpec.describe Factorix::Application do
 
     describe "[:mod_download_api]" do
       before do
-        # Use environment-based credentials to avoid NotImplementedError on plain Linux
-        Factorix::Application.config.credential.source = :env
         ENV["FACTORIO_USERNAME"] = "test_user"
         ENV["FACTORIO_TOKEN"] = "test_token"
       end
 
       after do
-        Factorix::Application.config.credential.source = :player_data
         ENV.delete("FACTORIO_USERNAME")
         ENV.delete("FACTORIO_TOKEN")
       end
@@ -119,14 +116,11 @@ RSpec.describe Factorix::Application do
 
     describe "[:service_credential]" do
       before do
-        # Use environment-based credentials to avoid NotImplementedError on plain Linux
-        Factorix::Application.config.credential.source = :env
         ENV["FACTORIO_USERNAME"] = "test_user"
         ENV["FACTORIO_TOKEN"] = "test_token"
       end
 
       after do
-        Factorix::Application.config.credential.source = :player_data
         ENV.delete("FACTORIO_USERNAME")
         ENV.delete("FACTORIO_TOKEN")
       end
@@ -189,14 +183,11 @@ RSpec.describe Factorix::Application do
 
     describe "[:portal]" do
       before do
-        # Use environment-based credentials to avoid NotImplementedError on plain Linux
-        Factorix::Application.config.credential.source = :env
         ENV["FACTORIO_USERNAME"] = "test_user"
         ENV["FACTORIO_TOKEN"] = "test_token"
       end
 
       after do
-        Factorix::Application.config.credential.source = :player_data
         ENV.delete("FACTORIO_USERNAME")
         ENV.delete("FACTORIO_TOKEN")
       end

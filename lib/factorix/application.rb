@@ -119,17 +119,7 @@ module Factorix
     end
 
     # Register service credential
-    register(:service_credential, memoize: true) do
-      runtime = resolve(:runtime)
-      case config.credential.source
-      when :env
-        ServiceCredential.from_env
-      when :player_data
-        ServiceCredential.from_player_data(runtime:)
-      else
-        raise ArgumentError, "Invalid credential source: #{config.credential.source}"
-      end
-    end
+    register(:service_credential, memoize: true) { ServiceCredential.load }
 
     # Register MOD Portal API client
     register(:mod_portal_api, memoize: true) do
@@ -142,9 +132,7 @@ module Factorix
     end
 
     # Register API credential (for MOD upload/management)
-    register(:api_credential, memoize: true) do
-      APICredential.from_env
-    end
+    register(:api_credential, memoize: true) { APICredential.load }
 
     # Register MOD Management API client
     register(:mod_management_api, memoize: true) do
@@ -158,11 +146,6 @@ module Factorix
 
     # Log level (:debug, :info, :warn, :error, :fatal)
     setting :log_level, default: :info
-
-    # Credential settings
-    setting :credential do
-      setting :source, default: :player_data # :player_data or :env
-    end
 
     # Runtime settings (optional overrides for auto-detection)
     setting :runtime do

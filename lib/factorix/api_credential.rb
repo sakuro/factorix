@@ -17,11 +17,11 @@ module Factorix
     ENV_API_KEY = "FACTORIO_API_KEY"
     private_constant :ENV_API_KEY
 
-    # Create a new APICredential instance from environment variables
+    # Load API credentials from environment variables
     #
     # @return [APICredential] new instance with API key from environment
     # @raise [ArgumentError] if API key is not set in environment
-    def self.from_env
+    def self.load
       logger = Application["logger"]
       logger.debug "Loading API credentials from environment"
 

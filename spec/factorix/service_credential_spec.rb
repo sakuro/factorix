@@ -3,46 +3,7 @@
 require "json"
 
 RSpec.describe Factorix::ServiceCredential do
-  describe ".from_env" do
-    it "loads credentials from environment variables" do
-      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
-      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
-
-      credential = Factorix::ServiceCredential.from_env
-      expect(credential.username).to eq("env_user")
-      expect(credential.token).to eq("env_token")
-    end
-
-    it "raises ArgumentError when FACTORIO_USERNAME is not set" do
-      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return(nil)
-      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
-
-      expect { Factorix::ServiceCredential.from_env }.to raise_error(ArgumentError, "FACTORIO_USERNAME environment variable is not set")
-    end
-
-    it "raises ArgumentError when FACTORIO_TOKEN is not set" do
-      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
-      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return(nil)
-
-      expect { Factorix::ServiceCredential.from_env }.to raise_error(ArgumentError, "FACTORIO_TOKEN environment variable is not set")
-    end
-
-    it "raises ArgumentError when FACTORIO_USERNAME is empty" do
-      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("")
-      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
-
-      expect { Factorix::ServiceCredential.from_env }.to raise_error(ArgumentError, "FACTORIO_USERNAME environment variable is empty")
-    end
-
-    it "raises ArgumentError when FACTORIO_TOKEN is empty" do
-      allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
-      allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("")
-
-      expect { Factorix::ServiceCredential.from_env }.to raise_error(ArgumentError, "FACTORIO_TOKEN environment variable is empty")
-    end
-  end
-
-  describe ".from_player_data" do
+  describe ".load" do
     let(:runtime) { instance_double(Factorix::Runtime::Base) }
     let(:player_data_path) { instance_double(Pathname) }
 
@@ -51,71 +12,137 @@ RSpec.describe Factorix::ServiceCredential do
       allow(Factorix::Application).to receive(:[]).with("logger").and_call_original
     end
 
-    it "loads credentials from player-data.json" do
-      player_data = {
-        "service-username" => "json_user",
-        "service-token" => "json_token"
-      }
+    context "when both environment variables are set" do
+      before do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
+      end
 
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
-
-      credential = Factorix::ServiceCredential.from_player_data(runtime:)
-      expect(credential.username).to eq("json_user")
-      expect(credential.token).to eq("json_token")
+      it "loads credentials from environment variables" do
+        credential = Factorix::ServiceCredential.load
+        expect(credential.username).to eq("env_user")
+        expect(credential.token).to eq("env_token")
+      end
     end
 
-    it "raises ArgumentError when service-username is missing" do
-      player_data = {
-        "service-token" => "json_token"
-      }
+    context "when only FACTORIO_USERNAME is set" do
+      before do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return(nil)
+      end
 
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
-
-      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-username is missing in player-data.json")
+      it "raises ArgumentError for partial configuration" do
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "Both FACTORIO_USERNAME and FACTORIO_TOKEN must be set (or neither)"
+        )
+      end
     end
 
-    it "raises ArgumentError when service-username is empty" do
-      player_data = {
-        "service-username" => "",
-        "service-token" => "json_token"
-      }
+    context "when only FACTORIO_TOKEN is set" do
+      before do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return(nil)
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
+      end
 
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
-
-      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-username is empty in player-data.json")
+      it "raises ArgumentError for partial configuration" do
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "Both FACTORIO_USERNAME and FACTORIO_TOKEN must be set (or neither)"
+        )
+      end
     end
 
-    it "raises ArgumentError when service-token is missing" do
-      player_data = {
-        "service-username" => "json_user"
-      }
+    context "when neither environment variable is set" do
+      before do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return(nil)
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return(nil)
+        allow(runtime).to receive(:player_data_path).and_return(player_data_path)
+      end
 
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+      it "loads credentials from player-data.json" do
+        player_data = {
+          "service-username" => "json_user",
+          "service-token" => "json_token"
+        }
+        allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
 
-      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-token is missing in player-data.json")
+        credential = Factorix::ServiceCredential.load
+        expect(credential.username).to eq("json_user")
+        expect(credential.token).to eq("json_token")
+      end
+
+      it "raises ArgumentError when service-username is missing in player-data.json" do
+        player_data = {"service-token" => "json_token"}
+        allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "service-username is missing in player-data.json"
+        )
+      end
+
+      it "raises ArgumentError when service-username is empty in player-data.json" do
+        player_data = {"service-username" => "", "service-token" => "json_token"}
+        allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "service-username is empty in player-data.json"
+        )
+      end
+
+      it "raises ArgumentError when service-token is missing in player-data.json" do
+        player_data = {"service-username" => "json_user"}
+        allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "service-token is missing in player-data.json"
+        )
+      end
+
+      it "raises ArgumentError when service-token is empty in player-data.json" do
+        player_data = {"service-username" => "json_user", "service-token" => ""}
+        allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "service-token is empty in player-data.json"
+        )
+      end
+
+      it "raises Errno::ENOENT when player-data.json does not exist" do
+        allow(player_data_path).to receive(:read).and_raise(Errno::ENOENT)
+
+        expect { Factorix::ServiceCredential.load }.to raise_error(Errno::ENOENT)
+      end
     end
 
-    it "raises ArgumentError when service-token is empty" do
-      player_data = {
-        "service-username" => "json_user",
-        "service-token" => ""
-      }
+    context "when environment variables are set but empty" do
+      before do
+        allow(runtime).to receive(:player_data_path).and_return(player_data_path)
+      end
 
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_return(JSON.generate(player_data))
+      it "raises ArgumentError when FACTORIO_USERNAME is empty" do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("")
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("env_token")
 
-      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(ArgumentError, "service-token is empty in player-data.json")
-    end
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "FACTORIO_USERNAME environment variable is empty"
+        )
+      end
 
-    it "raises Errno::ENOENT when player-data.json does not exist" do
-      allow(runtime).to receive(:player_data_path).and_return(player_data_path)
-      allow(player_data_path).to receive(:read).and_raise(Errno::ENOENT)
+      it "raises ArgumentError when FACTORIO_TOKEN is empty" do
+        allow(ENV).to receive(:fetch).with("FACTORIO_USERNAME", nil).and_return("env_user")
+        allow(ENV).to receive(:fetch).with("FACTORIO_TOKEN", nil).and_return("")
 
-      expect { Factorix::ServiceCredential.from_player_data(runtime:) }.to raise_error(Errno::ENOENT)
+        expect { Factorix::ServiceCredential.load }.to raise_error(
+          ArgumentError,
+          "FACTORIO_TOKEN environment variable is empty"
+        )
+      end
     end
   end
 end

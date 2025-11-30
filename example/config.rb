@@ -85,10 +85,4 @@ Factorix::Application.configure do |config|
   # config.cache.api.ttl = 3600  # 1 hour
   # config.cache.api.max_file_size = 10 * 1024 * 1024  # 10MB
 
-  # ============================================================================
-  # Credential Configuration
-  # ============================================================================
-
-  # Credential source: :player_data (from Factorio) or :env (from environment)
-  # config.credential.source = :player_data
 end

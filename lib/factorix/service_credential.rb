@@ -22,10 +22,32 @@ module Factorix
     ENV_TOKEN = "FACTORIO_TOKEN"
     private_constant :ENV_TOKEN
 
+    # Load service credentials with automatic source detection
+    #
+    # Tries environment variables first, falls back to player-data.json.
+    # Raises an error if only one environment variable is set (partial configuration).
+    #
+    # @return [ServiceCredential] new instance with credentials
+    # @raise [ArgumentError] if only one of FACTORIO_USERNAME/FACTORIO_TOKEN is set
+    # @raise [ArgumentError] if credentials are invalid or missing
+    def self.load
+      username_env = ENV.fetch(ENV_USERNAME, nil)
+      token_env = ENV.fetch(ENV_TOKEN, nil)
+
+      if username_env && token_env
+        from_env
+      elsif username_env || token_env
+        raise ArgumentError, "Both #{ENV_USERNAME} and #{ENV_TOKEN} must be set (or neither)"
+      else
+        runtime = Application[:runtime]
+        from_player_data(runtime:)
+      end
+    end
+
     # Create a new ServiceCredential instance from environment variables
     #
     # @return [ServiceCredential] new instance with credentials from environment
-    # @raise [ArgumentError] if username or token is not set in environment
+    # @raise [ArgumentError] if username or token is not set or empty
     def self.from_env
       logger = Application["logger"]
       logger.debug "Loading service credentials from environment"
@@ -91,6 +113,6 @@ module Factorix
       new(username:, token:)
     end
 
-    private_class_method :new, :[]
+    private_class_method :new, :[], :from_env, :from_player_data
   end
 end

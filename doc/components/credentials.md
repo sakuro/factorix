@@ -11,22 +11,22 @@ Authentication credentials for MOD downloads (username + token). Used for authen
 
 ### Data Sources
 
-1. **player-data.json (default)**
+The `.load` method automatically selects the credential source:
+
+1. **Environment variables (if both are set)**
+   - `FACTORIO_USERNAME`
+   - `FACTORIO_TOKEN`
+   - Both must be set, or an error is raised
+
+2. **player-data.json (fallback)**
    - `service-username` and `service-token` in `player-data.json`
    - Path: Runtime#player_data_path
    - Automatically saved when you log in to Factorio
 
-2. **Environment variables (alternative)**
-   - `FACTORIO_USERNAME`
-   - `FACTORIO_TOKEN`
-   - Configure `credential.source: :env` to use this method
-
 ### Usage Example
 
 ```ruby
-credential = ServiceCredential.from_env
-# or
-credential = ServiceCredential.from_player_data(runtime:)
+credential = ServiceCredential.load
 
 credential.username  # => "myusername"
 credential.token     # => "mytoken123"
@@ -66,7 +66,7 @@ Set in Authorization header as `Bearer {api_key}`.
 ### Usage Example
 
 ```ruby
-credential = APICredential.from_env
+credential = APICredential.load
 
 credential.api_key  # => "xxxxxxxxxx"
 ```
@@ -78,21 +78,9 @@ credential.api_key  # => "xxxxxxxxxx"
 ## dry-container Registration
 
 ```ruby
-register(:service_credential, memoize: true) do
-  runtime = resolve(:runtime)
-  case config.credential.source
-  when :env
-    ServiceCredential.from_env
-  when :player_data
-    ServiceCredential.from_player_data(runtime:)
-  else
-    raise ArgumentError, "Invalid credential source: #{config.credential.source}"
-  end
-end
+register(:service_credential, memoize: true) { ServiceCredential.load }
 
-register(:api_credential, memoize: true) do
-  APICredential.from_env
-end
+register(:api_credential, memoize: true) { APICredential.load }
 ```
 
 ## Related Documentation

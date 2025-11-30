@@ -12,10 +12,6 @@ Component that manages dependency management and configuration for the entire ap
 ```ruby
 setting :log_level, default: :info
 
-setting :credential do
-  setting :source, default: :player_data # :player_data or :env
-end
-
 setting :runtime do
   setting :executable_path, constructor: ->(v) { v ? Pathname(v) : nil }
   setting :user_dir, constructor: ->(v) { v ? Pathname(v) : nil }
