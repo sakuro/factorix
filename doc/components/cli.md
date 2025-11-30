@@ -14,6 +14,14 @@ Display Factorix version.
 
 **Output**: Current version of the Factorix gem
 
+### Man
+
+Display the Factorix manual page using the system's man command.
+
+**Requirements**: Requires the `man` command to be available on the system.
+
+**Error**: Exits with error if `man` command is not available.
+
 ### Path
 
 Display all Factorio and Factorix paths.

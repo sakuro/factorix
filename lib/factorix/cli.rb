@@ -14,6 +14,7 @@ module Factorix
     extend Dry::CLI::Registry
 
     register "version", Commands::Version
+    register "man", Commands::Man
     register "launch", Commands::Launch
     register "path", Commands::Path
     register "mod check", Commands::MOD::Check

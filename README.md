@@ -79,7 +79,7 @@ See `example/config.rb` for platform-specific examples and additional configurat
 
 Run `factorix --help` to see available commands, or `factorix <command> --help` for command-specific usage and examples.
 
-For detailed CLI documentation, see [doc/components/cli.md](doc/components/cli.md).
+For detailed CLI documentation, run `factorix man` or see [doc/components/cli.md](doc/components/cli.md).
 
 ## Contributing
 
