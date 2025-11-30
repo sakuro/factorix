@@ -63,10 +63,6 @@ RSpec/IndexedLet:
     - '^error\d+$'    # Allow error1, error2, etc.
     - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
 
-RSpec/RepeatedExampleGroupBody:
-  Exclude:
-    - spec/factorix/ser_des/deserializer_spec.rb
-
 RSpec/SubjectStub:
   Exclude:
     - spec/factorix/cli/commands/launch_spec.rb

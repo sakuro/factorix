@@ -57,14 +57,7 @@ RSpec.describe Factorix::SerDes::Deserializer do
       expect(deserializer.read_u8).to eq(0xAA)
     end
 
-    context "with not enough bytes left" do
-      let(:binary_data) { "" }
-
-      it "raises EOFerror" do
-        expect { deserializer.read_u8 }.to raise_error(EOFError)
-      end
-    end
-
+    # read_u8 reads only 1 byte, so "not enough bytes" and "at EOF" are the same situation
     context "when at EOF" do
       let(:binary_data) { "" }
 
