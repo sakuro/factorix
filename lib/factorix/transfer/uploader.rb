@@ -65,9 +65,7 @@ module Factorix
       #
       # @param file_path [Pathname] file path
       # @return [String] MIME type
-      private def detect_content_type(file_path)
-        MIME_TYPES[file_path.extname.downcase]
-      end
+      private def detect_content_type(file_path) = MIME_TYPES[file_path.extname.downcase]
 
       private def upload_file_with_progress(url, file_path, field_name, fields, content_type)
         boundary = generate_boundary
@@ -115,9 +113,7 @@ module Factorix
       # Generate a random boundary for multipart/form-data
       #
       # @return [String] boundary string
-      private def generate_boundary
-        "----RubyFormBoundary#{SecureRandom.hex(16)}"
-      end
+      private def generate_boundary = "----RubyFormBoundary#{SecureRandom.hex(16)}"
 
       # Build a multipart stream from body parts, file, and boundary
       #
