@@ -86,17 +86,13 @@ module Factorix
           #
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
-          # @return [Array<Hash>] Uninstall targets in reverse dependency order
+          # @return [Array<Hash>] Uninstall targets
           private def plan_uninstall_all(graph, _installed_mods)
-            # Reverse topological order ensures dependents are uninstalled before their dependencies
-            ordered_mods = graph.topological_order
-            mods_in_reverse_order = ordered_mods.reverse
+            graph.nodes.filter_map do |node|
+              mod = node.mod
+              next if mod.base? || mod.expansion?
 
-            mods_in_reverse_order.filter_map do |mod|
-              next if mod.base?
-
-              # Expansion MODs are disabled but not uninstalled
-              {mod:, version: nil} unless mod.expansion?
+              {mod:, version: nil}
             end
           end
 
