@@ -39,51 +39,9 @@ inherit_gem:
 
 inherit_from: .rubocop_todo.yml
 
-# Project-specific settings
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: consistent
-
-Layout/FirstHashElementIndentation:
-  EnforcedStyle: consistent
-
-Layout/LineLength:
-  Enabled: false
-
-Style/StaticClass:
-  Exclude:
-    - lib/factorix/info_json.rb
-
-Metrics/AbcSize:
-  Enabled: false
-
-Metrics/ClassLength:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
-
-Metrics/MethodLength:
-  Enabled: false
-
 Metrics/BlockLength:
   Exclude:
     - lib/factorix/dependency/resolver.rb
-
-Metrics/PerceivedComplexity:
-  Exclude:
-    - lib/factorix/api/mod_info.rb
-    - lib/factorix/dependency/parser.rb
-    - lib/factorix/dependency/list.rb
-    - lib/factorix/dependency/resolver.rb
-    - lib/factorix/cli/commands/mod/download.rb
-    - lib/factorix/cli/commands/mod/edit.rb
-    - lib/factorix/installed_mod.rb
-    - lib/factorix/cli/commands/mod/enable.rb
-    - lib/factorix/cli/commands/mod/install.rb
-    - lib/factorix/cli/commands/mod/list.rb
-    - lib/factorix/cli/commands/mod/uninstall.rb
-    - lib/factorix/cli/commands/mod/sync.rb
-    - lib/factorix/cli/commands/mod/update.rb
 
 Naming/PredicateMethod:
   Exclude:
@@ -96,9 +54,6 @@ Naming/VariableNumber:
     - '_v\d+$'              # Allow mod1_v1, etc.
     - '^requirement_\w+_\d+' # Allow requirement_ge_1_2_0, etc.
 
-RSpec/ExampleLength:
-  Enabled: false
-
 RSpec/IndexedLet:
   AllowedPatterns:
     - '^version_\d+'  # Allow version_1_0_0, version_123, etc.
@@ -107,9 +62,6 @@ RSpec/IndexedLet:
     - '^node\d+$'     # Allow node1, node2, etc.
     - '^error\d+$'    # Allow error1, error2, etc.
     - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
-
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
 
 RSpec/RepeatedExampleGroupBody:
   Exclude:
@@ -124,6 +76,10 @@ Style/IpAddresses:
   Exclude:
     - spec/factorix/game_version_spec.rb
     - spec/factorix/mod_version_spec.rb
+
+Style/StaticClass:
+  Exclude:
+    - lib/factorix/info_json.rb
 
 ThreadSafety/NewThread:
   Exclude:
