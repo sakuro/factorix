@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
       "lib/**/*.rb",
       "exe/*",
       "sig/**/*.rbs",
+      "doc/factorix.1",
       "LICENSE.txt",
       "README.md",
       "CHANGELOG.md"
