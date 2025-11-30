@@ -33,6 +33,9 @@ module Factorix
   # Digest verification errors
   class DigestMismatchError < InfrastructureError; end
 
+  # External command not found
+  class CommandNotFoundError < InfrastructureError; end
+
   # File format related errors
   class FileFormatError < InfrastructureError; end
 

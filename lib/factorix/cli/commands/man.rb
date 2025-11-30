@@ -15,12 +15,9 @@ module Factorix
         # Execute the man command
         #
         # @return [void]
-        # @raise [SystemExit] if man command is not available
+        # @raise [CommandNotFoundError] if man command is not available
         def call(**)
-          unless system("which man > /dev/null 2>&1")
-            warn "Error: man command is not available on this system"
-            exit 1
-          end
+          raise CommandNotFoundError, "man command is not available on this system" unless system("which man > /dev/null 2>&1")
 
           man_page = File.expand_path("../../../../doc/factorix.1", __dir__)
           exec "man", man_page
