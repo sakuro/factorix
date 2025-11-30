@@ -6,6 +6,9 @@ module Factorix
   # API credentials for Factorio MOD Portal management
   #
   # @see https://wiki.factorio.com/Mod_upload_API
+  # @see https://wiki.factorio.com/Mod_publish_API
+  # @see https://wiki.factorio.com/Mod_details_API
+  # @see https://wiki.factorio.com/Mod_images_API
   class APICredential
     # @!attribute [r] api_key
     #   @return [String] API key for Factorio MOD Portal
