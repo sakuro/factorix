@@ -124,9 +124,7 @@ module Factorix
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
-        mod_paths = mod_dir.children.select {|path|
-          (path.file? && path.extname == ".zip") || path.directory?
-        }
+        mod_paths = mod_dir.children.select {|path| (path.file? && path.extname == ".zip") || path.directory? }
         data_paths = data_dir.children.select {|path|
           next false unless path.directory?
 
@@ -201,9 +199,7 @@ module Factorix
       # @return [Array<InstalledMOD>] Array with duplicates resolved
       private def resolve_duplicates(mods)
         groups = mods.group_by {|mod| [mod.mod, mod.version] }
-        groups.map do |_key, group_mods|
-          group_mods.max
-        end
+        groups.map {|_key, group_mods| group_mods.max }
       end
     end
     private_constant :Scanner
