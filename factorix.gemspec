@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["OZAWA Sakuro"]
   spec.email = ["10973+sakuro@users.noreply.github.com"]
 
-  spec.summary = "Factorio MOD manager"
-  spec.description = "A CLI tool and library for managing Factorio MODs and more"
+  spec.summary = "CLI for Factorio MOD management, settings, and game control"
+  spec.description = "Manage Factorio MODs with dependency resolution, sync settings from saves, and launch the game"
   spec.homepage = "https://github.com/sakuro/factorix"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"

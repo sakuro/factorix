@@ -2,7 +2,7 @@
 
 ## What is Factorix?
 
-A Ruby gem for managing Factorio MODs - CLI tool and library API for MOD discovery, installation, dependency management, and MOD Portal integration.
+A Ruby gem providing a CLI for Factorio MOD management, settings synchronization, and MOD Portal integration.
 
 ## Documentation Map
 

@@ -2,7 +2,7 @@
 
 ### Added
 
-- **CLI tool and Ruby library** for Factorio MOD management
+- **CLI tool** for Factorio MOD management, settings sync, and game control
 - **MOD management commands**: search, install, uninstall, enable, disable, check, sync
 - **MOD Portal integration**: download, upload, and edit MOD metadata/images
 - **Dependency resolution** with graph-based analysis and incompatibility detection
