@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Search do
+  let(:data_dir) { Pathname(Dir.mktmpdir) }
+  let(:runtime) { instance_double(Factorix::Runtime::Base, data_dir:) }
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Search.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Search.new(runtime:, portal:) }
 
   let(:mod_info) do
     Factorix::API::MODInfo.new(
@@ -20,8 +22,16 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   end
 
   before do
+    base_dir = data_dir / "base"
+    base_dir.mkpath
+    (base_dir / "info.json").write(JSON.generate(name: "base", version: "2.0.28", title: "Base", author: "Wube"))
+
     allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+  end
+
+  after do
+    FileUtils.remove_entry(data_dir)
   end
 
   describe "#call" do
