@@ -43,10 +43,16 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
       expect(portal).to have_received(:edit_mod).with("test-mod", tags: %w[combat logistics])
     end
 
-    it "edits MOD with license" do
-      command.call(mod_name: "test-mod", license: "MIT")
+    it "edits MOD with standard license" do
+      command.call(mod_name: "test-mod", license: "default_mit")
 
-      expect(portal).to have_received(:edit_mod).with("test-mod", license: "MIT")
+      expect(portal).to have_received(:edit_mod).with("test-mod", license: "default_mit")
+    end
+
+    it "edits MOD with custom license" do
+      command.call(mod_name: "test-mod", license: "custom_0123456789abcdef01234567")
+
+      expect(portal).to have_received(:edit_mod).with("test-mod", license: "custom_0123456789abcdef01234567")
     end
 
     it "edits MOD with homepage" do
@@ -84,7 +90,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         mod_name: "test-mod",
         description: "Full description",
         category: "content",
-        license: "Apache-2.0",
+        license: "default_apache2",
         tags: %w[automation optimization]
       )
 
@@ -92,7 +98,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         "test-mod",
         description: "Full description",
         category: "content",
-        license: "Apache-2.0",
+        license: "default_apache2",
         tags: %w[automation optimization]
       )
     end
@@ -105,7 +111,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         title: "Title",
         category: "tweaks",
         tags: %w[tag1 tag2],
-        license: "GPL-3.0",
+        license: "default_gnugplv3",
         homepage: "https://homepage.example.com",
         source_url: "https://github.com/example/repo",
         faq: "FAQ content",
@@ -119,7 +125,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         title: "Title",
         category: "tweaks",
         tags: %w[tag1 tag2],
-        license: "GPL-3.0",
+        license: "default_gnugplv3",
         homepage: "https://homepage.example.com",
         source_url: "https://github.com/example/repo",
         faq: "FAQ content",
@@ -143,6 +149,36 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         expect {
           command.call(mod_name: "test-mod", description: "New description")
         }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
+      end
+    end
+
+    context "when invalid license is provided" do
+      it "raises error for unknown license identifier" do
+        expect {
+          command.call(mod_name: "test-mod", license: "invalid_license")
+        }.to raise_error(Factorix::Error, "Invalid license identifier")
+        expect(portal).not_to have_received(:edit_mod)
+      end
+
+      it "raises error for MIT without default_ prefix" do
+        expect {
+          command.call(mod_name: "test-mod", license: "MIT")
+        }.to raise_error(Factorix::Error, "Invalid license identifier")
+        expect(portal).not_to have_received(:edit_mod)
+      end
+
+      it "raises error for custom license with wrong hex length" do
+        expect {
+          command.call(mod_name: "test-mod", license: "custom_0123456789abcdef")
+        }.to raise_error(Factorix::Error, "Invalid license identifier")
+        expect(portal).not_to have_received(:edit_mod)
+      end
+
+      it "raises error for custom license with uppercase hex" do
+        expect {
+          command.call(mod_name: "test-mod", license: "custom_0123456789ABCDEF01234567")
+        }.to raise_error(Factorix::Error, "Invalid license identifier")
+        expect(portal).not_to have_received(:edit_mod)
       end
     end
   end
@@ -179,8 +215,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
     end
 
     it "includes license when provided" do
-      metadata = command.__send__(:build_metadata, license: "MIT")
-      expect(metadata).to eq({license: "MIT"})
+      metadata = command.__send__(:build_metadata, license: "default_mit")
+      expect(metadata).to eq({license: "default_mit"})
     end
 
     it "includes homepage when provided" do
@@ -216,7 +252,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         title: nil,
         category: "content",
         tags: nil,
-        license: "MIT",
+        license: "default_mit",
         homepage: nil,
         source_url: nil,
         faq: nil,
@@ -226,7 +262,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
       expect(metadata).to eq({
         description: "Desc",
         category: "content",
-        license: "MIT"
+        license: "default_mit"
       })
     end
 
@@ -238,7 +274,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         title: "Title",
         category: "tweaks",
         tags: %w[tag1 tag2],
-        license: "GPL-3.0",
+        license: "default_gnugplv3",
         homepage: "https://homepage.com",
         source_url: "https://github.com/user/repo",
         faq: "FAQ",
@@ -251,7 +287,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         title: "Title",
         category: "tweaks",
         tags: %w[tag1 tag2],
-        license: "GPL-3.0",
+        license: "default_gnugplv3",
         homepage: "https://homepage.com",
         source_url: "https://github.com/user/repo",
         faq: "FAQ",

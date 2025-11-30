@@ -11,6 +11,9 @@ module Factorix
       attr_reader description: String
       attr_reader url: URI::HTTPS
 
+      def self.valid_identifier?: (String value) -> bool
+      def self.identifier_values: () -> Array[String]
+
       def initialize: (id: String, name: String, title: String, description: String, url: String) -> void
     end
   end

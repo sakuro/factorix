@@ -46,6 +46,8 @@ module Factorix
           # @param deprecated [Boolean, nil] optional deprecation flag
           # @return [void]
           def call(mod_name:, description: nil, summary: nil, title: nil, category: nil, tags: nil, license: nil, homepage: nil, source_url: nil, faq: nil, deprecated: nil, **)
+            validate_license!(license) if license
+
             metadata = build_metadata(
               description:,
               summary:,
@@ -95,6 +97,15 @@ module Factorix
             metadata[:faq] = faq if faq
             metadata[:deprecated] = deprecated unless deprecated.nil?
             metadata
+          end
+
+          private def validate_license!(license)
+            return if API::License.valid_identifier?(license)
+
+            say "Invalid license identifier: #{license}", prefix: :error
+            say "Valid identifiers: #{API::License.identifier_values.join(", ")}"
+            say "Custom licenses: custom_<24 hex chars> (e.g., custom_0123456789abcdef01234567)"
+            raise Error, "Invalid license identifier"
           end
         end
       end
