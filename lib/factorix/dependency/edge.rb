@@ -21,11 +21,15 @@ module Factorix
 
       # Dependency types (from Factorix::Dependency::Entry)
       REQUIRED = Entry::REQUIRED
+      public_constant :REQUIRED
       OPTIONAL = Entry::OPTIONAL
+      public_constant :OPTIONAL
       HIDDEN_OPTIONAL = Entry::HIDDEN_OPTIONAL
+      public_constant :HIDDEN_OPTIONAL
       INCOMPATIBLE = Entry::INCOMPATIBLE
+      public_constant :INCOMPATIBLE
       LOAD_NEUTRAL = Entry::LOAD_NEUTRAL
-      public_constant :REQUIRED, :OPTIONAL, :HIDDEN_OPTIONAL, :INCOMPATIBLE, :LOAD_NEUTRAL
+      public_constant :LOAD_NEUTRAL
 
       # @param from_mod [Factorix::MOD] The dependent MOD
       # @param to_mod [Factorix::MOD] The dependency MOD

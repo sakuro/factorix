@@ -12,16 +12,21 @@ module Factorix
 
       # Error types
       MISSING_DEPENDENCY = :missing_dependency
+      public_constant :MISSING_DEPENDENCY
       DISABLED_DEPENDENCY = :disabled_dependency
+      public_constant :DISABLED_DEPENDENCY
       VERSION_MISMATCH = :version_mismatch
+      public_constant :VERSION_MISMATCH
       CONFLICT = :conflict
+      public_constant :CONFLICT
       CIRCULAR_DEPENDENCY = :circular_dependency
-      public_constant :MISSING_DEPENDENCY, :DISABLED_DEPENDENCY, :VERSION_MISMATCH, :CONFLICT, :CIRCULAR_DEPENDENCY
+      public_constant :CIRCULAR_DEPENDENCY
 
       # Warning types
       MOD_IN_LIST_NOT_INSTALLED = :mod_in_list_not_installed
+      public_constant :MOD_IN_LIST_NOT_INSTALLED
       MOD_INSTALLED_NOT_IN_LIST = :mod_installed_not_in_list
-      public_constant :MOD_IN_LIST_NOT_INSTALLED, :MOD_INSTALLED_NOT_IN_LIST
+      public_constant :MOD_INSTALLED_NOT_IN_LIST
 
       def initialize
         @errors = []

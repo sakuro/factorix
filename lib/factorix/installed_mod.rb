@@ -34,8 +34,9 @@ module Factorix
 
     # Form constants
     ZIP_FORM = :zip
+    public_constant :ZIP_FORM
     DIRECTORY_FORM = :directory
-    public_constant :ZIP_FORM, :DIRECTORY_FORM
+    public_constant :DIRECTORY_FORM
 
     # Get all installed MODs
     #
