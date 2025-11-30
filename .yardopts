@@ -2,7 +2,7 @@
 --markup-provider redcarpet
 --output-dir doc/api
 --readme README.md
---files CHANGELOG.md,LICENSE.txt
+--files CHANGELOG.md,LICENSE.txt,doc/*.md,doc/components/*.md
 --exclude spec/
 --exclude vendor/
 lib/**/*.rb
