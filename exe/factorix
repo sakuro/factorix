@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "../lib/factorix"
+require "dry/cli"
 require "zip"
 
 # Suppress warnings about invalid dates in ZIP files
