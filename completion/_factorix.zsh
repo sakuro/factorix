@@ -95,12 +95,14 @@ _factorix_completion() {
       local -a subcommands
       subcommands=(
         'zsh:Generate zsh completion script'
+        'bash:Generate bash completion script'
+        'fish:Generate fish completion script'
       )
       _describe -t subcommands 'completion subcommand' subcommands
       ;;
     args)
       case $line[1] in
-        zsh)
+        zsh|bash|fish)
           _arguments $global_opts
           ;;
       esac
