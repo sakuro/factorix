@@ -15,6 +15,8 @@ module Factorix
       def nodes: () -> Array[Node]
 
       def edges_from: (MOD mod) -> Array[Edge]
+      def edges_to: (MOD mod) -> Array[Edge]
+      def find_enabled_dependents: (MOD mod) -> Array[MOD]
       def edges: () -> Array[Edge]
 
       def node?: (MOD mod) -> bool

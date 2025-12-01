@@ -9,8 +9,6 @@ module Factorix
           confirmable!
           require_game_stopped!
 
-          include DependencyGraphSupport
-
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -45,7 +43,10 @@ module Factorix
             end
 
             # Load current state (without validation to allow fixing issues)
-            graph, mod_list, installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            graph = state.graph
+            mod_list = state.mod_list
+            installed_mods = state.installed_mods
 
             # Determine uninstall targets
             uninstall_targets = if all
@@ -165,7 +166,7 @@ module Factorix
           # @raise [Factorix::Error] if dependencies cannot be satisfied after uninstall
           private def check_dependents_with_version(target, graph, installed_mods)
             mod = target[:mod]
-            dependents = find_enabled_dependents(mod, graph)
+            dependents = graph.find_enabled_dependents(mod)
             return if dependents.none?
 
             # Find versions that will remain after this uninstall

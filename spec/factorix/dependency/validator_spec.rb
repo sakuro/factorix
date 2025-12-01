@@ -7,6 +7,21 @@ RSpec.describe Factorix::Dependency::Validator do
   let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
   let(:version_2_0_0) { Factorix::MODVersion.from_string("2.0.0") }
 
+  let(:mod_list) do
+    instance_double(Factorix::MODList).tap do |ml|
+      allow(ml).to receive(:each_mod)
+      allow(ml).to receive(:exist?).and_return(true)
+    end
+  end
+
+  let(:installed_mods) { [] }
+
+  def build_state(graph:, mod_list: self.mod_list, installed_mods: self.installed_mods)
+    instance_double(Factorix::MODInstallationState).tap do |state|
+      allow(state).to receive_messages(graph:, mod_list:, installed_mods:)
+    end
+  end
+
   describe "#validate" do
     context "with valid graph" do
       it "returns valid result with no errors" do
@@ -14,7 +29,7 @@ RSpec.describe Factorix::Dependency::Validator do
         node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
         graph.add_node(node_a)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be true
@@ -37,7 +52,7 @@ RSpec.describe Factorix::Dependency::Validator do
         graph.add_edge(edge_a_to_b)
         graph.add_edge(edge_b_to_a)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be false
@@ -58,7 +73,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be false
@@ -81,7 +96,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :optional)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be true
@@ -101,7 +116,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be false
@@ -129,7 +144,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be false
@@ -155,7 +170,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be true
@@ -175,7 +190,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be false
@@ -200,7 +215,7 @@ RSpec.describe Factorix::Dependency::Validator do
         edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible)
         graph.add_edge(edge)
 
-        validator = Factorix::Dependency::Validator.new(graph)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:))
         result = validator.validate
 
         expect(result.valid?).to be true
@@ -208,15 +223,15 @@ RSpec.describe Factorix::Dependency::Validator do
       end
     end
 
-    context "when MOD list is provided" do
+    context "when MOD list validation" do
       it "warns about MOD in list but not installed" do
         graph = Factorix::Dependency::Graph.new
-        mod_list = instance_double(Factorix::MODList)
-        allow(mod_list).to receive(:each_mod).and_yield(mod_a)
-        allow(mod_list).to receive(:exist?).with(mod_a).and_return(true)
+        custom_mod_list = instance_double(Factorix::MODList)
+        allow(custom_mod_list).to receive(:each_mod).and_yield(mod_a)
+        allow(custom_mod_list).to receive(:exist?).with(mod_a).and_return(true)
 
         # mod_a is in list but not in graph (not installed)
-        validator = Factorix::Dependency::Validator.new(graph, mod_list:)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:, mod_list: custom_mod_list))
         result = validator.validate
 
         expect(result.valid?).to be true # Warnings don't affect validity
@@ -234,12 +249,12 @@ RSpec.describe Factorix::Dependency::Validator do
         node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
         graph.add_node(node_a)
 
-        mod_list = instance_double(Factorix::MODList)
-        allow(mod_list).to receive(:each_mod) # No MODs in list
-        allow(mod_list).to receive(:exist?).with(mod_a).and_return(false)
+        custom_mod_list = instance_double(Factorix::MODList)
+        allow(custom_mod_list).to receive(:each_mod) # No MODs in list
+        allow(custom_mod_list).to receive(:exist?).with(mod_a).and_return(false)
 
         # mod_a is installed but not in mod_list
-        validator = Factorix::Dependency::Validator.new(graph, mod_list:)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:, mod_list: custom_mod_list))
         result = validator.validate
 
         expect(result.valid?).to be true # Warnings don't affect validity
@@ -249,19 +264,6 @@ RSpec.describe Factorix::Dependency::Validator do
         expect(warning.message).to include("mod-a")
         expect(warning.message).to include("mod-list.json")
         expect(warning.mod).to eq(mod_a)
-      end
-
-      it "does not validate MOD list when not provided" do
-        graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        graph.add_node(node_a)
-
-        # No mod_list provided - should not generate warnings
-        validator = Factorix::Dependency::Validator.new(graph)
-        result = validator.validate
-
-        expect(result.valid?).to be true
-        expect(result.warnings).to be_empty
       end
     end
 
@@ -281,16 +283,16 @@ RSpec.describe Factorix::Dependency::Validator do
         edge2 = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_c, type: :required)
         graph.add_edge(edge2)
 
-        mod_list = instance_double(Factorix::MODList)
-        allow(mod_list).to receive(:each_mod)  # No MODs in list
-        allow(mod_list).to receive(:exist?).and_return(false)
+        custom_mod_list = instance_double(Factorix::MODList)
+        allow(custom_mod_list).to receive(:each_mod) # No MODs in list
+        allow(custom_mod_list).to receive(:exist?).and_return(false)
 
-        validator = Factorix::Dependency::Validator.new(graph, mod_list:)
+        validator = Factorix::Dependency::Validator.new(build_state(graph:, mod_list: custom_mod_list))
         result = validator.validate
 
         expect(result.valid?).to be false
         expect(result.errors.size).to eq(2)
-        expect(result.warnings.size).to eq(2)  # mod_a and mod_b not in list
+        expect(result.warnings.size).to eq(2) # mod_a and mod_b not in list
       end
     end
   end

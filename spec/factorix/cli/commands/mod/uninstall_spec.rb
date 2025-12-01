@@ -50,15 +50,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
-    allow(graph).to receive(:nodes).and_return([])
+    allow(graph).to receive_messages(nodes: [], find_enabled_dependents: [])
 
-    # Stub load_current_state to return mocked state
-    # (Validator is tested separately in validator_spec.rb)
-    # Note: installed_mods will be set per context
-    allow(command).to receive(:load_current_state) do
-      installed = Factorix::InstalledMOD.all
-      [graph, mod_list, installed]
-    end
+    # Stub MODInstallationState to return mocked state
+    state = instance_double(Factorix::MODInstallationState)
+    allow(state).to receive_messages(graph:, mod_list:)
+    allow(state).to receive(:installed_mods) { Factorix::InstalledMOD.all }
+    allow(Factorix::MODInstallationState).to receive(:new).and_return(state)
   end
 
   describe "#call" do
@@ -98,7 +96,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         instance_double(
           Factorix::Dependency::Edge,
           required?: true,
-          to_mod: mod_a
+          to_mod: mod_a,
+          satisfied_by?: true
         )
       end
 
@@ -106,6 +105,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
         # mod-b depends on mod-a, so uninstalling mod-a should fail
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:nodes).and_return([node_a, node_b])
+        allow(graph).to receive(:find_enabled_dependents).with(mod_a).and_return([mod_b])
         allow(graph).to receive(:edges_from).with(mod_b).and_return([edge_b_to_a])
       end
 

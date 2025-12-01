@@ -9,8 +9,6 @@ module Factorix
           confirmable!
           require_game_stopped!
 
-          include DependencyGraphSupport
-
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -33,19 +31,19 @@ module Factorix
           # @return [void]
           def call(mod_names:, **)
             # Load current state (without validation to allow fixing issues)
-            graph, mod_list, _installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
 
             # Convert MOD names to MOD objects
             target_mods = mod_names.map {|name| Factorix::MOD[name:] }
 
             # Validate target MODs exist
-            validate_target_mods_exist(target_mods, graph)
+            validate_target_mods_exist(target_mods, state.graph)
 
             # Determine MODs to enable
-            mods_to_enable = plan_with_dependencies(target_mods, graph)
+            mods_to_enable = plan_with_dependencies(target_mods, state.graph)
 
             # Validate the plan (check for conflicts)
-            validate_plan(mods_to_enable, graph)
+            validate_plan(mods_to_enable, state.graph)
 
             # Show plan to user
             show_plan(mods_to_enable)
@@ -57,10 +55,10 @@ module Factorix
             return unless confirm?("Do you want to enable these MOD(s)?")
 
             # Execute the plan
-            execute_plan(mods_to_enable, mod_list)
+            execute_plan(mods_to_enable, state.mod_list)
 
             # Save mod-list.json
-            mod_list.save(runtime.mod_list_path)
+            state.mod_list.save(runtime.mod_list_path)
             say "Enabled #{mods_to_enable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")

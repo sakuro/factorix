@@ -35,11 +35,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive(:node)
-    allow(graph).to receive_messages(nodes: [], edges_from: [])
+    allow(graph).to receive_messages(nodes: [], edges_from: [], find_enabled_dependents: [])
 
-    # Stub load_current_state to return mocked state
-    # (Validator is tested separately in validator_spec.rb)
-    allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
+    # Stub MODInstallationState to return mocked state
+    state = instance_double(Factorix::MODInstallationState)
+    allow(state).to receive_messages(graph:, mod_list:, installed_mods: [])
+    allow(Factorix::MODInstallationState).to receive(:new).and_return(state)
   end
 
   describe "#call" do
@@ -66,30 +67,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
     context "when disabling a MOD with dependents" do
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: true) }
       let(:node_b) { instance_double(Factorix::Dependency::Node, mod: mod_b, enabled?: true) }
-      let(:edge_b_to_a) do
-        instance_double(
-          Factorix::Dependency::Edge,
-          required?: true,
-          to_mod: mod_a
-        )
-      end
 
       before do
         # mod-b depends on mod-a, so disabling mod-a should also disable mod-b
         allow(graph).to receive(:node?).with(mod_a).and_return(true)
         allow(graph).to receive(:node).with(mod_a).and_return(node_a)
         allow(graph).to receive(:node).with(mod_b).and_return(node_b)
-
-        # Mock the nodes iteration for find_enabled_dependents
-        # When find_enabled_dependents is called with mod_a, it should find node_b as a dependent
-        # This happens because node_b has an edge to mod_a
         allow(graph).to receive(:nodes).and_return([node_a, node_b])
 
-        # For the algorithm to work:
-        # - edges_from(mod_a) returns [] (mod-a doesn't depend on anything)
-        # - edges_from(mod_b) returns [edge to mod-a] (mod-b depends on mod-a)
-        allow(graph).to receive(:edges_from).with(mod_a).and_return([])
-        allow(graph).to receive(:edges_from).with(mod_b).and_return([edge_b_to_a])
+        # find_enabled_dependents returns MODs that depend on the given MOD
+        allow(graph).to receive(:find_enabled_dependents).with(mod_a).and_return([mod_b])
+        allow(graph).to receive(:find_enabled_dependents).with(mod_b).and_return([])
       end
 
       it "disables both the MOD and its dependents" do

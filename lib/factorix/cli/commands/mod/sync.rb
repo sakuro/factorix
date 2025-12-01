@@ -12,7 +12,6 @@ module Factorix
           confirmable!
           require_game_stopped!
 
-          include DependencyGraphSupport
           include DownloadSupport
 
           # @!parse
@@ -46,7 +45,10 @@ module Factorix
             say "Loaded save file (version: #{save_data.version}, MOD(s): #{save_data.mods.size})", prefix: :info
 
             # Load current state
-            graph, mod_list, installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            graph = state.graph
+            mod_list = state.mod_list
+            installed_mods = state.installed_mods
 
             raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 

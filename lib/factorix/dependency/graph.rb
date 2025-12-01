@@ -97,6 +97,27 @@ module Factorix
       # @return [Array<Factorix::Dependency::Edge>] Edges to this MOD
       def edges_to(mod) = @edges.values.flatten.select {|edge| edge.to_mod == mod }
 
+      # Find all enabled MODs that have a required dependency on the given MOD
+      #
+      # @param mod [Factorix::MOD] The MOD to find dependents for
+      # @return [Array<Factorix::MOD>] MODs that depend on the given MOD
+      def find_enabled_dependents(mod)
+        dependents = []
+
+        nodes.each do |node|
+          next unless node.enabled?
+
+          edges_from(node.mod).each do |edge|
+            next unless edge.required? && edge.to_mod == mod
+
+            dependents << node.mod
+            break
+          end
+        end
+
+        dependents
+      end
+
       # Get all edges in the graph
       #
       # @return [Array<Factorix::Dependency::Edge>] All edges

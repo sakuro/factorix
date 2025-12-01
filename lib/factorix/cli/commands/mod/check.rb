@@ -6,8 +6,6 @@ module Factorix
       module MOD
         # Validate MOD dependencies without making changes
         class Check < Base
-          include DependencyGraphSupport
-
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -25,12 +23,12 @@ module Factorix
           #
           # @return [void]
           def call(**)
-            graph, mod_list, installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
 
-            validator = Dependency::Validator.new(graph, mod_list:, installed_mods:)
+            validator = Dependency::Validator.new(state)
             result = validator.validate
 
-            display_result(result, graph)
+            display_result(result, state.graph)
 
             raise ValidationError, "MOD dependency validation failed" unless result.valid?
           end

@@ -6,8 +6,6 @@ module Factorix
       module MOD
         # List installed MODs
         class List < Base
-          include DependencyGraphSupport
-
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -79,12 +77,12 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            graph, mod_list, installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
 
-            validator = Dependency::Validator.new(graph, mod_list:, installed_mods:)
+            validator = Dependency::Validator.new(state)
             validation_result = validator.validate
 
-            mod_infos = build_mod_infos(installed_mods, mod_list, validation_result)
+            mod_infos = build_mod_infos(state.installed_mods, state.mod_list, validation_result)
             total_count = mod_infos.size
 
             # Apply filters

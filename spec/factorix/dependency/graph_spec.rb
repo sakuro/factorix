@@ -151,6 +151,78 @@ RSpec.describe Factorix::Dependency::Graph do
     end
   end
 
+  describe "#find_enabled_dependents" do
+    let(:graph) { Factorix::Dependency::Graph.new }
+
+    context "when MOD has enabled dependents with required dependencies" do
+      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
+      let(:node_b_enabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: true) }
+      let(:node_c_enabled) { Factorix::Dependency::Node.new(mod: mod_c, version:, enabled: true) }
+      let(:edge_b_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :required) }
+      let(:edge_c_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_a, type: :required) }
+
+      before do
+        graph.add_node(node_a_enabled)
+        graph.add_node(node_b_enabled)
+        graph.add_node(node_c_enabled)
+        graph.add_edge(edge_b_to_a)
+        graph.add_edge(edge_c_to_a)
+      end
+
+      it "returns MODs that depend on the given MOD" do
+        dependents = graph.find_enabled_dependents(mod_a)
+        expect(dependents).to contain_exactly(mod_b, mod_c)
+      end
+    end
+
+    context "when dependent is disabled" do
+      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
+      let(:node_b_disabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: false) }
+      let(:edge_b_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :required) }
+
+      before do
+        graph.add_node(node_a_enabled)
+        graph.add_node(node_b_disabled)
+        graph.add_edge(edge_b_to_a)
+      end
+
+      it "does not include disabled MODs" do
+        dependents = graph.find_enabled_dependents(mod_a)
+        expect(dependents).to be_empty
+      end
+    end
+
+    context "when dependency is optional" do
+      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
+      let(:node_b_enabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: true) }
+      let(:edge_b_to_a_optional) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :optional) }
+
+      before do
+        graph.add_node(node_a_enabled)
+        graph.add_node(node_b_enabled)
+        graph.add_edge(edge_b_to_a_optional)
+      end
+
+      it "does not include MODs with optional dependencies" do
+        dependents = graph.find_enabled_dependents(mod_a)
+        expect(dependents).to be_empty
+      end
+    end
+
+    context "when MOD has no dependents" do
+      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
+
+      before do
+        graph.add_node(node_a_enabled)
+      end
+
+      it "returns empty array" do
+        dependents = graph.find_enabled_dependents(mod_a)
+        expect(dependents).to be_empty
+      end
+    end
+  end
+
   describe "#tsort" do
     let(:graph) { Factorix::Dependency::Graph.new }
 

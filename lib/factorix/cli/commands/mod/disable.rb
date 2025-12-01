@@ -9,8 +9,6 @@ module Factorix
           confirmable!
           require_game_stopped!
 
-          include DependencyGraphSupport
-
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -39,23 +37,23 @@ module Factorix
             validate_arguments(mod_names, all)
 
             # Without validation to allow fixing issues
-            graph, mod_list, _installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
 
             target_mods = if all
-                            plan_disable_all(graph)
+                            plan_disable_all(state.graph)
                           else
                             mod_names.map {|name| Factorix::MOD[name:] }
                           end
 
-            validate_target_mods(target_mods, graph)
-            mods_to_disable = plan_with_dependents(target_mods, graph)
+            validate_target_mods(target_mods, state.graph)
+            mods_to_disable = plan_with_dependents(target_mods, state.graph)
 
             show_plan(mods_to_disable)
             return if mods_to_disable.empty?
             return unless confirm?("Do you want to disable these MOD(s)?")
 
-            execute_plan(mods_to_disable, mod_list)
-            mod_list.save(runtime.mod_list_path)
+            execute_plan(mods_to_disable, state.mod_list)
+            state.mod_list.save(runtime.mod_list_path)
             say "Disabled #{mods_to_disable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
@@ -134,7 +132,7 @@ module Factorix
 
               next if mods_to_disable.include?(mod)
 
-              dependents = find_enabled_dependents(mod, graph)
+              dependents = graph.find_enabled_dependents(mod)
 
               dependents.each do |dependent_mod|
                 logger.debug("Found dependent MOD", dependent: dependent_mod.name, dependency: mod.name)

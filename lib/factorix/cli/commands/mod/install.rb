@@ -12,7 +12,6 @@ module Factorix
           confirmable!
           require_game_stopped!
 
-          include DependencyGraphSupport
           include DownloadSupport
 
           # @!parse
@@ -43,7 +42,9 @@ module Factorix
           # @return [void]
           def call(mod_specs:, jobs: 4, **)
             # Load current state (without validation to allow fixing issues)
-            graph, mod_list, _installed_mods = load_current_state
+            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            graph = state.graph
+            mod_list = state.mod_list
 
             raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 

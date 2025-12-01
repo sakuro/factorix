@@ -12,14 +12,8 @@ module Factorix
     class Validator
       # Initialize validator
       #
-      # @param graph [Factorix::Dependency::Graph] The dependency graph to validate
-      # @param mod_list [Factorix::MODList, nil] Optional MOD list for additional validation
-      # @param installed_mods [Array<Factorix::InstalledMOD>, nil] Installed MODs for alternative version suggestions
-      def initialize(graph, mod_list: nil, installed_mods: nil)
-        @graph = graph
-        @mod_list = mod_list
-        @installed_mods = installed_mods || []
-      end
+      # @param state [Factorix::MODInstallationState] The MOD installation state to validate
+      def initialize(state) = @state = state
 
       # Validate the graph
       #
@@ -30,15 +24,21 @@ module Factorix
         validate_circular_dependencies(result)
         validate_dependencies(result)
         validate_conflicts(result)
-        validate_mod_list(result) if @mod_list
+        validate_mod_list(result)
 
         result
       end
 
-      private def validate_circular_dependencies(result)
-        return unless @graph.cyclic?
+      private def graph = @state.graph
 
-        components = @graph.strongly_connected_components
+      private def mod_list = @state.mod_list
+
+      private def installed_mods = @state.installed_mods
+
+      private def validate_circular_dependencies(result)
+        return unless graph.cyclic?
+
+        components = graph.strongly_connected_components
         cycles = components.select {|component| component.size > 1 }
 
         cycles.each do |cycle|
@@ -52,7 +52,7 @@ module Factorix
 
       # Validate dependencies for all enabled MODs
       private def validate_dependencies(result)
-        @graph.nodes.each do |node|
+        graph.nodes.each do |node|
           next unless node.enabled?
 
           validate_node_dependencies(node, result)
@@ -61,7 +61,7 @@ module Factorix
 
       # Validate dependencies for a single node
       private def validate_node_dependencies(node, result)
-        @graph.edges_from(node.mod).each do |edge|
+        graph.edges_from(node.mod).each do |edge|
           next unless edge.required?
 
           validate_required_dependency(node, edge, result)
@@ -70,7 +70,7 @@ module Factorix
 
       # Validate a single required dependency
       private def validate_required_dependency(node, edge, result)
-        dependency_node = @graph.node(edge.to_mod)
+        dependency_node = graph.node(edge.to_mod)
 
         unless dependency_node
           result.add_error(
@@ -107,7 +107,7 @@ module Factorix
 
       # Validate that no conflicts exist between enabled MODs
       private def validate_conflicts(result)
-        @graph.nodes.each do |node|
+        graph.nodes.each do |node|
           next unless node.enabled?
 
           validate_node_conflicts(node, result)
@@ -116,10 +116,10 @@ module Factorix
 
       # Validate conflicts for a single node
       private def validate_node_conflicts(node, result)
-        @graph.edges_from(node.mod).each do |edge|
+        graph.edges_from(node.mod).each do |edge|
           next unless edge.incompatible?
 
-          conflict_node = @graph.node(edge.to_mod)
+          conflict_node = graph.node(edge.to_mod)
           next unless conflict_node&.enabled?
 
           result.add_error(
@@ -133,16 +133,14 @@ module Factorix
 
       # Validate MOD list consistency
       private def validate_mod_list(result)
-        return unless @mod_list
-
         validate_mods_in_list_not_installed(result)
         validate_mods_installed_not_in_list(result)
       end
 
       # Warn about MODs in list but not installed
       private def validate_mods_in_list_not_installed(result)
-        @mod_list.each_mod do |mod|
-          next if @graph.node?(mod)
+        mod_list.each_mod do |mod|
+          next if graph.node?(mod)
 
           result.add_warning(
             type: ValidationResult::MOD_IN_LIST_NOT_INSTALLED,
@@ -154,8 +152,8 @@ module Factorix
 
       # Warn about installed MODs not in list
       private def validate_mods_installed_not_in_list(result)
-        @graph.nodes.each do |node|
-          next if @mod_list.exist?(node.mod)
+        graph.nodes.each do |node|
+          next if mod_list.exist?(node.mod)
 
           result.add_warning(
             type: ValidationResult::MOD_INSTALLED_NOT_IN_LIST,
@@ -171,9 +169,9 @@ module Factorix
       # @param result [Factorix::Dependency::ValidationResult] The validation result to add suggestions to
       # @return [void]
       private def check_alternative_versions(edge, result)
-        return if @installed_mods.empty?
+        return if installed_mods.empty?
 
-        alternative_versions = @installed_mods.select {|im| im.mod == edge.to_mod }
+        alternative_versions = installed_mods.select {|im| im.mod == edge.to_mod }
 
         alternative_versions.each do |installed_mod|
           next unless edge.satisfied_by?(installed_mod.version)
