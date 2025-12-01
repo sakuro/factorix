@@ -12,13 +12,9 @@ module Factorix
         # @example Enable completion in zsh
         #   eval "$(factorix completion zsh)"
         class Zsh < Base
-          # Directory containing completion scripts
-          COMPLETION_DIR = Pathname(__dir__).join("../../../../../completion").freeze
-          private_constant :COMPLETION_DIR
-
-          # Completion script filename
-          COMPLETION_FILE = "_factorix.zsh"
-          private_constant :COMPLETION_FILE
+          # Path to zsh completion script
+          COMPLETION_SCRIPT_PATH = Pathname(__dir__).join("../../../../../completion/_factorix.zsh").freeze
+          private_constant :COMPLETION_SCRIPT_PATH
 
           desc "Generate zsh completion script"
 
@@ -31,18 +27,9 @@ module Factorix
           #
           # @return [void]
           def call(**)
-            puts completion_script
-          end
+            raise Error, "Zsh completion script not found" unless COMPLETION_SCRIPT_PATH.exist?
 
-          # Read completion script
-          #
-          # @return [String] completion script content
-          private def completion_script
-            file_path = COMPLETION_DIR.join(COMPLETION_FILE)
-
-            raise Error, "Zsh completion script not found" unless file_path.exist?
-
-            file_path.read
+            puts COMPLETION_SCRIPT_PATH.read
           end
         end
       end
