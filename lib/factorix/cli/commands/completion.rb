@@ -44,12 +44,14 @@ module Factorix
         #
         # @param shell [String, nil] Shell type (zsh, bash, fish)
         # @return [void]
+        # @raise [InvalidArgumentError] if shell type cannot be detected or is unsupported
+        # @raise [ConfigurationError] if completion script not found
         def call(shell: nil, **)
           shell_type = shell || detect_shell
           validate_shell!(shell_type)
 
           script_path = COMPLETION_DIR / SUPPORTED_SHELLS[shell_type]
-          raise Error, "#{shell_type.capitalize} completion script not found" unless script_path.exist?
+          raise ConfigurationError, "#{shell_type.capitalize} completion script not found" unless script_path.exist?
 
           puts script_path.read
         end
@@ -63,17 +65,17 @@ module Factorix
 
           return shell_name if SUPPORTED_SHELLS.key?(shell_name)
 
-          raise Error, "Cannot detect shell type from SHELL=#{shell_path}. Please specify: #{SUPPORTED_SHELLS.keys.join(", ")}"
+          raise InvalidArgumentError, "Cannot detect shell type from SHELL=#{shell_path}. Please specify: #{SUPPORTED_SHELLS.keys.join(", ")}"
         end
 
         # Validate shell type
         #
         # @param shell [String] Shell type to validate
-        # @raise [Error] If shell type is not supported
+        # @raise [InvalidArgumentError] If shell type is not supported
         private def validate_shell!(shell)
           return if SUPPORTED_SHELLS.key?(shell)
 
-          raise Error, "Unsupported shell: #{shell}. Supported shells: #{SUPPORTED_SHELLS.keys.join(", ")}"
+          raise InvalidArgumentError, "Unsupported shell: #{shell}. Supported shells: #{SUPPORTED_SHELLS.keys.join(", ")}"
         end
       end
     end

@@ -26,7 +26,7 @@ module Factorix
     #
     # @param path [Pathname] Path to the save file (.zip)
     # @return [SaveFile] Extracted save file data
-    # @raise [Errno::ENOENT] If save file or level file not found
+    # @raise [FileFormatError] If save file or level file not found
     # @raise [Factorix::Error] If save file format is invalid
     def self.load(path) = Parser.new(path).parse
 
@@ -40,7 +40,7 @@ module Factorix
       # Parse the save file and return extracted data
       #
       # @return [SaveFile] Extracted save file data
-      # @raise [Errno::ENOENT] If save file or level file not found
+      # @raise [FileFormatError] If save file or level file not found
       def parse
         open_level_file do |stream|
           deserializer = SerDes::Deserializer.new(stream)
@@ -62,7 +62,7 @@ module Factorix
             return yield decompress_if_needed(stream)
           end
 
-          raise Errno::ENOENT, "level.dat0 or level-init.dat not found in #{@path}"
+          raise FileFormatError, "level.dat0 or level-init.dat not found in #{@path}"
         end
       end
 

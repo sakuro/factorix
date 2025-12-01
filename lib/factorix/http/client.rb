@@ -28,8 +28,14 @@ module Factorix
       # @param body [String, IO, nil] request body
       # @yield [Net::HTTPResponse] for streaming responses
       # @return [Response] response object
+      # @raise [URLError] if URI is not HTTPS or too many redirects
+      # @raise [InvalidArgumentError] if HTTP method is unsupported
+      # @raise [HTTPNotFoundError] for 404 errors
+      # @raise [HTTPClientError] for 4xx errors
+      # @raise [HTTPServerError] for 5xx errors
+      # @raise [HTTPError] for other HTTP errors
       def request(method, uri, headers: {}, body: nil, &)
-        raise ArgumentError, "URL must be HTTPS" unless uri.is_a?(URI::HTTPS)
+        raise URLError, "URL must be HTTPS" unless uri.is_a?(URI::HTTPS)
 
         perform_request(method, uri, redirect_count: 0, headers:, body:, &)
       end
@@ -57,7 +63,7 @@ module Factorix
       private def perform_request(method, uri, redirect_count:, headers:, body:, &block)
         if redirect_count > MAX_REDIRECTS
           logger.error("Too many redirects", redirect_count:)
-          raise ArgumentError, "Too many redirects (#{redirect_count})"
+          raise URLError, "Too many redirects (#{redirect_count})"
         end
 
         http = create_http(uri)
@@ -126,7 +132,7 @@ module Factorix
                   when :post then Net::HTTP::Post.new(uri)
                   when :put then Net::HTTP::Put.new(uri)
                   when :delete then Net::HTTP::Delete.new(uri)
-                  else raise ArgumentError, "Unsupported method: #{method}"
+                  else raise InvalidArgumentError, "Unsupported method: #{method}"
                   end
 
         headers.each {|k, v| request[k] = v }

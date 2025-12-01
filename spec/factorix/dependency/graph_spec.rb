@@ -37,7 +37,7 @@ RSpec.describe Factorix::Dependency::Graph do
 
       expect {
         graph.add_node(node_a)
-      }.to raise_error(ArgumentError, /already exists/)
+      }.to raise_error(Factorix::DependencyGraphError, /already exists/)
     end
   end
 
@@ -65,7 +65,7 @@ RSpec.describe Factorix::Dependency::Graph do
 
       expect {
         graph.add_edge(edge_x)
-      }.to raise_error(ArgumentError, /doesn't exist/)
+      }.to raise_error(Factorix::DependencyGraphError, /doesn't exist/)
     end
   end
 

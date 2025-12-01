@@ -63,7 +63,7 @@ RSpec.describe Factorix::InfoJSON do
 
       expect {
         Factorix::InfoJSON.from_json(incomplete_data.to_json)
-      }.to raise_error(ArgumentError, /Missing required fields: title, author/)
+      }.to raise_error(Factorix::FileFormatError, /Missing required fields: title, author/)
     end
 
     it "raises ArgumentError for invalid version format" do
@@ -71,7 +71,7 @@ RSpec.describe Factorix::InfoJSON do
 
       expect {
         Factorix::InfoJSON.from_json(invalid_version_data.to_json)
-      }.to raise_error(ArgumentError, /invalid version string/)
+      }.to raise_error(Factorix::FileFormatError, /invalid version string/)
     end
 
     it "raises ArgumentError for invalid JSON" do
@@ -79,7 +79,7 @@ RSpec.describe Factorix::InfoJSON do
 
       expect {
         Factorix::InfoJSON.from_json(invalid_json)
-      }.to raise_error(ArgumentError, /Invalid JSON/)
+      }.to raise_error(Factorix::FileFormatError, /Invalid JSON/)
     end
   end
 
@@ -120,7 +120,7 @@ RSpec.describe Factorix::InfoJSON do
 
       expect {
         Factorix::InfoJSON.from_zip(zip_path)
-      }.to raise_error(ArgumentError, /info.json not found/)
+      }.to raise_error(Factorix::FileFormatError, /info.json not found/)
     end
 
     it "raises ArgumentError for invalid zip file" do
@@ -129,7 +129,7 @@ RSpec.describe Factorix::InfoJSON do
 
       expect {
         Factorix::InfoJSON.from_zip(zip_path)
-      }.to raise_error(ArgumentError, /Invalid zip file/)
+      }.to raise_error(Factorix::FileFormatError, /Invalid zip file/)
     end
   end
 end

@@ -99,9 +99,9 @@ module Factorix
       #
       # @param dependency_string [String] Dependency string to parse
       # @return [Entry] Parsed dependency object
-      # @raise [ArgumentError] if the dependency string is invalid
+      # @raise [DependencyParseError] if the dependency string is invalid
       def parse(dependency_string)
-        raise ArgumentError, "dependency_string cannot be nil or empty" if dependency_string.nil? || dependency_string.empty?
+        raise DependencyParseError, "dependency_string cannot be nil or empty" if dependency_string.nil? || dependency_string.empty?
 
         begin
           tree = @grammar.parse(dependency_string)
@@ -114,7 +114,7 @@ module Factorix
 
           Entry[mod:, type:, version_requirement:]
         rescue Parslet::ParseFailed => e
-          raise ArgumentError, parse_error_message(dependency_string, e)
+          raise DependencyParseError, parse_error_message(dependency_string, e)
         end
       end
 
@@ -126,12 +126,10 @@ module Factorix
 
         version = MODVersion.from_string(version_string)
         MODVersionRequirement[operator:, version:]
-      rescue RangeError => e
+      rescue VersionParseError => e
         # Skip version requirements with out-of-range version components
         Application[:logger].warn("Skipping version requirement '#{version_string}': #{e.message}")
         nil
-      rescue ArgumentError => e
-        raise ArgumentError, "Invalid version requirement: #{e.message}"
       end
 
       private def parse_error_message(input, error)

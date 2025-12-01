@@ -12,6 +12,24 @@ module Factorix
   # Configuration errors
   class ConfigurationError < InfrastructureError; end
 
+  # Credential/environment variable errors
+  class CredentialError < ConfigurationError; end
+
+  # Shell/completion errors
+  class ShellError < ConfigurationError; end
+
+  # Directory not found errors
+  class DirectoryNotFoundError < ConfigurationError; end
+
+  # URL related errors
+  class URLError < InfrastructureError; end
+
+  # Platform-specific errors (WSL, etc.)
+  class PlatformError < InfrastructureError; end
+
+  # Unsupported platform errors
+  class UnsupportedPlatformError < PlatformError; end
+
   # HTTP errors
   class HTTPError < InfrastructureError; end
 
@@ -57,6 +75,34 @@ module Factorix
   class MODNotFoundError < DomainError; end
   class MODNotOnPortalError < MODNotFoundError; end
   class BundledMODError < DomainError; end
+
+  # MOD conflict errors
+  class MODConflictError < DomainError; end
+
+  # MOD settings errors
+  class MODSettingsError < DomainError; end
+
+  # Invalid operation errors (e.g., cannot disable base MOD)
+  class InvalidOperationError < DomainError; end
+
+  # CLI argument validation errors
+  class InvalidArgumentError < DomainError; end
+
+  # Version parsing errors
+  class VersionParseError < DomainError; end
+
+  # Dependency parsing errors
+  class DependencyParseError < DomainError; end
+
+  # Dependency graph errors
+  class DependencyGraphError < DomainError; end
+
+  # Dependency errors
+  class DependencyError < DomainError; end
+  class CircularDependencyError < DependencyError; end
+  class DependencyMissingError < DependencyError; end
+  class DependencyVersionError < DependencyError; end
+  class DependencyViolationError < DependencyError; end
 
   # Dependency validation errors
   class ValidationError < DomainError; end

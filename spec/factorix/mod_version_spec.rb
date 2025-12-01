@@ -20,16 +20,16 @@ RSpec.describe Factorix::MODVersion do
 
     it "raises ArgumentError for invalid version strings" do
       aggregate_failures "invalid version strings" do
-        expect { Factorix::MODVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
-        expect { Factorix::MODVersion.from_string("a.b.c") }.to raise_error(ArgumentError)
-        expect { Factorix::MODVersion.from_string("1") }.to raise_error(ArgumentError)
+        expect { Factorix::MODVersion.from_string("1.2.3.4") }.to raise_error(Factorix::VersionParseError)
+        expect { Factorix::MODVersion.from_string("a.b.c") }.to raise_error(Factorix::VersionParseError)
+        expect { Factorix::MODVersion.from_string("1") }.to raise_error(Factorix::VersionParseError)
       end
     end
 
     it "raises RangeError for component out of range" do
-      expect { Factorix::MODVersion.from_string("256.0.0") }.to raise_error(RangeError, /major/)
-      expect { Factorix::MODVersion.from_string("0.256.0") }.to raise_error(RangeError, /minor/)
-      expect { Factorix::MODVersion.from_string("0.0.256") }.to raise_error(RangeError, /patch/)
+      expect { Factorix::MODVersion.from_string("256.0.0") }.to raise_error(Factorix::VersionParseError, /major/)
+      expect { Factorix::MODVersion.from_string("0.256.0") }.to raise_error(Factorix::VersionParseError, /minor/)
+      expect { Factorix::MODVersion.from_string("0.0.256") }.to raise_error(Factorix::VersionParseError, /patch/)
     end
   end
 
@@ -44,10 +44,10 @@ RSpec.describe Factorix::MODVersion do
 
     it "raises RangeError for integers out of range" do
       aggregate_failures "invalid integers" do
-        expect { Factorix::MODVersion.from_numbers(256, 0, 0) }.to raise_error(RangeError, /major/)
-        expect { Factorix::MODVersion.from_numbers(0, 256, 0) }.to raise_error(RangeError, /minor/)
-        expect { Factorix::MODVersion.from_numbers(0, 0, 256) }.to raise_error(RangeError, /patch/)
-        expect { Factorix::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::MODVersion.from_numbers(256, 0, 0) }.to raise_error(Factorix::VersionParseError, /major/)
+        expect { Factorix::MODVersion.from_numbers(0, 256, 0) }.to raise_error(Factorix::VersionParseError, /minor/)
+        expect { Factorix::MODVersion.from_numbers(0, 0, 256) }.to raise_error(Factorix::VersionParseError, /patch/)
+        expect { Factorix::MODVersion.from_numbers(-1, 0, 0) }.to raise_error(Factorix::VersionParseError, /major/)
       end
     end
   end

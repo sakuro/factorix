@@ -116,7 +116,7 @@ RSpec.describe Factorix::HTTP::Client do
       it "raises ArgumentError" do
         expect {
           client.request(:get, http_uri)
-        }.to raise_error(ArgumentError, "URL must be HTTPS")
+        }.to raise_error(Factorix::URLError, "URL must be HTTPS")
       end
     end
 
@@ -149,7 +149,7 @@ RSpec.describe Factorix::HTTP::Client do
       it "raises ArgumentError" do
         expect {
           client.__send__(:build_request, :patch, uri, headers: {}, body: nil)
-        }.to raise_error(ArgumentError, "Unsupported method: patch")
+        }.to raise_error(Factorix::InvalidArgumentError, "Unsupported method: patch")
       end
     end
   end
@@ -200,7 +200,7 @@ RSpec.describe Factorix::HTTP::Client do
       it "raises ArgumentError after max redirects" do
         expect {
           client.get(URI("https://example.com/redirect0"))
-        }.to raise_error(ArgumentError, /Too many redirects/)
+        }.to raise_error(Factorix::URLError, /Too many redirects/)
       end
     end
 

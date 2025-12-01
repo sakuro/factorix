@@ -53,7 +53,7 @@ RSpec.describe Factorix::MODList do
         let(:invalid_list_path) { Pathname("spec/fixtures/mod-list/invalid_base_disabled.json") }
 
         it "raises ArgumentError" do
-          expect { Factorix::MODList.load(invalid_list_path) }.to raise_error(ArgumentError)
+          expect { Factorix::MODList.load(invalid_list_path) }.to raise_error(Factorix::MODSettingsError)
         end
       end
     end
@@ -149,7 +149,7 @@ RSpec.describe Factorix::MODList do
 
     context "when adding the base MOD" do
       it "can't add base MOD as disabled" do
-        expect { list.add(base_mod, enabled: false) }.to raise_error(ArgumentError)
+        expect { list.add(base_mod, enabled: false) }.to raise_error(Factorix::MODSettingsError)
       end
     end
   end
@@ -169,7 +169,7 @@ RSpec.describe Factorix::MODList do
 
     context "when removing the base MOD" do
       it "raises ArgumentError" do
-        expect { list.remove(base_mod) }.to raise_error(ArgumentError, "can't remove the base MOD")
+        expect { list.remove(base_mod) }.to raise_error(Factorix::MODSettingsError, "can't remove the base MOD")
       end
     end
 
@@ -189,19 +189,19 @@ RSpec.describe Factorix::MODList do
       it "raises ArgumentError for space-age" do
         expect {
           list_with_expansions.remove(space_age_mod)
-        }.to raise_error(ArgumentError, "can't remove expansion MOD: space-age")
+        }.to raise_error(Factorix::MODSettingsError, "can't remove expansion MOD: space-age")
       end
 
       it "raises ArgumentError for quality" do
         expect {
           list_with_expansions.remove(quality_mod)
-        }.to raise_error(ArgumentError, "can't remove expansion MOD: quality")
+        }.to raise_error(Factorix::MODSettingsError, "can't remove expansion MOD: quality")
       end
 
       it "raises ArgumentError for elevated-rails" do
         expect {
           list_with_expansions.remove(elevated_rails_mod)
-        }.to raise_error(ArgumentError, "can't remove expansion MOD: elevated-rails")
+        }.to raise_error(Factorix::MODSettingsError, "can't remove expansion MOD: elevated-rails")
       end
     end
   end
@@ -267,7 +267,7 @@ RSpec.describe Factorix::MODList do
     end
 
     it "raises ArgumentError on disabling base MOD" do
-      expect { list.disable(base_mod) }.to raise_error(ArgumentError)
+      expect { list.disable(base_mod) }.to raise_error(Factorix::MODSettingsError)
     end
 
     context "when disabling expansion MODs" do

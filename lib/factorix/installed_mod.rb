@@ -60,7 +60,7 @@ module Factorix
     #
     # @param path [Pathname] Path to the ZIP file
     # @return [InstalledMOD] New InstalledMOD instance
-    # @raise [ArgumentError] if ZIP file is invalid
+    # @raise [FileFormatError] if ZIP file is invalid
     def self.from_zip(path)
       info = InfoJSON.from_zip(path)
 
@@ -68,7 +68,7 @@ module Factorix
       actual_filename = path.basename.to_s
 
       unless actual_filename == expected_filename
-        raise ArgumentError, "Filename mismatch: expected #{expected_filename}, got #{actual_filename}"
+        raise FileFormatError, "Filename mismatch: expected #{expected_filename}, got #{actual_filename}"
       end
 
       new(mod: MOD[name: info.name], version: info.version, form: ZIP_FORM, path:, info:)
@@ -78,10 +78,10 @@ module Factorix
     #
     # @param path [Pathname] Path to the directory
     # @return [InstalledMOD] New InstalledMOD instance
-    # @raise [ArgumentError] if directory is invalid
+    # @raise [FileFormatError] if directory is invalid
     def self.from_directory(path)
       info_path = path + "info.json"
-      raise ArgumentError, "Missing info.json" unless info_path.file?
+      raise FileFormatError, "Missing info.json" unless info_path.file?
 
       info = InfoJSON.from_json(info_path.read)
 
@@ -90,7 +90,7 @@ module Factorix
       expected_versioned = "#{info.name}_#{info.version}"
 
       unless dirname == expected_unversioned || dirname == expected_versioned
-        raise ArgumentError, "Directory name mismatch: expected #{expected_unversioned} or #{expected_versioned}, got #{dirname}"
+        raise FileFormatError, "Directory name mismatch: expected #{expected_unversioned} or #{expected_versioned}, got #{dirname}"
       end
 
       new(mod: MOD[name: info.name], version: info.version, form: DIRECTORY_FORM, path:, info:)

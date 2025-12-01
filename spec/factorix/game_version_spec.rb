@@ -19,17 +19,17 @@ RSpec.describe Factorix::GameVersion do
 
     it "raises ArgumentError for invalid version strings" do
       aggregate_failures "invalid version strings" do
-        expect { Factorix::GameVersion.from_string("1.2") }.to raise_error(ArgumentError)
-        expect { Factorix::GameVersion.from_string("1.2.3.4") }.to raise_error(ArgumentError)
-        expect { Factorix::GameVersion.from_string("a.b.c-d") }.to raise_error(ArgumentError)
+        expect { Factorix::GameVersion.from_string("1.2") }.to raise_error(Factorix::VersionParseError)
+        expect { Factorix::GameVersion.from_string("1.2.3.4") }.to raise_error(Factorix::VersionParseError)
+        expect { Factorix::GameVersion.from_string("a.b.c-d") }.to raise_error(Factorix::VersionParseError)
       end
     end
 
     it "raises RangeError for component out of range" do
-      expect { Factorix::GameVersion.from_string("65536.0.0-0") }.to raise_error(RangeError, /major/)
-      expect { Factorix::GameVersion.from_string("0.65536.0-0") }.to raise_error(RangeError, /minor/)
-      expect { Factorix::GameVersion.from_string("0.0.65536-0") }.to raise_error(RangeError, /patch/)
-      expect { Factorix::GameVersion.from_string("0.0.0-65536") }.to raise_error(RangeError, /build/)
+      expect { Factorix::GameVersion.from_string("65536.0.0-0") }.to raise_error(Factorix::VersionParseError, /major/)
+      expect { Factorix::GameVersion.from_string("0.65536.0-0") }.to raise_error(Factorix::VersionParseError, /minor/)
+      expect { Factorix::GameVersion.from_string("0.0.65536-0") }.to raise_error(Factorix::VersionParseError, /patch/)
+      expect { Factorix::GameVersion.from_string("0.0.0-65536") }.to raise_error(Factorix::VersionParseError, /build/)
     end
   end
 
@@ -45,11 +45,11 @@ RSpec.describe Factorix::GameVersion do
 
     it "raises RangeError for integers out of range" do
       aggregate_failures "invalid integers" do
-        expect { Factorix::GameVersion.from_numbers(65536, 0, 0, 0) }.to raise_error(RangeError, /major/)
-        expect { Factorix::GameVersion.from_numbers(0, 65536, 0, 0) }.to raise_error(RangeError, /minor/)
-        expect { Factorix::GameVersion.from_numbers(0, 0, 65536, 0) }.to raise_error(RangeError, /patch/)
-        expect { Factorix::GameVersion.from_numbers(0, 0, 0, 65536) }.to raise_error(RangeError, /build/)
-        expect { Factorix::GameVersion.from_numbers(-1, 0, 0, 0) }.to raise_error(RangeError, /major/)
+        expect { Factorix::GameVersion.from_numbers(65536, 0, 0, 0) }.to raise_error(Factorix::VersionParseError, /major/)
+        expect { Factorix::GameVersion.from_numbers(0, 65536, 0, 0) }.to raise_error(Factorix::VersionParseError, /minor/)
+        expect { Factorix::GameVersion.from_numbers(0, 0, 65536, 0) }.to raise_error(Factorix::VersionParseError, /patch/)
+        expect { Factorix::GameVersion.from_numbers(0, 0, 0, 65536) }.to raise_error(Factorix::VersionParseError, /build/)
+        expect { Factorix::GameVersion.from_numbers(-1, 0, 0, 0) }.to raise_error(Factorix::VersionParseError, /major/)
       end
     end
   end

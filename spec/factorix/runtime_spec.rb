@@ -63,9 +63,9 @@ RSpec.describe Factorix::Runtime do
         stub_const("RUBY_PLATFORM", "aarch64-freebsd")
       end
 
-      it "raises UnsupportedPlatform error" do
+      it "raises UnsupportedPlatformError" do
         expect { runtime }.to raise_error(
-          Factorix::Runtime::UnsupportedPlatform,
+          Factorix::UnsupportedPlatformError,
           "Platform is not supported: aarch64-freebsd"
         )
       end

@@ -76,13 +76,13 @@ module Factorix
         # Fetch Windows environment variables via PowerShell
         #
         # @return [Hash] the environment variables as a hash
-        # @raise [RuntimeError] if PowerShell execution fails
+        # @raise [PlatformError] if PowerShell execution fails
         private def fetch_windows_paths_via_powershell
           ps = find_powershell_exe
 
           stdout, status = Open3.capture2(ps, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", POWERSHELL_SCRIPT)
 
-          raise RuntimeError, "PowerShell execution failed: #{status}" unless status.success?
+          raise PlatformError, "PowerShell execution failed: #{status}" unless status.success?
 
           JSON.parse(stdout.encode("UTF-8", invalid: :replace, undef: :replace))
         end
@@ -91,9 +91,9 @@ module Factorix
         #
         # @param windows_path [String] Windows-style path to convert
         # @return [String] equivalent WSL path
-        # @raise [ArgumentError] if the path format is invalid
+        # @raise [PlatformError] if the path format is invalid
         private def convert_windows_to_wsl(windows_path)
-          raise ArgumentError, "Invalid Windows path: #{windows_path}" unless windows_path =~ %r{\A([A-Za-z]):[\\/]?(.*)\z}
+          raise PlatformError, "Invalid Windows path: #{windows_path}" unless windows_path =~ %r{\A([A-Za-z]):[\\/]?(.*)\z}
 
           drive = $1.downcase
           path = $2.tr("\\", "/")
@@ -105,12 +105,12 @@ module Factorix
         # Find powershell.exe executable
         #
         # @return [String] path to powershell.exe
-        # @raise [RuntimeError] if powershell.exe is not found
+        # @raise [PlatformError] if powershell.exe is not found
         private def find_powershell_exe
           return "powershell.exe" if system("which", "powershell.exe", out: File::NULL, err: File::NULL)
 
           POWERSHELL_FALLBACK_PATHS.find {|path| File.exist?(path) } ||
-            raise(RuntimeError, "powershell.exe not found in PATH or default locations")
+            raise(PlatformError, "powershell.exe not found in PATH or default locations")
         end
       end
     end

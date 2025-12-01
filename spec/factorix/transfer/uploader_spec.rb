@@ -81,7 +81,7 @@ RSpec.describe Factorix::Transfer::Uploader do
 
         expect {
           uploader.upload(http_url, file_path)
-        }.to raise_error(ArgumentError, /must be HTTPS/)
+        }.to raise_error(Factorix::URLError, /must be HTTPS/)
       end
     end
   end

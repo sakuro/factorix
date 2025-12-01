@@ -192,12 +192,12 @@ module Factorix
     #
     # @param path [Pathname, String, nil] configuration file path
     # @return [void]
-    # @raise [Errno::ENOENT] if explicitly specified path does not exist
+    # @raise [ConfigurationError] if explicitly specified path does not exist
     def self.load_config(path=nil)
       if path
         # Explicitly specified path must exist
         config_path = Pathname(path)
-        raise Errno::ENOENT, config_path.to_s unless config_path.exist?
+        raise ConfigurationError, "Configuration file not found: #{config_path}" unless config_path.exist?
       else
         # Default path is optional
         config_path = resolve(:runtime).factorix_config_path

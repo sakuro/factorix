@@ -64,7 +64,7 @@ module Factorix
             if metadata.empty?
               say "At least one metadata option must be provided", prefix: :error
               say "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated"
-              raise Error, "No metadata options provided"
+              raise InvalidArgumentError, "No metadata options provided"
             end
 
             portal.edit_mod(mod_name, **metadata)
@@ -105,7 +105,7 @@ module Factorix
             say "Invalid license identifier: #{license}", prefix: :error
             say "Valid identifiers: #{API::License.identifier_values.join(", ")}"
             say "Custom licenses: custom_<24 hex chars> (e.g., custom_0123456789abcdef01234567)"
-            raise Error, "Invalid license identifier"
+            raise InvalidArgumentError, "Invalid license identifier"
           end
         end
       end

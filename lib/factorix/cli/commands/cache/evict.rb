@@ -53,24 +53,31 @@ module Factorix
             output_results(results)
           end
 
+          # Validate that exactly one eviction option is specified
+          #
+          # @param all [Boolean] --all option
+          # @param expired [Boolean] --expired option
+          # @param older_than [String, nil] --older-than option
+          # @return [void]
+          # @raise [InvalidArgumentError] if options are invalid
           private def validate_options!(all, expired, older_than)
             options_count = [all, expired, older_than].count {|opt| opt }
 
-            raise Error, "One of --all, --expired, or --older-than must be specified" if options_count == 0
-            raise Error, "Only one of --all, --expired, or --older-than can be specified" if options_count > 1
+            raise InvalidArgumentError, "One of --all, --expired, or --older-than must be specified" if options_count == 0
+            raise InvalidArgumentError, "Only one of --all, --expired, or --older-than can be specified" if options_count > 1
           end
 
           # Parse age string into seconds
           #
           # @param age [String] age string (e.g., "30s", "5m", "2h", "7d")
           # @return [Integer] age in seconds
-          # @raise [Error] if age format is invalid
+          # @raise [InvalidArgumentError] if age format is invalid
           DURATION_MULTIPLIERS = {"s" => 1, "m" => 60, "h" => 3600, "d" => 86400}.freeze
           private_constant :DURATION_MULTIPLIERS
 
           private def parse_age(age)
             match = age.match(/\A(\d+)([smhd])\z/)
-            raise Error, "Invalid age format: #{age}. Use format like 30s, 5m, 2h, 7d" unless match
+            raise InvalidArgumentError, "Invalid age format: #{age}. Use format like 30s, 5m, 2h, 7d" unless match
 
             value = Integer(match[1])
             unit = match[2]
@@ -82,7 +89,7 @@ module Factorix
           #
           # @param caches [Array<String>, nil] cache names from argument
           # @return [Array<Symbol>] resolved cache names
-          # @raise [Error] if unknown cache name specified
+          # @raise [InvalidArgumentError] if unknown cache name specified
           private def resolve_cache_names(caches)
             all_caches = Application.config.cache.values.keys
 
@@ -90,7 +97,7 @@ module Factorix
 
             caches.map do |name|
               sym = name.to_sym
-              raise Error, "Unknown cache: #{name}. Valid caches: #{all_caches.join(", ")}" unless all_caches.include?(sym)
+              raise InvalidArgumentError, "Unknown cache: #{name}. Valid caches: #{all_caches.join(", ")}" unless all_caches.include?(sym)
 
               sym
             end

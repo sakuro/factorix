@@ -128,13 +128,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       it "raises error when file does not exist" do
         expect {
           command.call(file: "/nonexistent/file.zip")
-        }.to raise_error(ArgumentError, /File not found/)
+        }.to raise_error(Factorix::InvalidArgumentError, /File not found/)
       end
 
       it "raises error when path is a directory" do
         expect {
           command.call(file: temp_dir.to_s)
-        }.to raise_error(ArgumentError, /Not a file/)
+        }.to raise_error(Factorix::InvalidArgumentError, /Not a file/)
       end
 
       it "raises error when file is not a zip" do
@@ -143,7 +143,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
         expect {
           command.call(file: txt_path.to_s)
-        }.to raise_error(ArgumentError, /must be a .zip file/)
+        }.to raise_error(Factorix::InvalidArgumentError, /must be a .zip file/)
       end
     end
 
@@ -156,7 +156,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
         expect {
           command.call(file: bad_zip_path.to_s)
-        }.to raise_error(ArgumentError, /info.json not found/)
+        }.to raise_error(Factorix::FileFormatError, /info.json not found/)
       end
 
       it "raises error when info.json is invalid" do
@@ -167,7 +167,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
         expect {
           command.call(file: invalid_zip_path.to_s)
-        }.to raise_error(ArgumentError, /Invalid JSON/)
+        }.to raise_error(Factorix::FileFormatError, /Invalid JSON/)
       end
 
       it "raises error when required fields are missing in info.json" do
@@ -184,7 +184,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
         expect {
           command.call(file: incomplete_zip_path.to_s)
-        }.to raise_error(ArgumentError, /Missing required fields/)
+        }.to raise_error(Factorix::FileFormatError, /Missing required fields/)
       end
     end
   end

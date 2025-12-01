@@ -22,10 +22,10 @@ module Factorix
       #
       # @param node [Factorix::Dependency::Node] The node to add
       # @return [void]
-      # @raise [ArgumentError] if a node for this MOD already exists
+      # @raise [DependencyGraphError] if a node for this MOD already exists
       def add_node(node)
         mod = node.mod
-        raise ArgumentError, "Node for #{mod} already exists" if @nodes.key?(mod)
+        raise DependencyGraphError, "Node for #{mod} already exists" if @nodes.key?(mod)
 
         @nodes[mod] = node
         @edges[mod] ||= []
@@ -35,10 +35,10 @@ module Factorix
       #
       # @param edge [Factorix::Dependency::Edge] The edge to add
       # @return [void]
-      # @raise [ArgumentError] if from_mod node doesn't exist
+      # @raise [DependencyGraphError] if from_mod node doesn't exist
       def add_edge(edge)
         from_mod = edge.from_mod
-        raise ArgumentError, "Node for #{from_mod} doesn't exist" unless @nodes.key?(from_mod)
+        raise DependencyGraphError, "Node for #{from_mod} doesn't exist" unless @nodes.key?(from_mod)
 
         @edges[from_mod] ||= []
         @edges[from_mod] << edge

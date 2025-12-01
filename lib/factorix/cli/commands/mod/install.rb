@@ -46,7 +46,7 @@ module Factorix
             graph = state.graph
             mod_list = state.mod_list
 
-            raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
+            raise DirectoryNotFoundError, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 
             # Plan installation (fetch info, extend graph, validate)
             install_targets = plan_installation(mod_specs, graph, jobs)
@@ -132,7 +132,7 @@ module Factorix
             release = find_release(mod_info, version)
 
             version_display = version == :latest ? "latest" : version.to_s
-            raise Error, "Release not found for #{mod}@#{version_display}" unless release
+            raise MODNotOnPortalError, "Release not found for #{mod}@#{version_display}" unless release
 
             {mod:, mod_name: mod.name, mod_info:, release:, version:}
           end
@@ -258,7 +258,8 @@ module Factorix
           #
           # @param graph [Dependency::Graph] Graph to validate
           # @return [void]
-          # @raise [Factorix::Error] if validation fails
+          # @raise [CircularDependencyError] if circular dependency detected
+          # @raise [MODConflictError] if MOD conflicts with enabled MOD
           private def validate_installation_graph(graph)
             # Check for cycles
             if graph.cyclic?
@@ -270,7 +271,7 @@ module Factorix
                 logger.error("  Cycle: #{cycle.join(" <-> ")}")
               end
 
-              raise Error, "Circular dependency detected in MOD(s) to install"
+              raise CircularDependencyError, "Circular dependency detected in MOD(s) to install"
             end
 
             graph.nodes.each do |node|
@@ -281,7 +282,7 @@ module Factorix
 
                 target_node = graph.node(edge.to_mod)
                 if target_node&.enabled?
-                  raise Error,
+                  raise MODConflictError,
                     "Cannot install #{node.mod}: it conflicts with enabled MOD #{edge.to_mod}"
                 end
               end

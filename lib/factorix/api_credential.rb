@@ -20,7 +20,7 @@ module Factorix
     # Load API credentials from environment variables
     #
     # @return [APICredential] new instance with API key from environment
-    # @raise [ArgumentError] if API key is not set in environment
+    # @raise [CredentialError] if API key is not set in environment
     def self.load
       logger = Application["logger"]
       logger.debug "Loading API credentials from environment"
@@ -28,12 +28,12 @@ module Factorix
       api_key = ENV.fetch(ENV_API_KEY, nil)
       if api_key.nil?
         logger.error("Failed to load API credentials", reason: "#{ENV_API_KEY} not set")
-        raise ArgumentError, "#{ENV_API_KEY} environment variable is not set"
+        raise CredentialError, "#{ENV_API_KEY} environment variable is not set"
       end
 
       if api_key.empty?
         logger.error("Failed to load API credentials", reason: "#{ENV_API_KEY} is empty")
-        raise ArgumentError, "#{ENV_API_KEY} environment variable is empty"
+        raise CredentialError, "#{ENV_API_KEY} environment variable is empty"
       end
 
       logger.info("API credentials loaded successfully")

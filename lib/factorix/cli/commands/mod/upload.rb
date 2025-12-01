@@ -32,14 +32,14 @@ module Factorix
           # @param license [String, nil] optional license
           # @param source_url [String, nil] optional source URL
           # @return [void]
-          # @raise [ArgumentError] if file does not exist, is not a file, or is not a .zip file
-          # @raise [ArgumentError] if zip is invalid or info.json is missing/malformed
+          # @raise [InvalidArgumentError] if file does not exist, is not a file, or is not a .zip file
+          # @raise [FileFormatError] if zip is invalid or info.json is missing/malformed
           def call(file:, description: nil, category: nil, license: nil, source_url: nil, **)
             file_path = Pathname(file)
 
-            raise ArgumentError, "File not found: #{file}" unless file_path.exist?
-            raise ArgumentError, "Not a file: #{file}" unless file_path.file?
-            raise ArgumentError, "File must be a .zip file" if file_path.extname.casecmp(".zip").nonzero?
+            raise InvalidArgumentError, "File not found: #{file}" unless file_path.exist?
+            raise InvalidArgumentError, "Not a file: #{file}" unless file_path.file?
+            raise InvalidArgumentError, "File must be a .zip file" if file_path.extname.casecmp(".zip").nonzero?
 
             mod_name = extract_mod_name(file_path)
             metadata = build_metadata(description:, category:, license:, source_url:)
@@ -62,7 +62,7 @@ module Factorix
           #
           # @param file_path [Pathname] path to zip file
           # @return [String] MOD name from info.json
-          # @raise [ArgumentError] if info.json not found or invalid
+          # @raise [FileFormatError] if info.json not found or invalid
           private def extract_mod_name(file_path)
             info = InfoJSON.from_zip(file_path)
             info.name

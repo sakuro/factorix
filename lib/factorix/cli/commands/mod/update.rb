@@ -79,12 +79,12 @@ module Factorix
           #
           # @param mod_name [String] MOD name
           # @return [MOD] MOD object
-          # @raise [Error] if MOD is base or expansion
+          # @raise [InvalidOperationError] if MOD is base or expansion
           private def validate_and_get_mod(mod_name)
             mod = Factorix::MOD[name: mod_name]
 
-            raise Error, "Cannot update base MOD" if mod.base?
-            raise Error, "Cannot update expansion MOD: #{mod}" if mod.expansion?
+            raise InvalidOperationError, "Cannot update base MOD" if mod.base?
+            raise InvalidOperationError, "Cannot update expansion MOD: #{mod}" if mod.expansion?
 
             mod
           end

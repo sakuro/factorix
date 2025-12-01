@@ -133,23 +133,23 @@ RSpec.describe Factorix::Dependency::Parser do
 
     context "with invalid input" do
       it "raises error for nil input" do
-        expect { parser.parse(nil) }.to raise_error(ArgumentError, /cannot be nil or empty/)
+        expect { parser.parse(nil) }.to raise_error(Factorix::DependencyParseError, /cannot be nil or empty/)
       end
 
       it "raises error for empty string" do
-        expect { parser.parse("") }.to raise_error(ArgumentError, /cannot be nil or empty/)
+        expect { parser.parse("") }.to raise_error(Factorix::DependencyParseError, /cannot be nil or empty/)
       end
 
       it "raises error for invalid version format" do
-        expect { parser.parse("mod >= invalid") }.to raise_error(ArgumentError, /Invalid version requirement/)
+        expect { parser.parse("mod >= invalid") }.to raise_error(Factorix::DependencyParseError, /Invalid version requirement/)
       end
 
       it "raises error for empty MOD name" do
-        expect { parser.parse(">= 1.0.0") }.to raise_error(ArgumentError, /empty MOD name/)
+        expect { parser.parse(">= 1.0.0") }.to raise_error(Factorix::DependencyParseError, /empty MOD name/)
       end
 
       it "raises error for empty version" do
-        expect { parser.parse("mod >= ") }.to raise_error(ArgumentError, /empty version/)
+        expect { parser.parse("mod >= ") }.to raise_error(Factorix::DependencyParseError, /empty version/)
       end
     end
 

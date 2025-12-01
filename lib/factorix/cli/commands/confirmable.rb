@@ -27,13 +27,18 @@ module Factorix
           super
         end
 
+        # Ask for user confirmation
+        #
+        # @param message [String] confirmation message to display
+        # @return [Boolean] true if user confirms, false otherwise
+        # @raise [InvalidOperationError] if in quiet mode without --yes flag
         private def confirm?(message="Do you want to continue?")
           # --yes flag skips confirmation
           return true if @yes
 
           # Cannot prompt in quiet mode
           if quiet?
-            raise Error, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
+            raise InvalidOperationError, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
           end
 
           print "#{message} [y/N] "

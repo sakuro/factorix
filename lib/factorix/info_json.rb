@@ -18,20 +18,22 @@ module Factorix
     #
     # @param json_string [String] JSON content
     # @return [InfoJSON] parsed info.json
-    # @raise [ArgumentError] if required fields are missing or JSON is invalid
+    # @raise [FileFormatError] if required fields are missing or JSON is invalid
     def self.from_json(json_string)
       data = JSON.parse(json_string)
 
       required_fields = %w[name version title author]
       missing = required_fields - data.keys
-      raise ArgumentError, "Missing required fields: #{missing.join(", ")}" unless missing.empty?
+      raise FileFormatError, "Missing required fields: #{missing.join(", ")}" unless missing.empty?
 
       parser = Dependency::Parser.new
       dependencies = (data["dependencies"] || []).map {|dep_str| parser.parse(dep_str) }
 
       new(name: data["name"], version: MODVersion.from_string(data["version"]), title: data["title"], author: data["author"], description: data["description"] || "", factorio_version: data["factorio_version"], dependencies:)
     rescue JSON::ParserError => e
-      raise ArgumentError, "Invalid JSON: #{e.message}"
+      raise FileFormatError, "Invalid JSON: #{e.message}"
+    rescue VersionParseError, DependencyParseError => e
+      raise FileFormatError, e.message
     end
 
     # Extract from zip file
@@ -43,7 +45,7 @@ module Factorix
     #
     # @param zip_path [Pathname] path to MOD zip file
     # @return [InfoJSON] parsed info.json from zip
-    # @raise [ArgumentError] if zip is invalid or info.json not found
+    # @raise [FileFormatError] if zip is invalid or info.json not found
     def self.from_zip(zip_path)
       cache = Application.resolve(:info_json_cache)
       logger = Application.resolve(:logger)
@@ -64,7 +66,7 @@ module Factorix
 
         json_string = Zip::File.open(zip_path) {|zip_file|
           info_entry = zip_file.find {|entry| entry.name.end_with?("/info.json") }
-          raise ArgumentError, "info.json not found in #{zip_path}" unless info_entry
+          raise FileFormatError, "info.json not found in #{zip_path}" unless info_entry
 
           info_entry.get_input_stream.read
         }
@@ -82,7 +84,7 @@ module Factorix
         from_json(json_string)
       end
     rescue Zip::Error => e
-      raise ArgumentError, "Invalid zip file: #{e.message}"
+      raise FileFormatError, "Invalid zip file: #{e.message}"
     end
   end
 end

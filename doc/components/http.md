@@ -43,7 +43,7 @@ Core HTTP client using `Net::HTTP`.
 - `post(uri, body:, headers:, content_type:)` - POST request
 
 **Constraints**:
-- HTTPS only (raises `ArgumentError` for non-HTTPS)
+- HTTPS only (raises `URLError` for non-HTTPS)
 - Timeouts configured via `Application.config.http`
 
 ### Response

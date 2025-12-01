@@ -50,7 +50,7 @@ module Factorix
             mod_list = state.mod_list
             installed_mods = state.installed_mods
 
-            raise Error, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
+            raise DirectoryNotFoundError, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 
             # Find MODs that need to be installed
             mods_to_install = find_mods_to_install(save_data.mods, installed_mods)
@@ -159,7 +159,7 @@ module Factorix
             release = mod_info.releases.find {|r| r.version == version }
 
             unless release
-              raise Error, "Release not found for #{mod_name}@#{version}"
+              raise MODNotOnPortalError, "Release not found for #{mod_name}@#{version}"
             end
 
             {mod_name:, mod_info:, release:, version:}

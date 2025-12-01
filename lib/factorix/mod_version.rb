@@ -24,10 +24,10 @@ module Factorix
 
     class << self
       private def validate_component(value, name)
-        raise ArgumentError, "#{name} must be an Integer, got #{value.class}" unless value.is_a?(Integer)
+        raise VersionParseError, "#{name} must be an Integer, got #{value.class}" unless value.is_a?(Integer)
         return if value.between?(0, UINT8_MAX)
 
-        raise RangeError, "#{name} must be between 0 and #{UINT8_MAX}, got #{value}"
+        raise VersionParseError, "#{name} must be between 0 and #{UINT8_MAX}, got #{value}"
       end
     end
 
@@ -38,7 +38,7 @@ module Factorix
     #
     # @param str [String] version string in "X.Y.Z" or "X.Y" format
     # @return [MODVersion]
-    # @raise [ArgumentError] if string format is invalid
+    # @raise [VersionParseError] if string format is invalid
     def self.from_string(str)
       if /\A(\d+)\.(\d+)\.(\d+)\z/ =~ str
         major = Integer($1, 10)
@@ -49,7 +49,7 @@ module Factorix
         minor = Integer($2, 10)
         patch = 0
       else
-        raise ArgumentError, "invalid version string: #{str.inspect}"
+        raise VersionParseError, "invalid version string: #{str.inspect}"
       end
 
       validate_component(major, :major)
@@ -65,7 +65,7 @@ module Factorix
     # @param minor [Integer] minor version number (0-255)
     # @param patch [Integer] patch version number (0-255)
     # @return [MODVersion]
-    # @raise [ArgumentError] if any component is out of range
+    # @raise [VersionParseError] if any component is out of range
     def self.from_numbers(major, minor, patch)
       validate_component(major, :major)
       validate_component(minor, :minor)

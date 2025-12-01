@@ -69,7 +69,7 @@ Split into three classes based on authentication method.
 
 **Response**: MOD list with pagination information
 
-**Validation**: Invalid parameter values raise `ArgumentError` with descriptive messages
+**Validation**: Invalid parameter values raise `InvalidArgumentError` with descriptive messages
 
 **Cache optimization**:
 - namelist is sorted before URI construction to ensure consistent cache keys

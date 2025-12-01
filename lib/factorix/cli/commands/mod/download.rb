@@ -43,10 +43,10 @@ module Factorix
           def call(mod_specs:, directory: ".", jobs: 4, recursive: false, **)
             download_dir = Pathname(directory).expand_path
 
-            raise Error, "Download directory does not exist: #{download_dir}" unless download_dir.exist?
+            raise DirectoryNotFoundError, "Download directory does not exist: #{download_dir}" unless download_dir.exist?
 
             if runtime.mod_dir.exist? && download_dir.realpath == runtime.mod_dir.realpath
-              raise Error, "Cannot download to MOD directory. Use 'mod install' instead."
+              raise InvalidOperationError, "Cannot download to MOD directory. Use 'mod install' instead."
             end
 
             download_targets = plan_download(mod_specs, download_dir, jobs, recursive)
@@ -120,7 +120,7 @@ module Factorix
             release = find_release(mod_info, version)
 
             version_display = version == :latest ? "latest" : version.to_s
-            raise Error, "Release not found for #{mod}@#{version_display}" unless release
+            raise MODNotOnPortalError, "Release not found for #{mod}@#{version_display}" unless release
 
             {mod:, mod_name: mod.name, mod_info:, release:, version:}
           end
@@ -277,12 +277,12 @@ module Factorix
           #
           # @param filename [String] Filename to validate
           # @return [void]
-          # @raise [ArgumentError] if filename is invalid
+          # @raise [InvalidArgumentError] if filename is invalid
           private def validate_filename(filename)
-            raise ArgumentError, "Filename is empty" if filename.nil? || filename.empty?
-            raise ArgumentError, "Filename contains path separators" if filename.include?(File::SEPARATOR)
-            raise ArgumentError, "Filename contains path separators" if File::ALT_SEPARATOR && filename.include?(File::ALT_SEPARATOR)
-            raise ArgumentError, "Filename contains parent directory reference" if filename.include?("..")
+            raise InvalidArgumentError, "Filename is empty" if filename.nil? || filename.empty?
+            raise InvalidArgumentError, "Filename contains path separators" if filename.include?(File::SEPARATOR)
+            raise InvalidArgumentError, "Filename contains path separators" if File::ALT_SEPARATOR && filename.include?(File::ALT_SEPARATOR)
+            raise InvalidArgumentError, "Filename contains parent directory reference" if filename.include?("..")
           end
         end
       end

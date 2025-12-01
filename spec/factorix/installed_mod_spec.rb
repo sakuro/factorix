@@ -313,7 +313,7 @@ RSpec.describe Factorix::InstalledMOD do
       it "raises ArgumentError" do
         expect {
           Factorix::InstalledMOD.from_zip(zip_path)
-        }.to raise_error(ArgumentError, /Filename mismatch/)
+        }.to raise_error(Factorix::FileFormatError, /Filename mismatch/)
       end
     end
   end
@@ -359,7 +359,7 @@ RSpec.describe Factorix::InstalledMOD do
       it "raises ArgumentError" do
         expect {
           Factorix::InstalledMOD.from_directory(dir_path)
-        }.to raise_error(ArgumentError, /Missing info\.json/)
+        }.to raise_error(Factorix::FileFormatError, /Missing info\.json/)
       end
     end
 
@@ -373,7 +373,7 @@ RSpec.describe Factorix::InstalledMOD do
       it "raises ArgumentError" do
         expect {
           Factorix::InstalledMOD.from_directory(dir_path)
-        }.to raise_error(ArgumentError, /Directory name mismatch/)
+        }.to raise_error(Factorix::FileFormatError, /Directory name mismatch/)
       end
     end
   end

@@ -189,7 +189,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
         expect {
           command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1)
-        }.to raise_error(ArgumentError, /path/)
+        }.to raise_error(Factorix::InvalidArgumentError, /path/)
       end
     end
   end
@@ -230,25 +230,25 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     it "rejects empty filename" do
       expect {
         command.__send__(:validate_filename, "")
-      }.to raise_error(ArgumentError, /empty/)
+      }.to raise_error(Factorix::InvalidArgumentError, /empty/)
     end
 
     it "rejects nil filename" do
       expect {
         command.__send__(:validate_filename, nil)
-      }.to raise_error(ArgumentError, /empty/)
+      }.to raise_error(Factorix::InvalidArgumentError, /empty/)
     end
 
     it "rejects filename with path separator" do
       expect {
         command.__send__(:validate_filename, "path/to/file.zip")
-      }.to raise_error(ArgumentError, /separator/)
+      }.to raise_error(Factorix::InvalidArgumentError, /separator/)
     end
 
     it "rejects filename with parent directory reference" do
       expect {
         command.__send__(:validate_filename, "..evil.zip")
-      }.to raise_error(ArgumentError, /parent directory/)
+      }.to raise_error(Factorix::InvalidArgumentError, /parent directory/)
     end
   end
 

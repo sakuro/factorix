@@ -353,7 +353,7 @@ RSpec.describe Factorix::Application do
       it "raises Errno::ENOENT" do
         expect {
           Factorix::Application.load_config("/nonexistent/config.rb")
-        }.to raise_error(Errno::ENOENT, /nonexistent/)
+        }.to raise_error(Factorix::ConfigurationError, /nonexistent/)
       end
     end
 

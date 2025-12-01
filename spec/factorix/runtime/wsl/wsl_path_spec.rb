@@ -107,7 +107,7 @@ RSpec.describe Factorix::Runtime::WSL::WSLPath do
     end
 
     it "raises ArgumentError for invalid path" do
-      expect { wsl_path.__send__(:convert_windows_to_wsl, "invalid/path") }.to raise_error(ArgumentError, /Invalid Windows path/)
+      expect { wsl_path.__send__(:convert_windows_to_wsl, "invalid/path") }.to raise_error(Factorix::PlatformError, /Invalid Windows path/)
     end
   end
 
@@ -133,7 +133,7 @@ RSpec.describe Factorix::Runtime::WSL::WSLPath do
       let(:status) { instance_double(Process::Status, success?: false, to_s: "exit 1") }
 
       it "raises an error" do
-        expect { wsl_path_for_fetch.program_files_x86 }.to raise_error(RuntimeError, /PowerShell execution failed/)
+        expect { wsl_path_for_fetch.program_files_x86 }.to raise_error(Factorix::PlatformError, /PowerShell execution failed/)
       end
     end
   end
@@ -159,7 +159,7 @@ RSpec.describe Factorix::Runtime::WSL::WSLPath do
         allow(wsl_path).to receive(:system).with("which", "powershell.exe", out: File::NULL, err: File::NULL).and_return(false)
         allow(File).to receive(:exist?).and_return(false)
 
-        expect { wsl_path.__send__(:find_powershell_exe) }.to raise_error(RuntimeError, /powershell.exe not found/)
+        expect { wsl_path.__send__(:find_powershell_exe) }.to raise_error(Factorix::PlatformError, /powershell.exe not found/)
       end
     end
   end

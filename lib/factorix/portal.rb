@@ -73,7 +73,6 @@ module Factorix
     # @param release [API::Release] release object containing download_url and sha1
     # @param output [Pathname] output file path
     # @return [void]
-    # @raise [ArgumentError] if release download_url is not a URI
     # @raise [DigestMismatchError] if SHA1 verification fails
     def download_mod(release, output)
       # Extract path from URI::HTTPS
@@ -136,11 +135,11 @@ module Factorix
     # @option metadata [String] :faq FAQ text
     # @option metadata [Boolean] :deprecated Deprecation flag
     # @return [void]
-    # @raise [ArgumentError] if no metadata provided
+    # @raise [MODSettingsError] if no metadata provided
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
     def edit_mod(mod_name, **metadata)
-      raise ArgumentError, "No metadata provided" if metadata.empty?
+      raise MODSettingsError, "No metadata provided" if metadata.empty?
 
       logger.info("Editing MOD metadata", mod: mod_name, fields: metadata.keys)
       mod_management_api.edit_details(mod_name, **metadata)

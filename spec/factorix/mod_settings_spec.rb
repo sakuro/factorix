@@ -54,7 +54,7 @@ RSpec.describe Factorix::MODSettings do
         invalid_settings = {"invalid-section" => {}}
         allow(deserializer).to receive(:read_property_tree).and_return(invalid_settings)
 
-        expect { Factorix::MODSettings.load(settings_path) }.to raise_error(ArgumentError)
+        expect { Factorix::MODSettings.load(settings_path) }.to raise_error(Factorix::MODSettingsError)
       end
 
       it "raises ExtraDataError if extra data exists at the end of file" do
@@ -74,7 +74,7 @@ RSpec.describe Factorix::MODSettings do
     end
 
     it "raises ArgumentError for invalid section names" do
-      expect { settings["invalid"] }.to raise_error(ArgumentError)
+      expect { settings["invalid"] }.to raise_error(Factorix::MODSettingsError)
     end
 
     it "raises MODSectionNotFoundError if the section doesn't exist" do
@@ -146,7 +146,7 @@ RSpec.describe Factorix::MODSettings do
       end
 
       it "raises ArgumentError for invalid section names" do
-        expect { Factorix::MODSettings::Section.new("invalid") }.to raise_error(ArgumentError)
+        expect { Factorix::MODSettings::Section.new("invalid") }.to raise_error(Factorix::MODSettingsError)
       end
     end
 

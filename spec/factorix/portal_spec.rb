@@ -237,7 +237,7 @@ RSpec.describe Factorix::Portal do
     it "raises ArgumentError when no metadata provided" do
       expect {
         portal.edit_mod("test-mod")
-      }.to raise_error(ArgumentError, /No metadata provided/)
+      }.to raise_error(Factorix::MODSettingsError, /No metadata provided/)
     end
 
     it "accepts tags as array" do

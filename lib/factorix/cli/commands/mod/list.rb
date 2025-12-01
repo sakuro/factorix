@@ -113,7 +113,7 @@ module Factorix
           # @param errors [Boolean] show only MODs with dependency errors
           # @param outdated [Boolean] show only MODs with available updates
           # @return [void]
-          # @raise [ArgumentError] if conflicting options are specified
+          # @raise [InvalidArgumentError] if conflicting options are specified
           private def validate_filter_options!(enabled:, disabled:, errors:, outdated:)
             filters = []
             filters << "--enabled" if enabled
@@ -123,7 +123,7 @@ module Factorix
 
             return if filters.size <= 1
 
-            raise ArgumentError, "Cannot combine #{filters.join(", ")} options"
+            raise InvalidArgumentError, "Cannot combine #{filters.join(", ")} options"
           end
 
           # Build list of MOD info from installed MODs

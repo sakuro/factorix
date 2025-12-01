@@ -69,11 +69,11 @@ module Factorix
           # @param target_mods [Array<Factorix::MOD>] MODs to validate
           # @param graph [Factorix::Dependency::Graph] Dependency graph
           # @return [void]
-          # @raise [Factorix::Error] if any MOD is not installed
+          # @raise [MODNotFoundError] if any MOD is not installed
           private def validate_target_mods_exist(target_mods, graph)
             target_mods.each do |mod|
               unless graph.node?(mod)
-                raise Error, "MOD '#{mod}' is not installed"
+                raise MODNotFoundError, "MOD '#{mod}' is not installed"
               end
             end
           end
@@ -83,7 +83,8 @@ module Factorix
           # @param target_mods [Array<Factorix::MOD>] MODs to enable
           # @param graph [Factorix::Dependency::Graph] Dependency graph
           # @return [Array<Factorix::MOD>] MODs to enable (including dependencies)
-          # @raise [Factorix::Error] if any dependency is missing or has version mismatch
+          # @raise [DependencyMissingError] if any dependency is not installed
+          # @raise [DependencyVersionError] if any dependency version requirement is not satisfied
           private def plan_with_dependencies(target_mods, graph)
             mods_to_enable = Set.new
             to_process = target_mods.dup
@@ -107,11 +108,11 @@ module Factorix
                 dep_node = graph.node(dep_mod)
 
                 unless dep_node
-                  raise Error,
+                  raise DependencyMissingError,
                     "MOD '#{mod}' requires '#{dep_mod}' which is not installed"
                 end
                 unless edge.satisfied_by?(dep_node.version)
-                  raise Error,
+                  raise DependencyVersionError,
                     "Cannot enable #{mod}: dependency #{dep_mod} version requirement not satisfied " \
                     "(required: #{edge.version_requirement}, installed: #{dep_node.version})"
                 end
@@ -131,7 +132,7 @@ module Factorix
           # @param mods_to_enable [Array<Factorix::MOD>] MODs to enable
           # @param graph [Factorix::Dependency::Graph] Dependency graph
           # @return [void]
-          # @raise [Factorix::Error] if any conflict is detected
+          # @raise [MODConflictError] if any conflict is detected
           private def validate_plan(mods_to_enable, graph)
             mods_to_enable_set = Set.new(mods_to_enable)
 
@@ -142,13 +143,13 @@ module Factorix
 
                 # Check if conflicting MOD is currently enabled
                 if conflict_node&.enabled?
-                  raise Error,
+                  raise MODConflictError,
                     "Cannot enable #{mod}: conflicts with #{edge.to_mod} which is currently enabled"
                 end
 
                 # Check if conflicting MOD is in the enable plan
                 if mods_to_enable_set.include?(edge.to_mod)
-                  raise Error,
+                  raise MODConflictError,
                     "Cannot enable #{mod}: conflicts with #{edge.to_mod} which is also being enabled"
                 end
               end
@@ -159,13 +160,13 @@ module Factorix
 
                 # Check if conflicting MOD is currently enabled
                 if conflict_node&.enabled?
-                  raise Error,
+                  raise MODConflictError,
                     "Cannot enable #{mod}: conflicts with #{edge.from_mod} which is currently enabled"
                 end
 
                 # Check if conflicting MOD is in the enable plan
                 if mods_to_enable_set.include?(edge.from_mod)
-                  raise Error,
+                  raise MODConflictError,
                     "Cannot enable #{mod}: conflicts with #{edge.from_mod} which is also being enabled"
                 end
               end

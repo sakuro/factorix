@@ -4,9 +4,6 @@
 
 module Factorix
   class Runtime
-    class UnsupportedPlatform < Error
-    end
-
     def self.detect: () -> Base
   end
 end

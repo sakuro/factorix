@@ -29,7 +29,7 @@ module Factorix
             def call(mod_name:, image_file:, **)
               file_path = Pathname(image_file)
 
-              raise ArgumentError, "Image file not found: #{image_file}" unless file_path.exist?
+              raise InvalidArgumentError, "Image file not found: #{image_file}" unless file_path.exist?
 
               # Add image via Portal
               image = portal.add_mod_image(mod_name, file_path)

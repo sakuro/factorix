@@ -6,10 +6,31 @@ module Factorix
   class Error < StandardError
   end
 
+  # =====================================
+  # Infrastructure layer errors
+  # =====================================
   class InfrastructureError < Error
   end
 
   class ConfigurationError < InfrastructureError
+  end
+
+  class CredentialError < ConfigurationError
+  end
+
+  class ShellError < ConfigurationError
+  end
+
+  class DirectoryNotFoundError < ConfigurationError
+  end
+
+  class URLError < InfrastructureError
+  end
+
+  class PlatformError < InfrastructureError
+  end
+
+  class UnsupportedPlatformError < PlatformError
   end
 
   class HTTPError < InfrastructureError
@@ -31,24 +52,30 @@ module Factorix
   class DigestMismatchError < InfrastructureError
   end
 
+  class CommandNotFoundError < InfrastructureError
+  end
+
   class FileFormatError < InfrastructureError
   end
 
-  class UnknownPropertyType < FileFormatError
+  class BinaryFormatError < FileFormatError
   end
 
-  class ExtraDataError < FileFormatError
+  class InvalidLengthError < BinaryFormatError
   end
 
-  class InvalidMODListError < FileFormatError
+  class UnknownPropertyType < BinaryFormatError
   end
 
-  class InvalidMODSectionError < FileFormatError
+  class ExtraDataError < BinaryFormatError
   end
 
   class MODSectionNotFoundError < FileFormatError
   end
 
+  # =====================================
+  # Domain layer errors
+  # =====================================
   class DomainError < Error
   end
 
@@ -56,5 +83,50 @@ module Factorix
   end
 
   class MODNotOnPortalError < MODNotFoundError
+  end
+
+  class BundledMODError < DomainError
+  end
+
+  class MODConflictError < DomainError
+  end
+
+  class MODSettingsError < DomainError
+  end
+
+  class InvalidOperationError < DomainError
+  end
+
+  class InvalidArgumentError < DomainError
+  end
+
+  class VersionParseError < DomainError
+  end
+
+  class DependencyParseError < DomainError
+  end
+
+  class DependencyGraphError < DomainError
+  end
+
+  class DependencyError < DomainError
+  end
+
+  class CircularDependencyError < DependencyError
+  end
+
+  class DependencyMissingError < DependencyError
+  end
+
+  class DependencyVersionError < DependencyError
+  end
+
+  class DependencyViolationError < DependencyError
+  end
+
+  class ValidationError < DomainError
+  end
+
+  class GameRunningError < DomainError
   end
 end

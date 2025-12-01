@@ -39,7 +39,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
 
       expect {
         command.call(mod_name: "test-mod", image_file:)
-      }.to raise_error(ArgumentError, /Image file not found/)
+      }.to raise_error(Factorix::InvalidArgumentError, /Image file not found/)
     end
 
     it "raises HTTPClientError when upload fails" do

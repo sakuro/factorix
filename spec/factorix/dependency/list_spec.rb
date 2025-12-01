@@ -49,7 +49,7 @@ RSpec.describe Factorix::Dependency::List do
     it "raises ArgumentError for invalid dependency string" do
       expect {
         Factorix::Dependency::List.from_strings([""])
-      }.to raise_error(ArgumentError)
+      }.to raise_error(Factorix::DependencyParseError)
     end
   end
 

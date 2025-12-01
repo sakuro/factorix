@@ -17,10 +17,10 @@ module Factorix
       # Initialize a new section with the given name
       #
       # @param name [String] The section name
-      # @raise [ArgumentError] If the section name is invalid
+      # @raise [MODSettingsError] If the section name is invalid
       def initialize(name)
         unless VALID_SECTIONS.include?(name)
-          raise ArgumentError, "Invalid MOD section name: #{name}"
+          raise MODSettingsError, "Invalid MOD section name: #{name}"
         end
 
         @name = name
@@ -145,7 +145,7 @@ module Factorix
     #
     # @param raw_settings [Hash] Raw settings from deserializer
     # @return [Hash<String, Section>] Hash of sections
-    # @raise [ArgumentError] If an invalid section name is encountered
+    # @raise [MODSettingsError] If an invalid section name is encountered
     def self.organize_into_sections(raw_settings)
       sections = {}
       process_raw_settings(raw_settings, sections)
@@ -159,11 +159,11 @@ module Factorix
     # @param raw_settings [Hash] Raw settings from deserializer
     # @param sections [Hash<String, Section>] Hash to populate with sections
     # @return [void]
-    # @raise [ArgumentError] If an invalid section name is encountered
+    # @raise [MODSettingsError] If an invalid section name is encountered
     def self.process_raw_settings(raw_settings, sections)
       raw_settings.each do |section_name, section_settings|
         unless VALID_SECTIONS.include?(section_name)
-          raise ArgumentError, "Invalid MOD section name: #{section_name}"
+          raise MODSettingsError, "Invalid MOD section name: #{section_name}"
         end
 
         section = sections[section_name] ||= Section.new(section_name)
@@ -214,11 +214,11 @@ module Factorix
     #
     # @param name [String] The section name
     # @return [Section] The section
-    # @raise [ArgumentError] If the section name is invalid
+    # @raise [MODSettingsError] If the section name is invalid
     # @raise [Factorix::MODSectionNotFoundError] If the section is not found
     def [](name)
       unless VALID_SECTIONS.include?(name)
-        raise ArgumentError, "Invalid MOD section name: #{name}"
+        raise MODSettingsError, "Invalid MOD section name: #{name}"
       end
 
       section = @sections[name]

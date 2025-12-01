@@ -28,8 +28,8 @@ module Factorix
     # Raises an error if only one environment variable is set (partial configuration).
     #
     # @return [ServiceCredential] new instance with credentials
-    # @raise [ArgumentError] if only one of FACTORIO_USERNAME/FACTORIO_TOKEN is set
-    # @raise [ArgumentError] if credentials are invalid or missing
+    # @raise [CredentialError] if only one of FACTORIO_USERNAME/FACTORIO_TOKEN is set
+    # @raise [CredentialError] if credentials are invalid or missing
     def self.load
       username_env = ENV.fetch(ENV_USERNAME, nil)
       token_env = ENV.fetch(ENV_TOKEN, nil)
@@ -37,7 +37,7 @@ module Factorix
       if username_env && token_env
         from_env
       elsif username_env || token_env
-        raise ArgumentError, "Both #{ENV_USERNAME} and #{ENV_TOKEN} must be set (or neither)"
+        raise CredentialError, "Both #{ENV_USERNAME} and #{ENV_TOKEN} must be set (or neither)"
       else
         runtime = Application[:runtime]
         from_player_data(runtime:)
@@ -47,7 +47,7 @@ module Factorix
     # Create a new ServiceCredential instance from environment variables
     #
     # @return [ServiceCredential] new instance with credentials from environment
-    # @raise [ArgumentError] if username or token is not set or empty
+    # @raise [CredentialError] if username or token is not set or empty
     def self.from_env
       logger = Application["logger"]
       logger.debug "Loading service credentials from environment"
@@ -57,19 +57,19 @@ module Factorix
 
       if username.nil?
         logger.error("Failed to load service credentials", reason: "#{ENV_USERNAME} not set")
-        raise ArgumentError, "#{ENV_USERNAME} environment variable is not set"
+        raise CredentialError, "#{ENV_USERNAME} environment variable is not set"
       end
       if username.empty?
         logger.error("Failed to load service credentials", reason: "#{ENV_USERNAME} is empty")
-        raise ArgumentError, "#{ENV_USERNAME} environment variable is empty"
+        raise CredentialError, "#{ENV_USERNAME} environment variable is empty"
       end
       if token.nil?
         logger.error("Failed to load service credentials", reason: "#{ENV_TOKEN} not set")
-        raise ArgumentError, "#{ENV_TOKEN} environment variable is not set"
+        raise CredentialError, "#{ENV_TOKEN} environment variable is not set"
       end
       if token.empty?
         logger.error("Failed to load service credentials", reason: "#{ENV_TOKEN} is empty")
-        raise ArgumentError, "#{ENV_TOKEN} environment variable is empty"
+        raise CredentialError, "#{ENV_TOKEN} environment variable is empty"
       end
 
       logger.info("Service credentials loaded successfully")
@@ -81,7 +81,7 @@ module Factorix
     # @param runtime [Factorix::Runtime::Base] runtime instance
     # @return [ServiceCredential] new instance with credentials from player-data.json
     # @raise [Errno::ENOENT] if player-data.json does not exist
-    # @raise [ArgumentError] if username or token is missing in player-data.json
+    # @raise [CredentialError] if username or token is missing in player-data.json
     def self.from_player_data(runtime:)
       logger = Application["logger"]
       logger.debug "Loading service credentials from player-data.json"
@@ -94,19 +94,19 @@ module Factorix
 
       if username.nil?
         logger.error("Failed to load credentials from player-data.json", reason: "service-username missing")
-        raise ArgumentError, "service-username is missing in player-data.json"
+        raise CredentialError, "service-username is missing in player-data.json"
       end
       if username.empty?
         logger.error("Failed to load credentials from player-data.json", reason: "service-username empty")
-        raise ArgumentError, "service-username is empty in player-data.json"
+        raise CredentialError, "service-username is empty in player-data.json"
       end
       if token.nil?
         logger.error("Failed to load credentials from player-data.json", reason: "service-token missing")
-        raise ArgumentError, "service-token is missing in player-data.json"
+        raise CredentialError, "service-token is missing in player-data.json"
       end
       if token.empty?
         logger.error("Failed to load credentials from player-data.json", reason: "service-token empty")
-        raise ArgumentError, "service-token is empty in player-data.json"
+        raise CredentialError, "service-token is empty in player-data.json"
       end
 
       logger.info("Service credentials loaded from player-data.json")

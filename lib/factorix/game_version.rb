@@ -26,10 +26,10 @@ module Factorix
 
     class << self
       private def validate_component(value, name)
-        raise ArgumentError, "#{name} must be an Integer, got #{value.class}" unless value.is_a?(Integer)
+        raise VersionParseError, "#{name} must be an Integer, got #{value.class}" unless value.is_a?(Integer)
         return if value.between?(0, UINT16_MAX)
 
-        raise RangeError, "#{name} must be between 0 and #{UINT16_MAX}, got #{value}"
+        raise VersionParseError, "#{name} must be between 0 and #{UINT16_MAX}, got #{value}"
       end
     end
 
@@ -37,10 +37,10 @@ module Factorix
     #
     # @param str [String] version string in "X.Y.Z-B" format (build defaults to 0 if omitted)
     # @return [GameVersion]
-    # @raise [ArgumentError] if string format is invalid
+    # @raise [VersionParseError] if string format is invalid
     def self.from_string(str)
       unless /\A(\d+)\.(\d+)\.(\d+)(?:-(\d+))?\z/ =~ str
-        raise ArgumentError, "invalid version string: #{str.inspect}"
+        raise VersionParseError, "invalid version string: #{str.inspect}"
       end
 
       major = Integer($1)
@@ -63,7 +63,7 @@ module Factorix
     # @param patch [Integer] patch version number (0-65535)
     # @param build [Integer] build version number (0-65535, defaults to 0)
     # @return [GameVersion]
-    # @raise [ArgumentError] if any component is out of range
+    # @raise [VersionParseError] if any component is out of range
     def self.from_numbers(major, minor, patch, build=0)
       validate_component(major, :major)
       validate_component(minor, :minor)

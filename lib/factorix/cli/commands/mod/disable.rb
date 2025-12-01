@@ -64,15 +64,15 @@ module Factorix
           # @param mod_names [Array<String>] MOD names from argument
           # @param all [Boolean] Whether --all option is specified
           # @return [void]
-          # @raise [Factorix::Error] if arguments are invalid
+          # @raise [InvalidArgumentError] if arguments are invalid
           private def validate_arguments(mod_names, all)
             if all && mod_names.any?
-              raise Error, "Cannot specify MOD names with --all option"
+              raise InvalidArgumentError, "Cannot specify MOD names with --all option"
             end
 
             return if all || mod_names.any?
 
-            raise Error, "Must specify MOD names or use --all option"
+            raise InvalidArgumentError, "Must specify MOD names or use --all option"
           end
 
           # Plan which MODs to disable when --all is specified
@@ -94,10 +94,10 @@ module Factorix
           # @param target_mods [Array<Factorix::MOD>] MODs to validate
           # @param graph [Factorix::Dependency::Graph] Dependency graph
           # @return [void]
-          # @raise [Factorix::Error] if any MOD cannot be disabled
+          # @raise [InvalidOperationError] if any MOD cannot be disabled
           private def validate_target_mods(target_mods, graph)
             target_mods.each do |mod|
-              raise Error, "Cannot disable base MOD" if mod.base?
+              raise InvalidOperationError, "Cannot disable base MOD" if mod.base?
 
               unless graph.node?(mod)
                 say "MOD not installed, skipping: #{mod}", prefix: :warn

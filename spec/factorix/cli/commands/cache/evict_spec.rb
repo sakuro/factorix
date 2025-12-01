@@ -22,13 +22,13 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
   describe "#call" do
     context "without any option" do
       it "raises an error" do
-        expect { command.call }.to raise_error(Factorix::Error, /One of --all, --expired, or --older-than must be specified/)
+        expect { command.call }.to raise_error(Factorix::InvalidArgumentError, /One of --all, --expired, or --older-than must be specified/)
       end
     end
 
     context "with multiple options" do
       it "raises an error" do
-        expect { command.call(all: true, expired: true) }.to raise_error(Factorix::Error, /Only one of --all, --expired, or --older-than can be specified/)
+        expect { command.call(all: true, expired: true) }.to raise_error(Factorix::InvalidArgumentError, /Only one of --all, --expired, or --older-than can be specified/)
       end
     end
 
@@ -131,15 +131,15 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       end
 
       it "raises error for invalid age format" do
-        expect { command.call(older_than: "invalid") }.to raise_error(Factorix::Error, /Invalid age format/)
-        expect { command.call(older_than: "10") }.to raise_error(Factorix::Error, /Invalid age format/)
-        expect { command.call(older_than: "10w") }.to raise_error(Factorix::Error, /Invalid age format/)
+        expect { command.call(older_than: "invalid") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
+        expect { command.call(older_than: "10") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
+        expect { command.call(older_than: "10w") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
       end
     end
 
     context "with unknown cache name" do
       it "raises an error" do
-        expect { command.call(caches: ["unknown"], all: true) }.to raise_error(Factorix::Error, /Unknown cache: unknown/)
+        expect { command.call(caches: ["unknown"], all: true) }.to raise_error(Factorix::InvalidArgumentError, /Unknown cache: unknown/)
       end
     end
 

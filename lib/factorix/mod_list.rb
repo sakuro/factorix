@@ -17,7 +17,7 @@ module Factorix
     #
     # @param path [Pathname] the path to the file to load the MOD list from (default: runtime.mod_list_path)
     # @return [Factorix::MODList] the loaded MOD list
-    # @raise [ArgumentError] if the base MOD is disabled
+    # @raise [MODSettingsError] if the base MOD is disabled
     def self.load(path=Application[:runtime].mod_list_path)
       raw_data = JSON.parse(path.read, symbolize_names: true)
       mods_hash = raw_data[:mods].to_h {|entry|
@@ -27,7 +27,7 @@ module Factorix
 
         # Validate that base MOD is not disabled
         if mod.base? && !entry[:enabled]
-          raise ArgumentError, "base MOD cannot be disabled"
+          raise MODSettingsError, "base MOD cannot be disabled"
         end
 
         [mod, state]
@@ -98,9 +98,9 @@ module Factorix
     # @param enabled [Boolean] the enabled status. Default to true
     # @param version [Factorix::MODVersion, nil] the version of the MOD. Default to nil
     # @return [void]
-    # @raise [ArgumentError] if the MOD is the base MOD and the enabled status is false
+    # @raise [MODSettingsError] if the MOD is the base MOD and the enabled status is false
     def add(mod, enabled: true, version: nil)
-      raise ArgumentError, "can't disable the base MOD" if mod.base? && enabled == false
+      raise MODSettingsError, "can't disable the base MOD" if mod.base? && enabled == false
 
       @mods[mod] = MODState[enabled:, version:]
     end
@@ -109,10 +109,10 @@ module Factorix
     #
     # @param mod [Factorix::MOD] the MOD to remove
     # @return [void]
-    # @raise [ArgumentError] if the MOD is the base MOD or an expansion MOD
+    # @raise [MODSettingsError] if the MOD is the base MOD or an expansion MOD
     def remove(mod)
-      raise ArgumentError, "can't remove the base MOD" if mod.base?
-      raise ArgumentError, "can't remove expansion MOD: #{mod}" if mod.expansion?
+      raise MODSettingsError, "can't remove the base MOD" if mod.base?
+      raise MODSettingsError, "can't remove expansion MOD: #{mod}" if mod.expansion?
 
       @mods.delete(mod)
     end
@@ -161,10 +161,10 @@ module Factorix
     #
     # @param mod [Factorix::MOD] the MOD to disable
     # @return [void]
-    # @raise [ArgumentError] if the MOD is the base MOD
+    # @raise [MODSettingsError] if the MOD is the base MOD
     # @raise [Factorix::MODList::MODNotInListError] if the MOD is not in the list
     def disable(mod)
-      raise ArgumentError, "can't disable the base MOD" if mod.base?
+      raise MODSettingsError, "can't disable the base MOD" if mod.base?
       raise MODNotInListError, "MOD not in the list: #{mod}" unless exist?(mod)
 
       current_state = @mods[mod]

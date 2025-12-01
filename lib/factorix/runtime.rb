@@ -6,13 +6,10 @@ module Factorix
   # This class provides a factory method to detect the current platform
   # and return the appropriate runtime environment instance.
   class Runtime
-    # Error raised when running on an unsupported platform
-    class UnsupportedPlatform < Error; end
-
     # Detect the current platform and return the appropriate runtime
     #
     # @return [Runtime::Base] the runtime environment for the current platform
-    # @raise [UnsupportedPlatform] if the platform is not supported
+    # @raise [UnsupportedPlatformError] if the platform is not supported
     def self.detect
       case RUBY_PLATFORM
       when /darwin/
@@ -22,7 +19,7 @@ module Factorix
       when /linux/
         wsl? ? WSL.new : Linux.new
       else
-        raise UnsupportedPlatform, "Platform is not supported: #{RUBY_PLATFORM}"
+        raise UnsupportedPlatformError, "Platform is not supported: #{RUBY_PLATFORM}"
       end
     end
 

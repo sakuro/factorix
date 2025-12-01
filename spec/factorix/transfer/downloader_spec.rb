@@ -201,12 +201,12 @@ RSpec.describe Factorix::Transfer::Downloader do
     context "with invalid URI" do
       it "raises ArgumentError for HTTP URI" do
         http_uri = URI("http://example.com/file.zip")
-        expect { downloader.download(http_uri, output) }.to raise_error(ArgumentError, "URL must be HTTPS")
+        expect { downloader.download(http_uri, output) }.to raise_error(Factorix::URLError, "URL must be HTTPS")
       end
 
       it "raises ArgumentError for FTP URI" do
         ftp_uri = URI("ftp://example.com/file.zip")
-        expect { downloader.download(ftp_uri, output) }.to raise_error(ArgumentError, "URL must be HTTPS")
+        expect { downloader.download(ftp_uri, output) }.to raise_error(Factorix::URLError, "URL must be HTTPS")
       end
     end
 

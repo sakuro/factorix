@@ -35,11 +35,11 @@ module Factorix
           def call(mod_specs: [], all: false, **)
             # Validate arguments
             if all && mod_specs.any?
-              raise Error, "Cannot specify MOD names with --all option"
+              raise InvalidArgumentError, "Cannot specify MOD names with --all option"
             end
 
             unless all || mod_specs.any?
-              raise Error, "Must specify MOD names or use --all option"
+              raise InvalidArgumentError, "Must specify MOD names or use --all option"
             end
 
             # Load current state (without validation to allow fixing issues)
@@ -122,12 +122,13 @@ module Factorix
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @param all [Boolean] Whether this is part of --all uninstall
           # @return [Hash, nil] The target if valid, nil if should be skipped
+          # @raise [InvalidOperationError] if trying to uninstall base or expansion MOD
           private def validate_uninstall_target(target, graph, installed_mods, all: false)
             mod = target[:mod]
 
             # Check if base/expansion
-            raise Error, "Cannot uninstall base MOD" if mod.base?
-            raise Error, "Cannot uninstall expansion MOD: #{mod}" if mod.expansion?
+            raise InvalidOperationError, "Cannot uninstall base MOD" if mod.base?
+            raise InvalidOperationError, "Cannot uninstall expansion MOD: #{mod}" if mod.expansion?
 
             # Check if installed
             unless graph.node?(mod)
@@ -163,7 +164,7 @@ module Factorix
           # @param graph [Dependency::Graph] Dependency graph
           # @param installed_mods [Array<InstalledMOD>] All installed MODs
           # @return [void]
-          # @raise [Factorix::Error] if dependencies cannot be satisfied after uninstall
+          # @raise [DependencyViolationError] if dependencies cannot be satisfied after uninstall
           private def check_dependents_with_version(target, graph, installed_mods)
             mod = target[:mod]
             dependents = graph.find_enabled_dependents(mod)
@@ -195,7 +196,7 @@ module Factorix
 
             return if unsatisfied_dependents.empty?
 
-            raise Error,
+            raise DependencyViolationError,
               "Cannot uninstall #{format_target(target)}: " \
               "the following enabled MOD(s) depend on it: #{unsatisfied_dependents.uniq.join(", ")}"
           end

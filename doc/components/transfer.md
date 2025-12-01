@@ -76,7 +76,7 @@ download(url, output, expected_sha1: nil)
 5. Store downloaded file in cache
 
 **Errors**:
-- `ArgumentError` - Non-HTTPS URL
+- `URLError` - Non-HTTPS URL
 - `HTTPClientError` - 4xx HTTP errors
 - `HTTPServerError` - 5xx HTTP errors
 - `DigestMismatchError` - SHA1 verification failure
@@ -124,7 +124,8 @@ upload(url, file_path, field_name: "file", fields: {}, content_type: :auto)
 | (other) | `application/octet-stream` |
 
 **Errors**:
-- `ArgumentError` - Non-HTTPS URL or file doesn't exist
+- `URLError` - Non-HTTPS URL
+- `ConfigurationError` - File doesn't exist
 - `HTTPClientError` - 4xx HTTP errors
 - `HTTPServerError` - 5xx HTTP errors
 

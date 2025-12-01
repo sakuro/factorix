@@ -41,7 +41,8 @@ module Factorix
       # @param fields [Hash<String, String>] additional form fields (e.g., metadata)
       # @param content_type [:auto, String] MIME type (:auto detects from extension)
       # @return [void]
-      # @raise [ArgumentError] if the URL is not HTTPS or file doesn't exist
+      # @raise [URLError] if the URL is not HTTPS
+      # @raise [ConfigurationError] if file doesn't exist
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       # @raise [HTTPError] for other HTTP errors
@@ -49,12 +50,12 @@ module Factorix
         url = URI(url) if url.is_a?(String)
         unless url.is_a?(URI::HTTPS)
           logger.error("Invalid URL: must be HTTPS", url: url.to_s)
-          raise ArgumentError, "URL must be HTTPS"
+          raise URLError, "URL must be HTTPS"
         end
 
         unless file_path.exist?
           logger.error("File does not exist", path: file_path.to_s)
-          raise ArgumentError, "File does not exist: #{file_path}"
+          raise ConfigurationError, "File does not exist: #{file_path}"
         end
 
         resolved_content_type = content_type == :auto ? detect_content_type(file_path) : content_type

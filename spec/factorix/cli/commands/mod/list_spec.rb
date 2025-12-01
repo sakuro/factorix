@@ -300,13 +300,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       it "raises ArgumentError when combining --enabled and --disabled" do
         expect {
           capture_stdout { command.call(enabled: true, disabled: true, errors: false, outdated: false, json: false) }
-        }.to raise_error(ArgumentError, /Cannot combine/)
+        }.to raise_error(Factorix::InvalidArgumentError, /Cannot combine/)
       end
 
       it "raises ArgumentError when combining --enabled and --outdated" do
         expect {
           capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: true, json: false) }
-        }.to raise_error(ArgumentError, /Cannot combine/)
+        }.to raise_error(Factorix::InvalidArgumentError, /Cannot combine/)
       end
     end
 
