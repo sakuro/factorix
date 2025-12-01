@@ -116,7 +116,7 @@ Commands should use two distinct output methods based on the nature of the outpu
 - Intended for human consumption
 
 **Use cases:**
-- Status updates: `say "✓ Saved mod-list.json"`
+- Status updates: `say "Saved mod-list.json", prefix: :success`
 - Progress indicators: `say "Validating MOD dependencies..."`
 - Success messages: `say "Metadata updated successfully!"`
 - Warnings: `say "Warning message", prefix: :warn`
