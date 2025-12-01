@@ -26,25 +26,84 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
   let(:version_1_0_0) { Factorix::MODVersion.from_string("1.0.0") }
   let(:version_0_5_0) { Factorix::MODVersion.from_string("0.5.0") }
 
+  let(:base_info) do
+    Factorix::InfoJSON.new(
+      name: "base",
+      version: version_2_0_28,
+      title: "Base",
+      author: "Wube",
+      description: "",
+      factorio_version: "2.0",
+      dependencies: []
+    )
+  end
+  let(:space_age_info) do
+    Factorix::InfoJSON.new(
+      name: "space-age",
+      version: version_2_0_28,
+      title: "Space Age",
+      author: "Wube",
+      description: "",
+      factorio_version: "2.0",
+      dependencies: []
+    )
+  end
+  let(:quality_info) do
+    Factorix::InfoJSON.new(
+      name: "quality",
+      version: version_2_0_28,
+      title: "Quality",
+      author: "Wube",
+      description: "",
+      factorio_version: "2.0",
+      dependencies: []
+    )
+  end
+  let(:custom_info) do
+    Factorix::InfoJSON.new(
+      name: "custom-mod",
+      version: version_1_0_0,
+      title: "Custom Mod",
+      author: "Author",
+      description: "",
+      factorio_version: "2.0",
+      dependencies: []
+    )
+  end
+  let(:another_info) do
+    Factorix::InfoJSON.new(
+      name: "another-mod",
+      version: version_0_5_0,
+      title: "Another Mod",
+      author: "Author",
+      description: "",
+      factorio_version: "2.0",
+      dependencies: []
+    )
+  end
+
   let(:base_installed) do
-    instance_double(Factorix::InstalledMOD, mod: base_mod, version: version_2_0_28)
+    instance_double(Factorix::InstalledMOD, mod: base_mod, version: version_2_0_28, info: base_info)
   end
   let(:space_age_installed) do
-    instance_double(Factorix::InstalledMOD, mod: space_age_mod, version: version_2_0_28)
+    instance_double(Factorix::InstalledMOD, mod: space_age_mod, version: version_2_0_28, info: space_age_info)
   end
   let(:quality_installed) do
-    instance_double(Factorix::InstalledMOD, mod: quality_mod, version: version_2_0_28)
+    instance_double(Factorix::InstalledMOD, mod: quality_mod, version: version_2_0_28, info: quality_info)
   end
   let(:custom_installed) do
-    instance_double(Factorix::InstalledMOD, mod: custom_mod, version: version_1_0_0)
+    instance_double(Factorix::InstalledMOD, mod: custom_mod, version: version_1_0_0, info: custom_info)
   end
   let(:another_installed) do
-    instance_double(Factorix::InstalledMOD, mod: another_mod, version: version_0_5_0)
+    instance_double(Factorix::InstalledMOD, mod: another_mod, version: version_0_5_0, info: another_info)
   end
 
   before do
     allow(Factorix::Application).to receive(:load_config)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
+    allow(mod_list).to receive(:each_mod)
+    presenter = instance_double(Factorix::Progress::Presenter, start: nil, update: nil, finish: nil)
+    allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
   end
 
   describe "#call" do

@@ -6,6 +6,8 @@ module Factorix
       module MOD
         # List installed MODs
         class List < Base
+          include DependencyGraphSupport
+
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -77,13 +79,12 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
-            handler = Progress::ScanHandler.new(presenter)
-            installed_mods = InstalledMOD.all(handler:)
-            mod_list = MODList.load(runtime.mod_list_path)
+            graph, mod_list, installed_mods = load_current_state
 
-            # Build list of MOD info
-            mod_infos = build_mod_infos(installed_mods, mod_list)
+            validator = Dependency::Validator.new(graph, mod_list:, installed_mods:)
+            validation_result = validator.validate
+
+            mod_infos = build_mod_infos(installed_mods, mod_list, validation_result)
             total_count = mod_infos.size
 
             # Apply filters
@@ -131,25 +132,37 @@ module Factorix
           #
           # @param installed_mods [Array<InstalledMOD>] installed MODs
           # @param mod_list [MODList] MOD list with enabled status
+          # @param validation_result [Dependency::ValidationResult] validation result with errors
           # @return [Array<MODInfo>] MOD info list
-          private def build_mod_infos(installed_mods, mod_list)
+          private def build_mod_infos(installed_mods, mod_list, validation_result)
             grouped = installed_mods.group_by(&:mod)
+            error_map = build_error_map(validation_result)
 
             grouped.map {|mod, versions|
               display_version = determine_display_version(mod, versions, mod_list)
               enabled = mod_list.exist?(mod) && mod_list.enabled?(mod)
+              error = error_map[mod.name]
 
-              # Check for dependency errors (placeholder - would need dependency graph)
-              error = nil
-
-              MODInfo.new(
-                name: mod.name,
-                version: display_version,
-                enabled:,
-                error:,
-                latest_version: nil
-              )
+              MODInfo.new(name: mod.name, version: display_version, enabled:, error:, latest_version: nil)
             }
+          end
+
+          # Build a map of MOD name to error messages from validation result
+          #
+          # @param validation_result [Dependency::ValidationResult] validation result
+          # @return [Hash<String, String>] map of MOD name to error message
+          private def build_error_map(validation_result)
+            error_map = {}
+
+            validation_result.errors.each do |error|
+              mod = error.mod
+              next unless mod
+
+              # Use the first error for each MOD
+              error_map[mod.name] ||= error.message
+            end
+
+            error_map
           end
 
           # Determine which version of a MOD to display
