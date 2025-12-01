@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/auto_inject"
-require "dry/cli"
 require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"

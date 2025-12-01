@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "net/http"
-require "webmock/rspec"
 
 RSpec.describe Factorix::HTTP::Client do
   let(:client) { Factorix::HTTP::Client.new }
