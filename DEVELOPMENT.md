@@ -84,7 +84,10 @@ end
 
 #### Naming Conventions
 
-- `MOD` is always uppercase (not `Mod` or `mod`)
+- `MOD` is uppercase in class names and user-facing messages (not `Mod` or `mod`)
+  - Class names: `MODList`, `MODVersion`, `MODSettings`
+  - Messages: `"MOD directory does not exist"`
+  - Method/variable names follow Ruby convention: `mod_list`, `mod_dir`, `mods`
 - Other abbreviations: `API`, `CLI`, `HTTP`, `MacOS`, `WSL`
 
 See [`doc/architecture.md`](doc/architecture.md) for Zeitwerk configuration and file-to-class mapping details.

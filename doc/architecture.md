@@ -10,7 +10,10 @@
   - Other common services
 
 ### Naming Conventions
-- MOD is always uppercase (not Mod but **MOD**)
+- MOD is uppercase in class names and user-facing messages (not Mod but **MOD**)
+  - Class names: `MODList`, `MODVersion`, `MODSettings`
+  - Messages: `"MOD directory does not exist"`
+  - Method/variable names follow Ruby convention: `mod_list`, `mod_dir`, `mods`
 - Must specify `"mod" => "MOD"` in Zeitwerk configuration
 
 ## Class Hierarchy

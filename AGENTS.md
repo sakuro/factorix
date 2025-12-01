@@ -36,7 +36,10 @@ Located in [doc/components/](doc/components/):
 
 ### Key Naming Convention
 
-- **MOD** is always uppercase (not `Mod` or `mod`)
+- **MOD** is uppercase in class names and user-facing messages (not `Mod` or `mod`)
+  - Class names: `MODList`, `MODVersion`
+  - Messages: `"MOD not found"`
+  - Method/variable names follow Ruby convention: `mod_list`, `mod`
 
 ## Development Commands
 
