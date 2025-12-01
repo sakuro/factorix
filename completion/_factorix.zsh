@@ -214,8 +214,8 @@ _factorix_mod() {
           _arguments \
             $global_opts \
             '--description[Markdown description]:description:' \
-            '--category[MOD category]:category:' \
-            '--license[License identifier]:license:' \
+            '--category[MOD category]:category:(content overhaul tweaks utilities scenarios mod-packs localizations internal no-category)' \
+            '--license[License identifier]:license:(default_mit default_gnugplv3 default_gnulgplv3 default_mozilla2 default_apache2 default_unlicense)' \
             '--source-url[Repository URL]:url:' \
             '1:MOD zip file:_files -g "*.zip"'
           ;;
@@ -225,9 +225,9 @@ _factorix_mod() {
             '--description[Markdown description]:description:' \
             '--summary[Brief description]:summary:' \
             '--title[MOD title]:title:' \
-            '--category[MOD category]:category:' \
-            '*--tags[Tags]:tag:' \
-            '--license[License identifier]:license:' \
+            '--category[MOD category]:category:(content overhaul tweaks utilities scenarios mod-packs localizations internal no-category)' \
+            '--tags[Tags]: :_values -s , tag transportation logistics trains combat armor enemies character environment planets mining fluids logistic-network circuit-network manufacturing power storage blueprints cheats' \
+            '--license[License identifier]:license:(default_mit default_gnugplv3 default_gnulgplv3 default_mozilla2 default_apache2 default_unlicense)' \
             '--homepage[Homepage URL]:url:' \
             '--source-url[Repository URL]:url:' \
             '--faq[FAQ text]:faq:' \
