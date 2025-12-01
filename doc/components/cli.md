@@ -107,18 +107,27 @@ factorix cache evict download --older-than 7d  # Remove entries older than 7 day
 
 **Use case**: Free up disk space or clear stale cache data
 
-### Completion::Zsh
+### Completion
 
-Generate zsh completion script.
+Generate shell completion script.
 
-**Output**: Zsh completion script that should be evaluated to enable command-line completion.
+**Arguments**:
+- `shell` (optional) - Shell type: zsh, bash, fish. Defaults to current shell from SHELL environment variable.
 
-**Example**:
+**Output**: Shell completion script that should be evaluated to enable command-line completion.
+
+**Examples**:
 ```bash
+# Auto-detect shell
+eval "$(factorix completion)"
+
+# Specify shell explicitly
 eval "$(factorix completion zsh)"
+eval "$(factorix completion bash)"
+factorix completion fish | source  # fish shell
 ```
 
-**Use case**: Enable tab completion for factorix commands in zsh
+**Use case**: Enable tab completion for factorix commands
 
 ### Launch
 

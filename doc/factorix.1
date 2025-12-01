@@ -46,11 +46,20 @@ Wait for the game to finish.
 Arguments after
 .B \-\-
 are passed directly to Factorio.
-.SS factorix completion zsh
-Generate zsh completion script. Output should be evaluated to enable completion.
+.SS factorix completion [SHELL]
+Generate shell completion script. Output should be evaluated to enable completion.
+.TP
+.B SHELL
+Shell type: zsh, bash, fish. If omitted, detects from SHELL environment variable.
 .PP
 .RS
-eval "$(factorix completion zsh)"
+eval "$(factorix completion)"        # auto-detect
+.br
+eval "$(factorix completion zsh)"    # zsh
+.br
+eval "$(factorix completion bash)"   # bash
+.br
+factorix completion fish | source    # fish
 .RE
 .SS factorix cache stat
 Display cache statistics.
@@ -285,10 +294,16 @@ Cache directory for API responses and downloads.
 .I ~/.local/state/factorix/
 Log files.
 .SH EXAMPLES
-Enable zsh completion:
+Enable shell completion for bash or zsh:
 .PP
 .RS
-eval "$(factorix completion zsh)"
+eval "$(factorix completion)"
+.RE
+.PP
+Enable shell completion for fish:
+.PP
+.RS
+factorix completion fish | source
 .RE
 .PP
 List all installed MODs:

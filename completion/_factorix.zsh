@@ -76,9 +76,6 @@ _factorix() {
 }
 
 _factorix_completion() {
-  local context state state_descr line
-  typeset -A opt_args
-
   local -a global_opts
   global_opts=(
     '(-c --config-path)'{-c,--config-path}'[Path to configuration file]:config file:_files'
@@ -86,28 +83,9 @@ _factorix_completion() {
     '(-q --quiet)'{-q,--quiet}'[Suppress non-essential output]'
   )
 
-  _arguments -C \
-    '1:subcommand:->subcommand' \
-    '*::arg:->args'
-
-  case $state in
-    subcommand)
-      local -a subcommands
-      subcommands=(
-        'zsh:Generate zsh completion script'
-        'bash:Generate bash completion script'
-        'fish:Generate fish completion script'
-      )
-      _describe -t subcommands 'completion subcommand' subcommands
-      ;;
-    args)
-      case $line[1] in
-        zsh|bash|fish)
-          _arguments $global_opts
-          ;;
-      esac
-      ;;
-  esac
+  _arguments \
+    $global_opts \
+    '1:shell:(zsh bash fish)'
 }
 
 _factorix_mod() {

@@ -25,9 +25,6 @@ _factorix() {
   # cache subcommands
   local cache_commands="stat evict"
 
-  # completion subcommands
-  local completion_commands="zsh bash fish"
-
   # mod image subcommands
   local image_commands="list add edit"
 
@@ -48,8 +45,8 @@ _factorix() {
       return
       ;;
     completion)
-      if [[ $cword -eq 2 ]]; then
-        COMPREPLY=($(compgen -W "$completion_commands" -- "$cur"))
+      if [[ $cword -eq 2 ]] && [[ "$cur" != -* ]]; then
+        COMPREPLY=($(compgen -W "zsh bash fish" -- "$cur"))
       else
         COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
       fi

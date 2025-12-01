@@ -87,10 +87,8 @@ complete -c factorix -n "__factorix_using_command launch" -s w -l wait -d 'Wait 
 # path options
 complete -c factorix -n "__factorix_using_command path" -l json -d 'Output in JSON format'
 
-# completion subcommands
-complete -c factorix -n "__factorix_using_command completion" -a zsh -d 'Generate zsh completion script'
-complete -c factorix -n "__factorix_using_command completion" -a bash -d 'Generate bash completion script'
-complete -c factorix -n "__factorix_using_command completion" -a fish -d 'Generate fish completion script'
+# completion shell argument
+complete -c factorix -n "__factorix_using_command completion" -a 'zsh bash fish' -d 'Shell type'
 
 # cache subcommands
 complete -c factorix -n "__factorix_using_command cache" -a stat -d 'Display cache statistics'
