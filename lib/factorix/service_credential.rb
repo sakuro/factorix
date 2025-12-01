@@ -116,7 +116,7 @@ module Factorix
     private_class_method :new, :[], :from_env, :from_player_data
 
     # @return [String] string representation with masked credentials
-    def inspect = "#<#{self.class} username=\"*****\" token=\"*****\">"
+    def inspect = %[#<#{self.class} username="*****" token="*****">]
 
     alias to_s inspect
 

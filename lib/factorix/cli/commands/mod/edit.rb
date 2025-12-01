@@ -14,7 +14,7 @@ module Factorix
           desc "Edit MOD metadata on Factorio MOD Portal"
 
           example [
-            "some-mod --title \"New Title\"       # Update MOD title",
+            'some-mod --title "New Title"         # Update MOD title',
             "some-mod --category automation       # Update category",
             "some-mod --deprecated                # Mark as deprecated"
           ]

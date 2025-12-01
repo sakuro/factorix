@@ -43,7 +43,7 @@ module Factorix
     private_class_method :new, :[]
 
     # @return [String] string representation with masked API key
-    def inspect = "#<#{self.class} api_key=\"*****\">"
+    def inspect = %[#<#{self.class} api_key="*****">]
 
     alias to_s inspect
 

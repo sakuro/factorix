@@ -79,14 +79,14 @@ module Factorix
         # Add additional form fields first
         fields.each do |name, value|
           body_parts << "--#{boundary}\r\n"
-          body_parts << "Content-Disposition: form-data; name=\"#{name}\"\r\n"
+          body_parts << %[Content-Disposition: form-data; name="#{name}"\r\n]
           body_parts << "\r\n"
           body_parts << "#{value}\r\n"
         end
 
         # Add file field
         body_parts << "--#{boundary}\r\n"
-        body_parts << "Content-Disposition: form-data; name=\"#{field_name}\"; filename=\"#{file_path.basename}\"\r\n"
+        body_parts << %[Content-Disposition: form-data; name="#{field_name}"; filename="#{file_path.basename}"\r\n]
         body_parts << "Content-Type: #{content_type}\r\n"
         body_parts << "\r\n"
 

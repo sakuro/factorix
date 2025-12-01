@@ -24,7 +24,7 @@ module Factorix
 
           example [
             "  # Output zsh completion script",
-            "  # Enable with: eval \"$(factorix completion zsh)\""
+            '  # Enable with: eval "$(factorix completion zsh)"'
           ]
 
           # Execute the completion zsh command
