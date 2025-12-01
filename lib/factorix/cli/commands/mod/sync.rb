@@ -45,7 +45,7 @@ module Factorix
             say "Loaded save file (version: #{save_data.version}, MOD(s): #{save_data.mods.size})", prefix: :info
 
             # Load current state
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
             graph = state.graph
             mod_list = state.mod_list
             installed_mods = state.installed_mods
@@ -77,7 +77,7 @@ module Factorix
 
             # Update mod-list.json
             update_mod_list(mod_list, save_data.mods)
-            mod_list.save(runtime.mod_list_path)
+            mod_list.save
             say "Updated mod-list.json", prefix: :success
 
             # Update mod-settings.dat

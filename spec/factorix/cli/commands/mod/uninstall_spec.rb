@@ -85,7 +85,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       it "saves the mod-list.json" do
         allow(installed_mod_a.path).to receive(:rmtree)
         command.call(mod_specs: ["mod-a"], yes: true)
-        expect(mod_list).to have_received(:save).with(mod_list_path)
+        expect(mod_list).to have_received(:save).with(no_args)
       end
     end
 

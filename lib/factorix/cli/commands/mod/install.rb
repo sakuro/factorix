@@ -42,7 +42,7 @@ module Factorix
           # @return [void]
           def call(mod_specs:, jobs: 4, **)
             # Load current state (without validation to allow fixing issues)
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
             graph = state.graph
             mod_list = state.mod_list
 
@@ -64,7 +64,7 @@ module Factorix
             execute_installation(install_targets, graph, mod_list, jobs)
 
             # Save mod-list.json
-            mod_list.save(runtime.mod_list_path)
+            mod_list.save
             say "Installed #{install_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")

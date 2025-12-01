@@ -43,7 +43,7 @@ module Factorix
             end
 
             # Load current state (without validation to allow fixing issues)
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
             graph = state.graph
             mod_list = state.mod_list
             installed_mods = state.installed_mods
@@ -78,7 +78,7 @@ module Factorix
 
             execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
             disable_expansion_mods(graph, mod_list) if all
-            mod_list.save(runtime.mod_list_path)
+            mod_list.save
             say "Uninstalled #{targets_to_uninstall.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
           end

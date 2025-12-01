@@ -23,7 +23,7 @@ module Factorix
           #
           # @return [void]
           def call(**)
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
 
             validator = Dependency::Validator.new(state)
             result = validator.validate

@@ -47,12 +47,16 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
   end
 
   before do
-    mod_list_path.write(JSON.generate(mods: [{name: "base", enabled: true}]))
-
+    allow(Factorix::Application).to receive(:load_config)
     allow(Factorix::Application).to receive(:[]).and_call_original
     allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
     allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
+
+    # Stub MODList.load to return proper mock based on test needs
+    default_mod_list = instance_double(Factorix::MODList)
+    allow(default_mod_list).to receive_messages(exist?: false, enabled?: false)
+    allow(Factorix::MODList).to receive(:load).and_return(default_mod_list)
   end
 
   after do
@@ -151,7 +155,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
     end
 
     before do
-      mod_list_path.write(JSON.generate(mods: [{name: "base", enabled: true}, {name: "test-mod", enabled: true}]))
+      enabled_mod_list = instance_double(Factorix::MODList)
+      allow(enabled_mod_list).to receive_messages(exist?: true, enabled?: true)
+      allow(Factorix::MODList).to receive(:load).and_return(enabled_mod_list)
       allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod])
     end
 

@@ -31,7 +31,7 @@ module Factorix
           # @return [void]
           def call(mod_names:, **)
             # Load current state (without validation to allow fixing issues)
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
 
             # Convert MOD names to MOD objects
             target_mods = mod_names.map {|name| Factorix::MOD[name:] }
@@ -58,7 +58,7 @@ module Factorix
             execute_plan(mods_to_enable, state.mod_list)
 
             # Save mod-list.json
-            state.mod_list.save(runtime.mod_list_path)
+            state.mod_list.save
             say "Enabled #{mods_to_enable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")

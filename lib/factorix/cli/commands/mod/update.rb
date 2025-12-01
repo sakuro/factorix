@@ -42,7 +42,7 @@ module Factorix
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
-            mod_list = MODList.load(runtime.mod_list_path)
+            mod_list = MODList.load
 
             target_mods = if mod_names.empty?
                             mods = installed_mods.map(&:mod)
@@ -70,7 +70,7 @@ module Factorix
 
             execute_updates(update_targets, mod_list, jobs)
 
-            mod_list.save(runtime.mod_list_path)
+            mod_list.save
             say "Updated #{update_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
           end

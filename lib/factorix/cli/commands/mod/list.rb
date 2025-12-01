@@ -77,7 +77,7 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
 
             validator = Dependency::Validator.new(state)
             validation_result = validator.validate

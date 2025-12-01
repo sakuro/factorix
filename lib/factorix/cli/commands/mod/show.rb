@@ -55,7 +55,7 @@ module Factorix
           end
 
           private def fetch_local_status(mod_name)
-            mod_list = MODList.load(runtime.mod_list_path)
+            mod_list = MODList.load
             mod = Factorix::MOD[mod_name]
             installed_mod = find_installed_mod(mod_name)
 

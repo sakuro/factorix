@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::MODInstallationState do
-  let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
-  let(:state) { Factorix::MODInstallationState.new(mod_list_path:) }
+  let(:state) { Factorix::MODInstallationState.new }
 
   let(:mod_list) { instance_double(Factorix::MODList) }
   let(:installed_mods) { [] }
@@ -11,7 +10,7 @@ RSpec.describe Factorix::MODInstallationState do
   let(:handler) { instance_double(Factorix::Progress::ScanHandler) }
 
   before do
-    allow(Factorix::MODList).to receive(:load).with(mod_list_path).and_return(mod_list)
+    allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
     allow(Factorix::Progress::ScanHandler).to receive(:new).with(presenter).and_return(handler)
     allow(Factorix::InstalledMOD).to receive(:all).with(handler:).and_return(installed_mods)

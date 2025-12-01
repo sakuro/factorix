@@ -116,7 +116,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
       it "updates mod-list.json" do
         command.call(save_file: save_file_path.to_s)
 
-        expect(mod_list).to have_received(:save).with(mod_list_path)
+        expect(mod_list).to have_received(:save).with(no_args)
       end
     end
   end

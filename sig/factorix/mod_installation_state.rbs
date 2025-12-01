@@ -1,11 +1,9 @@
 module Factorix
   class MODInstallationState
-    @mod_list_path: Pathname
     @mod_list: MODList?
     @installed_mods: Array[InstalledMOD]?
     @graph: Dependency::Graph?
 
-    def initialize: (mod_list_path: Pathname) -> void
     def mod_list: () -> MODList
     def installed_mods: () -> Array[InstalledMOD]
     def graph: () -> Dependency::Graph

@@ -37,7 +37,7 @@ module Factorix
             validate_arguments(mod_names, all)
 
             # Without validation to allow fixing issues
-            state = MODInstallationState.new(mod_list_path: runtime.mod_list_path)
+            state = MODInstallationState.new
 
             target_mods = if all
                             plan_disable_all(state.graph)
@@ -53,7 +53,7 @@ module Factorix
             return unless confirm?("Do you want to disable these MOD(s)?")
 
             execute_plan(mods_to_disable, state.mod_list)
-            state.mod_list.save(runtime.mod_list_path)
+            state.mod_list.save
             say "Disabled #{mods_to_disable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
