@@ -9,6 +9,7 @@ module Factorix
       # By default, the game is launched asynchronously (in the background), but certain
       # options like --help and --dump-* are automatically detected and run synchronously.
       class Launch < Base
+        require_game_stopped!
         # Game options that require synchronous execution
         #
         # These options output information and exit immediately, so we should

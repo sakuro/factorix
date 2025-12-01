@@ -3,9 +3,9 @@
 RSpec.describe Factorix::CLI::Commands::Launch do
   include_context "with suppressed output"
 
-  let(:command) { Factorix::CLI::Commands::Launch.new(runtime:) }
-
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
+  let(:logger) { instance_double(Dry::Logger::Dispatcher, info: nil, debug: nil, error: nil) }
+  let(:command) { Factorix::CLI::Commands::Launch.new(runtime:, logger:) }
 
   before do
     allow(runtime).to receive(:executable_path).and_return(Pathname("/path/to/factorio"))
@@ -16,11 +16,11 @@ RSpec.describe Factorix::CLI::Commands::Launch do
   describe "#call" do
     context "when the game is already running" do
       before do
-        allow(runtime).to receive(:launch).and_raise("The game is already running")
+        allow(runtime).to receive(:running?).and_return(true)
       end
 
-      it "raises exception" do
-        expect { command.call }.to raise_error("The game is already running")
+      it "raises GameRunningError" do
+        expect { command.call }.to raise_error(Factorix::GameRunningError)
       end
     end
 

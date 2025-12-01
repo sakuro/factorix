@@ -276,15 +276,5 @@ RSpec.describe Factorix::Runtime::Base do
         )
       end
     end
-
-    context "when the game is already running" do
-      before do
-        allow(runtime).to receive(:running?).and_return(true)
-      end
-
-      it "raises RuntimeError" do
-        expect { runtime.launch }.to raise_error(RuntimeError, "The game is already running")
-      end
-    end
   end
 end
