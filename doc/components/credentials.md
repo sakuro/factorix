@@ -83,6 +83,22 @@ register(:service_credential, memoize: true) { ServiceCredential.load }
 register(:api_credential, memoize: true) { APICredential.load }
 ```
 
+## Credential Masking in Logs
+
+When downloading MODs, URLs may contain sensitive parameters. These are automatically masked with `*****` in HTTP logs:
+
+| Parameter | Description |
+|-----------|-------------|
+| `username` | Factorio service username |
+| `token` | Factorio service token |
+| `secure` | CDN redirect signature |
+
+This masking applies to:
+- HTTP request logs (initial request)
+- HTTP redirect logs
+
+Implementation: `Factorix::HTTP::Client#mask_credentials`
+
 ## Related Documentation
 
 - [API/Portal Layer](api-portal.md)

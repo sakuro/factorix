@@ -379,4 +379,52 @@ RSpec.describe Factorix::HTTP::Client do
       expect(http.write_timeout).to eq(30) if http.respond_to?(:write_timeout)
     end
   end
+
+  describe "#mask_credentials" do
+    subject(:mask_credentials) { client.__send__(:mask_credentials, url) }
+
+    context "when URL has no query string" do
+      let(:url) { URI("https://example.com/file.zip") }
+
+      it "returns the URL as-is" do
+        expect(mask_credentials).to eq("https://example.com/file.zip")
+      end
+    end
+
+    context "when URL has username parameter" do
+      let(:url) { URI("https://example.com/file.zip?username=myuser") }
+
+      it "masks the username value" do
+        expect(mask_credentials).to eq("https://example.com/file.zip?username=*****")
+      end
+    end
+
+    context "when URL has token parameter" do
+      let(:url) { URI("https://example.com/file.zip?token=mytoken") }
+
+      it "masks the token value" do
+        expect(mask_credentials).to eq("https://example.com/file.zip?token=*****")
+      end
+    end
+
+    context "when URL has secure parameter" do
+      let(:url) { URI("https://example.com/file.zip?secure=abc123") }
+
+      it "masks the secure value" do
+        expect(mask_credentials).to eq("https://example.com/file.zip?secure=*****")
+      end
+    end
+
+    context "when URL has multiple credential parameters" do
+      let(:url) { URI("https://example.com/file.zip?username=myuser&token=mytoken&secure=abc123&other=value") }
+
+      it "masks all credential values but preserves other parameters" do
+        result = URI.decode_www_form(URI(mask_credentials).query).to_h
+        expect(result["username"]).to eq("*****")
+        expect(result["token"]).to eq("*****")
+        expect(result["secure"]).to eq("*****")
+        expect(result["other"]).to eq("value")
+      end
+    end
+  end
 end

@@ -37,6 +37,7 @@ module Factorix
       def request(method, uri, headers: {}, body: nil, &)
         raise URLError, "URL must be HTTPS" unless uri.is_a?(URI::HTTPS)
 
+        logger.info("HTTP request", method: method.upcase, url: mask_credentials(uri))
         perform_request(method, uri, redirect_count: 0, headers:, body:, &)
       end
 
@@ -85,7 +86,7 @@ module Factorix
         when Net::HTTPRedirection
           location = response["Location"]
           redirect_url = URI(location)
-          logger.info("Following redirect", location: redirect_url.to_s)
+          logger.info("Following redirect", location: mask_credentials(redirect_url))
 
           perform_request(:get, redirect_url, redirect_count: redirect_count + 1, headers: {}, body: nil, &block)
 
@@ -156,6 +157,22 @@ module Factorix
           http.read_timeout = Application.config.http.read_timeout
           http.write_timeout = Application.config.http.write_timeout if http.respond_to?(:write_timeout=)
         end
+      end
+
+      # Mask sensitive URL parameters for logging
+      #
+      # @param url [URI] URL to mask
+      # @return [String] URL string with sensitive parameters masked
+      private def mask_credentials(url)
+        return url.to_s unless url.query
+
+        masked_url = url.dup
+        params = URI.decode_www_form(masked_url.query).to_h
+        params["username"] = "*****" if params.key?("username")
+        params["token"] = "*****" if params.key?("token")
+        params["secure"] = "*****" if params.key?("secure")
+        masked_url.query = URI.encode_www_form(params)
+        masked_url.to_s
       end
     end
   end

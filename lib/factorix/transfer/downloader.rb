@@ -52,25 +52,24 @@ module Factorix
           raise URLError, "URL must be HTTPS"
         end
 
-        masked_url = mask_credentials(url)
-        logger.info("Starting download", url: masked_url, output: output.to_s)
+        logger.info("Starting download", output: output.to_s)
         key = cache.key_for(url.to_s)
 
-        case try_cache_hit(key, output, expected_sha1:, masked_url:)
+        case try_cache_hit(key, output, expected_sha1:)
         when :hit
           return
         when :miss
-          logger.debug("Cache miss, downloading", url: masked_url)
-          publish("cache.miss", url: masked_url)
+          logger.debug("Cache miss, downloading", output: output.to_s)
+          publish("cache.miss", output: output.to_s)
         when :corrupted
-          logger.debug("Re-downloading after cache invalidation", url: masked_url)
-          publish("cache.miss", url: masked_url)
+          logger.debug("Re-downloading after cache invalidation", output: output.to_s)
+          publish("cache.miss", output: output.to_s)
         else
           raise RuntimeError, "Unexpected cache state"
         end
 
         cache.with_lock(key) do
-          return if try_cache_hit(key, output, expected_sha1:, masked_url:) == :hit
+          return if try_cache_hit(key, output, expected_sha1:) == :hit
 
           with_temporary_file do |temp_file|
             download_file_with_progress(url, temp_file)
@@ -108,17 +107,6 @@ module Factorix
         publish("download.completed", total_size: current_size)
       end
 
-      private def mask_credentials(url)
-        return url.to_s unless url.query
-
-        masked_url = url.dup
-        params = URI.decode_www_form(masked_url.query).to_h
-        params["username"] = "*****" if params.key?("username")
-        params["token"] = "*****" if params.key?("token")
-        masked_url.query = URI.encode_www_form(params)
-        masked_url.to_s
-      end
-
       # Attempt to retrieve file from cache with SHA1 verification.
       #
       # If the cached file exists but fails SHA1 verification, the cache entry
@@ -127,18 +115,17 @@ module Factorix
       # @param key [String] cache key
       # @param output [Pathname] path to save the cached file
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
-      # @param masked_url [String] URL with credentials masked (for logging)
       # @return [Symbol] :hit if cache hit with valid SHA1, :miss if not cached, :corrupted if SHA1 mismatch
-      private def try_cache_hit(key, output, expected_sha1:, masked_url:)
+      private def try_cache_hit(key, output, expected_sha1:)
         return :miss unless cache.fetch(key, output)
 
-        logger.info("Cache hit", url: masked_url)
+        logger.info("Cache hit", output: output.to_s)
         verify_sha1(output, expected_sha1) if expected_sha1
         total_size = cache.size(key)
-        publish("cache.hit", url: masked_url, output: output.to_s, total_size:)
+        publish("cache.hit", output: output.to_s, total_size:)
         :hit
       rescue DigestMismatchError => e
-        logger.warn("Cache corrupted, invalidating", url: masked_url, error: e.message)
+        logger.warn("Cache corrupted, invalidating", output: output.to_s, error: e.message)
         cache.delete(key)
         :corrupted
       end
