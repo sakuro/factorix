@@ -381,7 +381,9 @@ RSpec.describe Factorix::HTTP::Client do
   end
 
   describe "#mask_credentials" do
-    subject(:mask_credentials) { client.__send__(:mask_credentials, url) }
+    subject(:mask_credentials) { masking_client.__send__(:mask_credentials, url) }
+
+    let(:masking_client) { Factorix::HTTP::Client.new(masked_params: %w[username token secure]) }
 
     context "when URL has no query string" do
       let(:url) { URI("https://example.com/file.zip") }
@@ -423,6 +425,26 @@ RSpec.describe Factorix::HTTP::Client do
         expect(result["username"]).to eq("*****")
         expect(result["token"]).to eq("*****")
         expect(result["secure"]).to eq("*****")
+        expect(result["other"]).to eq("value")
+      end
+    end
+
+    context "when masked_params is empty (default)" do
+      let(:masking_client) { Factorix::HTTP::Client.new }
+      let(:url) { URI("https://example.com/file.zip?username=myuser&token=mytoken") }
+
+      it "does not mask any parameters" do
+        expect(mask_credentials).to eq("https://example.com/file.zip?username=myuser&token=mytoken")
+      end
+    end
+
+    context "with custom masked_params" do
+      let(:masking_client) { Factorix::HTTP::Client.new(masked_params: %w[api_key]) }
+      let(:url) { URI("https://example.com/file.zip?api_key=secret&other=value") }
+
+      it "masks only specified parameters" do
+        result = URI.decode_www_form(URI(mask_credentials).query).to_h
+        expect(result["api_key"]).to eq("*****")
         expect(result["other"]).to eq("value")
       end
     end

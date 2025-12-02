@@ -20,6 +20,15 @@ module Factorix
       MAX_REDIRECTS = 10
       private_constant :MAX_REDIRECTS
 
+      # @return [Array<String>] URL parameter names to mask in logs
+      attr_reader :masked_params
+
+      # @param masked_params [Array<String>] URL parameter names to mask in logs
+      def initialize(masked_params: [], **)
+        super(**)
+        @masked_params = masked_params.freeze
+      end
+
       # Execute an HTTP request
       #
       # @param method [Symbol] HTTP method (:get, :post, :put, :delete)
@@ -165,12 +174,11 @@ module Factorix
       # @return [String] URL string with sensitive parameters masked
       private def mask_credentials(url)
         return url.to_s unless url.query
+        return url.to_s if masked_params.empty?
 
         masked_url = url.dup
         params = URI.decode_www_form(masked_url.query).to_h
-        params["username"] = "*****" if params.key?("username")
-        params["token"] = "*****" if params.key?("token")
-        params["secure"] = "*****" if params.key?("secure")
+        masked_params.each {|key| params[key] = "*****" if params.key?(key) }
         masked_url.query = URI.encode_www_form(params)
         masked_url.to_s
       end

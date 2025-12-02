@@ -85,7 +85,19 @@ register(:api_credential, memoize: true) { APICredential.load }
 
 ## Credential Masking in Logs
 
-When downloading MODs, URLs may contain sensitive parameters. These are automatically masked with `*****` in HTTP logs:
+When downloading MODs, URLs may contain sensitive parameters. These are automatically masked with `*****` in HTTP logs.
+
+### Configuration
+
+Masked parameters are configured via `HTTP::Client` constructor:
+
+```ruby
+HTTP::Client.new(masked_params: %w[username token secure])
+```
+
+Default: `[]` (no masking)
+
+### Currently Masked Parameters
 
 | Parameter | Description |
 |-----------|-------------|
@@ -93,7 +105,9 @@ When downloading MODs, URLs may contain sensitive parameters. These are automati
 | `token` | Factorio service token |
 | `secure` | CDN redirect signature |
 
-This masking applies to:
+### Log Points
+
+Masking applies to:
 - HTTP request logs (initial request)
 - HTTP redirect logs
 

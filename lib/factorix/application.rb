@@ -75,7 +75,7 @@ module Factorix
 
     # Register base HTTP client
     register(:http_client, memoize: true) do
-      HTTP::Client.new
+      HTTP::Client.new(masked_params: %w[username token secure])
     end
 
     # Register decorated HTTP client for downloads (with retry only)

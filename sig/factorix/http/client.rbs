@@ -20,6 +20,9 @@ module Factorix
     # - JSON parsing (handled by API clients)
     class Client
       attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader masked_params: Array[String]
+
+      def initialize: (?masked_params: Array[String]) -> void
 
       # Execute an HTTP request
       #
