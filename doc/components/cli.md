@@ -417,8 +417,6 @@ Export MOD settings to JSON format.
 
 Restore MOD settings from JSON format.
 
-**Backup**: Automatically creates a backup with `.bak` extension before overwriting (customizable with `--backup-extension`)
-
 **File format**: Reads JSON file and converts it back to the binary `mod-settings.dat` format used by Factorio.
 
 ## Related Documentation
