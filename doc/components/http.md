@@ -94,7 +94,7 @@ Manages retry logic with exponential backoff.
 
 ### CacheDecorator
 
-Adds caching for GET requests.
+Adds caching for GET requests. See [`cache.md`](cache.md) for detailed cache architecture.
 
 **Behavior**:
 - Only caches non-streaming GET requests (no block given)
@@ -176,3 +176,4 @@ end
 
 - [API and Portal Layers](api-portal.md)
 - [Application Container](application.md)
+- [Cache System](cache.md)
