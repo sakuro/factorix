@@ -39,6 +39,9 @@ inherit_gem:
 
 inherit_from: .rubocop_todo.yml
 
+Lint/EmptyClass:
+  AllowComments: true
+
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names

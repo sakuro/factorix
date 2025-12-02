@@ -7,8 +7,48 @@ module Factorix
     # Holds errors and warnings found during validation.
     class ValidationResult
       Error = Data.define(:type, :message, :mod, :dependency)
+
+      # Validation error information
+      #
+      # Represents an error found during dependency validation.
+      class Error
+        # @!attribute [r] type
+        #   @return [Symbol] error type
+        # @!attribute [r] message
+        #   @return [String] error message
+        # @!attribute [r] mod
+        #   @return [Factorix::MOD, nil] related MOD
+        # @!attribute [r] dependency
+        #   @return [Factorix::MOD, nil] dependency MOD
+      end
+
       Warning = Data.define(:type, :message, :mod)
+
+      # Validation warning information
+      #
+      # Represents a warning found during dependency validation.
+      class Warning
+        # @!attribute [r] type
+        #   @return [Symbol] warning type
+        # @!attribute [r] message
+        #   @return [String] warning message
+        # @!attribute [r] mod
+        #   @return [Factorix::MOD, nil] related MOD
+      end
+
       Suggestion = Data.define(:message, :mod, :version)
+
+      # Validation suggestion information
+      #
+      # Represents a suggestion for resolving dependency issues.
+      class Suggestion
+        # @!attribute [r] message
+        #   @return [String] suggestion message
+        # @!attribute [r] mod
+        #   @return [Factorix::MOD] related MOD
+        # @!attribute [r] version
+        #   @return [Factorix::MODVersion] suggested version
+      end
 
       # Error types
       MISSING_DEPENDENCY = :missing_dependency

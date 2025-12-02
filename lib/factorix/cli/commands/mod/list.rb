@@ -30,23 +30,25 @@ module Factorix
           option :outdated, type: :flag, default: false, desc: "Show only MOD(s) with available updates"
           option :json, type: :flag, default: false, desc: "Output in JSON format"
 
-          # MOD information for display
           MODInfo = Data.define(:name, :version, :enabled, :error, :latest_version)
 
-          # @!parse
-          #   class MODInfo
-          #     # @return [String] MOD name
-          #     attr_reader :name
-          #     # @return [MODVersion] MOD version
-          #     attr_reader :version
-          #     # @return [Boolean] enabled status
-          #     attr_reader :enabled
-          #     # @return [String, nil] error message if any
-          #     attr_reader :error
-          #     # @return [MODVersion, nil] latest version available on portal
-          #     attr_reader :latest_version
-          #   end
+          # MOD information for display
+          #
+          # This class encapsulates MOD information for display purposes,
+          # including the MOD name, version, enabled status, error messages,
+          # and latest available version.
           class MODInfo
+            # @!attribute [r] name
+            #   @return [String] MOD name
+            # @!attribute [r] version
+            #   @return [MODVersion] MOD version
+            # @!attribute [r] enabled
+            #   @return [Boolean] enabled status
+            # @!attribute [r] error
+            #   @return [String, nil] error message if any
+            # @!attribute [r] latest_version
+            #   @return [MODVersion, nil] latest version available on portal
+
             # Get the display status string
             #
             # @return [String] "error", "enabled", or "disabled"
