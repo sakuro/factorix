@@ -41,6 +41,10 @@ Located in [doc/components/](doc/components/):
   - Messages: `"MOD not found"`
   - Method/variable names follow Ruby convention: `mod_list`, `mod`
 
+### Skills
+
+- Explore available skills and use them proactively when applicable
+
 ## Development Commands
 
 ```bash
