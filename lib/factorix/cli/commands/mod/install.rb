@@ -11,6 +11,7 @@ module Factorix
         class Install < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           include DownloadSupport
 
@@ -64,6 +65,7 @@ module Factorix
             execute_installation(install_targets, graph, mod_list, jobs)
 
             # Save mod-list.json
+            backup_if_exists(runtime.mod_list_path)
             mod_list.save
             say "Installed #{install_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success

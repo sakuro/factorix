@@ -58,6 +58,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
     allow(Factorix::MODSettings).to receive_messages(load: mod_settings, new: mod_settings)
     allow(mod_settings).to receive(:save)
     allow(mod_settings_path).to receive(:exist?).and_return(true)
+    allow(mod_settings_path).to receive(:rename)
 
     # Stub confirmation to always return true
     allow(command).to receive(:confirm?).and_return(true)

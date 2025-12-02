@@ -8,6 +8,7 @@ module Factorix
         class Enable < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
@@ -58,6 +59,7 @@ module Factorix
             execute_plan(mods_to_enable, state.mod_list)
 
             # Save mod-list.json
+            backup_if_exists(runtime.mod_list_path)
             state.mod_list.save
             say "Enabled #{mods_to_enable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success

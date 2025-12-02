@@ -10,6 +10,7 @@ module Factorix
           # Restore MOD settings from JSON format
           class Restore < Base
             require_game_stopped!
+            backup_support!
 
             # @!parse
             #   # @return [Runtime::Base]
@@ -25,15 +26,13 @@ module Factorix
 
             argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file to write"
             option :input, type: :string, aliases: ["-i"], desc: "Input file path"
-            option :backup_extension, type: :string, default: ".bak", desc: "Backup file extension"
 
             # Execute the restore command
             #
             # @param input [String, nil] Path to JSON file
             # @param settings_file [String, nil] Path to mod-settings.dat file
-            # @param backup_extension [String] Backup file extension
             # @return [void]
-            def call(input: nil, settings_file: nil, backup_extension: ".bak", **)
+            def call(input: nil, settings_file: nil, **)
               # Read input
               if input
                 input_path = Pathname(input)
@@ -51,7 +50,7 @@ module Factorix
               output_path = settings_file ? Pathname(settings_file) : runtime.mod_settings_path
 
               # Backup existing file if it exists
-              backup_if_exists(output_path, backup_extension)
+              backup_if_exists(output_path)
 
               # Save settings
               settings.save(output_path)
@@ -93,18 +92,6 @@ module Factorix
               else
                 value
               end
-            end
-
-            # Backup existing file if it exists
-            #
-            # @param path [Pathname] File path to backup
-            # @param extension [String] Backup extension
-            # @return [void]
-            private def backup_if_exists(path, extension)
-              return unless path.exist?
-
-              backup_path = Pathname("#{path}#{extension}")
-              path.rename(backup_path)
             end
           end
         end

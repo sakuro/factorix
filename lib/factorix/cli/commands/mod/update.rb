@@ -11,6 +11,7 @@ module Factorix
         class Update < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           # @!parse
           #   # @return [Portal]
@@ -70,6 +71,7 @@ module Factorix
 
             execute_updates(update_targets, mod_list, jobs)
 
+            backup_if_exists(runtime.mod_list_path)
             mod_list.save
             say "Updated #{update_targets.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success

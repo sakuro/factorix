@@ -8,6 +8,7 @@ module Factorix
         class Disable < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
@@ -53,6 +54,7 @@ module Factorix
             return unless confirm?("Do you want to disable these MOD(s)?")
 
             execute_plan(mods_to_disable, state.mod_list)
+            backup_if_exists(runtime.mod_list_path)
             state.mod_list.save
             say "Disabled #{mods_to_disable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success

@@ -8,6 +8,7 @@ module Factorix
         class Uninstall < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
@@ -78,6 +79,7 @@ module Factorix
 
             execute_uninstall(targets_to_uninstall, installed_mods, mod_list)
             disable_expansion_mods(graph, mod_list) if all
+            backup_if_exists(runtime.mod_list_path)
             mod_list.save
             say "Uninstalled #{targets_to_uninstall.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success

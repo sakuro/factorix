@@ -11,6 +11,7 @@ module Factorix
         class Sync < Base
           confirmable!
           require_game_stopped!
+          backup_support!
 
           include DownloadSupport
 
@@ -77,6 +78,7 @@ module Factorix
 
             # Update mod-list.json
             update_mod_list(mod_list, save_data.mods)
+            backup_if_exists(runtime.mod_list_path)
             mod_list.save
             say "Updated mod-list.json", prefix: :success
 
@@ -286,6 +288,7 @@ module Factorix
             end
 
             # Save updated settings
+            backup_if_exists(runtime.mod_settings_path)
             mod_settings.save(runtime.mod_settings_path)
           end
         end
