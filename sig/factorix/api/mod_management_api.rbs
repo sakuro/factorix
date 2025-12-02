@@ -15,10 +15,10 @@ module Factorix
 
       def init_publish: (String mod_name) -> URI::HTTPS
       def init_upload: (String mod_name) -> URI::HTTPS
-      def finish_upload: (URI::HTTPS upload_url, Pathname | String file_path, **untyped metadata) -> void
+      def finish_upload: (String mod_name, URI::HTTPS upload_url, Pathname | String file_path, **untyped metadata) -> void
       def edit_details: (String mod_name, **untyped metadata) -> void
       def init_image_upload: (String mod_name) -> URI::HTTPS
-      def finish_image_upload: (URI::HTTPS upload_url, Pathname | String image_file) -> Hash[String, String]
+      def finish_image_upload: (String mod_name, URI::HTTPS upload_url, Pathname | String image_file) -> Hash[String, String]
       def edit_images: (String mod_name, Array[String] image_ids) -> void
     end
   end

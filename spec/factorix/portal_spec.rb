@@ -154,6 +154,7 @@ RSpec.describe Factorix::Portal do
 
         expect(mod_management_api).to have_received(:init_publish).with("test-mod")
         expect(mod_management_api).to have_received(:finish_upload).with(
+          "test-mod",
           upload_url,
           file_path,
           description: "Test",
@@ -165,7 +166,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path)
 
         expect(mod_management_api).to have_received(:init_publish).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
       end
     end
 
@@ -192,7 +193,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path, description: "Updated", license: "MIT")
 
         expect(mod_management_api).to have_received(:init_upload).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
         expect(mod_management_api).to have_received(:edit_details).with(
           "test-mod",
           description: "Updated",
@@ -204,7 +205,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path)
 
         expect(mod_management_api).to have_received(:init_upload).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with(upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
         expect(mod_management_api).not_to have_received(:edit_details)
       end
     end
@@ -269,7 +270,7 @@ RSpec.describe Factorix::Portal do
       image = portal.add_mod_image("test-mod", image_file)
 
       expect(mod_management_api).to have_received(:init_image_upload).with("test-mod")
-      expect(mod_management_api).to have_received(:finish_image_upload).with(upload_url, image_file)
+      expect(mod_management_api).to have_received(:finish_image_upload).with("test-mod", upload_url, image_file)
       expect(image).to be_a(Factorix::API::Image)
       expect(image.id).to eq("abc123def456")
       expect(image.url.to_s).to eq("https://assets-mod.factorio.com/assets/abc123def456.png")

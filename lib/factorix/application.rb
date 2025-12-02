@@ -136,7 +136,10 @@ module Factorix
 
     # Register MOD Management API client
     register(:mod_management_api, memoize: true) do
-      API::MODManagementAPI.new
+      api = API::MODManagementAPI.new
+      # Subscribe mod_portal_api to invalidate cache when MOD is changed on portal
+      api.subscribe(resolve(:mod_portal_api))
+      api
     end
 
     # Register portal (high-level API wrapper)

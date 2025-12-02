@@ -110,11 +110,11 @@ module Factorix
 
       if mod_exists
         # For existing MODs: upload file, then edit metadata separately
-        mod_management_api.finish_upload(upload_url, file_path)
+        mod_management_api.finish_upload(mod_name, upload_url, file_path)
         mod_management_api.edit_details(mod_name, **metadata) unless metadata.empty?
       else
         # For new MODs: upload file with metadata
-        mod_management_api.finish_upload(upload_url, file_path, **metadata)
+        mod_management_api.finish_upload(mod_name, upload_url, file_path, **metadata)
       end
 
       logger.info("Upload completed successfully", mod: mod_name)
@@ -160,7 +160,7 @@ module Factorix
       upload_url = mod_management_api.init_image_upload(mod_name)
 
       # Upload image
-      response_data = mod_management_api.finish_image_upload(upload_url, image_file)
+      response_data = mod_management_api.finish_image_upload(mod_name, upload_url, image_file)
 
       # Convert response to API::Image
       image = API::Image[**response_data.transform_keys(&:to_sym)]

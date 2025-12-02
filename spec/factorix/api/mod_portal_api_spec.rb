@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dry/events"
+
 RSpec.describe Factorix::API::MODPortalAPI do
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:cache) { instance_double(Factorix::Cache::FileSystem) }
@@ -272,6 +274,36 @@ RSpec.describe Factorix::API::MODPortalAPI do
           expect { api.get_mods(version: "9.9") }.to raise_error(ArgumentError, /version must be one of/)
         end
       end
+    end
+  end
+
+  describe "#on_mod_changed" do
+    before do
+      allow(cache).to receive(:key_for) {|uri| "key_for_#{uri}" }
+      allow(cache).to receive(:with_lock).and_yield
+      allow(cache).to receive(:delete)
+    end
+
+    it "deletes cache entries for get_mod and get_mod_full with locks" do
+      event = Dry::Events::Event.new("mod.changed", mod: "example-mod")
+
+      api.on_mod_changed(event)
+
+      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/example-mod")
+      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/example-mod/full")
+      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/example-mod")
+      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/example-mod/full")
+    end
+
+    it "URL-encodes MOD names with special characters" do
+      event = Dry::Events::Event.new("mod.changed", mod: "Explosive Excavation")
+
+      api.on_mod_changed(event)
+
+      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation")
+      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
+      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation")
+      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
     end
   end
 end

@@ -4,6 +4,11 @@
 
 module Dry
   module Events
+    # Minimal type definition for Dry::Events::Event
+    class Event
+      def []: (Symbol key) -> untyped
+    end
+
     module Publisher
       def self.[]: (Symbol id) -> Module
 

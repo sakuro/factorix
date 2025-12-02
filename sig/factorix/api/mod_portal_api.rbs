@@ -24,6 +24,8 @@ module Factorix
       def get_mod: (String name) -> Hash[String, untyped]
 
       def get_mod_full: (String name) -> Hash[String, untyped]
+
+      def on_mod_changed: (Dry::Events::Event event) -> void
     end
   end
 end

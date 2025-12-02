@@ -88,7 +88,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
     end
 
     it "uploads file without metadata" do
-      api.finish_upload(upload_url, file_path)
+      api.finish_upload("my-mod", upload_url, file_path)
 
       expect(uploader).to have_received(:upload).with(
         upload_url,
@@ -98,7 +98,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
     end
 
     it "uploads file with metadata" do
-      api.finish_upload(upload_url, file_path, description: "Test MOD", category: "content")
+      api.finish_upload("my-mod", upload_url, file_path, description: "Test MOD", category: "content")
 
       expect(uploader).to have_received(:upload).with(
         upload_url,
@@ -109,20 +109,30 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
     it "rejects invalid metadata keys" do
       expect {
-        api.finish_upload(upload_url, file_path, invalid_key: "value", another_bad: "test")
+        api.finish_upload("my-mod", upload_url, file_path, invalid_key: "value", another_bad: "test")
       }.to raise_error(ArgumentError, /Invalid metadata for finish_upload: invalid_key, another_bad/)
     end
 
     it "shows allowed keys in error message" do
       expect {
-        api.finish_upload(upload_url, file_path, bad: "value")
+        api.finish_upload("my-mod", upload_url, file_path, bad: "value")
       }.to raise_error(ArgumentError, /Allowed keys: description, category, license, source_url/)
     end
 
     it "accepts empty metadata" do
       expect {
-        api.finish_upload(upload_url, file_path)
+        api.finish_upload("my-mod", upload_url, file_path)
       }.not_to raise_error
+    end
+
+    it "publishes mod.changed event" do
+      events = []
+      api.subscribe("mod.changed") {|event| events << event }
+
+      api.finish_upload("my-mod", upload_url, file_path)
+
+      expect(events.size).to eq(1)
+      expect(events.first[:mod]).to eq("my-mod")
     end
   end
 
@@ -184,6 +194,19 @@ RSpec.describe Factorix::API::MODManagementAPI do
         )
       }.not_to raise_error
     end
+
+    it "publishes mod.changed event" do
+      response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
+      allow(client).to receive(:post).and_return(response)
+
+      events = []
+      api.subscribe("mod.changed") {|event| events << event }
+
+      api.edit_details("my-mod", description: "Updated description")
+
+      expect(events.size).to eq(1)
+      expect(events.first[:mod]).to eq("my-mod")
+    end
   end
 
   describe "#init_image_upload" do
@@ -232,7 +255,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
       response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
       allow(uploader).to receive(:upload).and_return(response)
 
-      result = api.finish_image_upload(upload_url, image_file)
+      result = api.finish_image_upload("my-mod", upload_url, image_file)
 
       expect(uploader).to have_received(:upload).with(upload_url, image_file, field_name: "image")
       expect(result).to eq(response_data)
@@ -243,8 +266,21 @@ RSpec.describe Factorix::API::MODManagementAPI do
       allow(uploader).to receive(:upload).and_return(response)
 
       expect {
-        api.finish_image_upload(upload_url, image_file)
+        api.finish_image_upload("my-mod", upload_url, image_file)
       }.to raise_error(Factorix::HTTPError, /Invalid JSON response/)
+    end
+
+    it "publishes mod.changed event" do
+      response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
+      allow(uploader).to receive(:upload).and_return(response)
+
+      events = []
+      api.subscribe("mod.changed") {|event| events << event }
+
+      api.finish_image_upload("my-mod", upload_url, image_file)
+
+      expect(events.size).to eq(1)
+      expect(events.first[:mod]).to eq("my-mod")
     end
   end
 
@@ -289,6 +325,19 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect {
         api.edit_images("my-mod", %w[abc123])
       }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
+    end
+
+    it "publishes mod.changed event" do
+      response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
+      allow(client).to receive(:post).and_return(response)
+
+      events = []
+      api.subscribe("mod.changed") {|event| events << event }
+
+      api.edit_images("my-mod", %w[abc123 def456])
+
+      expect(events.size).to eq(1)
+      expect(events.first[:mod]).to eq("my-mod")
     end
   end
 end

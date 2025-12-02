@@ -75,6 +75,28 @@ module Factorix
         raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
       end
 
+      # Event handler for mod.changed event
+      # Invalidates cached MOD information when a MOD is modified on the portal
+      #
+      # @param event [Dry::Events::Event] event with mod payload
+      # @return [void]
+      def on_mod_changed(event)
+        mod_name = event[:mod]
+        encoded_name = ERB::Util.url_encode(mod_name)
+
+        # Invalidate get_mod cache
+        mod_uri = build_uri("/api/mods/#{encoded_name}")
+        mod_key = cache.key_for(mod_uri.to_s)
+        cache.with_lock(mod_key) { cache.delete(mod_key) }
+
+        # Invalidate get_mod_full cache
+        full_uri = build_uri("/api/mods/#{encoded_name}/full")
+        full_key = cache.key_for(full_uri.to_s)
+        cache.with_lock(full_key) { cache.delete(full_key) }
+
+        logger.debug("Invalidated cache for MOD", mod: mod_name)
+      end
+
       private def build_uri(path, **params)
         URI.join(BASE_URL, path).tap {|uri| uri.query = URI.encode_www_form(params.sort.to_h) unless params.empty? }
       end
