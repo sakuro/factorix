@@ -20,6 +20,10 @@ module Factorix
           include Import[:logger]
           include Formatting
 
+          # Valid cache names for the caches argument
+          VALID_CACHES = %w[download api info_json].freeze
+          private_constant :VALID_CACHES
+
           desc "Evict cache entries"
 
           example [
@@ -28,7 +32,7 @@ module Factorix
             "download --older-than 7d  # Remove entries older than 7 days"
           ]
 
-          argument :caches, type: :array, required: false, desc: "Cache names (download, api, info_json)"
+          argument :caches, type: :array, required: false, values: VALID_CACHES, desc: "Cache names"
 
           option :all, type: :flag, default: false, desc: "Remove all entries"
           option :expired, type: :flag, default: false, desc: "Remove expired entries only"
