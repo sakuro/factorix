@@ -24,7 +24,6 @@ RSpec.configure do |config|
   config.add_setting :log_stream
 
   config.before(:suite) do
-    Factorix::Application.enable_stubs!
     config.log_stream = StringIO.new
     Factorix::Application.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s %<payload>s"))
   end

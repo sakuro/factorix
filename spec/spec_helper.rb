@@ -3,6 +3,7 @@
 require "simplecov"
 SimpleCov.start
 
+require "dry/configurable/test_interface"
 require "dry/container/stub"
 require "factorix"
 require "fileutils"
@@ -14,6 +15,11 @@ require "zip"
 Zip.warn_invalid_date = false
 
 WebMock.disable_net_connect!
+
+# Enable test interfaces for dry-container and dry-configurable
+# before loading support files that may use stub
+Factorix::Application.enable_stubs!
+Factorix::Application.enable_test_interface
 
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
@@ -41,10 +47,15 @@ RSpec.configure do |config|
     ENV["XDG_DATA_HOME"] = File.join(@test_tmpdir, "data")
     ENV["XDG_STATE_HOME"] = File.join(@test_tmpdir, "state")
 
-    # Reset Application cache directory configuration
-    runtime = Factorix::Application.resolve(:runtime)
-    Factorix::Application.config.cache.download.dir = runtime.factorix_cache_dir / "download"
-    Factorix::Application.config.cache.api.dir = runtime.factorix_cache_dir / "api"
+    # Stub runtime with new XDG directories
+    new_runtime = Factorix::Runtime.detect
+    Factorix::Application.stub(:runtime, new_runtime)
+
+    # Reset configuration to defaults and reconfigure with new runtime
+    Factorix::Application.reset_config
+    Factorix::Application.config.cache.download.dir = new_runtime.factorix_cache_dir / "download"
+    Factorix::Application.config.cache.api.dir = new_runtime.factorix_cache_dir / "api"
+    Factorix::Application.config.cache.info_json.dir = new_runtime.factorix_cache_dir / "info_json"
   end
 
   config.after(:suite) do
