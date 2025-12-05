@@ -112,7 +112,7 @@ RSpec.describe Factorix::Runtime::WSL::WSLPath do
   end
 
   describe "#fetch_windows_paths_via_powershell" do
-    let(:json_output) { '{"ProgramFiles(x86)":"C:\\Program Files (x86)","APPDATA":"C:\\Users\\wube\\AppData\\Roaming","LOCALAPPDATA":"C:\\Users\\wube\\AppData\\Local"}' }
+    let(:json_output) { '{"ProgramFiles(x86)":"C:\\\\Program Files (x86)","APPDATA":"C:\\\\Users\\\\wube\\\\AppData\\\\Roaming","LOCALAPPDATA":"C:\\\\Users\\\\wube\\\\AppData\\\\Local"}' }
     let(:status) { instance_double(Process::Status, success?: true) }
 
     let(:wsl_path_for_fetch) do
