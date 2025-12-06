@@ -178,7 +178,7 @@ module Factorix
       setting :api do
         setting :dir, constructor: ->(value) { Pathname(value) }
         setting :ttl, default: 3600 # 1 hour (API responses may change)
-        setting :max_file_size, default: 10 * 1024 * 1024 # 10MB (JSON responses)
+        setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
 

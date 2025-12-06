@@ -189,7 +189,7 @@ setting :cache do
   setting :api do
     setting :dir, constructor: ->(v) { Pathname(v) }
     setting :ttl, default: 3600                     # 1 hour
-    setting :max_file_size, default: 10 * 1024 * 1024  # 10MB
+    setting :max_file_size, default: 10 * 1024 * 1024  # 10MiB
     setting :compression_threshold, default: 0      # Always compress
   end
 

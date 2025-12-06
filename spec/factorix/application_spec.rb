@@ -246,7 +246,7 @@ RSpec.describe Factorix::Application do
         expect(Factorix::Application.config.cache.api.ttl).to eq(3600)
       end
 
-      it "has default max_file_size of 10MB" do
+      it "has default max_file_size of 10MiB" do
         expect(Factorix::Application.config.cache.api.max_file_size).to eq(10 * 1024 * 1024)
       end
     end

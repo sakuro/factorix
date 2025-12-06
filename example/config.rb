@@ -83,6 +83,6 @@ Factorix::Application.configure do |config|
 
   # API cache settings (for API responses)
   # config.cache.api.ttl = 3600  # 1 hour
-  # config.cache.api.max_file_size = 10 * 1024 * 1024  # 10MB
+  # config.cache.api.max_file_size = 10 * 1024 * 1024  # 10MiB
 
 end
