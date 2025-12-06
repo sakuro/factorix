@@ -5,9 +5,8 @@ require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"
 
-# Factorix provides [description of your gem].
-#
-# This module serves as the namespace for the gem's functionality.
+# Factorix provides a CLI for Factorio MOD management, settings synchronization,
+# and MOD Portal integration.
 module Factorix
   loader = Zeitwerk::Loader.for_gem
   loader.ignore("#{__dir__}/factorix/version.rb")
