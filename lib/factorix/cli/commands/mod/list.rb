@@ -79,12 +79,16 @@ module Factorix
           def call(enabled:, disabled:, errors:, outdated:, json:, **)
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
-            state = MODInstallationState.new
+            mod_list = MODList.load
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            handler = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(handler:)
+            graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
-            validator = Dependency::Validator.new(state)
+            validator = Dependency::Validator.new(graph:, mod_list:, installed_mods:)
             validation_result = validator.validate
 
-            mod_infos = build_mod_infos(state.installed_mods, state.mod_list, validation_result)
+            mod_infos = build_mod_infos(installed_mods, mod_list, validation_result)
             total_count = mod_infos.size
 
             # Apply filters

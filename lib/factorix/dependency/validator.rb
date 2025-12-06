@@ -12,8 +12,14 @@ module Factorix
     class Validator
       # Initialize validator
       #
-      # @param state [Factorix::MODInstallationState] The MOD installation state to validate
-      def initialize(state) = @state = state
+      # @param graph [Factorix::Dependency::Graph] The dependency graph
+      # @param mod_list [Factorix::MODList] The MOD list
+      # @param installed_mods [Array<Factorix::InstalledMOD>] The installed MODs
+      def initialize(graph:, mod_list:, installed_mods:)
+        @graph = graph
+        @mod_list = mod_list
+        @installed_mods = installed_mods
+      end
 
       # Validate the graph
       #
@@ -29,11 +35,7 @@ module Factorix
         result
       end
 
-      private def graph = @state.graph
-
-      private def mod_list = @state.mod_list
-
-      private def installed_mods = @state.installed_mods
+      private attr_reader :graph, :mod_list, :installed_mods
 
       private def validate_circular_dependencies(result)
         return unless graph.cyclic?

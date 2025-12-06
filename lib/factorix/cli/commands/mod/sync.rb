@@ -46,10 +46,11 @@ module Factorix
             say "Loaded save file (version: #{save_data.version}, MOD(s): #{save_data.mods.size})", prefix: :info
 
             # Load current state
-            state = MODInstallationState.new
-            graph = state.graph
-            mod_list = state.mod_list
-            installed_mods = state.installed_mods
+            mod_list = MODList.load
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            handler = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(handler:)
+            graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
             raise DirectoryNotFoundError, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 

@@ -36,11 +36,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
     allow(graph).to receive(:node?)
     allow(graph).to receive(:node)
     allow(graph).to receive_messages(nodes: [], edges_from: [], find_enabled_dependents: [])
-
-    # Stub MODInstallationState to return mocked state
-    state = instance_double(Factorix::MODInstallationState)
-    allow(state).to receive_messages(graph:, mod_list:, installed_mods: [])
-    allow(Factorix::MODInstallationState).to receive(:new).and_return(state)
   end
 
   describe "#call" do

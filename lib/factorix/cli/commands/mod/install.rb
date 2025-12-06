@@ -43,9 +43,11 @@ module Factorix
           # @return [void]
           def call(mod_specs:, jobs: 4, **)
             # Load current state (without validation to allow fixing issues)
-            state = MODInstallationState.new
-            graph = state.graph
-            mod_list = state.mod_list
+            mod_list = MODList.load
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            handler = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(handler:)
+            graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
             raise DirectoryNotFoundError, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 

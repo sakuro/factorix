@@ -38,24 +38,28 @@ module Factorix
             validate_arguments(mod_names, all)
 
             # Without validation to allow fixing issues
-            state = MODInstallationState.new
+            mod_list = MODList.load
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            handler = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(handler:)
+            graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
             target_mods = if all
-                            plan_disable_all(state.graph)
+                            plan_disable_all(graph)
                           else
                             mod_names.map {|name| Factorix::MOD[name:] }
                           end
 
-            validate_target_mods(target_mods, state.graph)
-            mods_to_disable = plan_with_dependents(target_mods, state.graph)
+            validate_target_mods(target_mods, graph)
+            mods_to_disable = plan_with_dependents(target_mods, graph)
 
             show_plan(mods_to_disable)
             return if mods_to_disable.empty?
             return unless confirm?("Do you want to disable these MOD(s)?")
 
-            execute_plan(mods_to_disable, state.mod_list)
+            execute_plan(mods_to_disable, mod_list)
             backup_if_exists(runtime.mod_list_path)
-            state.mod_list.save
+            mod_list.save
             say "Disabled #{mods_to_disable.size} MOD(s)", prefix: :success
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")

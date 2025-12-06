@@ -51,12 +51,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)
     allow(graph).to receive(:node?)
     allow(graph).to receive_messages(nodes: [], find_enabled_dependents: [])
-
-    # Stub MODInstallationState to return mocked state
-    state = instance_double(Factorix::MODInstallationState)
-    allow(state).to receive_messages(graph:, mod_list:)
-    allow(state).to receive(:installed_mods) { Factorix::InstalledMOD.all }
-    allow(Factorix::MODInstallationState).to receive(:new).and_return(state)
   end
 
   describe "#call" do
