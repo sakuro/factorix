@@ -68,7 +68,12 @@ module Factorix
       def add_uninstalled_mod(mod_info, release, operation: :install)
         mod = MOD[name: mod_info.name]
 
-        return if node?(mod)
+        existing_node = @nodes[mod]
+        if existing_node
+          # If already installed but disabled, mark for enabling
+          set_node_operation(mod, :enable) if existing_node.installed? && !existing_node.enabled?
+          return
+        end
 
         node = Node.new(mod:, version: release.version, enabled: false, installed: false, operation:)
         add_node(node)

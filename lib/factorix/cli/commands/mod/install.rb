@@ -91,7 +91,8 @@ module Factorix
           # @return [void]
           def mark_disabled_dependencies_for_enable(graph)
             # Find all MODs that will be installed or enabled
-            mods_to_process = graph.nodes.filter_map {|node| node.mod if node.operation == :install }
+            target_operations = %i[install enable]
+            mods_to_process = graph.nodes.filter_map {|node| node.mod if target_operations.include?(node.operation) }
 
             processed = Set.new
 
