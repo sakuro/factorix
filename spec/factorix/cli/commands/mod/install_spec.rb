@@ -99,6 +99,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         install_targets = [
           {
             mod: mod_a,
+            operation: :install,
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
@@ -177,6 +178,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         install_targets = [
           {
             mod: mod_b,
+            operation: :install,
             mod_info: mod_info_b,
             release: release_b,
             output_path: mod_dir / "mod-b_1.0.0.zip",
@@ -184,6 +186,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           },
           {
             mod: mod_a,
+            operation: :install,
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",
@@ -247,6 +250,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         install_targets = [
           {
             mod: mod_a,
+            operation: :install,
             mod_info: mod_info_a,
             release: release_a,
             output_path: mod_dir / "mod-a_1.0.0.zip",

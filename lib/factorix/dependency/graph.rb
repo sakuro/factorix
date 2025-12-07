@@ -31,6 +31,18 @@ module Factorix
         @edges[mod] ||= []
       end
 
+      # Set the planned operation for an existing node
+      #
+      # @param mod [Factorix::MOD] The MOD to update
+      # @param operation [Symbol, nil] The planned operation (:install, :enable, :disable, :uninstall, or nil)
+      # @return [Node, nil] The updated node, or nil if node doesn't exist
+      def set_node_operation(mod, operation)
+        node = @nodes[mod]
+        return unless node
+
+        @nodes[mod] = node.with(operation:)
+      end
+
       # Add an edge to the graph
       #
       # @param edge [Factorix::Dependency::Edge] The edge to add

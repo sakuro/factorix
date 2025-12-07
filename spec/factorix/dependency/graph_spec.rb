@@ -41,6 +41,38 @@ RSpec.describe Factorix::Dependency::Graph do
     end
   end
 
+  describe "#set_node_operation" do
+    let(:graph) { Factorix::Dependency::Graph.new }
+    let(:node_a_installed) { Factorix::Dependency::Node.new(mod: mod_a, version:, installed: true, enabled: false) }
+
+    before do
+      graph.add_node(node_a_installed)
+    end
+
+    it "sets the operation of an existing node" do
+      graph.set_node_operation(mod_a, :enable)
+
+      updated_node = graph.node(mod_a)
+      expect(updated_node.operation).to eq(:enable)
+      expect(updated_node.mod).to eq(mod_a)
+      expect(updated_node.version).to eq(version)
+      expect(updated_node.installed).to be true
+      expect(updated_node.enabled).to be false
+    end
+
+    it "returns the updated node" do
+      result = graph.set_node_operation(mod_a, :enable)
+
+      expect(result.operation).to eq(:enable)
+    end
+
+    it "returns nil when node doesn't exist" do
+      result = graph.set_node_operation(mod_b, :enable)
+
+      expect(result).to be_nil
+    end
+  end
+
   describe "#add_edge" do
     let(:graph) { Factorix::Dependency::Graph.new }
     let(:edge) do

@@ -8,6 +8,7 @@ module Factorix
       def initialize: () -> void
 
       def add_node: (Node node) -> void
+      def set_node_operation: (MOD mod, Symbol? operation) -> Node?
       def add_edge: (Edge edge) -> void
       def add_uninstalled_mod: (API::MODInfo mod_info, API::Release release, ?operation: Symbol) -> void
 

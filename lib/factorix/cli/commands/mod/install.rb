@@ -61,7 +61,7 @@ module Factorix
 
             # Show plan
             show_plan(install_targets)
-            return unless confirm?("Do you want to install these MOD(s)?")
+            return unless confirm?("Do you want to proceed?")
 
             # Execute installation
             execute_installation(install_targets, graph, mod_list, jobs)
@@ -69,11 +69,56 @@ module Factorix
             # Save mod-list.json
             backup_if_exists(runtime.mod_list_path)
             mod_list.save
-            say "Installed #{install_targets.size} MOD(s)", prefix: :success
+
+            install_count = install_targets.count {|t| t[:operation] == :install }
+            enable_count = install_targets.count {|t| t[:operation] == :enable }
+
+            if install_count > 0
+              say "Installed #{install_count} MOD(s)", prefix: :success
+            end
+            if enable_count > 0
+              say "Enabled #{enable_count} disabled dependency MOD(s)", prefix: :success
+            end
             say "Saved mod-list.json", prefix: :success
             logger.debug("Saved mod-list.json")
           end
 
+          # Mark disabled dependencies for enabling
+          #
+          # Recursively traverses required dependencies and marks disabled MODs for enabling.
+          #
+          # @param graph [Dependency::Graph] The dependency graph
+          # @return [void]
+          def mark_disabled_dependencies_for_enable(graph)
+            # Find all MODs that will be installed or enabled
+            mods_to_process = graph.nodes.filter_map {|node| node.mod if node.operation == :install }
+
+            processed = Set.new
+
+            until mods_to_process.empty?
+              mod = mods_to_process.shift
+              next if processed.include?(mod)
+
+              processed.add(mod)
+
+              graph.edges_from(mod).each do |edge|
+                next unless edge.required?
+
+                dep_node = graph.node(edge.to_mod)
+                next unless dep_node
+
+                # Skip if already has an operation or is enabled
+                next if dep_node.operation
+                next if dep_node.enabled?
+
+                # Mark for enabling if installed but disabled
+                next unless dep_node.installed?
+
+                graph.set_node_operation(edge.to_mod, :enable)
+                mods_to_process << edge.to_mod
+              end
+            end
+          end
           # Plan the installation by fetching MOD info and extending the graph
           #
           # @param mod_specs [Array<String>] MOD specifications
@@ -90,10 +135,13 @@ module Factorix
             # Phase 2: Recursively resolve dependencies and extend graph
             all_mod_infos = resolve_dependencies_with_graph(target_infos, graph, jobs, presenter)
 
-            # Phase 3: Validate graph (cycles, conflicts)
+            # Phase 3: Mark disabled dependencies for enabling
+            mark_disabled_dependencies_for_enable(graph)
+
+            # Phase 4: Validate graph (cycles, conflicts)
             validate_installation_graph(graph)
 
-            # Phase 4: Extract install targets from graph
+            # Phase 5: Extract install targets from graph
             extract_install_targets(graph, all_mod_infos)
           end
 
@@ -264,6 +312,7 @@ module Factorix
           # @return [void]
           # @raise [CircularDependencyError] if circular dependency detected
           # @raise [MODConflictError] if MOD conflicts with enabled MOD
+
           private def validate_installation_graph(graph)
             # Check for cycles
             if graph.cyclic?
@@ -299,20 +348,30 @@ module Factorix
           # @param all_mod_infos [Hash] All MOD infos by name
           # @return [Array<Hash>] Install targets
           private def extract_install_targets(graph, all_mod_infos)
-            # Filter MODs marked for installation and merge with their info
-            mod_infos = graph.nodes.filter_map {|node|
-              next unless node.operation == :install
+            # Filter MODs marked for installation or enabling
+            graph.nodes.filter_map {|node|
+              if node.operation == :install
+                info = all_mod_infos[node.mod.name]
+                unless info
+                  logger.warn("No info found for #{node.mod}, skipping")
+                  next
+                end
 
-              info = all_mod_infos[node.mod.name]
-              unless info
-                logger.warn("No info found for #{node.mod}, skipping")
-                next
+                {
+                  mod: node.mod,
+                  operation: :install,
+                  mod_info: info[:mod_info],
+                  release: info[:release],
+                  output_path: runtime.mod_dir / info[:release].file_name,
+                  category: info[:mod_info].category
+                }
+              elsif node.operation == :enable
+                {
+                  mod: node.mod,
+                  operation: :enable
+                }
               end
-
-              info.merge(mod: node.mod)
             }
-
-            build_install_targets(mod_infos, runtime.mod_dir)
           end
 
           # Show the installation plan
@@ -320,9 +379,21 @@ module Factorix
           # @param targets [Array<Hash>] Installation targets
           # @return [void]
           private def show_plan(targets)
-            say "Planning to install #{targets.size} MOD(s):", prefix: :info
-            targets.each do |target|
-              say "  - #{target[:mod]}@#{target[:release].version}"
+            install_targets = targets.select {|t| t[:operation] == :install }
+            enable_targets = targets.select {|t| t[:operation] == :enable }
+
+            if install_targets.any?
+              say "Planning to install #{install_targets.size} MOD(s):", prefix: :info
+              install_targets.each do |target|
+                say "  - #{target[:mod]}@#{target[:release].version}"
+              end
+            end
+
+            return if enable_targets.none?
+
+            say "Planning to enable #{enable_targets.size} disabled dependency MOD(s):", prefix: :info
+            enable_targets.each do |target|
+              say "  - #{target[:mod]}"
             end
           end
 
@@ -334,23 +405,33 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
           private def execute_installation(targets, _graph, mod_list, jobs)
-            # Download all MODs
-            download_mods(targets, jobs)
+            # Download MODs that need to be installed (not just enabled)
+            install_targets = targets.select {|t| t[:operation] == :install }
+            download_mods(install_targets, jobs) unless install_targets.empty?
 
             # Add/enable all MODs in mod-list.json
             targets.each do |target|
               mod = target[:mod]
 
-              if mod_list.exist?(mod)
-                unless mod_list.enabled?(mod)
-                  mod_list.enable(mod)
-                  say "Enabled #{mod} in mod-list.json", prefix: :success
-                  logger.debug("Enabled in mod-list.json", mod_name: mod.name)
+              case target[:operation]
+              when :install
+                if mod_list.exist?(mod)
+                  unless mod_list.enabled?(mod)
+                    mod_list.enable(mod)
+                    say "Enabled #{mod} in mod-list.json", prefix: :success
+                    logger.debug("Enabled in mod-list.json", mod_name: mod.name)
+                  end
+                else
+                  mod_list.add(mod, enabled: true)
+                  say "Added #{mod} to mod-list.json", prefix: :success
+                  logger.debug("Added to mod-list.json", mod_name: mod.name)
                 end
+              when :enable
+                mod_list.enable(mod)
+                say "Enabled dependency #{mod} in mod-list.json", prefix: :success
+                logger.debug("Enabled dependency in mod-list.json", mod_name: mod.name)
               else
-                mod_list.add(mod, enabled: true)
-                say "Added #{mod} to mod-list.json", prefix: :success
-                logger.debug("Added to mod-list.json", mod_name: mod.name)
+                logger.warn("Unknown operation #{target[:operation]} for #{mod}")
               end
             end
           end
