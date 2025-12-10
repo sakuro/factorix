@@ -4,7 +4,7 @@ Component that manages dependency management and configuration for the entire ap
 
 ## Structure
 
-- `extend Dry::Container::Mixin` - Dependency container
+- `extend Dry::Core::Container::Mixin` - Dependency container
 - `extend Dry::Configurable` - Configuration management
 
 ## Configuration Items

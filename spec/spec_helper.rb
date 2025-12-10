@@ -4,7 +4,8 @@ require "simplecov"
 SimpleCov.start
 
 require "dry/configurable/test_interface"
-require "dry/container/stub"
+require "dry/core"
+require "dry/core/container/stub"
 require "factorix"
 require "fileutils"
 require "tmpdir"
@@ -16,7 +17,7 @@ Zip.warn_invalid_date = false
 
 WebMock.disable_net_connect!
 
-# Enable test interfaces for dry-container and dry-configurable
+# Enable test interfaces for dry-core container and dry-configurable
 # before loading support files that may use stub
 Factorix::Application.enable_stubs!
 Factorix::Application.enable_test_interface

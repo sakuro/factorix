@@ -75,7 +75,7 @@ credential.api_key  # => "xxxxxxxxxx"
 
 - `PortalAPI` - Upload/publish/edit MODs
 
-## dry-container Registration
+## Container Registration
 
 ```ruby
 register(:service_credential, memoize: true) { ServiceCredential.load }

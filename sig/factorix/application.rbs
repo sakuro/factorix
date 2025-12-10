@@ -4,7 +4,7 @@
 
 module Factorix
   class Application
-    extend Dry::Container::Mixin
+    extend Dry::Core::Container::Mixin
     extend Dry::Configurable
 
     def self.register: (Symbol, ?memoize: bool) { () -> untyped } -> void

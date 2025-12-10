@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require "dry/configurable"
-require "dry/container"
+require "dry/core"
 require "dry/logger"
 
 module Factorix
   # Application container and configuration
   #
   # Provides dependency injection container and configuration management
-  # using dry-container and dry-configurable.
+  # using dry-core's Container and dry-configurable.
   #
   # @example Configure the application
   #   Factorix::Application.configure do |config|
@@ -19,7 +19,7 @@ module Factorix
   # @example Resolve dependencies
   #   runtime = Factorix::Application[:runtime]
   class Application
-    extend Dry::Container::Mixin
+    extend Dry::Core::Container::Mixin
     extend Dry::Configurable
 
     # Some items are registered with memoize: false to support independent event handlers

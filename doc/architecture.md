@@ -116,7 +116,7 @@ Factorix/
 │
 ├── ServiceCredential          # username + token (for MOD downloads)
 ├── APICredential              # api_key (for Portal API)
-├── Application                # dry-container + dry-configurable
+├── Application                # dry-core Container + dry-configurable
 │
 └── Error                      # Simple error hierarchy
 ```

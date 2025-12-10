@@ -4,14 +4,13 @@
 
 - **Zeitwerk** (>= 2.7.1) - Auto-loading
 - **dry-cli** (>= 1.2.0) - CLI framework
-- **dry-container** - Dependency container
-- **dry-auto_inject** - Dependency injection (used with dry-container)
+- **dry-core** - Dependency container (Container module)
+- **dry-auto_inject** - Dependency injection (used with dry-core's Container)
 - **dry-configurable** (>= 1.0) - Application configuration management
   - Config file: XDG-compliant (`$XDG_CONFIG_HOME/factorix/config.rb`, defaults to `~/.config/factorix/config.rb`)
   - Format: Ruby DSL
 - **dry-events** (~> 1.1) - Event system for progress notification
 - **dry-logger** (~> 1.2) - Logging
-- **dry-core** (>= 1.1.0) - Utilities
 - **retriable** (>= 3.1.2) - Retry logic for network operations
 - **tty-progressbar** (~> 0.18) - Progress display with multi-bar support
 - **tint_me** (~> 1.1) - Terminal text coloring
