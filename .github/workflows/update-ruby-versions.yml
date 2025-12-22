@@ -4,8 +4,10 @@ name: Update Ruby Versions
 # Data source: Ruby's official branches.yml from www.ruby-lang.org repository
 on:
   schedule:
-    # Run at repository-specific time on Jan 2-8 and Apr 2-8 to distribute API load
-    - cron: '49 10 2-8 1,4 *'
+    # Run at repository-specific time on Dec
+    - cron: '49 10 25-31 12 *'
+    # Run at repository-specific time on Apr
+    - cron: '49 10 1-7 4 *'
   workflow_dispatch:
 
 jobs:
