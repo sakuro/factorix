@@ -25,7 +25,7 @@ jobs:
           # Get Ruby versions directly from branches.yml
           ruby_data=$(gh api -H "Accept: application/vnd.github.raw" repos/ruby/www.ruby-lang.org/contents/_data/branches.yml | \
             yq -o json | \
-            jq '{ruby: ([.[] | select(.status | test("maintenance")) | {name, date}] | sort_by(.date) | map(.name | tostring))}')
+            jq '{ruby: ([.[] | select(.status | test("maintenance")) | {name, date}] | sort_by(.date) | map(.name | tostring | if contains(".") then . else . + ".0" end))}')
 
           min_version=$(echo "$ruby_data" | jq -r '.ruby[0]')
           ruby_array=$(echo "$ruby_data" | jq -r '.ruby | map("\"" + . + "\"") | join(", ")')
