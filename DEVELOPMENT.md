@@ -35,7 +35,7 @@ This opens an IRB session where you can experiment with the Factorix API.
 See [`doc/technology-stack.md`](doc/technology-stack.md) for details.
 
 - **Required Ruby version**: >= 3.2
-- **CI tested**: Ruby 3.2, 3.3, 3.4
+- **CI tested**: Ruby 3.2, 3.3, 3.4, 4.0
 
 ## Project Structure
 
