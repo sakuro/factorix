@@ -6,7 +6,7 @@ This guide covers the development setup, architecture, and contribution guidelin
 
 ### Prerequisites
 
-- Ruby >= 3.2
+- Ruby (non-EOL versions)
 
 ### Initial Setup
 
@@ -34,8 +34,8 @@ This opens an IRB session where you can experiment with the Factorix API.
 
 See [`doc/technology-stack.md`](doc/technology-stack.md) for details.
 
-- **Required Ruby version**: >= 3.2
-- **CI tested**: Ruby 3.2, 3.3, 3.4, 4.0
+- **Required Ruby version**: Oldest non-EOL version or later
+- **CI tested**: All non-EOL Ruby versions (see [CI workflow](.github/workflows/ci.yml))
 
 ## Project Structure
 
@@ -57,7 +57,7 @@ See [`doc/architecture.md`](doc/architecture.md) for detailed class hierarchy an
 #### RuboCop Configuration
 - **Strategy**: EnabledByDefault: true (very strict)
 - **Shared config**: Inherits from `docquet` gem
-- **Target Ruby**: 3.2+
+- **Target Ruby**: Oldest non-EOL version
 
 #### Method Definition Style
 - **Endless Methods**: Use endless method syntax for single-line method definitions

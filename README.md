@@ -24,7 +24,7 @@ Factorix simplifies Factorio MOD management by providing:
 
 ## Requirements
 
-- Ruby >= 3.2
+- Ruby (non-EOL versions)
 - Factorio API Key (required for uploading MODs and editing MOD metadata)
   - Obtain your API key from [Factorio Profile](https://factorio.com/profile)
 
