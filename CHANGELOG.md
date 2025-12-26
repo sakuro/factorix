@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.5.0] - 2025-12-26
+
 ### Added
 
 - **CLI tool** for Factorio MOD management, settings sync, and game control
