@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Fixed
+
+- Fix `completion` command failing without arguments after dry-cli 1.4.0 update (#4)
+
 ## [0.5.0] - 2025-12-26
 
 ### Added
