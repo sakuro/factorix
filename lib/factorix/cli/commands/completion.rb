@@ -30,7 +30,7 @@ module Factorix
         argument :shell,
           type: :string,
           required: false,
-          values: SUPPORTED_SHELLS.keys,
+          values: [nil] + SUPPORTED_SHELLS.keys,
           desc: "Shell type. Defaults to current shell from $SHELL"
 
         example [
