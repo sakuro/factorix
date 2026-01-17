@@ -68,7 +68,7 @@ Configuration file is resolved in the following order:
 ### Configuration File Format (Ruby DSL)
 
 ```ruby
-Factorix::Container.configure do |config|
+Factorix.configure do |config|
   config.cache_dir = "/custom/cache/path"
   config.log_level = :debug
   config.http.open_timeout = 120

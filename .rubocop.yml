@@ -70,6 +70,7 @@ Style/IpAddresses:
 Style/StaticClass:
   Exclude:
     - lib/factorix/info_json.rb
+    - lib/factorix.rb # Deprecated Application class for backward compatibility
 
 ThreadSafety/NewThread:
   Exclude:

@@ -20,7 +20,7 @@ WebMock.disable_net_connect!
 # Enable test interfaces for dry-core container and dry-configurable
 # before loading support files that may use stub
 Factorix::Container.enable_stubs!
-Factorix::Container.enable_test_interface
+Factorix.enable_test_interface
 
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
@@ -53,10 +53,10 @@ RSpec.configure do |config|
     Factorix::Container.stub(:runtime, new_runtime)
 
     # Reset configuration to defaults and reconfigure with new runtime
-    Factorix::Container.reset_config
-    Factorix::Container.config.cache.download.dir = new_runtime.factorix_cache_dir / "download"
-    Factorix::Container.config.cache.api.dir = new_runtime.factorix_cache_dir / "api"
-    Factorix::Container.config.cache.info_json.dir = new_runtime.factorix_cache_dir / "info_json"
+    Factorix.reset_config
+    Factorix.config.cache.download.dir = new_runtime.factorix_cache_dir / "download"
+    Factorix.config.cache.api.dir = new_runtime.factorix_cache_dir / "api"
+    Factorix.config.cache.info_json.dir = new_runtime.factorix_cache_dir / "info_json"
   end
 
   config.after(:suite) do

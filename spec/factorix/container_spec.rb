@@ -33,18 +33,18 @@ RSpec.describe Factorix::Container do
       it "uses log level from configuration" do
         skip "Difficult to change log level of registered logger and recreate it"
 
-        original_level = Factorix::Container.config.log_level
+        original_level = Factorix.config.log_level
 
-        Factorix::Container.config.log_level = :debug
+        Factorix.config.log_level = :debug
         # Force re-registration by calling resolve directly
         logger = Factorix::Container.resolve(:logger)
         expect(logger.level).to eq(Logger::DEBUG)
 
-        Factorix::Container.config.log_level = :warn
+        Factorix.config.log_level = :warn
         logger = Factorix::Container.resolve(:logger)
         expect(logger.level).to eq(Logger::WARN)
 
-        Factorix::Container.config.log_level = original_level
+        Factorix.config.log_level = original_level
       end
 
       it "formats messages with timestamp and severity" do
@@ -202,117 +202,117 @@ RSpec.describe Factorix::Container do
   describe "configuration" do
     after do
       # Reset configuration after each test
-      Factorix::Container.config.log_level = :info
-      Factorix::Container.config.http.connect_timeout = 5
-      Factorix::Container.config.http.read_timeout = 30
-      Factorix::Container.config.http.write_timeout = 30
+      Factorix.config.log_level = :info
+      Factorix.config.http.connect_timeout = 5
+      Factorix.config.http.read_timeout = 30
+      Factorix.config.http.write_timeout = 30
     end
 
     describe ".config" do
       it "provides access to configuration" do
-        expect(Factorix::Container.config).to respond_to(:log_level)
-        expect(Factorix::Container.config).to respond_to(:cache)
+        expect(Factorix.config).to respond_to(:log_level)
+        expect(Factorix.config).to respond_to(:cache)
       end
     end
 
     describe "cache.download" do
       it "defaults dir to runtime.factorix_cache_dir/download" do
         runtime = Factorix::Container[:runtime]
-        expect(Factorix::Container.config.cache.download.dir).to eq(runtime.factorix_cache_dir / "download")
+        expect(Factorix.config.cache.download.dir).to eq(runtime.factorix_cache_dir / "download")
       end
 
       it "has default ttl of nil" do
-        expect(Factorix::Container.config.cache.download.ttl).to be_nil
+        expect(Factorix.config.cache.download.ttl).to be_nil
       end
 
       it "has default max_file_size of nil" do
-        expect(Factorix::Container.config.cache.download.max_file_size).to be_nil
+        expect(Factorix.config.cache.download.max_file_size).to be_nil
       end
 
       it "can be overridden" do
         custom_path = Pathname("/custom/cache/download")
-        Factorix::Container.config.cache.download.dir = custom_path
-        expect(Factorix::Container.config.cache.download.dir).to eq(custom_path)
+        Factorix.config.cache.download.dir = custom_path
+        expect(Factorix.config.cache.download.dir).to eq(custom_path)
       end
     end
 
     describe "cache.api" do
       it "defaults dir to runtime.factorix_cache_dir/api" do
         runtime = Factorix::Container[:runtime]
-        expect(Factorix::Container.config.cache.api.dir).to eq(runtime.factorix_cache_dir / "api")
+        expect(Factorix.config.cache.api.dir).to eq(runtime.factorix_cache_dir / "api")
       end
 
       it "has default ttl of 3600 seconds" do
-        expect(Factorix::Container.config.cache.api.ttl).to eq(3600)
+        expect(Factorix.config.cache.api.ttl).to eq(3600)
       end
 
       it "has default max_file_size of 10MiB" do
-        expect(Factorix::Container.config.cache.api.max_file_size).to eq(10 * 1024 * 1024)
+        expect(Factorix.config.cache.api.max_file_size).to eq(10 * 1024 * 1024)
       end
     end
 
     describe "log_level" do
       it "defaults to :info" do
-        expect(Factorix::Container.config.log_level).to eq(:info)
+        expect(Factorix.config.log_level).to eq(:info)
       end
 
       it "can be changed" do
-        Factorix::Container.config.log_level = :debug
-        expect(Factorix::Container.config.log_level).to eq(:debug)
+        Factorix.config.log_level = :debug
+        expect(Factorix.config.log_level).to eq(:debug)
       end
     end
 
     describe "http timeouts" do
       it "has default connect_timeout" do
-        expect(Factorix::Container.config.http.connect_timeout).to eq(5)
+        expect(Factorix.config.http.connect_timeout).to eq(5)
       end
 
       it "has default read_timeout" do
-        expect(Factorix::Container.config.http.read_timeout).to eq(30)
+        expect(Factorix.config.http.read_timeout).to eq(30)
       end
 
       it "has default write_timeout" do
-        expect(Factorix::Container.config.http.write_timeout).to eq(30)
+        expect(Factorix.config.http.write_timeout).to eq(30)
       end
 
       it "can be changed" do
-        Factorix::Container.config.http.connect_timeout = 10
-        expect(Factorix::Container.config.http.connect_timeout).to eq(10)
+        Factorix.config.http.connect_timeout = 10
+        expect(Factorix.config.http.connect_timeout).to eq(10)
       end
     end
 
     describe ".configure block" do
       it "allows configuration via block" do
-        Factorix::Container.configure do |config|
+        Factorix.configure do |config|
           config.log_level = :warn
           config.http.connect_timeout = 15
         end
 
-        expect(Factorix::Container.config.log_level).to eq(:warn)
-        expect(Factorix::Container.config.http.connect_timeout).to eq(15)
+        expect(Factorix.config.log_level).to eq(:warn)
+        expect(Factorix.config.http.connect_timeout).to eq(15)
       end
     end
 
     describe "runtime settings" do
       after do
-        Factorix::Container.config.runtime.executable_path = nil
-        Factorix::Container.config.runtime.user_dir = nil
-        Factorix::Container.config.runtime.data_dir = nil
+        Factorix.config.runtime.executable_path = nil
+        Factorix.config.runtime.user_dir = nil
+        Factorix.config.runtime.data_dir = nil
       end
 
       it "converts executable_path string to Pathname" do
-        Factorix::Container.config.runtime.executable_path = "/path/to/factorio"
-        expect(Factorix::Container.config.runtime.executable_path).to eq(Pathname("/path/to/factorio"))
+        Factorix.config.runtime.executable_path = "/path/to/factorio"
+        expect(Factorix.config.runtime.executable_path).to eq(Pathname("/path/to/factorio"))
       end
 
       it "converts user_dir string to Pathname" do
-        Factorix::Container.config.runtime.user_dir = "/path/to/user"
-        expect(Factorix::Container.config.runtime.user_dir).to eq(Pathname("/path/to/user"))
+        Factorix.config.runtime.user_dir = "/path/to/user"
+        expect(Factorix.config.runtime.user_dir).to eq(Pathname("/path/to/user"))
       end
 
       it "converts data_dir string to Pathname" do
-        Factorix::Container.config.runtime.data_dir = "/path/to/data"
-        expect(Factorix::Container.config.runtime.data_dir).to eq(Pathname("/path/to/data"))
+        Factorix.config.runtime.data_dir = "/path/to/data"
+        expect(Factorix.config.runtime.data_dir).to eq(Pathname("/path/to/data"))
       end
     end
   end
@@ -337,22 +337,22 @@ RSpec.describe Factorix::Container do
 
       after do
         config_file.unlink
-        Factorix::Container.config.log_level = :info
-        Factorix::Container.config.http.connect_timeout = 5
+        Factorix.config.log_level = :info
+        Factorix.config.http.connect_timeout = 5
       end
 
       it "loads configuration from file" do
-        Factorix::Container.load_config(config_file.path)
+        Factorix.load_config(Pathname(config_file.path))
 
-        expect(Factorix::Container.config.log_level).to eq(:debug)
-        expect(Factorix::Container.config.http.connect_timeout).to eq(20)
+        expect(Factorix.config.log_level).to eq(:debug)
+        expect(Factorix.config.http.connect_timeout).to eq(20)
       end
     end
 
     context "when explicitly specified config file does not exist" do
-      it "raises Errno::ENOENT" do
+      it "raises ConfigurationError" do
         expect {
-          Factorix::Container.load_config("/nonexistent/config.rb")
+          Factorix.load_config(Pathname("/nonexistent/config.rb"))
         }.to raise_error(Factorix::ConfigurationError, /nonexistent/)
       end
     end
@@ -361,7 +361,7 @@ RSpec.describe Factorix::Container do
       it "tries to load from default path" do
         # Default path likely doesn't exist in test environment
         expect {
-          Factorix::Container.load_config(nil)
+          Factorix.load_config(nil)
         }.not_to raise_error
       end
     end

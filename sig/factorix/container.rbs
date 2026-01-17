@@ -5,82 +5,11 @@
 module Factorix
   class Container
     extend Dry::Core::Container::Mixin
-    extend Dry::Configurable
 
     def self.register: (Symbol, ?memoize: bool) { () -> untyped } -> void
 
     def self.resolve: (Symbol) -> untyped
 
     def self.[]: (Symbol) -> untyped
-
-    def self.config: () -> Config
-
-    def self.configure: () { (Config) -> void } -> void
-
-    def self.load_config: (?String? path) -> void
-
-    class Config
-      def log_level: () -> Symbol
-
-      def log_level=: (Symbol) -> void
-
-      def credential: () -> CredentialConfig
-
-      def runtime: () -> RuntimeConfig
-
-      def http: () -> HttpConfig
-
-      def cache: () -> CacheConfig
-    end
-
-    class CredentialConfig
-      def source: () -> Symbol
-
-      def source=: (Symbol) -> void
-    end
-
-    class RuntimeConfig
-      def executable_path: () -> Pathname?
-
-      def executable_path=: (Pathname | String | nil) -> void
-
-      def user_dir: () -> Pathname?
-
-      def user_dir=: (Pathname | String | nil) -> void
-    end
-
-    class HttpConfig
-      def connect_timeout: () -> Integer
-
-      def connect_timeout=: (Integer) -> void
-
-      def read_timeout: () -> Integer
-
-      def read_timeout=: (Integer) -> void
-
-      def write_timeout: () -> Integer
-
-      def write_timeout=: (Integer) -> void
-    end
-
-    class CacheConfig
-      def download: () -> CacheInstanceConfig
-
-      def api: () -> CacheInstanceConfig
-    end
-
-    class CacheInstanceConfig
-      def dir: () -> Pathname
-
-      def dir=: (Pathname | String) -> void
-
-      def ttl: () -> Integer?
-
-      def ttl=: (Integer?) -> void
-
-      def max_file_size: () -> Integer?
-
-      def max_file_size=: (Integer?) -> void
-    end
   end
 end

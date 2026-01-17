@@ -44,7 +44,7 @@ Core HTTP client using `Net::HTTP`.
 
 **Constraints**:
 - HTTPS only (raises `URLError` for non-HTTPS)
-- Timeouts configured via `Container.config.http`
+- Timeouts configured via `Factorix.config.http`
 
 ### Response
 
@@ -133,7 +133,7 @@ graph TD
 
 ## Configuration
 
-Timeouts are configured via `Container.config.http`:
+Timeouts are configured via `Factorix.config.http`:
 
 - `connect_timeout` - Connection timeout (seconds)
 - `read_timeout` - Read timeout (seconds)

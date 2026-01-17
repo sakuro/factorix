@@ -23,7 +23,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
   let(:runtime) { test_runtime_class.new }
   let(:logger) { instance_double(Dry::Logger::Dispatcher) }
-  let(:config) { Factorix::Container.config }
+  let(:config) { Factorix.config }
 
   before do
     # Inject logger into runtime
@@ -120,7 +120,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.executable_path }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Container\.configure/
+          /Factorix\.configure/
         )
       end
     end
@@ -208,7 +208,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.user_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Container\.configure/
+          /Factorix\.configure/
         )
       end
     end
@@ -296,7 +296,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.data_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Container\.configure/
+          /Factorix\.configure/
         )
       end
     end

@@ -40,7 +40,7 @@ module Factorix
           path = resolve_config_path(explicit_path)
           return unless path
 
-          Container.load_config(path)
+          Factorix.load_config(path)
         end
 
         # Resolves which config path to use

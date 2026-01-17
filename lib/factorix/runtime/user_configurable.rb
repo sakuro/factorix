@@ -8,10 +8,10 @@ module Factorix
     # auto-detected paths via configuration. When a configured path is available,
     # it is used instead of platform-specific auto-detection.
     #
-    # Configuration is done via Container.config:
+    # Configuration is done via Factorix.config:
     #
     # @example Configure paths in config file
-    #   Factorix::Container.configure do |config|
+    #   Factorix.configure do |config|
     #     config.runtime.executable_path = "/opt/factorio/bin/x64/factorio"
     #     config.runtime.user_dir = "/home/user/.factorio"
     #   end
@@ -46,7 +46,7 @@ module Factorix
       def data_dir = configurable_path(:data_dir, example_path: "/path/to/factorio/data") { super }
 
       private def configurable_path(name, example_path:)
-        if (configured = Container.config.runtime.public_send(name))
+        if (configured = Factorix.config.runtime.public_send(name))
           Container[:logger].debug("Using configured #{name}", path: configured.to_s)
           configured
         else
@@ -59,7 +59,7 @@ module Factorix
           #{name} not configured and auto-detection is not supported for this platform.
           Please configure it in #{Container[:runtime].factorix_config_path}:
 
-            Factorix::Container.configure do |config|
+            Factorix.configure do |config|
               config.runtime.#{name} = "#{example_path}"
             end
         MESSAGE
