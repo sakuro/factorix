@@ -35,4 +35,14 @@ module Factorix
 
   Import = Dry::AutoInject(Container)
   public_constant :Import
+
+  # @deprecated Use {Container} instead of Application. Will be removed in v1.0.
+  def self.const_missing(name)
+    if name == :Application
+      warn "[factorix] Factorix::Application is deprecated, use Factorix::Container instead"
+      Container
+    else
+      super
+    end
+  end
 end
