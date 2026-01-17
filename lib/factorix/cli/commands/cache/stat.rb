@@ -42,7 +42,7 @@ module Factorix
             logger.debug("Collecting cache statistics")
 
             @now = Time.now
-            cache_names = Container.config.cache.values.keys
+            cache_names = Factorix.config.cache.values.keys
             stats = cache_names.to_h {|name| [name, collect_stats(name)] }
 
             if json
@@ -53,7 +53,7 @@ module Factorix
           end
 
           private def collect_stats(name)
-            config = Container.config.cache.public_send(name)
+            config = Factorix.config.cache.public_send(name)
             cache_dir = config.dir
 
             entries = scan_entries(cache_dir, config.ttl)

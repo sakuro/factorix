@@ -162,9 +162,9 @@ module Factorix
         Net::HTTP.new(uri.host, uri.port).tap do |http|
           http.use_ssl = uri.scheme == "https"
           http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          http.open_timeout = Container.config.http.connect_timeout
-          http.read_timeout = Container.config.http.read_timeout
-          http.write_timeout = Container.config.http.write_timeout if http.respond_to?(:write_timeout=)
+          http.open_timeout = Factorix.config.http.connect_timeout
+          http.read_timeout = Factorix.config.http.read_timeout
+          http.write_timeout = Factorix.config.http.write_timeout if http.respond_to?(:write_timeout=)
         end
       end
 

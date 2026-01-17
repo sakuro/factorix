@@ -33,7 +33,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
     allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
-    allow(Factorix::Container).to receive(:load_config)
+    allow(Factorix).to receive(:load_config)
     allow(logger).to receive(:backends).and_return([file_backend])
     allow(runtime).to receive(:factorix_config_path).and_return(default_config_path)
     allow(default_config_path).to receive(:exist?).and_return(false)
@@ -57,7 +57,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
 
       it "loads configuration from specified path" do
         command.call(config_path:)
-        expect(Factorix::Container).to have_received(:load_config).with(config_path)
+        expect(Factorix).to have_received(:load_config).with(config_path)
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
 
           command.call
 
-          expect(Factorix::Container).to have_received(:load_config) do |path|
+          expect(Factorix).to have_received(:load_config) do |path|
             expect(path).to be_a(Pathname)
             expect(path.to_s).to eq(config_file.path)
           end
@@ -91,14 +91,14 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
 
           it "loads configuration from default path" do
             command.call
-            expect(Factorix::Container).to have_received(:load_config).with(default_config_path)
+            expect(Factorix).to have_received(:load_config).with(default_config_path)
           end
         end
 
         context "when default config file does not exist" do
           it "does not load configuration" do
             command.call
-            expect(Factorix::Container).not_to have_received(:load_config)
+            expect(Factorix).not_to have_received(:load_config)
           end
         end
       end

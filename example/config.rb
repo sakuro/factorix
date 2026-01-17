@@ -8,7 +8,7 @@
 # Copy this file to: ~/.config/factorix/config.rb
 # Or specify with: factorix --config-path /path/to/config.rb
 
-Factorix::Container.configure do |config|
+Factorix.configure do |config|
   # ============================================================================
   # Runtime Configuration
   # ============================================================================

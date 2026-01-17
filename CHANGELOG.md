@@ -2,11 +2,16 @@
 
 ### Changed
 
-- Rename `Factorix::Application` to `Factorix::Container` to avoid naming conflicts when used as a library (#7)
+- Reorganize configuration and DI container interfaces (#7, #9)
+  - `Factorix::Application` renamed to `Factorix::Container` (DI container only)
+  - Configuration interface (`config`, `configure`, `load_config`) moved to `Factorix` module
+  - Use `Factorix.configure { |c| ... }` instead of `Factorix::Container.configure { |c| ... }`
 
 ### Deprecated
 
-- `Factorix::Application` still works but emits a deprecation warning; will be removed in v1.0
+- `Factorix::Application` still works but emits deprecation warnings; will be removed in v1.0
+  - DI methods (`[]`, `resolve`, `register`) delegate to `Factorix::Container`
+  - Configuration methods (`config`, `configure`) delegate to `Factorix`
 
 ## [0.5.1] - 2026-01-13
 
