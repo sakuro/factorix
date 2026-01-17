@@ -40,8 +40,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
   end
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
     allow(settings).to receive(:save)
     allow(runtime).to receive(:mod_settings_path).and_return(Pathname("/default/mod-settings.dat"))
     allow(Factorix::MODSettings).to receive(:new).and_return(settings)

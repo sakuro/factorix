@@ -5,20 +5,20 @@ require "dry/core"
 require "dry/logger"
 
 module Factorix
-  # Application container and configuration
+  # DI container and configuration
   #
   # Provides dependency injection container and configuration management
   # using dry-core's Container and dry-configurable.
   #
-  # @example Configure the application
-  #   Factorix::Application.configure do |config|
+  # @example Configure the container
+  #   Factorix::Container.configure do |config|
   #     config.log_level = :debug
   #     config.http.connect_timeout = 10
   #   end
   #
   # @example Resolve dependencies
-  #   runtime = Factorix::Application[:runtime]
-  class Application
+  #   runtime = Factorix::Container[:runtime]
+  class Container
     extend Dry::Core::Container::Mixin
     extend Dry::Configurable
 

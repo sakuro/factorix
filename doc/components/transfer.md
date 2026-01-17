@@ -154,7 +154,7 @@ CombinedIO.new(header_io, file_io, footer_io)
 ### Download with Progress
 
 ```ruby
-downloader = Factorix::Application[:downloader]
+downloader = Factorix::Container[:downloader]
 
 handler = ->(event) { puts "#{event[:current_size]} / #{event[:total_size]}" }
 downloader.subscribe("download.progress", &handler)
@@ -169,7 +169,7 @@ downloader.download(
 ### Upload with Additional Fields
 
 ```ruby
-uploader = Factorix::Application[:uploader]
+uploader = Factorix::Container[:uploader]
 
 uploader.upload(
   "https://mods.factorio.com/upload/...",

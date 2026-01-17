@@ -212,7 +212,7 @@ Forwards all arguments to `MODPortalAPI#get_mods` and converts results to `API::
 
 **Usage**:
 ```ruby
-portal = Factorix::Application[:portal]
+portal = Factorix::Container[:portal]
 
 # List all mods
 portal.list_mods

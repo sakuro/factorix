@@ -6,7 +6,7 @@ Low-level HTTP infrastructure for all network communication.
 
 ```mermaid
 graph TD
-    subgraph Application Container
+    subgraph Container Container
         api[api_http_client]
         download[download_http_client]
         upload[upload_http_client]
@@ -44,7 +44,7 @@ Core HTTP client using `Net::HTTP`.
 
 **Constraints**:
 - HTTPS only (raises `URLError` for non-HTTPS)
-- Timeouts configured via `Application.config.http`
+- Timeouts configured via `Container.config.http`
 
 ### Response
 
@@ -108,7 +108,7 @@ Adds caching for GET requests. See [`cache.md`](cache.md) for detailed cache arc
 
 ## Client Variants
 
-Registered in `Application` container with different decorator stacks:
+Registered in `Container` container with different decorator stacks:
 
 | Client | Decorators | Use Case |
 |--------|------------|----------|
@@ -133,7 +133,7 @@ graph TD
 
 ## Configuration
 
-Timeouts are configured via `Application.config.http`:
+Timeouts are configured via `Container.config.http`:
 
 - `connect_timeout` - Connection timeout (seconds)
 - `read_timeout` - Read timeout (seconds)
@@ -144,7 +144,7 @@ Timeouts are configured via `Application.config.http`:
 ### Direct Client Usage
 
 ```ruby
-client = Factorix::Application[:api_http_client]
+client = Factorix::Container[:api_http_client]
 
 # GET request
 response = client.get(URI("https://mods.factorio.com/api/mods"))
@@ -161,7 +161,7 @@ response = client.post(
 ### Streaming Download
 
 ```ruby
-client = Factorix::Application[:download_http_client]
+client = Factorix::Container[:download_http_client]
 
 client.get(download_uri) do |response|
   File.open(output_path, "wb") do |file|
@@ -175,5 +175,5 @@ end
 ## Related Documentation
 
 - [API and Portal Layers](api-portal.md)
-- [Application Container](application.md)
+- [Container Container](application.md)
 - [Cache System](cache.md)

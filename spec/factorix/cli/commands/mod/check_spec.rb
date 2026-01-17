@@ -20,7 +20,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
   let(:validation_result) { instance_double(Factorix::Dependency::ValidationResult) }
 
   before do
-    allow(Factorix::Application).to receive(:load_config)
+    allow(Factorix::Container).to receive(:load_config)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
     allow(Factorix::Dependency::Graph::Builder).to receive(:build).and_return(graph)

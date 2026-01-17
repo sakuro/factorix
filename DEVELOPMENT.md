@@ -278,7 +278,7 @@ bundle exec exe/factorix path
 
 **Accessing log paths programmatically:**
 ```ruby
-runtime = Factorix::Application[:runtime]
+runtime = Factorix::Container[:runtime]
 runtime.factorix_log_path    # Factorix log file
 runtime.current_log_path     # Factorio current log
 runtime.previous_log_path    # Factorio previous log

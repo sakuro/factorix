@@ -39,7 +39,7 @@ module Factorix
       elsif username_env || token_env
         raise CredentialError, "Both #{ENV_USERNAME} and #{ENV_TOKEN} must be set (or neither)"
       else
-        runtime = Application[:runtime]
+        runtime = Container[:runtime]
         from_player_data(runtime:)
       end
     end
@@ -49,7 +49,7 @@ module Factorix
     # @return [ServiceCredential] new instance with credentials from environment
     # @raise [CredentialError] if username or token is not set or empty
     def self.from_env
-      logger = Application["logger"]
+      logger = Container["logger"]
       logger.debug "Loading service credentials from environment"
 
       username = ENV.fetch(ENV_USERNAME, nil)
@@ -83,7 +83,7 @@ module Factorix
     # @raise [Errno::ENOENT] if player-data.json does not exist
     # @raise [CredentialError] if username or token is missing in player-data.json
     def self.from_player_data(runtime:)
-      logger = Application["logger"]
+      logger = Container["logger"]
       logger.debug "Loading service credentials from player-data.json"
 
       player_data_path = runtime.player_data_path

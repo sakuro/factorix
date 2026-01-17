@@ -71,12 +71,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   end
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
 
-    allow(Factorix::Application).to receive(:load_config)
+    allow(Factorix::Container).to receive(:load_config)
 
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive_messages(save: nil, exist?: true, enabled?: true, remove: nil, add: nil)

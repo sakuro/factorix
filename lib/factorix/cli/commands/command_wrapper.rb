@@ -23,14 +23,14 @@ module Factorix
           super
         rescue Error => e
           # Expected errors (validation failures, missing dependencies, etc.)
-          log = Application[:logger]
+          log = Container[:logger]
           log.warn(e.message)
           log.debug(e)
           say "Error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
         rescue => e
           # Unexpected errors (bugs, system failures, etc.)
-          log = Application[:logger]
+          log = Container[:logger]
           log.error(e)
           say "Unexpected error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
@@ -40,7 +40,7 @@ module Factorix
           path = resolve_config_path(explicit_path)
           return unless path
 
-          Application.load_config(path)
+          Container.load_config(path)
         end
 
         # Resolves which config path to use
@@ -50,14 +50,14 @@ module Factorix
           return Pathname(explicit_path) if explicit_path
           return Pathname(ENV.fetch("FACTORIX_CONFIG")) if ENV["FACTORIX_CONFIG"]
 
-          default_path = Application[:runtime].factorix_config_path
+          default_path = Container[:runtime].factorix_config_path
           default_path.exist? ? default_path : nil
         end
 
         # Sets the application logger's level
         # @param level [String] log level (debug, info, warn, error, fatal)
         private def log_level!(level)
-          logger = Application[:logger]
+          logger = Container[:logger]
           level_constant = Logger.const_get(level.upcase)
 
           # Change only the File backend (first backend) level

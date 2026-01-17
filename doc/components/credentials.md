@@ -116,5 +116,5 @@ Implementation: `Factorix::HTTP::Client#mask_credentials`
 ## Related Documentation
 
 - [API/Portal Layer](api-portal.md)
-- [Application Configuration](application.md)
+- [Container Configuration](container.md)
 - [Technology Stack](../technology-stack.md)

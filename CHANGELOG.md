@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+### Changed
+
+- Rename `Factorix::Application` to `Factorix::Container` to avoid naming conflicts when used as a library (#7)
+
+### Deprecated
+
+- `Factorix::Application` still works but emits a deprecation warning; will be removed in v1.0
+
 ## [0.5.1] - 2026-01-13
 
 ### Fixed

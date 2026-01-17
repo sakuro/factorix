@@ -36,13 +36,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
   end
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
 
     allow(runtime).to receive_messages(mod_list_path:, mod_dir:, data_dir:)
 
-    allow(Factorix::Application).to receive(:load_config)
+    allow(Factorix::Container).to receive(:load_config)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:remove)

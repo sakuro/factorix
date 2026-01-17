@@ -9,8 +9,8 @@ RSpec.describe Factorix::API::MODDownloadAPI do
 
   before do
     # Stub service_credential in Application container for lazy loading
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:service_credential).and_return(service_credential)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
   end
 
   describe "#download" do

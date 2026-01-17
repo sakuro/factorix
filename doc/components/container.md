@@ -1,6 +1,6 @@
-# Application Configuration and DI
+# Container Configuration and DI
 
-Component that manages dependency management and configuration for the entire application.
+Component that manages dependency injection and configuration for the library.
 
 ## Structure
 
@@ -68,7 +68,7 @@ Configuration file is resolved in the following order:
 ### Configuration File Format (Ruby DSL)
 
 ```ruby
-Factorix::Application.configure do |config|
+Factorix::Container.configure do |config|
   config.cache_dir = "/custom/cache/path"
   config.log_level = :debug
   config.http.open_timeout = 120
@@ -78,7 +78,7 @@ end
 ## Dependency Injection
 
 ```ruby
-Import = Dry::AutoInject(Factorix::Application)
+Import = Dry::AutoInject(Factorix::Container)
 
 class SomeClass
   include Import[:logger, cache: :api_cache]

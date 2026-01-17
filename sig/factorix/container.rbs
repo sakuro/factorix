@@ -3,7 +3,7 @@
 #       Only public interfaces should be documented here.
 
 module Factorix
-  class Application
+  class Container
     extend Dry::Core::Container::Mixin
     extend Dry::Configurable
 

@@ -26,8 +26,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
     base_dir.mkpath
     (base_dir / "info.json").write(JSON.generate(name: "base", version: "2.0.28", title: "Base", author: "Wube"))
 
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
   end
 
   after do

@@ -47,8 +47,8 @@ module Factorix
     # @return [InfoJSON] parsed info.json from zip
     # @raise [FileFormatError] if zip is invalid or info.json not found
     def self.from_zip(zip_path)
-      cache = Application.resolve(:info_json_cache)
-      logger = Application.resolve(:logger)
+      cache = Container.resolve(:info_json_cache)
+      logger = Container.resolve(:logger)
       cache_key = cache.key_for(zip_path.to_s)
 
       if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))

@@ -208,7 +208,7 @@ module Factorix
         return @api_credential if defined?(@api_credential)
 
         @api_credential_mutex.synchronize do
-          @api_credential ||= Application[:api_credential]
+          @api_credential ||= Container[:api_credential]
         end
       end
 

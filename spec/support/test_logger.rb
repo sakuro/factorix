@@ -25,7 +25,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     config.log_stream = StringIO.new
-    Factorix::Application.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s %<payload>s"))
+    Factorix::Container.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s %<payload>s"))
   end
 
   config.include_context "with testing log stream"
