@@ -8,7 +8,7 @@ RSpec.describe Factorix::HTTP::Client do
 
   before do
     # Configure stub application config
-    allow(Factorix::Application.config.http).to receive_messages(
+    allow(Factorix::Container.config.http).to receive_messages(
       connect_timeout: 10,
       read_timeout: 30,
       write_timeout: 30

@@ -22,7 +22,7 @@ module Factorix
     # @return [APICredential] new instance with API key from environment
     # @raise [CredentialError] if API key is not set in environment
     def self.load
-      logger = Application["logger"]
+      logger = Container["logger"]
       logger.debug "Loading API credentials from environment"
 
       api_key = ENV.fetch(ENV_API_KEY, nil)

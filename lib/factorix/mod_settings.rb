@@ -108,7 +108,7 @@ module Factorix
     #
     # @param path [Pathname] Path to the MOD settings file (default: runtime.mod_settings_path)
     # @return [MODSettings] New MODSettings instance
-    def self.load(path=Application[:runtime].mod_settings_path)
+    def self.load(path=Container[:runtime].mod_settings_path)
       path.open("rb") do |io|
         game_version, sections = load_settings_from_io(io)
         new(game_version, sections)
@@ -244,7 +244,7 @@ module Factorix
     #
     # @param path [Pathname] Path to save the MOD settings file (default: runtime.mod_settings_path)
     # @return [void]
-    def save(path=Application[:runtime].mod_settings_path)
+    def save(path=Container[:runtime].mod_settings_path)
       path.open("wb") do |file|
         serializer = SerDes::Serializer.new(file)
 

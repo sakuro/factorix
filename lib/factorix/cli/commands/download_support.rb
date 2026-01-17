@@ -97,7 +97,7 @@ module Factorix
 
           futures = targets.map {|target|
             Concurrent::Future.execute(executor: pool) do
-              thread_portal = Application[:portal]
+              thread_portal = Container[:portal]
               thread_downloader = thread_portal.mod_download_api.downloader
 
               presenter = multi_presenter.register(

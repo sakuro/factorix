@@ -65,7 +65,7 @@ $EDITOR ~/.config/factorix/config.rb
 
 **Example configuration:**
 ```ruby
-Factorix::Application.configure do |config|
+Factorix::Container.configure do |config|
   config.runtime.executable_path = "/Applications/Factorio.app/Contents/MacOS/factorio"
   config.runtime.user_dir = "#{Dir.home}/Library/Application Support/factorio"
   config.runtime.data_dir = "/Applications/Factorio.app/Contents/data"

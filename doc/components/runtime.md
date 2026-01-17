@@ -74,7 +74,7 @@ The `UserConfigurable` module is prepended to `Runtime::Base` and all its subcla
 Users can explicitly configure paths in `~/.config/factorix/config.rb` (or `$XDG_CONFIG_HOME/factorix/config.rb`):
 
 ```ruby
-Factorix::Application.configure do |config|
+Factorix::Container.configure do |config|
   config.runtime.executable_path = "/path/to/factorio"
   config.runtime.user_dir = "/path/to/factorio/user/dir"
   config.runtime.data_dir = "/path/to/factorio/data"

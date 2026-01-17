@@ -95,7 +95,7 @@ module Factorix
           # @return [Array<Symbol>] resolved cache names
           # @raise [InvalidArgumentError] if unknown cache name specified
           private def resolve_cache_names(caches)
-            all_caches = Application.config.cache.values.keys
+            all_caches = Container.config.cache.values.keys
 
             return all_caches if caches.nil? || caches.empty?
 
@@ -114,7 +114,7 @@ module Factorix
           # @param expired [Boolean] remove expired entries only
           # @return [Hash] eviction result with :count and :size
           private def evict_cache(name, all:, expired:)
-            config = Application.config.cache.public_send(name)
+            config = Container.config.cache.public_send(name)
             cache_dir = config.dir
             ttl = config.ttl
 

@@ -8,8 +8,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
   let(:tmpdir) { Dir.mktmpdir }
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
   end
 
   after do

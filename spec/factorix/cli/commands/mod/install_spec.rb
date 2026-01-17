@@ -55,12 +55,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   end
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
 
-    allow(Factorix::Application).to receive(:load_config)
+    allow(Factorix::Container).to receive(:load_config)
 
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
@@ -75,7 +75,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
     allow(portal).to receive(:download_mod)
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
 
     downloader = instance_double(Factorix::Transfer::Downloader)
     allow(downloader).to receive(:subscribe)

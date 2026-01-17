@@ -99,7 +99,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
   end
 
   before do
-    allow(Factorix::Application).to receive(:load_config)
+    allow(Factorix::Container).to receive(:load_config)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:each_mod)
     presenter = instance_double(Factorix::Progress::Presenter, start: nil, update: nil, finish: nil)

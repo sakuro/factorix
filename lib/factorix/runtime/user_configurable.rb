@@ -8,10 +8,10 @@ module Factorix
     # auto-detected paths via configuration. When a configured path is available,
     # it is used instead of platform-specific auto-detection.
     #
-    # Configuration is done via Application.config:
+    # Configuration is done via Container.config:
     #
     # @example Configure paths in config file
-    #   Factorix::Application.configure do |config|
+    #   Factorix::Container.configure do |config|
     #     config.runtime.executable_path = "/opt/factorio/bin/x64/factorio"
     #     config.runtime.user_dir = "/home/user/.factorio"
     #   end
@@ -46,20 +46,20 @@ module Factorix
       def data_dir = configurable_path(:data_dir, example_path: "/path/to/factorio/data") { super }
 
       private def configurable_path(name, example_path:)
-        if (configured = Application.config.runtime.public_send(name))
-          Application[:logger].debug("Using configured #{name}", path: configured.to_s)
+        if (configured = Container.config.runtime.public_send(name))
+          Container[:logger].debug("Using configured #{name}", path: configured.to_s)
           configured
         else
-          Application[:logger].debug("No configuration for #{name}, using auto-detection")
-          yield.tap {|path| Application[:logger].debug("Auto-detected #{name}", path: path.to_s) }
+          Container[:logger].debug("No configuration for #{name}, using auto-detection")
+          yield.tap {|path| Container[:logger].debug("Auto-detected #{name}", path: path.to_s) }
         end
       rescue NotImplementedError => e
-        Application[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
+        Container[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
         raise ConfigurationError, <<~MESSAGE
           #{name} not configured and auto-detection is not supported for this platform.
-          Please configure it in #{Application[:runtime].factorix_config_path}:
+          Please configure it in #{Container[:runtime].factorix_config_path}:
 
-            Factorix::Application.configure do |config|
+            Factorix::Container.configure do |config|
               config.runtime.#{name} = "#{example_path}"
             end
         MESSAGE

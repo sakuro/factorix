@@ -51,7 +51,7 @@ module Factorix
         return @service_credential if defined?(@service_credential)
 
         @service_credential_mutex.synchronize do
-          @service_credential ||= Application[:service_credential]
+          @service_credential ||= Container[:service_credential]
         end
       end
 

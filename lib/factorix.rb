@@ -33,6 +33,6 @@ module Factorix
   )
   loader.setup
 
-  Import = Dry::AutoInject(Application)
+  Import = Dry::AutoInject(Container)
   public_constant :Import
 end

@@ -7,8 +7,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
   let(:command) { Factorix::CLI::Commands::MOD::Edit.new(portal:) }
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
     allow(portal).to receive(:edit_mod)
   end
 

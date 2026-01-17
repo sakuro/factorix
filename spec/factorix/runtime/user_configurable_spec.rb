@@ -23,11 +23,11 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
   let(:runtime) { test_runtime_class.new }
   let(:logger) { instance_double(Dry::Logger::Dispatcher) }
-  let(:config) { Factorix::Application.config }
+  let(:config) { Factorix::Container.config }
 
   before do
     # Inject logger into runtime
-    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
     allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
 
@@ -88,13 +88,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
+        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
           )
         )
-        allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do
@@ -120,7 +120,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.executable_path }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Application\.configure/
+          /Factorix::Container\.configure/
         )
       end
     end
@@ -176,13 +176,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
+        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
           )
         )
-        allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do
@@ -208,7 +208,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.user_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Application\.configure/
+          /Factorix::Container\.configure/
         )
       end
     end
@@ -264,13 +264,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Application).to receive(:[]).with(:runtime).and_return(
+        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
           )
         )
-        allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do
@@ -296,7 +296,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.data_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix::Application\.configure/
+          /Factorix::Container\.configure/
         )
       end
     end

@@ -45,9 +45,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   end
 
   before do
-    allow(Factorix::Application).to receive(:[]).and_call_original
-    allow(Factorix::Application).to receive(:[]).with(:portal).and_return(portal)
-    allow(Factorix::Application).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix::Container).to receive(:[]).and_call_original
+    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
     allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(portal).to receive(:download_mod)
     allow(downloader).to receive(:subscribe)

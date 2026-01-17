@@ -23,7 +23,7 @@ The following options are available for all commands:
 |----------|-------------|
 | `FACTORIX_CONFIG` | Path to configuration file. Overrides the default location. |
 
-See [Application Configuration](application.md) for configuration file loading priority.
+See [Container Configuration](container.md) for configuration file loading priority.
 
 ## Command List
 
