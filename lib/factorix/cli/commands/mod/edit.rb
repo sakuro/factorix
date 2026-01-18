@@ -19,16 +19,16 @@ module Factorix
             "some-mod --deprecated                # Mark as deprecated"
           ]
 
-          argument :mod_name, type: :string, required: true, desc: "MOD name"
-          option :description, type: :string, desc: "Markdown description"
-          option :summary, type: :string, desc: "Brief description"
-          option :title, type: :string, desc: "MOD title"
-          option :category, type: :string, desc: "MOD category"
+          argument :mod_name, required: true, desc: "MOD name"
+          option :description, desc: "Markdown description"
+          option :summary, desc: "Brief description"
+          option :title, desc: "MOD title"
+          option :category, desc: "MOD category"
           option :tags, type: :array, desc: "Array of tags"
-          option :license, type: :string, desc: "License identifier"
-          option :homepage, type: :string, desc: "Homepage URL"
-          option :source_url, type: :string, desc: "Repository URL"
-          option :faq, type: :string, desc: "FAQ text"
+          option :license, desc: "License identifier"
+          option :homepage, desc: "Homepage URL"
+          option :source_url, desc: "Repository URL"
+          option :faq, desc: "FAQ text"
           option :deprecated, type: :boolean, desc: "Deprecation flag"
 
           # Execute the edit command

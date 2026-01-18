@@ -29,11 +29,11 @@ module Factorix
           argument :mod_names, type: :array, required: false, default: [], desc: "MOD names to search"
 
           option :hide_deprecated, type: :boolean, default: true, desc: "Hide deprecated MOD(s)"
-          option :page, type: :integer, default: 1, desc: "Page number"
-          option :page_size, type: :integer, default: 25, desc: "Results per page (max 500)"
-          option :sort, type: :string, values: %w[name created_at updated_at], desc: "Sort field"
-          option :sort_order, type: :string, values: %w[asc desc], desc: "Sort order"
-          option :version, type: :string, desc: "Filter by Factorio version (default: installed version)"
+          option :page, default: "1", desc: "Page number"
+          option :page_size, default: "25", desc: "Results per page (max 500)"
+          option :sort, values: %w[name created_at updated_at], desc: "Sort field"
+          option :sort_order, values: %w[asc desc], desc: "Sort order"
+          option :version, desc: "Filter by Factorio version (default: installed version)"
           option :json, type: :flag, default: false, desc: "Output in JSON format"
 
           # Execute the search command
@@ -47,7 +47,9 @@ module Factorix
           # @param version [String, nil] Factorio version filter
           # @param json [Boolean] Output in JSON format
           # @return [void]
-          def call(mod_names: [], hide_deprecated: true, page: 1, page_size: 25, sort: nil, sort_order: nil, version: nil, json: false, **)
+          def call(mod_names: [], hide_deprecated: true, page: "1", page_size: "25", sort: nil, sort_order: nil, version: nil, json: false, **)
+            page = Integer(page)
+            page_size = Integer(page_size)
             version ||= default_factorio_version
 
             mods = portal.list_mods(*mod_names, hide_deprecated: hide_deprecated || nil, page:, page_size:, sort:, sort_order:, version:)

@@ -18,11 +18,11 @@ module Factorix
             "my-mod_1.0.0.zip --category automation     # Upload with category"
           ]
 
-          argument :file, type: :string, required: true, desc: "Path to MOD zip file"
-          option :description, type: :string, desc: "Markdown description"
-          option :category, type: :string, desc: "MOD category"
-          option :license, type: :string, desc: "License identifier"
-          option :source_url, type: :string, desc: "Repository URL"
+          argument :file, required: true, desc: "Path to MOD zip file"
+          option :description, desc: "Markdown description"
+          option :category, desc: "MOD category"
+          option :license, desc: "License identifier"
+          option :source_url, desc: "Repository URL"
 
           # Execute the upload command
           #

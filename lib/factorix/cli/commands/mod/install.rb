@@ -34,14 +34,15 @@ module Factorix
           ]
 
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
-          option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
+          option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
 
           # Execute the install command
           #
           # @param mod_specs [Array<String>] MOD specifications
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
-          def call(mod_specs:, jobs: 4, **)
+          def call(mod_specs:, jobs: "4", **)
+            jobs = Integer(jobs)
             # Load current state (without validation to allow fixing issues)
             mod_list = MODList.load
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)

@@ -22,8 +22,8 @@ module Factorix
               "/path/to/mod-settings.dat -o out.json   # Dump specific file"
             ]
 
-            argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file"
-            option :output, type: :string, aliases: ["-o"], desc: "Output file path"
+            argument :settings_file, required: false, desc: "Path to mod-settings.dat file"
+            option :output, aliases: ["-o"], desc: "Output file path"
 
             # Execute the dump command
             #

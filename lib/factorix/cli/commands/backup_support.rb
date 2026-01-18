@@ -15,7 +15,7 @@ module Factorix
         # @param base [Class] the class prepending this module
         def self.prepended(base)
           base.class_eval do
-            option :backup_extension, type: :string, default: ".bak", desc: "Backup file extension"
+            option :backup_extension, default: ".bak", desc: "Backup file extension"
           end
         end
 

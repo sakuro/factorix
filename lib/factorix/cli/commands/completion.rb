@@ -28,7 +28,6 @@ module Factorix
         desc "Generate shell completion script"
 
         argument :shell,
-          type: :string,
           required: false,
           values: [nil] + SUPPORTED_SHELLS.keys,
           desc: "Shell type. Defaults to current shell from $SHELL"

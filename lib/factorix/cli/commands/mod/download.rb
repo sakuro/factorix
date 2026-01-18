@@ -29,8 +29,8 @@ module Factorix
           ]
 
           argument :mod_specs, type: :array, required: true, desc: "MOD specifications (name@version or name@latest or name)"
-          option :directory, type: :string, aliases: ["-d"], default: ".", desc: "Download directory"
-          option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
+          option :directory, aliases: ["-d"], default: ".", desc: "Download directory"
+          option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
           option :recursive, type: :flag, aliases: ["-r"], default: false, desc: "Include required dependencies recursively"
 
           # Execute the download command
@@ -40,7 +40,8 @@ module Factorix
           # @param jobs [Integer] Number of parallel downloads
           # @param recursive [Boolean] Include required dependencies recursively
           # @return [void]
-          def call(mod_specs:, directory: ".", jobs: 4, recursive: false, **)
+          def call(mod_specs:, directory: ".", jobs: "4", recursive: false, **)
+            jobs = Integer(jobs)
             download_dir = Pathname(directory).expand_path
 
             raise DirectoryNotFoundError, "Download directory does not exist: #{download_dir}" unless download_dir.exist?

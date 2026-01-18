@@ -32,14 +32,15 @@ module Factorix
           ]
 
           argument :mod_names, type: :array, required: false, desc: "MOD names to update (all if not specified)"
-          option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
+          option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
 
           # Execute the update command
           #
           # @param mod_names [Array<String>] MOD names to update
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
-          def call(mod_names: [], jobs: 4, **)
+          def call(mod_names: [], jobs: "4", **)
+            jobs = Integer(jobs)
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)

@@ -31,15 +31,16 @@ module Factorix
             "-j 8 save.zip      # Use 8 parallel downloads"
           ]
 
-          argument :save_file, type: :string, required: true, desc: "Path to Factorio save file (.zip)"
-          option :jobs, type: :integer, aliases: ["-j"], default: 4, desc: "Number of parallel downloads"
+          argument :save_file, required: true, desc: "Path to Factorio save file (.zip)"
+          option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
 
           # Execute the sync command
           #
           # @param save_file [String] Path to save file
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
-          def call(save_file:, jobs: 4, **)
+          def call(save_file:, jobs: "4", **)
+            jobs = Integer(jobs)
             # Load save file
             say "Loading save file: #{save_file}", prefix: :info
             save_data = SaveFile.load(Pathname(save_file))
