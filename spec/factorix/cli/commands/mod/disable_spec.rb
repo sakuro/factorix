@@ -47,12 +47,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables the MOD" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:disable).with(mod_a)
       end
 
       it "saves the mod-list.json" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:save).with(no_args)
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables both the MOD and its dependents" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:disable).with(mod_a)
         expect(mod_list).to have_received(:disable).with(mod_b)
       end
@@ -89,7 +89,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "does not disable the MOD again" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).not_to have_received(:disable)
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "raises an error" do
-        expect { command.call(mod_names: ["base"], yes: true) }
+        expect { run_command(command, %w[base --yes]) }
           .to raise_error(Factorix::Error, /Cannot disable base MOD/)
       end
     end
@@ -122,7 +122,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
         end
 
         it "disables the MOD" do
-          command.call(mod_names: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).to have_received(:disable).with(mod_a)
         end
       end
@@ -133,7 +133,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
         end
 
         it "does not disable the MOD" do
-          command.call(mod_names: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).not_to have_received(:disable)
         end
       end
@@ -159,7 +159,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "raises GameRunningError" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end
@@ -179,26 +179,26 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
       end
 
       it "disables all enabled MODs except base" do
-        command.call(all: true, yes: true)
+        run_command(command, %w[--all --yes])
         expect(mod_list).to have_received(:disable).with(mod_a)
         expect(mod_list).to have_received(:disable).with(expansion_mod)
         expect(mod_list).not_to have_received(:disable).with(base_mod)
       end
 
       it "does not disable already disabled MODs" do
-        command.call(all: true, yes: true)
+        run_command(command, %w[--all --yes])
         expect(mod_list).not_to have_received(:disable).with(mod_b)
       end
 
       it "raises error when used with MOD names" do
-        expect { command.call(mod_names: ["mod-a"], all: true, yes: true) }
+        expect { run_command(command, %w[mod-a --all --yes]) }
           .to raise_error(Factorix::Error, /Cannot specify MOD names with --all option/)
       end
     end
 
     context "without MOD names or --all option" do
       it "raises error" do
-        expect { command.call(yes: true) }
+        expect { run_command(command, %w[--yes]) }
           .to raise_error(Factorix::Error, /Must specify MOD names or use --all option/)
       end
     end

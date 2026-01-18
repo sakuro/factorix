@@ -12,19 +12,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
 
   describe "#call" do
     it "edits MOD images with multiple IDs" do
-      command.call(mod_name: "test-mod", image_ids: %w[abc123 def456 ghi789])
+      run_command(command, %w[test-mod abc123 def456 ghi789])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123 def456 ghi789])
     end
 
     it "edits MOD images with single ID" do
-      command.call(mod_name: "test-mod", image_ids: %w[abc123])
+      run_command(command, %w[test-mod abc123])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", %w[abc123])
     end
 
     it "edits MOD images with empty array" do
-      command.call(mod_name: "test-mod", image_ids: [])
+      run_command(command, %w[test-mod])
 
       expect(portal).to have_received(:edit_mod_images).with("test-mod", [])
     end
@@ -38,7 +38,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
 
       it "raises HTTPClientError" do
         expect {
-          command.call(mod_name: "test-mod", image_ids: %w[abc123])
+          run_command(command, %w[test-mod abc123])
         }.to raise_error(Factorix::HTTPClientError, /400 Bad Request/)
       end
     end

@@ -12,14 +12,13 @@ module CLITestHelper
   # Run a CLI command with captured output
   #
   # @param command_or_class [Dry::CLI::Command, Class] command instance or class
-  # @param args [Array<String>] positional arguments
-  # @param kwargs [Hash] keyword arguments (converted to CLI options)
+  # @param arguments [Array<String>] CLI arguments (e.g., %w[mod-a --yes])
+  # @param rescue_exception [Boolean] if true, captures exception instead of re-raising
   # @return [CLIResult] captured stdout, stderr, and any raised exception
   # @raise [Exception] re-raises the exception after capturing output (unless rescue_exception: true)
-  def run_command(command_or_class, *args, rescue_exception: false, **kwargs)
+  def run_command(command_or_class, arguments=[], rescue_exception: false)
     stdout = StringIO.new
     stderr = StringIO.new
-    arguments = build_arguments(args, kwargs)
     exception = nil
 
     begin
@@ -30,18 +29,6 @@ module CLITestHelper
     end
 
     CLIResult.new(stdout.string, stderr.string, exception)
-  end
-
-  private def build_arguments(args, kwargs)
-    result = args.map(&:to_s)
-    kwargs.each do |key, value|
-      case value
-      when true then result << "--#{key.to_s.tr("_", "-")}"
-      when false then next
-      else result << "--#{key.to_s.tr("_", "-")}=#{value}"
-      end
-    end
-    result
   end
 end
 

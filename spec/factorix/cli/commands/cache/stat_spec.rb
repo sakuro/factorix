@@ -31,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "outputs statistics in JSON format" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json.keys).to contain_exactly(:download, :api, :info_json)
@@ -49,7 +49,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "counts entries correctly" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:entries][:total]).to eq(2)
@@ -57,7 +57,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "calculates size statistics" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:size][:total]).to eq(35) # 14 + 21 bytes
@@ -82,7 +82,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "distinguishes valid and expired entries" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         # api cache has TTL of 3600 seconds (1 hour)
@@ -105,14 +105,14 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "counts stale locks" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:stale_locks]).to eq(1)
       end
 
       it "does not count lock files as cache entries" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
 
         json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:entries][:total]).to eq(0)

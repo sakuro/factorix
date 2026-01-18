@@ -40,7 +40,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "waits for the game to start and finish" do
-        run_command(command, wait: true)
+        run_command(command, %w[--wait])
 
         expect(command).to have_received(:wait_while).twice
       end
@@ -52,7 +52,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "does not wait for the game" do
-        run_command(command, wait: false)
+        run_command(command)
 
         expect(command).not_to have_received(:wait_while)
       end
@@ -64,7 +64,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        run_command(command, "--dump-data")
+        run_command(command, %w[-- --dump-data])
 
         expect(runtime).to have_received(:launch).with("--dump-data", async: false)
       end
@@ -76,7 +76,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "does not wait for the game" do
-        run_command(command, "--dump-data", wait: true)
+        run_command(command, %w[--wait -- --dump-data])
 
         expect(command).not_to have_received(:wait_while)
       end
@@ -88,7 +88,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        run_command(command, "--help")
+        run_command(command, %w[-- --help])
 
         expect(runtime).to have_received(:launch).with("--help", async: false)
       end
@@ -100,7 +100,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        run_command(command, "--version")
+        run_command(command, %w[-- --version])
 
         expect(runtime).to have_received(:launch).with("--version", async: false)
       end
@@ -112,7 +112,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "passes the args to the runtime with async: true" do
-        run_command(command, "--start-server", "save.zip")
+        run_command(command, %w[-- --start-server save.zip])
 
         expect(runtime).to have_received(:launch).with("--start-server", "save.zip", async: true)
       end

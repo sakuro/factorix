@@ -39,7 +39,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
     context "with --json option" do
       it "outputs all paths as JSON" do
-        result = run_command(command, json: true)
+        result = run_command(command, %w[--json])
 
         json = JSON.parse(result.stdout)
         expect(json).to include(

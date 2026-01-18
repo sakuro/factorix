@@ -66,82 +66,82 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
 
   describe "#call" do
     it "fetches MOD info from portal" do
-      run_command(command, "test-mod")
+      run_command(command, %w[test-mod])
       expect(portal).to have_received(:get_mod_full).with("test-mod")
     end
 
     it "raises BundledMODError for base MOD" do
-      expect { run_command(command, "base") }.to raise_error(Factorix::BundledMODError, "Cannot show base MOD")
+      expect { run_command(command, %w[base]) }.to raise_error(Factorix::BundledMODError, "Cannot show base MOD")
     end
 
     it "raises BundledMODError for expansion MODs" do
       %w[space-age quality elevated-rails].each do |expansion|
-        expect { run_command(command, expansion) }.to raise_error(Factorix::BundledMODError, /Cannot show expansion MOD/)
+        expect { run_command(command, [expansion]) }.to raise_error(Factorix::BundledMODError, /Cannot show expansion MOD/)
       end
     end
 
     it "displays MOD title" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("Test MOD Title")
     end
 
     it "displays MOD summary" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("A test MOD summary")
     end
 
     it "displays version" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("1.2.3")
     end
 
     it "displays author" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("test-author")
     end
 
     it "displays category" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("Utilities")
     end
 
     it "displays downloads count" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("12345")
     end
 
     it "displays license from detail" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("MIT")
     end
 
     it "displays MOD portal link" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("https://mods.factorio.com/mod/test-mod")
     end
 
     it "displays source URL" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("https://github.com/test/test-mod")
     end
 
     it "displays required dependencies" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("base >= 2.0")
     end
 
     it "displays optional dependencies" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("optional-dep >= 1.0")
     end
 
     it "displays incompatibilities" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("incompatible-mod")
     end
 
     it "shows 'Not installed' for uninstalled MOD" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("Not installed")
     end
   end
@@ -163,12 +163,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
     end
 
     it "displays 'Enabled' for installed and enabled MOD" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("Enabled")
     end
 
     it "shows installed version with update available" do
-      result = run_command(command, "test-mod")
+      result = run_command(command, %w[test-mod])
       expect(result.stdout).to include("1.0.0 (update available)")
     end
   end

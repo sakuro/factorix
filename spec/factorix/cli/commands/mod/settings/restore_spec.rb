@@ -66,7 +66,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "loads from JSON file and saves settings" do
-        command.call(input: input_file.path, settings_file: output_path.to_s)
+        run_command(command, %W[#{output_path} --input=#{input_file.path}])
 
         expect(settings).to have_received(:save).with(output_path)
       end
@@ -86,7 +86,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "reads from stdin when no input file specified" do
-        command.call(settings_file: output_path.to_s)
+        run_command(command, %W[#{output_path}])
 
         expect($stdin).to have_received(:read)
         expect(settings).to have_received(:save).with(output_path)
@@ -110,7 +110,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "saves to specified output file" do
-        command.call(input: input_file.path, settings_file: custom_output_file.path)
+        run_command(command, %W[#{custom_output_file.path} --input=#{input_file.path}])
 
         expect(settings).to have_received(:save).with(Pathname(custom_output_file.path))
       end
@@ -132,7 +132,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "saves to default path when settings_file not specified" do
-        command.call(input: input_file.path)
+        run_command(command, %W[--input=#{input_file.path}])
 
         expect(settings).to have_received(:save).with(default_path)
       end
@@ -160,7 +160,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "creates backup when output file exists" do
-        command.call(input: input_file.path, settings_file: output_file.path)
+        run_command(command, %W[#{output_file.path} --input=#{input_file.path}])
 
         backup_file = "#{output_file.path}.bak"
         expect(File.exist?(backup_file)).to be true
@@ -168,7 +168,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
       end
 
       it "uses custom backup extension" do
-        command.call(input: input_file.path, settings_file: output_file.path, backup_extension: ".old")
+        run_command(command, %W[#{output_file.path} --input=#{input_file.path} --backup-extension=.old])
 
         backup_file = "#{output_file.path}.old"
         expect(File.exist?(backup_file)).to be true
@@ -179,7 +179,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Restore do
         output_file.close
         output_file.unlink
 
-        command.call(input: input_file.path, settings_file: output_file.path)
+        run_command(command, %W[#{output_file.path} --input=#{input_file.path}])
 
         backup_file = "#{output_file.path}.bak"
         expect(File.exist?(backup_file)).to be false

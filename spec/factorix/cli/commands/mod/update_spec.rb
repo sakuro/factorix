@@ -96,7 +96,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "downloads and updates the MOD" do
-        run_command(command, "mod-a", jobs: 1)
+        run_command(command, %w[mod-a --jobs=1])
 
         expect(portal).to have_received(:download_mod)
         expect(mod_list).to have_received(:remove).with(mod_a)
@@ -115,7 +115,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "does not perform any updates" do
-        run_command(command, "mod-a", jobs: 1)
+        run_command(command, %w[mod-a --jobs=1])
 
         expect(portal).not_to have_received(:download_mod)
       end
@@ -127,7 +127,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "updates all installed MODs" do
-        run_command(command, jobs: 1)
+        run_command(command, %w[--jobs=1])
 
         expect(portal).to have_received(:download_mod)
       end
@@ -138,7 +138,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
         allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 
         expect {
-          run_command(command, "base", jobs: 1)
+          run_command(command, %w[base --jobs=1])
         }.to raise_error(Factorix::Error, /Cannot update base MOD/)
       end
     end
@@ -148,7 +148,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
         allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 
         expect {
-          run_command(command, "space-age", jobs: 1)
+          run_command(command, %w[space-age --jobs=1])
         }.to raise_error(Factorix::Error, /Cannot update expansion MOD/)
       end
     end
@@ -159,7 +159,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "does not perform any updates" do
-        run_command(command, jobs: 1)
+        run_command(command, %w[--jobs=1])
 
         expect(portal).not_to have_received(:download_mod)
       end

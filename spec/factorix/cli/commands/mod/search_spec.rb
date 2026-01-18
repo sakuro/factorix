@@ -40,15 +40,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
     end
 
     it "passes options to portal.list_mods" do
-      run_command(
-        command,
-        hide_deprecated: true,
-        page: 2,
-        page_size: 50,
-        sort: "name",
-        sort_order: "asc",
-        version: "2.0"
-      )
+      run_command(command, %w[
+        --hide-deprecated
+        --page=2
+        --page-size=50
+        --sort=name
+        --sort-order=asc
+        --version=2.0
+      ])
 
       expect(portal).to have_received(:list_mods).with(
         hide_deprecated: true,

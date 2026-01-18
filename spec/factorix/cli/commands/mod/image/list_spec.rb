@@ -45,7 +45,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "outputs table format by default" do
-        result = run_command(command, "test-mod")
+        result = run_command(command, %w[test-mod])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
         expect(result.stdout).to include("ID")
@@ -56,7 +56,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "outputs JSON format with --json option" do
-        result = run_command(command, "test-mod", json: true)
+        result = run_command(command, %w[test-mod --json])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
 
@@ -100,14 +100,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "displays 'No images found' in table format" do
-        result = run_command(command, "test-mod")
+        result = run_command(command, %w[test-mod])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
         expect(result.stdout).to include("No images found")
       end
 
       it "displays empty array in JSON format" do
-        result = run_command(command, "test-mod", json: true)
+        result = run_command(command, %w[test-mod --json])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
         expect(JSON.parse(result.stdout)).to eq([])
@@ -131,14 +131,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "displays 'No images found' in table format" do
-        result = run_command(command, "test-mod")
+        result = run_command(command, %w[test-mod])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
         expect(result.stdout).to include("No images found")
       end
 
       it "displays empty array in JSON format" do
-        result = run_command(command, "test-mod", json: true)
+        result = run_command(command, %w[test-mod --json])
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
         expect(JSON.parse(result.stdout)).to eq([])
@@ -154,7 +154,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
 
       it "raises MODNotOnPortalError" do
         expect {
-          run_command(command, "non-existent-mod")
+          run_command(command, %w[non-existent-mod])
         }.to raise_error(Factorix::MODNotOnPortalError, /not found on portal/)
       end
     end

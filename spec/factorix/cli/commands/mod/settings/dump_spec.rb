@@ -50,7 +50,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
         settings_path = Pathname("/path/to/mod-settings.dat")
         allow(Factorix::MODSettings).to receive(:load).with(settings_path).and_return(settings)
 
-        result = run_command(command, settings_path.to_s)
+        result = run_command(command, %W[#{settings_path}])
         expect(result.stdout).to match(/game_version/)
 
         expect(Factorix::MODSettings).to have_received(:load).with(settings_path)
@@ -66,14 +66,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
       end
 
       it "writes to specified file" do
-        run_command(command, output: output_file.path)
+        run_command(command, %W[--output=#{output_file.path}])
 
         content = File.read(output_file.path)
         expect(content).to match(/"game_version": "1.1.0-42"/)
       end
 
       it "does not output to stdout" do
-        result = run_command(command, output: output_file.path)
+        result = run_command(command, %W[--output=#{output_file.path}])
         expect(result.stdout).to be_empty
       end
     end

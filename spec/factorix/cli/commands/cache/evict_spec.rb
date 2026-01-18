@@ -26,7 +26,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
 
     context "with multiple options" do
       it "raises an error" do
-        expect { run_command(command, all: true, expired: true) }.to raise_error(Factorix::InvalidArgumentError, /Only one of --all, --expired, or --older-than can be specified/)
+        expect { run_command(command, %w[--all --expired]) }.to raise_error(Factorix::InvalidArgumentError, /Only one of --all, --expired, or --older-than can be specified/)
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       end
 
       it "removes all entries" do
-        result = run_command(command, all: true)
+        result = run_command(command, %w[--all])
 
         expect(result.stdout).to match(/download.*2 entries removed/)
         expect((cache_dir / "download").glob("**/*").select(&:file?)).to be_empty
@@ -50,7 +50,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
         (api_dir / "ab").mkpath
         (api_dir / "ab" / "api_entry").write("api content")
 
-        result = run_command(command, "download", all: true)
+        result = run_command(command, %w[download --all])
 
         expect(result.stdout).to match(/download/)
         expect(result.stdout).not_to match(/\bapi\s*:/)
@@ -75,7 +75,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       end
 
       it "removes only expired entries" do
-        result = run_command(command, expired: true)
+        result = run_command(command, %w[--expired])
 
         expect(result.stdout).to match(/api.*1 entries removed/)
         expect(cache_dir / "api" / "ab" / "old_entry").not_to exist
@@ -89,7 +89,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
         old_file.write("old download content")
         FileUtils.touch(old_file, mtime: Time.now - 86400) # 1 day old
 
-        result = run_command(command, expired: true)
+        result = run_command(command, %w[--expired])
 
         # download cache has no TTL, so no entries should be removed
         expect(result.stdout).to match(/download.*0 entries removed/)
@@ -113,7 +113,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       end
 
       it "removes entries older than specified age" do
-        result = run_command(command, older_than: "12h")
+        result = run_command(command, %w[--older-than=12h])
 
         expect(result.stdout).to match(/download.*1 entries removed/)
         expect(cache_dir / "download" / "ab" / "old_entry").not_to exist
@@ -122,23 +122,23 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
 
       it "parses various age formats" do
         # Test that parsing works for different formats
-        expect { run_command(command, older_than: "30s") }.not_to raise_error
-        expect { run_command(command, older_than: "5m") }.not_to raise_error
-        expect { run_command(command, older_than: "2h") }.not_to raise_error
-        expect { run_command(command, older_than: "7d") }.not_to raise_error
+        expect { run_command(command, %w[--older-than=30s]) }.not_to raise_error
+        expect { run_command(command, %w[--older-than=5m]) }.not_to raise_error
+        expect { run_command(command, %w[--older-than=2h]) }.not_to raise_error
+        expect { run_command(command, %w[--older-than=7d]) }.not_to raise_error
       end
 
       it "raises error for invalid age format" do
-        expect { run_command(command, older_than: "invalid") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
-        expect { run_command(command, older_than: "10") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
-        expect { run_command(command, older_than: "10w") }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
+        expect { run_command(command, %w[--older-than=invalid]) }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
+        expect { run_command(command, %w[--older-than=10]) }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
+        expect { run_command(command, %w[--older-than=10w]) }.to raise_error(Factorix::InvalidArgumentError, /Invalid age format/)
       end
     end
 
     context "with unknown cache name" do
       it "raises an error" do
         pending "dry-cli validates values before reaching resolve_cache_names"
-        expect { run_command(command, "unknown", all: true) }.to raise_error(Factorix::InvalidArgumentError, /Unknown cache: unknown/)
+        expect { run_command(command, %w[unknown --all]) }.to raise_error(Factorix::InvalidArgumentError, /Unknown cache: unknown/)
       end
     end
 
@@ -151,7 +151,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
       end
 
       it "does not remove lock files" do
-        run_command(command, all: true)
+        run_command(command, %w[--all])
 
         expect(cache_dir / "download" / "ab" / "entry").not_to exist
         expect(cache_dir / "download" / "ab" / "entry.lock").to exist
@@ -167,7 +167,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
     end
 
     it "formats sizes using binary prefixes" do
-      result = run_command(command, all: true)
+      result = run_command(command, %w[--all])
 
       expect(result.stdout).to match(/KiB/)
     end
