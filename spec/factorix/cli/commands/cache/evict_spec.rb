@@ -136,9 +136,8 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
     end
 
     context "with unknown cache name" do
-      it "raises an error" do
-        pending "dry-cli validates values before reaching resolve_cache_names"
-        expect { run_command(command, %w[unknown --all]) }.to raise_error(Factorix::InvalidArgumentError, /Unknown cache: unknown/)
+      it "exits with error via dry-cli validation" do
+        expect { run_command(command, %w[unknown --all]) }.to raise_error(SystemExit)
       end
     end
 
