@@ -7,6 +7,10 @@
   - Configuration interface (`config`, `configure`, `load_config`) moved to `Factorix` module
   - Use `Factorix.configure { |c| ... }` instead of `Factorix::Container.configure { |c| ... }`
 
+### Fixed
+
+- Fix integer CLI options being parsed as strings after dry-cli 1.4.0 update (#12)
+
 ### Deprecated
 
 - `Factorix::Application` still works but emits deprecation warnings; will be removed in v1.0
