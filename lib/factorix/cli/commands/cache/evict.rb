@@ -36,7 +36,7 @@ module Factorix
 
           option :all, type: :flag, default: false, desc: "Remove all entries"
           option :expired, type: :flag, default: false, desc: "Remove expired entries only"
-          option :older_than, type: :string, default: nil, desc: "Remove entries older than AGE (e.g., 30s, 5m, 2h, 7d)"
+          option :older_than, default: nil, desc: "Remove entries older than AGE (e.g., 30s, 5m, 2h, 7d)"
 
           # Execute the cache evict command
           #

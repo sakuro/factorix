@@ -32,7 +32,7 @@ module Factorix
             "some-mod          # Show details for some-mod"
           ]
 
-          argument :mod_name, type: :string, required: true, desc: "MOD name to show"
+          argument :mod_name, required: true, desc: "MOD name to show"
 
           # Execute the show command
           #

@@ -24,8 +24,8 @@ module Factorix
               "                        # Restore from stdin"
             ]
 
-            argument :settings_file, type: :string, required: false, desc: "Path to mod-settings.dat file to write"
-            option :input, type: :string, aliases: ["-i"], desc: "Input file path"
+            argument :settings_file, required: false, desc: "Path to mod-settings.dat file to write"
+            option :input, aliases: ["-i"], desc: "Input file path"
 
             # Execute the restore command
             #

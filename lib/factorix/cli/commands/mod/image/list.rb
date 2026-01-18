@@ -19,7 +19,7 @@ module Factorix
               "some-mod --json   # List images in JSON format"
             ]
 
-            argument :mod_name, type: :string, required: true, desc: "MOD name"
+            argument :mod_name, required: true, desc: "MOD name"
 
             option :json, type: :flag, default: false, desc: "Output in JSON format"
 

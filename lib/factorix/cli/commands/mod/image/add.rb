@@ -18,8 +18,8 @@ module Factorix
               "some-mod screenshot.png   # Add image to MOD"
             ]
 
-            argument :mod_name, type: :string, required: true, desc: "MOD name"
-            argument :image_file, type: :string, required: true, desc: "Path to image file"
+            argument :mod_name, required: true, desc: "MOD name"
+            argument :image_file, required: true, desc: "Path to image file"
 
             # Execute the add command
             #
