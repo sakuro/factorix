@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.6.0] - 2026-01-18
+
 ### Changed
 
 - Reorganize configuration and DI container interfaces (#7, #9)
