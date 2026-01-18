@@ -29,19 +29,19 @@ RSpec.describe Factorix::CLI::Commands::Path do
 
   describe "#call" do
     it "outputs all paths in table format by default" do
-      output = capture_stdout { command.call(json: false) }
+      result = run_command(command)
 
-      expect(output).to include("executable_path")
-      expect(output).to include("/path/to/factorio")
-      expect(output).to include("user_dir")
-      expect(output).to include("/path/to/user")
+      expect(result.stdout).to include("executable_path")
+      expect(result.stdout).to include("/path/to/factorio")
+      expect(result.stdout).to include("user_dir")
+      expect(result.stdout).to include("/path/to/user")
     end
 
     context "with --json option" do
       it "outputs all paths as JSON" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(command, %w[--json])
 
-        json = JSON.parse(output)
+        json = JSON.parse(result.stdout)
         expect(json).to include(
           "executable_path" => "/path/to/factorio",
           "data_dir" => "/path/to/factorio/data",
@@ -68,7 +68,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
       end
 
       it "re-raises the error" do
-        expect { capture_stdout { command.call(json: false) } }.to raise_error(StandardError, "Runtime error")
+        expect { run_command(command) }.to raise_error(StandardError, "Runtime error")
       end
     end
   end

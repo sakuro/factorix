@@ -114,8 +114,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "displays 'No MOD(s) found'" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("No MOD(s) found")
+        result = run_command(command)
+        expect(result.stdout).to include("No MOD(s) found")
       end
     end
 
@@ -133,30 +133,30 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "includes base and expansion MODs" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("base")
-        expect(output).to include("space-age")
-        expect(output).to include("quality")
-        expect(output).to include("custom-mod")
-        expect(output).to include("another-mod")
+        result = run_command(command)
+        expect(result.stdout).to include("base")
+        expect(result.stdout).to include("space-age")
+        expect(result.stdout).to include("quality")
+        expect(result.stdout).to include("custom-mod")
+        expect(result.stdout).to include("another-mod")
       end
 
       it "displays table header" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("NAME")
-        expect(output).to include("VERSION")
-        expect(output).to include("STATUS")
+        result = run_command(command)
+        expect(result.stdout).to include("NAME")
+        expect(result.stdout).to include("VERSION")
+        expect(result.stdout).to include("STATUS")
       end
 
       it "shows enabled status" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to match(/custom-mod.*enabled/)
-        expect(output).to match(/another-mod.*disabled/)
+        result = run_command(command)
+        expect(result.stdout).to match(/custom-mod.*enabled/)
+        expect(result.stdout).to match(/another-mod.*disabled/)
       end
 
       it "sorts base first, then expansions, then others alphabetically" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        lines = output.lines.filter_map {|line| (stripped = line.strip).empty? ? nil : stripped }
+        result = run_command(command)
+        lines = result.stdout.lines.filter_map {|line| (stripped = line.strip).empty? ? nil : stripped }
         # Skip header line and summary line (last line)
         data_lines = lines[1...-1]
         mod_names = data_lines.map {|line| line.split.first }
@@ -174,9 +174,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "shows only enabled MODs" do
-        output = capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("custom-mod")
-        expect(output).not_to include("another-mod")
+        result = run_command(command, %w[--enabled])
+        expect(result.stdout).to include("custom-mod")
+        expect(result.stdout).not_to include("another-mod")
       end
     end
 
@@ -189,9 +189,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "shows only disabled MODs" do
-        output = capture_stdout { command.call(enabled: false, disabled: true, errors: false, outdated: false, json: false) }
-        expect(output).not_to include("custom-mod")
-        expect(output).to include("another-mod")
+        result = run_command(command, %w[--disabled])
+        expect(result.stdout).not_to include("custom-mod")
+        expect(result.stdout).to include("another-mod")
       end
 
       context "when no MODs match the filter" do
@@ -202,9 +202,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         end
 
         it "displays 'No MOD(s) match the specified criteria'" do
-          output = capture_stdout { command.call(enabled: false, disabled: true, errors: false, outdated: false, json: false) }
-          expect(output).to include("No MOD(s) match the specified criteria")
-          expect(output).not_to include("No MOD(s) found")
+          result = run_command(command, %w[--disabled])
+          expect(result.stdout).to include("No MOD(s) match the specified criteria")
+          expect(result.stdout).not_to include("No MOD(s) found")
         end
       end
     end
@@ -217,9 +217,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "displays 'No MOD(s) match the specified criteria'" do
-        output = capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to include("No MOD(s) match the specified criteria")
-        expect(output).not_to include("No MOD(s) found")
+        result = run_command(command, %w[--enabled])
+        expect(result.stdout).to include("No MOD(s) match the specified criteria")
+        expect(result.stdout).not_to include("No MOD(s) found")
       end
     end
 
@@ -231,8 +231,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "outputs valid JSON" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: true) }
-        json = JSON.parse(output)
+        result = run_command(command, %w[--json])
+        json = JSON.parse(result.stdout)
         expect(json).to be_an(Array)
         expect(json.first).to include("name" => "custom-mod", "version" => "1.0.0", "enabled" => true)
       end
@@ -262,15 +262,15 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "shows only MODs with available updates" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
-        expect(output).to include("custom-mod")
-        expect(output).not_to include("another-mod")
+        result = run_command(command, %w[--outdated])
+        expect(result.stdout).to include("custom-mod")
+        expect(result.stdout).not_to include("another-mod")
       end
 
       it "displays LATEST column with new version" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
-        expect(output).to include("LATEST")
-        expect(output).to include("2.0.0")
+        result = run_command(command, %w[--outdated])
+        expect(result.stdout).to include("LATEST")
+        expect(result.stdout).to include("2.0.0")
       end
 
       context "when no MODs have available updates" do
@@ -285,9 +285,9 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
         end
 
         it "displays 'No MOD(s) match the specified criteria'" do
-          output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: true, json: false) }
-          expect(output).to include("No MOD(s) match the specified criteria")
-          expect(output).not_to include("No MOD(s) found")
+          result = run_command(command, %w[--outdated])
+          expect(result.stdout).to include("No MOD(s) match the specified criteria")
+          expect(result.stdout).not_to include("No MOD(s) found")
         end
       end
     end
@@ -299,13 +299,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
 
       it "raises ArgumentError when combining --enabled and --disabled" do
         expect {
-          capture_stdout { command.call(enabled: true, disabled: true, errors: false, outdated: false, json: false) }
+          run_command(command, %w[--enabled --disabled])
         }.to raise_error(Factorix::InvalidArgumentError, /Cannot combine/)
       end
 
       it "raises ArgumentError when combining --enabled and --outdated" do
         expect {
-          capture_stdout { command.call(enabled: true, disabled: false, errors: false, outdated: true, json: false) }
+          run_command(command, %w[--enabled --outdated])
         }.to raise_error(Factorix::InvalidArgumentError, /Cannot combine/)
       end
     end
@@ -317,8 +317,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       end
 
       it "shows MOD as disabled" do
-        output = capture_stdout { command.call(enabled: false, disabled: false, errors: false, outdated: false, json: false) }
-        expect(output).to match(/custom-mod.*disabled/)
+        result = run_command(command)
+        expect(result.stdout).to match(/custom-mod.*disabled/)
       end
     end
   end

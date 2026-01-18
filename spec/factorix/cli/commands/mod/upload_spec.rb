@@ -4,9 +4,6 @@ require "tmpdir"
 require "zip"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Upload do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
   let(:uploader) { instance_double(Factorix::Transfer::Uploader) }
@@ -43,13 +40,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
   describe "#call" do
     it "uploads a MOD without metadata" do
-      command.call(file: zip_path.to_s)
+      run_command(command, %W[#{zip_path}])
 
       expect(portal).to have_received(:upload_mod).with("test-mod", zip_path)
     end
 
     it "uploads a MOD with description" do
-      command.call(file: zip_path.to_s, description: "Test description")
+      run_command(command, [zip_path.to_s, "--description=Test description"])
 
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
@@ -59,7 +56,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     end
 
     it "uploads a MOD with category" do
-      command.call(file: zip_path.to_s, category: "content")
+      run_command(command, %W[#{zip_path} --category=content])
 
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
@@ -69,7 +66,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     end
 
     it "uploads a MOD with license" do
-      command.call(file: zip_path.to_s, license: "MIT")
+      run_command(command, %W[#{zip_path} --license=MIT])
 
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
@@ -79,7 +76,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     end
 
     it "uploads a MOD with source_url" do
-      command.call(file: zip_path.to_s, source_url: "https://github.com/user/repo")
+      run_command(command, %W[#{zip_path} --source-url=https://github.com/user/repo])
 
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
@@ -89,13 +86,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     end
 
     it "uploads a MOD with all metadata" do
-      command.call(
-        file: zip_path.to_s,
-        description: "Full description",
-        category: "utilities",
-        license: "Apache-2.0",
-        source_url: "https://example.com/repo"
-      )
+      run_command(command, [
+        zip_path.to_s,
+        "--description=Full description",
+        "--category=utilities",
+        "--license=Apache-2.0",
+        "--source-url=https://example.com/repo"
+      ])
 
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
@@ -108,7 +105,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     end
 
     it "subscribes and unsubscribes upload handler" do
-      command.call(file: zip_path.to_s)
+      run_command(command, %W[#{zip_path}])
 
       expect(uploader).to have_received(:subscribe).with(kind_of(Factorix::Progress::UploadHandler))
       expect(uploader).to have_received(:unsubscribe).with(kind_of(Factorix::Progress::UploadHandler))
@@ -118,7 +115,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       allow(portal).to receive(:upload_mod).and_raise(Factorix::HTTPClientError.new("Upload failed"))
 
       expect {
-        command.call(file: zip_path.to_s)
+        run_command(command, %W[#{zip_path}])
       }.to raise_error(Factorix::HTTPClientError)
 
       expect(uploader).to have_received(:unsubscribe).with(kind_of(Factorix::Progress::UploadHandler))
@@ -127,13 +124,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     context "with invalid file path" do
       it "raises error when file does not exist" do
         expect {
-          command.call(file: "/nonexistent/file.zip")
+          run_command(command, %w[/nonexistent/file.zip])
         }.to raise_error(Factorix::InvalidArgumentError, /File not found/)
       end
 
       it "raises error when path is a directory" do
         expect {
-          command.call(file: temp_dir.to_s)
+          run_command(command, %W[#{temp_dir}])
         }.to raise_error(Factorix::InvalidArgumentError, /Not a file/)
       end
 
@@ -142,7 +139,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
         File.write(txt_path, "not a zip")
 
         expect {
-          command.call(file: txt_path.to_s)
+          run_command(command, %W[#{txt_path}])
         }.to raise_error(Factorix::InvalidArgumentError, /must be a .zip file/)
       end
     end
@@ -155,7 +152,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
         end
 
         expect {
-          command.call(file: bad_zip_path.to_s)
+          run_command(command, %W[#{bad_zip_path}])
         }.to raise_error(Factorix::FileFormatError, /info.json not found/)
       end
 
@@ -166,7 +163,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
         end
 
         expect {
-          command.call(file: invalid_zip_path.to_s)
+          run_command(command, %W[#{invalid_zip_path}])
         }.to raise_error(Factorix::FileFormatError, /Invalid JSON/)
       end
 
@@ -183,7 +180,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
         end
 
         expect {
-          command.call(file: incomplete_zip_path.to_s)
+          run_command(command, %W[#{incomplete_zip_path}])
         }.to raise_error(Factorix::FileFormatError, /Missing required fields/)
       end
     end

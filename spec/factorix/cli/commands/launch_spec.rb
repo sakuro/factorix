@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::Launch do
-  include_context "with suppressed output"
-
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, info: nil, debug: nil, error: nil) }
   let(:command) { Factorix::CLI::Commands::Launch.new(runtime:, logger:) }
@@ -20,7 +18,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "raises GameRunningError" do
-        expect { command.call }.to raise_error(Factorix::GameRunningError)
+        expect { run_command(command) }.to raise_error(Factorix::GameRunningError)
       end
     end
 
@@ -30,7 +28,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game asynchronously" do
-        command.call
+        run_command(command)
 
         expect(runtime).to have_received(:launch).with(async: true)
       end
@@ -42,7 +40,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "waits for the game to start and finish" do
-        command.call(wait: true)
+        run_command(command, %w[--wait])
 
         expect(command).to have_received(:wait_while).twice
       end
@@ -54,7 +52,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "does not wait for the game" do
-        command.call(wait: false)
+        run_command(command)
 
         expect(command).not_to have_received(:wait_while)
       end
@@ -66,7 +64,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        command.call(args: %w[--dump-data])
+        run_command(command, %w[-- --dump-data])
 
         expect(runtime).to have_received(:launch).with("--dump-data", async: false)
       end
@@ -78,7 +76,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "does not wait for the game" do
-        command.call(args: %w[--dump-data], wait: true)
+        run_command(command, %w[--wait -- --dump-data])
 
         expect(command).not_to have_received(:wait_while)
       end
@@ -90,7 +88,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        command.call(args: %w[--help])
+        run_command(command, %w[-- --help])
 
         expect(runtime).to have_received(:launch).with("--help", async: false)
       end
@@ -102,7 +100,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "launches the game synchronously" do
-        command.call(args: %w[--version])
+        run_command(command, %w[-- --version])
 
         expect(runtime).to have_received(:launch).with("--version", async: false)
       end
@@ -114,7 +112,7 @@ RSpec.describe Factorix::CLI::Commands::Launch do
       end
 
       it "passes the args to the runtime with async: true" do
-        command.call(args: %w[--start-server save.zip])
+        run_command(command, %w[-- --start-server save.zip])
 
         expect(runtime).to have_received(:launch).with("--start-server", "save.zip", async: true)
       end

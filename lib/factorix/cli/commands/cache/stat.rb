@@ -8,7 +8,7 @@ module Factorix
       module Cache
         # Display cache statistics
         #
-        # This command outputs statistics for all cache stores
+        # This command outout.puts statistics for all cache stores
         # in a human-readable or JSON format.
         #
         # @example
@@ -46,7 +46,7 @@ module Factorix
             stats = cache_names.to_h {|name| [name, collect_stats(name)] }
 
             if json
-              puts JSON.pretty_generate(stats)
+              out.puts JSON.pretty_generate(stats)
             else
               output_text(stats)
             end
@@ -142,8 +142,8 @@ module Factorix
           # @return [void]
           private def output_text(stats)
             stats.each_with_index do |(name, data), index|
-              puts if index > 0
-              puts "#{name}:"
+              out.puts if index > 0
+              out.puts "#{name}:"
               output_cache_stats(data)
             end
           end
@@ -153,26 +153,26 @@ module Factorix
           # @param data [Hash] cache statistics
           # @return [void]
           private def output_cache_stats(data)
-            puts "  Directory:      #{data[:directory]}"
-            puts "  TTL:            #{format_ttl(data[:ttl])}"
-            puts "  Max file size:  #{format_size(data[:max_file_size])}"
-            puts "  Compression:    #{format_compression(data[:compression_threshold])}"
+            out.puts "  Directory:      #{data[:directory]}"
+            out.puts "  TTL:            #{format_ttl(data[:ttl])}"
+            out.puts "  Max file size:  #{format_size(data[:max_file_size])}"
+            out.puts "  Compression:    #{format_compression(data[:compression_threshold])}"
 
             entries = data[:entries]
             valid_pct = entries[:total] > 0 ? (Float(entries[:valid]) / entries[:total] * 100) : 0.0
-            puts "  Entries:        #{entries[:valid]} / #{entries[:total]} (#{"%.1f" % valid_pct}% valid)"
+            out.puts "  Entries:        #{entries[:valid]} / #{entries[:total]} (#{"%.1f" % valid_pct}% valid)"
 
             size = data[:size]
-            puts "  Size:           #{format_size(size[:total])} (avg #{format_size(size[:avg])})"
+            out.puts "  Size:           #{format_size(size[:total])} (avg #{format_size(size[:avg])})"
 
             age = data[:age]
             if age[:oldest]
-              puts "  Age:            #{format_duration(age[:newest])} - #{format_duration(age[:oldest])} (avg #{format_duration(age[:avg])})"
+              out.puts "  Age:            #{format_duration(age[:newest])} - #{format_duration(age[:oldest])} (avg #{format_duration(age[:avg])})"
             else
-              puts "  Age:            -"
+              out.puts "  Age:            -"
             end
 
-            puts "  Stale locks:    #{data[:stale_locks]}"
+            out.puts "  Stale locks:    #{data[:stale_locks]}"
           end
 
           # Format TTL value for display

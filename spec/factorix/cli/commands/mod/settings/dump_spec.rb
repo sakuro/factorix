@@ -32,13 +32,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
   describe "#call" do
     context "with default options" do
       it "dumps to JSON format to stdout" do
-        expect { command.call }.to output(/"game_version": "1.1.0-42"/).to_stdout
-        expect { command.call }.to output(/"startup":/).to_stdout
-        expect { command.call }.to output(/"string-value": "test"/).to_stdout
+        result = run_command(command)
+        expect(result.stdout).to match(/"game_version": "1.1.0-42"/)
+        expect(result.stdout).to match(/"startup":/)
+        expect(result.stdout).to match(/"string-value": "test"/)
       end
 
       it "loads from default path" do
-        expect { command.call }.to output.to_stdout
+        run_command(command)
 
         expect(Factorix::MODSettings).to have_received(:load).with(default_settings_path)
       end
@@ -49,7 +50,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
         settings_path = Pathname("/path/to/mod-settings.dat")
         allow(Factorix::MODSettings).to receive(:load).with(settings_path).and_return(settings)
 
-        expect { command.call(settings_file: settings_path.to_s) }.to output(/game_version/).to_stdout
+        result = run_command(command, %W[#{settings_path}])
+        expect(result.stdout).to match(/game_version/)
 
         expect(Factorix::MODSettings).to have_received(:load).with(settings_path)
       end
@@ -64,14 +66,15 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
       end
 
       it "writes to specified file" do
-        command.call(output: output_file.path)
+        run_command(command, %W[--output=#{output_file.path}])
 
         content = File.read(output_file.path)
         expect(content).to match(/"game_version": "1.1.0-42"/)
       end
 
       it "does not output to stdout" do
-        expect { command.call(output: output_file.path) }.not_to output.to_stdout
+        result = run_command(command, %W[--output=#{output_file.path}])
+        expect(result.stdout).to be_empty
       end
     end
   end

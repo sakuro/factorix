@@ -122,7 +122,7 @@ Commands should use two distinct output methods based on the nature of the outpu
 - Warnings: `say "Warning message", prefix: :warn`
 - Errors: `say "Error message", prefix: :error`
 
-#### `puts(data)` - Data output
+#### `out.puts(data)` - Data output
 
 **Purpose:** Primary command output for piping, scripting, or direct display
 
@@ -142,11 +142,11 @@ Commands should use two distinct output methods based on the nature of the outpu
 
 #### Selection Guidelines
 
-1. **Data query commands** (output as primary purpose) → Use `puts` for data
+1. **Data query commands** (output as primary purpose) → Use `out.puts` for data
    ```ruby
    def call(path_types: [], **)
      result = build_path_data(path_types)
-     puts JSON.pretty_generate(result)  # Always output, even with --quiet
+     out.puts JSON.pretty_generate(result)  # Always output, even with --quiet
    end
    ```
 
@@ -168,14 +168,14 @@ Commands should use two distinct output methods based on the nature of the outpu
        write_file(output, data)
        say "Exported to #{output}", prefix: :success  # Success feedback
      else
-       puts JSON.pretty_generate(data)  # Data output to stdout
+       out.puts JSON.pretty_generate(data)  # Data output to stdout
      end
    end
    ```
 
 #### Key Principle
 
-**If the output is the primary value** (data that users/scripts need to capture), use `puts`. **If the output is feedback about what happened**, use `say`.
+**If the output is the primary value** (data that users/scripts need to capture), use `out.puts`. **If the output is feedback about what happened**, use `say`.
 
 ### Exception Handling in CLI Commands
 

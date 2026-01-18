@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::Add.new(portal:) }
   let(:tmpdir) { Dir.mktmpdir }
@@ -29,7 +27,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
 
       allow(portal).to receive(:add_mod_image).and_return(image)
 
-      command.call(mod_name: "test-mod", image_file:)
+      run_command(command, %W[test-mod #{image_file}])
 
       expect(portal).to have_received(:add_mod_image).with("test-mod", Pathname(image_file))
     end
@@ -38,7 +36,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
       image_file = File.join(tmpdir, "nonexistent.png")
 
       expect {
-        command.call(mod_name: "test-mod", image_file:)
+        run_command(command, %W[test-mod #{image_file}])
       }.to raise_error(Factorix::InvalidArgumentError, /Image file not found/)
     end
 
@@ -49,7 +47,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
       allow(portal).to receive(:add_mod_image).and_raise(Factorix::HTTPClientError.new("403 Forbidden"))
 
       expect {
-        command.call(mod_name: "test-mod", image_file:)
+        run_command(command, %W[test-mod #{image_file}])
       }.to raise_error(Factorix::HTTPClientError, /403 Forbidden/)
     end
   end

@@ -70,7 +70,7 @@ module Factorix
           # @param recursive [Boolean] Include dependencies
           # @return [Array<Hash>] Download targets with MOD info and releases
           private def plan_download(mod_specs, download_dir, jobs, recursive)
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: err)
 
             target_infos = fetch_target_mod_info(mod_specs, jobs, presenter)
 

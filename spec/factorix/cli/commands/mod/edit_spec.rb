@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Edit do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Edit.new(portal:) }
 
@@ -14,85 +12,85 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
 
   describe "#call" do
     it "edits MOD with description" do
-      command.call(mod_name: "test-mod", description: "New description")
+      run_command(command, ["test-mod", "--description=New description"])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", description: "New description")
     end
 
     it "edits MOD with summary" do
-      command.call(mod_name: "test-mod", summary: "Brief summary")
+      run_command(command, ["test-mod", "--summary=Brief summary"])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", summary: "Brief summary")
     end
 
     it "edits MOD with title" do
-      command.call(mod_name: "test-mod", title: "New Title")
+      run_command(command, ["test-mod", "--title=New Title"])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", title: "New Title")
     end
 
     it "edits MOD with category" do
-      command.call(mod_name: "test-mod", category: "utilities")
+      run_command(command, %w[test-mod --category=utilities])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", category: "utilities")
     end
 
     it "edits MOD with tags" do
-      command.call(mod_name: "test-mod", tags: %w[combat logistics])
+      run_command(command, %w[test-mod --tags=combat,logistics])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", tags: %w[combat logistics])
     end
 
     it "edits MOD with standard license" do
-      command.call(mod_name: "test-mod", license: "default_mit")
+      run_command(command, %w[test-mod --license=default_mit])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", license: "default_mit")
     end
 
     it "edits MOD with custom license" do
-      command.call(mod_name: "test-mod", license: "custom_0123456789abcdef01234567")
+      run_command(command, %w[test-mod --license=custom_0123456789abcdef01234567])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", license: "custom_0123456789abcdef01234567")
     end
 
     it "edits MOD with homepage" do
-      command.call(mod_name: "test-mod", homepage: "https://example.com")
+      run_command(command, %w[test-mod --homepage=https://example.com])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", homepage: "https://example.com")
     end
 
     it "edits MOD with source_url" do
-      command.call(mod_name: "test-mod", source_url: "https://github.com/user/repo")
+      run_command(command, %w[test-mod --source-url=https://github.com/user/repo])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", source_url: "https://github.com/user/repo")
     end
 
     it "edits MOD with faq" do
-      command.call(mod_name: "test-mod", faq: "Q: How?\nA: Easy.")
+      run_command(command, ["test-mod", "--faq=Q: How?\nA: Easy."])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", faq: "Q: How?\nA: Easy.")
     end
 
     it "edits MOD with deprecated flag set to true" do
-      command.call(mod_name: "test-mod", deprecated: true)
+      run_command(command, %w[test-mod --deprecated])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", deprecated: true)
     end
 
     it "edits MOD with deprecated flag set to false" do
-      command.call(mod_name: "test-mod", deprecated: false)
+      run_command(command, %w[test-mod --no-deprecated])
 
       expect(portal).to have_received(:edit_mod).with("test-mod", deprecated: false)
     end
 
     it "edits MOD with multiple metadata fields" do
-      command.call(
-        mod_name: "test-mod",
-        description: "Full description",
-        category: "content",
-        license: "default_apache2",
-        tags: %w[automation optimization]
-      )
+      run_command(command, [
+        "test-mod",
+        "--description=Full description",
+        "--category=content",
+        "--license=default_apache2",
+        "--tags=automation,optimization"
+      ])
 
       expect(portal).to have_received(:edit_mod).with(
         "test-mod",
@@ -104,19 +102,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
     end
 
     it "edits MOD with all metadata fields" do
-      command.call(
-        mod_name: "test-mod",
-        description: "Description",
-        summary: "Summary",
-        title: "Title",
-        category: "tweaks",
-        tags: %w[tag1 tag2],
-        license: "default_gnugplv3",
-        homepage: "https://homepage.example.com",
-        source_url: "https://github.com/example/repo",
-        faq: "FAQ content",
-        deprecated: true
-      )
+      run_command(command, [
+        "test-mod",
+        "--description=Description",
+        "--summary=Summary",
+        "--title=Title",
+        "--category=tweaks",
+        "--tags=tag1,tag2",
+        "--license=default_gnugplv3",
+        "--homepage=https://homepage.example.com",
+        "--source-url=https://github.com/example/repo",
+        "--faq=FAQ content",
+        "--deprecated"
+      ])
 
       expect(portal).to have_received(:edit_mod).with(
         "test-mod",
@@ -135,7 +133,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
 
     context "when no metadata is provided" do
       it "raises error with message" do
-        expect { command.call(mod_name: "test-mod") }.to raise_error(Factorix::Error, "No metadata options provided")
+        expect { run_command(command, %w[test-mod]) }.to raise_error(Factorix::Error, "No metadata options provided")
         expect(portal).not_to have_received(:edit_mod)
       end
     end
@@ -147,7 +145,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
         )
 
         expect {
-          command.call(mod_name: "test-mod", description: "New description")
+          run_command(command, ["test-mod", "--description=New description"])
         }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
       end
     end
@@ -155,28 +153,28 @@ RSpec.describe Factorix::CLI::Commands::MOD::Edit do
     context "when invalid license is provided" do
       it "raises error for unknown license identifier" do
         expect {
-          command.call(mod_name: "test-mod", license: "invalid_license")
+          run_command(command, %w[test-mod --license=invalid_license])
         }.to raise_error(Factorix::Error, "Invalid license identifier")
         expect(portal).not_to have_received(:edit_mod)
       end
 
       it "raises error for MIT without default_ prefix" do
         expect {
-          command.call(mod_name: "test-mod", license: "MIT")
+          run_command(command, %w[test-mod --license=MIT])
         }.to raise_error(Factorix::Error, "Invalid license identifier")
         expect(portal).not_to have_received(:edit_mod)
       end
 
       it "raises error for custom license with wrong hex length" do
         expect {
-          command.call(mod_name: "test-mod", license: "custom_0123456789abcdef")
+          run_command(command, %w[test-mod --license=custom_0123456789abcdef])
         }.to raise_error(Factorix::Error, "Invalid license identifier")
         expect(portal).not_to have_received(:edit_mod)
       end
 
       it "raises error for custom license with uppercase hex" do
         expect {
-          command.call(mod_name: "test-mod", license: "custom_0123456789ABCDEF01234567")
+          run_command(command, %w[test-mod --license=custom_0123456789ABCDEF01234567])
         }.to raise_error(Factorix::Error, "Invalid license identifier")
         expect(portal).not_to have_received(:edit_mod)
       end

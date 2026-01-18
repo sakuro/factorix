@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Enable do
-  include_context "with suppressed output"
-
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -53,12 +51,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "enables the MOD" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:enable).with(mod_a)
       end
 
       it "saves the mod-list.json" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:save).with(no_args)
       end
     end
@@ -89,7 +87,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "enables both the MOD and its dependency" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:enable).with(mod_a)
         expect(mod_list).to have_received(:enable).with(mod_b)
       end
@@ -104,7 +102,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "does not enable the MOD again" do
-        command.call(mod_names: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).not_to have_received(:enable)
       end
     end
@@ -129,7 +127,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error about the conflict" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::Error, /conflicts with mod-c/)
       end
     end
@@ -155,7 +153,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error about the conflict" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::Error, /conflicts with mod-c/)
       end
     end
@@ -166,7 +164,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises an error" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::Error, /not installed/)
       end
     end
@@ -186,7 +184,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         end
 
         it "enables the MOD" do
-          command.call(mod_names: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).to have_received(:enable).with(mod_a)
         end
       end
@@ -197,7 +195,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
         end
 
         it "does not enable the MOD" do
-          command.call(mod_names: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).not_to have_received(:enable)
         end
       end
@@ -224,7 +222,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       end
 
       it "raises GameRunningError" do
-        expect { command.call(mod_names: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end

@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Install do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -115,17 +112,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "downloads the MOD" do
-        command.call(mod_specs: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(portal).to have_received(:download_mod)
       end
 
       it "adds the MOD to mod-list.json" do
-        command.call(mod_specs: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:add).with(mod_a, enabled: true)
       end
 
       it "saves mod-list.json" do
-        command.call(mod_specs: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(mod_list).to have_received(:save).with(no_args)
       end
     end
@@ -200,7 +197,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "downloads both MODs in dependency order" do
-        command.call(mod_specs: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(portal).to have_received(:download_mod).twice
       end
     end
@@ -212,7 +209,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       end
 
       it "does not download anything" do
-        command.call(mod_specs: ["mod-a"], yes: true)
+        run_command(command, %w[mod-a --yes])
         expect(portal).not_to have_received(:download_mod)
       end
     end
@@ -225,13 +222,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       it "accepts name@version format" do
         # Allow the command to proceed without actual download
         allow(graph).to receive(:nodes).and_return([])
-        command.call(mod_specs: ["mod-a@1.0.0"], yes: true)
+        run_command(command, %w[mod-a@1.0.0 --yes])
         expect(portal).to have_received(:get_mod_full).with("mod-a")
       end
 
       it "accepts name@latest format" do
         allow(graph).to receive(:nodes).and_return([])
-        command.call(mod_specs: ["mod-a@latest"], yes: true)
+        run_command(command, %w[mod-a@latest --yes])
         expect(portal).to have_received(:get_mod_full).with("mod-a")
       end
     end
@@ -271,7 +268,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         end
 
         it "installs the MOD" do
-          command.call(mod_specs: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).to have_received(:add).with(mod_a, enabled: true)
         end
       end
@@ -282,7 +279,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
         end
 
         it "does not install the MOD" do
-          command.call(mod_specs: ["mod-a"])
+          run_command(command, %w[mod-a])
           expect(mod_list).not_to have_received(:add)
         end
       end
@@ -302,7 +299,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, error: nil) }
 
       it "raises GameRunningError" do
-        expect { command.call(mod_specs: ["mod-a"], yes: true) }
+        expect { run_command(command, %w[mod-a --yes]) }
           .to raise_error(Factorix::GameRunningError, /Cannot perform this operation while Factorio is running/)
       end
     end

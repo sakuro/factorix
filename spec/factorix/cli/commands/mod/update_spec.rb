@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Update do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
@@ -99,7 +96,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "downloads and updates the MOD" do
-        command.call(mod_names: ["mod-a"], jobs: 1)
+        run_command(command, %w[mod-a --jobs=1])
 
         expect(portal).to have_received(:download_mod)
         expect(mod_list).to have_received(:remove).with(mod_a)
@@ -118,7 +115,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "does not perform any updates" do
-        command.call(mod_names: ["mod-a"], jobs: 1)
+        run_command(command, %w[mod-a --jobs=1])
 
         expect(portal).not_to have_received(:download_mod)
       end
@@ -130,7 +127,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "updates all installed MODs" do
-        command.call(mod_names: [], jobs: 1)
+        run_command(command, %w[--jobs=1])
 
         expect(portal).to have_received(:download_mod)
       end
@@ -141,7 +138,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
         allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 
         expect {
-          capture_stdout { command.call(mod_names: ["base"], jobs: 1) }
+          run_command(command, %w[base --jobs=1])
         }.to raise_error(Factorix::Error, /Cannot update base MOD/)
       end
     end
@@ -151,7 +148,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
         allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 
         expect {
-          capture_stdout { command.call(mod_names: ["space-age"], jobs: 1) }
+          run_command(command, %w[space-age --jobs=1])
         }.to raise_error(Factorix::Error, /Cannot update expansion MOD/)
       end
     end
@@ -162,7 +159,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       end
 
       it "does not perform any updates" do
-        command.call(mod_names: [], jobs: 1)
+        run_command(command, %w[--jobs=1])
 
         expect(portal).not_to have_received(:download_mod)
       end

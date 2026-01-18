@@ -75,10 +75,10 @@ module Factorix
           end
 
           private def display_header(mod_info)
-            puts TITLE_STYLE[mod_info.title]
-            puts
-            puts mod_info.summary unless mod_info.summary.empty?
-            puts
+            out.puts TITLE_STYLE[mod_info.title]
+            out.puts
+            out.puts mod_info.summary unless mod_info.summary.empty?
+            out.puts
           end
 
           private def display_basic_info(mod_info, local_status)
@@ -103,9 +103,9 @@ module Factorix
 
             max_label_width = rows.map {|label, _| label.length }.max
             rows.each do |label, value|
-              puts "#{label.ljust(max_label_width)}  #{value}"
+              out.puts "#{label.ljust(max_label_width)}  #{value}"
             end
-            puts
+            out.puts
           end
 
           private def format_status(local_status)
@@ -123,18 +123,18 @@ module Factorix
           end
 
           private def display_links(mod_info)
-            puts HEADER_STYLE["Links"]
-            puts "  MOD Portal: https://mods.factorio.com/mod/#{mod_info.name}"
+            out.puts HEADER_STYLE["Links"]
+            out.puts "  MOD Portal: https://mods.factorio.com/mod/#{mod_info.name}"
 
             if mod_info.detail
               if mod_info.detail.source_url
-                puts "  Source: #{mod_info.detail.source_url}"
+                out.puts "  Source: #{mod_info.detail.source_url}"
               end
               if mod_info.detail.homepage
-                puts "  Homepage: #{mod_info.detail.homepage}"
+                out.puts "  Homepage: #{mod_info.detail.homepage}"
               end
             end
-            puts
+            out.puts
           end
 
           private def display_dependencies(mod_info)
@@ -149,16 +149,16 @@ module Factorix
             optional = parsed.select {|d| d[:type] == :optional }
 
             unless required.empty?
-              puts HEADER_STYLE["Dependencies"]
+              out.puts HEADER_STYLE["Dependencies"]
               required.each {|dep| display_dependency(dep) }
-              puts
+              out.puts
             end
 
             return if optional.empty?
 
-            puts HEADER_STYLE["Optional Dependencies"]
+            out.puts HEADER_STYLE["Optional Dependencies"]
             optional.each {|dep| display_dependency(dep) }
-            puts
+            out.puts
           end
 
           private def parse_dependency(dep_str)
@@ -178,7 +178,7 @@ module Factorix
           end
 
           private def display_dependency(dep)
-            puts "  #{dep[:spec]}"
+            out.puts "  #{dep[:spec]}"
           end
 
           private def display_incompatibilities(mod_info)
@@ -191,9 +191,9 @@ module Factorix
 
             return if incompatible.empty?
 
-            puts HEADER_STYLE["Incompatibilities"]
-            incompatible.each {|dep| puts "  #{INCOMPATIBLE_MOD_STYLE[dep[:spec]]}" }
-            puts
+            out.puts HEADER_STYLE["Incompatibilities"]
+            incompatible.each {|dep| out.puts "  #{INCOMPATIBLE_MOD_STYLE[dep[:spec]]}" }
+            out.puts
           end
         end
       end

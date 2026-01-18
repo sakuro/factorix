@@ -52,7 +52,7 @@ module Factorix
           script_path = COMPLETION_DIR / SUPPORTED_SHELLS[shell_type]
           raise ConfigurationError, "#{shell_type.capitalize} completion script not found" unless script_path.exist?
 
-          puts script_path.read
+          out.puts script_path.read
         end
 
         # Detect shell type from SHELL environment variable

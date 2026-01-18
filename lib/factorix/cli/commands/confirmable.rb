@@ -41,7 +41,7 @@ module Factorix
             raise InvalidOperationError, "Cannot prompt for confirmation in quiet mode. Use --yes to proceed automatically."
           end
 
-          print "#{message} [y/N] "
+          out.print "#{message} [y/N] "
           response = $stdin.gets&.strip&.downcase
 
           # Only explicit y or yes means yes (default is no for safety)

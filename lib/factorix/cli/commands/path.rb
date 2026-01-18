@@ -61,7 +61,7 @@ module Factorix
           result = PATH_TYPES.transform_values {|method_name| runtime.public_send(method_name).to_s }
 
           if json
-            puts JSON.pretty_generate(result)
+            out.puts JSON.pretty_generate(result)
           else
             output_table(result)
           end
@@ -70,7 +70,7 @@ module Factorix
         private def output_table(result)
           key_width = result.keys.map(&:length).max
           result.each do |key, value|
-            puts "%-#{key_width}s  %s" % [key, value]
+            out.puts "%-#{key_width}s  %s" % [key, value]
           end
         end
       end

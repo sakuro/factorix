@@ -44,7 +44,7 @@ module Factorix
             mod_name = extract_mod_name(file_path)
             metadata = build_metadata(description:, category:, license:, source_url:)
 
-            presenter = Progress::Presenter.new(title: "\u{1F4E4} Uploading #{file_path.basename}", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F4E4} Uploading #{file_path.basename}", output: err)
 
             uploader = portal.mod_management_api.uploader
             handler = Progress::UploadHandler.new(presenter)

@@ -3,9 +3,6 @@
 require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }
@@ -60,7 +57,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "#call" do
     it "downloads a single MOD" do
-      command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
+      run_command(command, %W[test-mod --directory=#{tmpdir} --jobs=1])
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
@@ -70,19 +67,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       download_dir = File.join(tmpdir, "nonexistent")
 
       expect {
-        command.call(mod_specs: ["test-mod"], directory: download_dir, jobs: 1)
+        run_command(command, %W[test-mod --directory=#{download_dir} --jobs=1])
       }.to raise_error(Factorix::Error, /Download directory does not exist/)
     end
 
     it "handles MOD with version specification" do
-      command.call(mod_specs: ["test-mod@1.0.0"], directory: tmpdir, jobs: 1)
+      run_command(command, %W[test-mod@1.0.0 --directory=#{tmpdir} --jobs=1])
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
     end
 
     it "handles latest version specification" do
-      command.call(mod_specs: ["test-mod@latest"], directory: tmpdir, jobs: 1)
+      run_command(command, %W[test-mod@latest --directory=#{tmpdir} --jobs=1])
 
       expect(portal).to have_received(:get_mod_full).with("test-mod")
       expect(portal).to have_received(:download_mod).once
@@ -129,7 +126,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
       allow(portal).to receive(:get_mod_full).with("mod1").and_return(mod1_info)
       allow(portal).to receive(:get_mod_full).with("mod2").and_return(mod2_info)
 
-      command.call(mod_specs: %w[mod1 mod2], directory: tmpdir, jobs: 2)
+      run_command(command, %W[mod1 mod2 --directory=#{tmpdir} --jobs=2])
 
       expect(portal).to have_received(:get_mod_full).with("mod1")
       expect(portal).to have_received(:get_mod_full).with("mod2")
@@ -139,7 +136,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     context "with invalid MOD specification" do
       it "raises error for non-existent release version" do
         expect {
-          command.call(mod_specs: ["test-mod@9.9.9"], directory: tmpdir, jobs: 1)
+          run_command(command, %W[test-mod@9.9.9 --directory=#{tmpdir} --jobs=1])
         }.to raise_error(Factorix::Error, /Release not found/)
       end
     end
@@ -149,14 +146,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
       it "raises error when trying to download to MOD directory" do
         expect {
-          command.call(mod_specs: ["test-mod"], directory: tmpdir, jobs: 1)
+          run_command(command, %W[test-mod --directory=#{tmpdir} --jobs=1])
         }.to raise_error(Factorix::Error, /Cannot download to MOD directory/)
       end
 
       it "raises error when using '.' in MOD directory" do
         Dir.chdir(runtime.mod_dir) do
           expect {
-            command.call(mod_specs: ["test-mod"], directory: ".", jobs: 1)
+            run_command(command, %w[test-mod --directory=. --jobs=1])
           }.to raise_error(Factorix::Error, /Cannot download to MOD directory/)
         end
       end
@@ -188,7 +185,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(portal).to receive(:get_mod_full).with("evil-mod").and_return(mod_info_with_bad_filename)
 
         expect {
-          command.call(mod_specs: ["evil-mod"], directory: tmpdir, jobs: 1)
+          run_command(command, %W[evil-mod --directory=#{tmpdir} --jobs=1])
         }.to raise_error(Factorix::InvalidArgumentError, /path/)
       end
     end
@@ -321,12 +318,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         presenter = instance_double(Factorix::Progress::Presenter, start: nil, update: nil, increase_total: nil)
         allow(Factorix::Progress::Presenter).to receive(:new).and_return(presenter)
 
-        command.call(
-          mod_specs: ["mod-with-dep"],
-          directory: tmpdir,
-          jobs: 1,
-          recursive: true
-        )
+        run_command(command, %W[mod-with-dep --directory=#{tmpdir} --jobs=1 --recursive])
 
         # Verify both mods were downloaded
         expect(portal).to have_received(:download_mod).twice
@@ -340,12 +332,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
         allow(portal).to receive(:get_mod_full).with("mod-with-dep").and_return(mod_with_dep)
         allow(portal).to receive(:download_mod).and_return(true)
 
-        command.call(
-          mod_specs: ["mod-with-dep"],
-          directory: tmpdir,
-          jobs: 1,
-          recursive: false
-        )
+        run_command(command, %W[mod-with-dep --directory=#{tmpdir} --jobs=1])
 
         # Verify only the specified mod was downloaded
         expect(portal).to have_received(:download_mod).once
