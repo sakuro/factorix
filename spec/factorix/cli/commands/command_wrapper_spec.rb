@@ -11,25 +11,19 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     )
   end
 
-  # Create a test command class that includes BeforeCallSetup
-  let(:test_command_class) do
-    Class.new do
-      prepend Factorix::CLI::Commands::CommandWrapper
-
-      attr_reader :called, :quiet
-
-      def call(**_options)
-        @called = true
-      end
-    end
-  end
-
-  let(:command) { test_command_class.new }
   let(:logger) { instance_double(Dry::Logger::Dispatcher) }
   let(:file_backend) { instance_double(Dry::Logger::Backends::Stream, level: Logger::INFO) }
   let(:default_config_path) { Pathname("/tmp/factorix/config.rb") }
 
   before do
+    # Define test command class with stub_const for automatic cleanup
+    test_class = Class.new(Factorix::CLI::Commands::Base) do
+      def call(**)
+        say "executed", prefix: :success
+      end
+    end
+    stub_const("TestCommand", test_class)
+
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
     allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
@@ -42,22 +36,20 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
   end
 
   describe "#call" do
-    it "sets @quiet from options" do
-      command.call(quiet: true)
-      expect(command.quiet).to be true
+    it "suppresses output when --quiet is passed" do
+      result = run_command(TestCommand, %w[--quiet])
+      expect(result.stdout).to be_empty
     end
 
     it "calls the command's implementation via super" do
-      command.call
-      expect(command.called).to be true
+      result = run_command(TestCommand)
+      expect(result.stdout).to include("executed")
     end
 
     context "with config_path option" do
-      let(:config_path) { Pathname("/custom/config.toml") }
-
       it "loads configuration from specified path" do
-        command.call(config_path:)
-        expect(Factorix).to have_received(:load_config).with(config_path)
+        run_command(TestCommand, %w[--config-path=/custom/config.toml])
+        expect(Factorix).to have_received(:load_config).with(Pathname("/custom/config.toml"))
       end
     end
 
@@ -74,7 +66,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
           allow(ENV).to receive(:[]).with("FACTORIX_CONFIG").and_return(config_file.path)
           allow(ENV).to receive(:fetch).with("FACTORIX_CONFIG").and_return(config_file.path)
 
-          command.call
+          run_command(TestCommand)
 
           expect(Factorix).to have_received(:load_config) do |path|
             expect(path).to be_a(Pathname)
@@ -90,14 +82,14 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
           end
 
           it "loads configuration from default path" do
-            command.call
+            run_command(TestCommand)
             expect(Factorix).to have_received(:load_config).with(default_config_path)
           end
         end
 
         context "when default config file does not exist" do
           it "does not load configuration" do
-            command.call
+            run_command(TestCommand)
             expect(Factorix).not_to have_received(:load_config)
           end
         end
@@ -111,27 +103,27 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
       end
 
       it "sets file backend log level to DEBUG" do
-        command.call(log_level: "debug")
+        run_command(TestCommand, %w[--log-level=debug])
         expect(file_backend).to have_received(:level=).with(Logger::DEBUG)
       end
 
       it "sets file backend log level to INFO" do
-        command.call(log_level: "info")
+        run_command(TestCommand, %w[--log-level=info])
         expect(file_backend).to have_received(:level=).with(Logger::INFO)
       end
 
       it "sets file backend log level to WARN" do
-        command.call(log_level: "warn")
+        run_command(TestCommand, %w[--log-level=warn])
         expect(file_backend).to have_received(:level=).with(Logger::WARN)
       end
 
       it "sets file backend log level to ERROR" do
-        command.call(log_level: "error")
+        run_command(TestCommand, %w[--log-level=error])
         expect(file_backend).to have_received(:level=).with(Logger::ERROR)
       end
 
       it "sets file backend log level to FATAL" do
-        command.call(log_level: "fatal")
+        run_command(TestCommand, %w[--log-level=fatal])
         expect(file_backend).to have_received(:level=).with(Logger::FATAL)
       end
 
@@ -141,7 +133,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
         end
 
         it "does not set log level" do
-          command.call(log_level: "debug")
+          run_command(TestCommand, %w[--log-level=debug])
           expect(file_backend).not_to have_received(:level=)
         end
       end
@@ -150,7 +142,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     context "without log_level option" do
       it "does not change log level" do
         allow(file_backend).to receive(:level=)
-        command.call
+        run_command(TestCommand)
         expect(file_backend).not_to have_received(:level=)
       end
     end
