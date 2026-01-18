@@ -190,7 +190,7 @@ module Factorix
           # @param jobs [Integer] Number of parallel jobs
           # @return [void]
           private def download_mods(targets, jobs)
-            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads")
+            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads", output: err)
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 
