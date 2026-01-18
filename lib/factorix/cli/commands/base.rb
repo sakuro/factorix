@@ -72,7 +72,7 @@ module Factorix
         option :log_level, values: %w[debug info warn error fatal], desc: "Set log level"
         option :quiet, type: :flag, default: false, aliases: ["-q"], desc: "Suppress non-essential output"
 
-        private private def say(message, prefix: "")
+        private def say(message, prefix: "")
           return if quiet?
 
           resolved_prefix = EMOJI_PREFIXES.fetch(prefix) { prefix.to_s }
