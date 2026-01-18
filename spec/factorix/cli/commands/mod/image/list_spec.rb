@@ -45,22 +45,22 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "outputs table format by default" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
+        result = run_command(command, "test-mod")
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(output).to include("ID")
-        expect(output).to include("THUMBNAIL")
-        expect(output).to include("URL")
-        expect(output).to include("abc123")
-        expect(output).to include("def456")
+        expect(result.stdout).to include("ID")
+        expect(result.stdout).to include("THUMBNAIL")
+        expect(result.stdout).to include("URL")
+        expect(result.stdout).to include("abc123")
+        expect(result.stdout).to include("def456")
       end
 
       it "outputs JSON format with --json option" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
+        result = run_command(command, "test-mod", json: true)
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
 
-        json = JSON.parse(output)
+        json = JSON.parse(result.stdout)
         expect(json).to eq([
           {
             "id" => "abc123",
@@ -100,17 +100,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "displays 'No images found' in table format" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
+        result = run_command(command, "test-mod")
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(output).to include("No images found")
+        expect(result.stdout).to include("No images found")
       end
 
       it "displays empty array in JSON format" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
+        result = run_command(command, "test-mod", json: true)
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(JSON.parse(output)).to eq([])
+        expect(JSON.parse(result.stdout)).to eq([])
       end
     end
 
@@ -131,17 +131,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
       end
 
       it "displays 'No images found' in table format" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: false) }
+        result = run_command(command, "test-mod")
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(output).to include("No images found")
+        expect(result.stdout).to include("No images found")
       end
 
       it "displays empty array in JSON format" do
-        output = capture_stdout { command.call(mod_name: "test-mod", json: true) }
+        result = run_command(command, "test-mod", json: true)
 
         expect(portal).to have_received(:get_mod_full).with("test-mod")
-        expect(JSON.parse(output)).to eq([])
+        expect(JSON.parse(result.stdout)).to eq([])
       end
     end
 
@@ -154,7 +154,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
 
       it "raises MODNotOnPortalError" do
         expect {
-          capture_stdout { command.call(mod_name: "non-existent-mod", json: false) }
+          run_command(command, "non-existent-mod")
         }.to raise_error(Factorix::MODNotOnPortalError, /not found on portal/)
       end
     end

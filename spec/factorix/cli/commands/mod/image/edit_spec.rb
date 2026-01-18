@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::Edit.new(portal:) }
 

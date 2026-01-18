@@ -80,7 +80,7 @@ module Factorix
             validate_filter_options!(enabled:, disabled:, errors:, outdated:)
 
             mod_list = MODList.load
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: err)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
@@ -226,7 +226,7 @@ module Factorix
             }
 
             # Only show progress for MOD(s) that need API calls
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Checking for updates", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Checking for updates", output: err)
             presenter.start(total: regular_mods.size)
 
             pool = Concurrent::FixedThreadPool.new(DEFAULT_JOBS)
@@ -307,19 +307,19 @@ module Factorix
               latest_width = [mod_infos.map {|m| m.latest_version&.to_s&.length || 0 }.max, 6].max
 
               # Header with LATEST column
-              puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % %w[NAME VERSION LATEST STATUS]
+              out.puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % %w[NAME VERSION LATEST STATUS]
 
               # Rows with LATEST column
               mod_infos.each do |info|
-                puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % [info.name, info.version, info.latest_version, info.status]
+                out.puts "%-#{name_width}s  %-#{version_width}s  %-#{latest_width}s  %s" % [info.name, info.version, info.latest_version, info.status]
               end
             else
               # Header
-              puts "%-#{name_width}s  %-#{version_width}s  %s" % %w[NAME VERSION STATUS]
+              out.puts "%-#{name_width}s  %-#{version_width}s  %s" % %w[NAME VERSION STATUS]
 
               # Rows
               mod_infos.each do |info|
-                puts "%-#{name_width}s  %-#{version_width}s  %s" % [info.name, info.version, info.status]
+                out.puts "%-#{name_width}s  %-#{version_width}s  %s" % [info.name, info.version, info.status]
               end
             end
 
@@ -363,7 +363,7 @@ module Factorix
               end
             }
 
-            puts JSON.pretty_generate(data)
+            out.puts JSON.pretty_generate(data)
           end
         end
       end

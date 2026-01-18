@@ -45,7 +45,7 @@ module Factorix
                        end
 
               if json
-                puts JSON.pretty_generate(images)
+                out.puts JSON.pretty_generate(images)
               else
                 output_table(images)
               end
@@ -60,10 +60,10 @@ module Factorix
               id_width = [images.map {|i| i[:id].length }.max, 2].max
               thumb_width = [images.map {|i| i[:thumbnail].length }.max, 9].max
 
-              puts "%-#{id_width}s  %-#{thumb_width}s  %s" % %w[ID THUMBNAIL URL]
+              out.puts "%-#{id_width}s  %-#{thumb_width}s  %s" % %w[ID THUMBNAIL URL]
 
               images.each do |image|
-                puts "%-#{id_width}s  %-#{thumb_width}s  %s" % [image[:id], image[:thumbnail], image[:url]]
+                out.puts "%-#{id_width}s  %-#{thumb_width}s  %s" % [image[:id], image[:thumbnail], image[:url]]
               end
             end
           end

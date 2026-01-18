@@ -62,7 +62,7 @@ module Factorix
           end
 
           private def output_json(mods)
-            puts JSON.pretty_generate(mods.map {|mod| mod_to_hash(mod) })
+            out.puts JSON.pretty_generate(mods.map {|mod| mod_to_hash(mod) })
           end
 
           private def mod_to_hash(mod)
@@ -101,10 +101,10 @@ module Factorix
             headers = %w[NAME TITLE CATEGORY OWNER LATEST]
             widths = headers.map.with_index {|h, i| [h.length, *rows.map {|r| r[i].to_s.length }].max }
 
-            puts format_table_row(headers, widths)
+            out.puts format_table_row(headers, widths)
 
             rows.each do |row|
-              puts format_table_row(row, widths)
+              out.puts format_table_row(row, widths)
             end
 
             say "#{mods.size} MOD(s) found", prefix: :info

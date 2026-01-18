@@ -3,8 +3,6 @@
 require "tempfile"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Sync do
-  include_context "with suppressed output"
-
   let(:command) do
     Factorix::CLI::Commands::MOD::Sync.new(
       runtime:,

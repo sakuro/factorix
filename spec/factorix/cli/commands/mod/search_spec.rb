@@ -35,14 +35,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   end
 
   describe "#call" do
-    include_context "with suppressed output"
-
     before do
       allow(portal).to receive(:list_mods).and_return([mod_info])
     end
 
     it "passes options to portal.list_mods" do
-      command.call(
+      run_command(
+        command,
         hide_deprecated: true,
         page: 2,
         page_size: 50,
@@ -90,8 +89,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
     end
 
     it "displays latest_release version in LATEST column" do
-      output = capture_stdout { command.call }
-      expect(output).to include("1.2.3")
+      result = run_command(command)
+      expect(result.stdout).to include("1.2.3")
     end
   end
 end

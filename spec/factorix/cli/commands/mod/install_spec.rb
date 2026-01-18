@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Install do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,

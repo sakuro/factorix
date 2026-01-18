@@ -1,52 +1,58 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::Completion do
-  let(:command) { Factorix::CLI::Commands::Completion.new }
-
-  include_context "with suppressed output"
-
   describe "#call" do
     context "with zsh argument" do
       it "outputs zsh completion script" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "zsh") }.to output(/\A#compdef factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "zsh")
+        expect(result.stdout).to match(/\A#compdef factorix/)
       end
 
       it "includes _factorix function" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "zsh") }.to output(/_factorix\(\)/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "zsh")
+        expect(result.stdout).to match(/_factorix\(\)/)
       end
 
       it "includes compdef directive" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "zsh") }.to output(/compdef _factorix factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "zsh")
+        expect(result.stdout).to match(/compdef _factorix factorix/)
       end
     end
 
     context "with bash argument" do
       it "outputs bash completion script" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "bash") }.to output(/\A# Bash completion for factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "bash")
+        expect(result.stdout).to match(/\A# Bash completion for factorix/)
       end
 
       it "includes _factorix function" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "bash") }.to output(/_factorix\(\)/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "bash")
+        expect(result.stdout).to match(/_factorix\(\)/)
       end
 
       it "includes complete directive" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "bash") }.to output(/complete -F _factorix factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "bash")
+        expect(result.stdout).to match(/complete -F _factorix factorix/)
       end
     end
 
     context "with fish argument" do
       it "outputs fish completion script" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "fish") }.to output(/\A# Fish completion for factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "fish")
+        expect(result.stdout).to match(/\A# Fish completion for factorix/)
       end
 
       it "includes __factorix_installed_mods function" do
-        expect { Factorix::CLI::Commands::Completion.new.call(shell: "fish") }.to output(/__factorix_installed_mods/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion, shell: "fish")
+        expect(result.stdout).to match(/__factorix_installed_mods/)
       end
     end
 
     context "with unsupported shell" do
       it "raises an error" do
-        expect { command.call(shell: "unknown") }.to raise_error(Factorix::Error, /Unsupported shell/)
+        expect {
+          run_command(Factorix::CLI::Commands::Completion, shell: "unknown")
+        }.to raise_error(Factorix::Error, /Unsupported shell/)
       end
     end
 
@@ -59,22 +65,27 @@ RSpec.describe Factorix::CLI::Commands::Completion do
 
       it "detects zsh" do
         ENV["SHELL"] = "/bin/zsh"
-        expect { Factorix::CLI::Commands::Completion.new.call }.to output(/\A#compdef factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion)
+        expect(result.stdout).to match(/\A#compdef factorix/)
       end
 
       it "detects bash" do
         ENV["SHELL"] = "/bin/bash"
-        expect { Factorix::CLI::Commands::Completion.new.call }.to output(/\A# Bash completion for factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion)
+        expect(result.stdout).to match(/\A# Bash completion for factorix/)
       end
 
       it "detects fish" do
         ENV["SHELL"] = "/usr/bin/fish"
-        expect { Factorix::CLI::Commands::Completion.new.call }.to output(/\A# Fish completion for factorix/).to_stdout
+        result = run_command(Factorix::CLI::Commands::Completion)
+        expect(result.stdout).to match(/\A# Fish completion for factorix/)
       end
 
       it "raises error for unknown shell" do
         ENV["SHELL"] = "/bin/unknown"
-        expect { command.call }.to raise_error(Factorix::Error, /Cannot detect shell type/)
+        expect {
+          run_command(Factorix::CLI::Commands::Completion)
+        }.to raise_error(Factorix::Error, /Cannot detect shell type/)
       end
     end
   end

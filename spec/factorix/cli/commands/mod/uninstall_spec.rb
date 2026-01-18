@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
-  include_context "with suppressed output"
-
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,

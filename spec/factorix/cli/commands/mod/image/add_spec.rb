@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
-  include_context "with suppressed output"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:command) { Factorix::CLI::Commands::MOD::Image::Add.new(portal:) }
   let(:tmpdir) { Dir.mktmpdir }

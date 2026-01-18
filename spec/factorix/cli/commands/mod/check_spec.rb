@@ -45,19 +45,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays success messages" do
-        output = capture_stdout { command.call }
-        expect(output).to include("✓ All enabled MOD(s) have their required dependencies satisfied")
-        expect(output).to include("✓ No circular dependencies detected")
-        expect(output).to include("✓ No conflicting MOD(s) are enabled simultaneously")
+        result = run_command(command)
+        expect(result.stdout).to include("All enabled MOD(s) have their required dependencies satisfied")
+        expect(result.stdout).to include("No circular dependencies detected")
+        expect(result.stdout).to include("No conflicting MOD(s) are enabled simultaneously")
       end
 
       it "displays summary with enabled count" do
-        output = capture_stdout { command.call }
-        expect(output).to include("Summary: 2 enabled MODs")
+        result = run_command(command)
+        expect(result.stdout).to include("Summary: 2 enabled MODs")
       end
 
       it "does not exit with error code" do
-        expect { capture_stdout { command.call } }.not_to raise_error
+        result = run_command(command)
+        expect(result.success?).to be true
       end
     end
 
@@ -83,23 +84,24 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "does not display success messages" do
-        output = capture_stdout { command.call }
-        expect(output).not_to include("✅ All enabled MOD(s)")
+        result = run_command(command)
+        expect(result.stdout).not_to include("All enabled MOD(s)")
       end
 
       it "displays warnings" do
-        output = capture_stdout { command.call }
-        expect(output).to include("Warnings:")
-        expect(output).to include("MOD X may have compatibility issues")
+        result = run_command(command)
+        expect(result.stdout).to include("Warnings:")
+        expect(result.stdout).to include("MOD X may have compatibility issues")
       end
 
       it "displays summary with warning count" do
-        output = capture_stdout { command.call }
-        expect(output).to include("Summary: 1 enabled MOD, 1 warning")
+        result = run_command(command)
+        expect(result.stdout).to include("Summary: 1 enabled MOD, 1 warning")
       end
 
       it "does not exit with error code" do
-        expect { capture_stdout { command.call } }.not_to raise_error
+        result = run_command(command)
+        expect(result.success?).to be true
       end
     end
 
@@ -135,32 +137,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays errors" do
-        output = capture_stdout {
-          begin
-            command.call
-          rescue Factorix::ValidationError
-            # Expected exception
-          end
-        }
-        expect(output).to include("Errors:")
-        expect(output).to include("Missing dependency: mod-a")
-        expect(output).to include("Circular dependency detected")
+        result = run_command(command, rescue_exception: true)
+        expect(result.stdout).to include("Errors:")
+        expect(result.stdout).to include("Missing dependency: mod-a")
+        expect(result.stdout).to include("Circular dependency detected")
       end
 
       it "displays summary with error count" do
-        output = capture_stdout {
-          begin
-            command.call
-          rescue Factorix::ValidationError
-            # Expected exception
-          end
-        }
-        expect(output).to include("Summary: 2 enabled MODs, 2 errors")
+        result = run_command(command, rescue_exception: true)
+        expect(result.stdout).to include("Summary: 2 enabled MODs, 2 errors")
       end
 
       it "raises ValidationError" do
         expect {
-          capture_stdout { command.call }
+          run_command(command)
         }.to raise_error(Factorix::ValidationError, /MOD dependency validation failed/)
       end
     end
@@ -196,28 +186,16 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays both errors and warnings" do
-        output = capture_stdout {
-          begin
-            command.call
-          rescue Factorix::ValidationError
-            # Expected exception
-          end
-        }
-        expect(output).to include("Errors:")
-        expect(output).to include("Missing dependency")
-        expect(output).to include("Warnings:")
-        expect(output).to include("Version mismatch")
+        result = run_command(command, rescue_exception: true)
+        expect(result.stdout).to include("Errors:")
+        expect(result.stdout).to include("Missing dependency")
+        expect(result.stdout).to include("Warnings:")
+        expect(result.stdout).to include("Version mismatch")
       end
 
       it "displays summary with both counts" do
-        output = capture_stdout {
-          begin
-            command.call
-          rescue Factorix::ValidationError
-            # Expected exception
-          end
-        }
-        expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
+        result = run_command(command, rescue_exception: true)
+        expect(result.stdout).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
       end
     end
 
@@ -250,10 +228,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays suggestions" do
-        output = capture_stdout { command.call }
-        expect(output).to include("ℹ Suggestions:")
-        expect(output).to include("Consider enabling mod-x")
-        expect(output).to include("Update mod-y to latest version")
+        result = run_command(command)
+        expect(result.stdout).to include("Suggestions:")
+        expect(result.stdout).to include("Consider enabling mod-x")
+        expect(result.stdout).to include("Update mod-y to latest version")
       end
     end
 
@@ -288,14 +266,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "uses singular forms correctly" do
-        output = capture_stdout {
-          begin
-            command.call
-          rescue Factorix::ValidationError
-            # Expected exception
-          end
-        }
-        expect(output).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
+        result = run_command(command, rescue_exception: true)
+        expect(result.stdout).to include("Summary: 1 enabled MOD, 1 error, 1 warning")
       end
     end
 
@@ -311,8 +283,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       end
 
       it "displays zero in summary" do
-        output = capture_stdout { command.call }
-        expect(output).to include("Summary: 0 enabled MODs")
+        result = run_command(command)
+        expect(result.stdout).to include("Summary: 0 enabled MODs")
       end
     end
   end

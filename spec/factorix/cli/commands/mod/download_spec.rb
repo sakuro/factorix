@@ -3,9 +3,6 @@
 require "tmpdir"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Download do
-  include_context "with suppressed output"
-  include_context "with suppressed progress bar"
-
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }

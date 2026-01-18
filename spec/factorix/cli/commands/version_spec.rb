@@ -3,9 +3,8 @@
 RSpec.describe Factorix::CLI::Commands::Version do
   describe "#call" do
     it "outputs the Factorix version" do
-      expect {
-        Factorix::CLI::Commands::Version.new.call
-      }.to output("#{Factorix::VERSION}\n").to_stdout
+      result = run_command(Factorix::CLI::Commands::Version)
+      expect(result.stdout).to eq("#{Factorix::VERSION}\n")
     end
   end
 end

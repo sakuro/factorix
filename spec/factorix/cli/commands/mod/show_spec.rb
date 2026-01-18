@@ -65,83 +65,84 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
   end
 
   describe "#call" do
-    include_context "with suppressed output"
-
     it "fetches MOD info from portal" do
-      command.call(mod_name: "test-mod")
+      run_command(command, "test-mod")
       expect(portal).to have_received(:get_mod_full).with("test-mod")
     end
 
     it "raises BundledMODError for base MOD" do
-      expect { command.call(mod_name: "base") }.to raise_error(Factorix::BundledMODError, "Cannot show base MOD")
+      expect { run_command(command, "base") }.to raise_error(Factorix::BundledMODError, "Cannot show base MOD")
     end
 
     it "raises BundledMODError for expansion MODs" do
       %w[space-age quality elevated-rails].each do |expansion|
-        expect { command.call(mod_name: expansion) }.to raise_error(Factorix::BundledMODError, /Cannot show expansion MOD/)
+        expect { run_command(command, expansion) }.to raise_error(Factorix::BundledMODError, /Cannot show expansion MOD/)
       end
     end
 
-    context "with output capture" do
-      let(:output) { capture_stdout { command.call(mod_name: "test-mod") } }
+    it "displays MOD title" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("Test MOD Title")
+    end
 
-      before do
-        allow(command).to receive(:say).and_call_original
-        allow(command).to receive(:puts).and_call_original
-        allow(command).to receive(:print).and_call_original
-      end
+    it "displays MOD summary" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("A test MOD summary")
+    end
 
-      it "displays MOD title" do
-        expect(output).to include("Test MOD Title")
-      end
+    it "displays version" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("1.2.3")
+    end
 
-      it "displays MOD summary" do
-        expect(output).to include("A test MOD summary")
-      end
+    it "displays author" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("test-author")
+    end
 
-      it "displays version" do
-        expect(output).to include("1.2.3")
-      end
+    it "displays category" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("Utilities")
+    end
 
-      it "displays author" do
-        expect(output).to include("test-author")
-      end
+    it "displays downloads count" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("12345")
+    end
 
-      it "displays category" do
-        expect(output).to include("Utilities")
-      end
+    it "displays license from detail" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("MIT")
+    end
 
-      it "displays downloads count" do
-        expect(output).to include("12345")
-      end
+    it "displays MOD portal link" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("https://mods.factorio.com/mod/test-mod")
+    end
 
-      it "displays license from detail" do
-        expect(output).to include("MIT")
-      end
+    it "displays source URL" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("https://github.com/test/test-mod")
+    end
 
-      it "displays MOD portal link" do
-        expect(output).to include("https://mods.factorio.com/mod/test-mod")
-      end
+    it "displays required dependencies" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("base >= 2.0")
+    end
 
-      it "displays source URL" do
-        expect(output).to include("https://github.com/test/test-mod")
-      end
+    it "displays optional dependencies" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("optional-dep >= 1.0")
+    end
 
-      it "displays required dependencies" do
-        expect(output).to include("base >= 2.0")
-      end
+    it "displays incompatibilities" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("incompatible-mod")
+    end
 
-      it "displays optional dependencies" do
-        expect(output).to include("optional-dep >= 1.0")
-      end
-
-      it "displays incompatibilities" do
-        expect(output).to include("incompatible-mod")
-      end
-
-      it "shows 'Not installed' for uninstalled MOD" do
-        expect(output).to include("Not installed")
-      end
+    it "shows 'Not installed' for uninstalled MOD" do
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("Not installed")
     end
   end
 
@@ -162,13 +163,13 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
     end
 
     it "displays 'Enabled' for installed and enabled MOD" do
-      output = capture_stdout { command.call(mod_name: "test-mod") }
-      expect(output).to include("Enabled")
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("Enabled")
     end
 
     it "shows installed version with update available" do
-      output = capture_stdout { command.call(mod_name: "test-mod") }
-      expect(output).to include("1.0.0 (update available)")
+      result = run_command(command, "test-mod")
+      expect(result.stdout).to include("1.0.0 (update available)")
     end
   end
 end

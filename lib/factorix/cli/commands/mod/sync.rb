@@ -48,7 +48,7 @@ module Factorix
 
             # Load current state
             mod_list = MODList.load
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: err)
             handler = Progress::ScanHandler.new(presenter)
             installed_mods = InstalledMOD.all(handler:)
             graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
@@ -110,7 +110,7 @@ module Factorix
           # @return [Array<Hash>] Installation targets with MOD info and releases
           private def plan_installation(mods_to_install, graph, jobs)
             # Create progress presenter for info fetching
-            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: $stderr)
+            presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: err)
 
             # Fetch info for MODs to install
             target_infos = fetch_target_mod_info(mods_to_install, jobs, presenter)

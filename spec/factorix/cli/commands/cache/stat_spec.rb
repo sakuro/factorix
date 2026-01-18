@@ -3,7 +3,6 @@
 require "json"
 
 RSpec.describe Factorix::CLI::Commands::Cache::Stat do
-  let(:command) { Factorix::CLI::Commands::Cache::Stat.new }
   let(:cache_dir) { Pathname(Dir.mktmpdir) }
 
   before do
@@ -22,19 +21,19 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
   describe "#call" do
     context "with empty caches" do
       it "outputs statistics in text format" do
-        output = capture_stdout { command.call(json: false) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat)
 
-        expect(output).to include("download:")
-        expect(output).to include("api:")
-        expect(output).to include("info_json:")
-        expect(output).to include("Entries:        0 / 0")
-        expect(output).to include("Size:           0 B")
+        expect(result.stdout).to include("download:")
+        expect(result.stdout).to include("api:")
+        expect(result.stdout).to include("info_json:")
+        expect(result.stdout).to include("Entries:        0 / 0")
+        expect(result.stdout).to include("Size:           0 B")
       end
 
       it "outputs statistics in JSON format" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json.keys).to contain_exactly(:download, :api, :info_json)
         expect(json[:download][:entries]).to eq({total: 0, valid: 0, expired: 0})
       end
@@ -50,17 +49,17 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "counts entries correctly" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:entries][:total]).to eq(2)
         expect(json[:download][:entries][:valid]).to eq(2)
       end
 
       it "calculates size statistics" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:size][:total]).to eq(35) # 14 + 21 bytes
         expect(json[:download][:size][:min]).to eq(14)
         expect(json[:download][:size][:max]).to eq(21)
@@ -83,9 +82,9 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "distinguishes valid and expired entries" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         # api cache has TTL of 3600 seconds (1 hour)
         expect(json[:api][:entries][:total]).to eq(2)
         expect(json[:api][:entries][:valid]).to eq(1)
@@ -106,16 +105,16 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       end
 
       it "counts stale locks" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:stale_locks]).to eq(1)
       end
 
       it "does not count lock files as cache entries" do
-        output = capture_stdout { command.call(json: true) }
+        result = run_command(Factorix::CLI::Commands::Cache::Stat, json: true)
 
-        json = JSON.parse(output, symbolize_names: true)
+        json = JSON.parse(result.stdout, symbolize_names: true)
         expect(json[:download][:entries][:total]).to eq(0)
       end
     end
@@ -123,23 +122,23 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
 
   describe "text output formatting" do
     it "formats TTL as duration when set" do
-      output = capture_stdout { command.call(json: false) }
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
 
-      expect(output).to include("TTL:            1h 0m") # api cache has 3600s TTL
+      expect(result.stdout).to include("TTL:            1h 0m") # api cache has 3600s TTL
     end
 
     it "formats TTL as unlimited when nil" do
-      output = capture_stdout { command.call(json: false) }
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
 
-      expect(output).to include("TTL:            unlimited") # download cache has nil TTL
+      expect(result.stdout).to include("TTL:            unlimited") # download cache has nil TTL
     end
 
     it "formats compression setting" do
-      output = capture_stdout { command.call(json: false) }
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
 
       # download has nil (disabled), api/info_json have 0 (always)
-      expect(output).to include("Compression:    disabled")
-      expect(output).to include("Compression:    enabled (always)")
+      expect(result.stdout).to include("Compression:    disabled")
+      expect(result.stdout).to include("Compression:    enabled (always)")
     end
 
     it "formats sizes using binary prefixes" do
@@ -148,9 +147,9 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       # Create a file larger than 1 KiB
       (download_dir / "ab" / "large_file").write("x" * 2048)
 
-      output = capture_stdout { command.call(json: false) }
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
 
-      expect(output).to include("KiB")
+      expect(result.stdout).to include("KiB")
     end
   end
 end
