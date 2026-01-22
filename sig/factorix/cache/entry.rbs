@@ -5,7 +5,8 @@ module Factorix
     class Entry
       attr_reader size: Integer
       attr_reader age: Float
-      attr_reader expired: bool
+
+      def expired?: () -> bool
 
       def initialize: (size: Integer, age: Float, expired: bool) -> void
     end

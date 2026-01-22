@@ -543,7 +543,7 @@ RSpec.describe Factorix::Cache::FileSystem do
           expect(entry).to be_a(Factorix::Cache::Entry)
           expect(entry.size).to eq(12) # "test content" is 12 bytes
           expect(entry.age).to be_within(1).of(0)
-          expect(entry.expired).to be false
+          expect(entry).not_to be_expired
         end
       end
 
@@ -569,7 +569,7 @@ RSpec.describe Factorix::Cache::FileSystem do
 
       it "marks entry as expired" do
         cache.each do |_key, entry|
-          expect(entry.expired).to be true
+          expect(entry).to be_expired
         end
       end
     end

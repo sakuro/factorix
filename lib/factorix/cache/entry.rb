@@ -13,10 +13,13 @@ module Factorix
     #   @return [Integer] entry size in bytes
     # @!attribute [r] age
     #   @return [Float] age in seconds since creation/modification
-    # @!attribute [r] expired
-    #   @return [Boolean] whether entry has exceeded TTL
     class Entry
-      # All functionality provided by Data.define
+      private :expired
+
+      # Check if the cache entry has expired.
+      #
+      # @return [Boolean] true if entry has exceeded TTL
+      def expired? = expired
     end
   end
 end
