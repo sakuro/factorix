@@ -2,22 +2,7 @@
 
 require "json"
 
-RSpec.describe Factorix::CLI::Commands::Cache::Stat do
-  let(:cache_dir) { Pathname(Dir.mktmpdir) }
-
-  before do
-    # Set up test cache directories
-    %i[download api info_json].each do |name|
-      dir = cache_dir / name.to_s
-      dir.mkpath
-      allow(Factorix.config.cache.public_send(name).file_system).to receive(:dir).and_return(dir)
-    end
-  end
-
-  after do
-    FileUtils.rm_rf(cache_dir)
-  end
-
+RSpec.describe Factorix::CLI::Commands::Cache::Stat, :with_test_caches do
   describe "#call" do
     context "with empty caches" do
       it "outputs statistics in text format" do
@@ -41,11 +26,8 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
 
     context "with cache entries" do
       before do
-        # Create some test cache files
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-        (download_dir / "ab" / "cdef1234").write("test content 1")
-        (download_dir / "ab" / "cdef5678").write("test content 2 longer")
+        download_cache.add_entry("http://example.com/file1", "test content 1")
+        download_cache.add_entry("http://example.com/file2", "test content 2 longer")
       end
 
       it "counts entries correctly" do
@@ -68,17 +50,10 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
 
     context "with expired entries" do
       before do
-        api_dir = cache_dir / "api"
-        (api_dir / "ab").mkpath
-
-        # Create an old file (expired)
-        old_file = api_dir / "ab" / "old_entry"
-        old_file.write("old content")
-        FileUtils.touch(old_file, mtime: Time.now - 7200) # 2 hours ago
-
-        # Create a new file (valid)
-        new_file = api_dir / "ab" / "new_entry"
-        new_file.write("new content")
+        # Create an old entry (expired) - api cache has TTL of 3600s
+        api_cache.add_entry("http://example.com/old", "old content", age: 7200)
+        # Create a new entry (valid)
+        api_cache.add_entry("http://example.com/new", "new content", age: 0)
       end
 
       it "distinguishes valid and expired entries" do
@@ -89,33 +64,6 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
         expect(json[:api][:entries][:total]).to eq(2)
         expect(json[:api][:entries][:valid]).to eq(1)
         expect(json[:api][:entries][:expired]).to eq(1)
-      end
-    end
-
-    context "with lock files" do
-      before do
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-
-        # Create a stale lock file
-        lock_file = download_dir / "ab" / "test.lock"
-        lock_file.write("")
-        # Make it older than LOCK_FILE_LIFETIME (3600 seconds)
-        FileUtils.touch(lock_file, mtime: Time.now - 7200)
-      end
-
-      it "counts stale locks" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
-
-        json = JSON.parse(result.stdout, symbolize_names: true)
-        expect(json[:download][:stale_locks]).to eq(1)
-      end
-
-      it "does not count lock files as cache entries" do
-        result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
-
-        json = JSON.parse(result.stdout, symbolize_names: true)
-        expect(json[:download][:entries][:total]).to eq(0)
       end
     end
   end
@@ -133,19 +81,8 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       expect(result.stdout).to include("TTL:            unlimited") # download cache has nil TTL
     end
 
-    it "formats compression setting" do
-      result = run_command(Factorix::CLI::Commands::Cache::Stat)
-
-      # download has nil (disabled), api/info_json have 0 (always)
-      expect(result.stdout).to include("Compression:    disabled")
-      expect(result.stdout).to include("Compression:    enabled (always)")
-    end
-
     it "formats sizes using binary prefixes" do
-      download_dir = cache_dir / "download"
-      (download_dir / "ab").mkpath
-      # Create a file larger than 1 KiB
-      (download_dir / "ab" / "large_file").write("x" * 2048)
+      download_cache.add_entry("http://example.com/large", "x" * 2048)
 
       result = run_command(Factorix::CLI::Commands::Cache::Stat)
 

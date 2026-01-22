@@ -45,11 +45,13 @@ Lint/EmptyClass:
 Lint/UnusedMethodArgument:
   Exclude:
     - lib/factorix/cache/file_system.rb # timeout parameter kept for Base interface compatibility
+    - spec/support/test_cache_backend.rb # timeout parameter kept for Base interface compatibility
 
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
     - lib/factorix/ser_des/deserializer.rb # read_bool follows binary deserialization naming convention
+    - spec/support/test_cache_backend.rb # store/delete return boolean but are standard cache API names
 
 Naming/VariableNumber:
   AllowedPatterns:
@@ -68,10 +70,12 @@ RSpec/IndexedLet:
 
 Style/HashEachMethods:
   Exclude:
+    - lib/factorix/cli/commands/cache/stat.rb # cache.each is not Hash#each, it's Cache::Base#each
     - spec/factorix/cache/file_system_spec.rb # cache.each is not Hash#each, it's a custom method
 
 Style/MapIntoArray:
   Exclude:
+    - lib/factorix/cli/commands/cache/stat.rb # cache.each is Cache::Base#each, not Hash#each
     - spec/factorix/cache/file_system_spec.rb # Testing cache.each method, not optimizing for map
 
 Style/IpAddresses:
