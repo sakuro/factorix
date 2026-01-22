@@ -125,12 +125,15 @@ module Factorix
 
             cache_dir.glob("**/*").each do |path|
               next unless path.file?
-              next if path.extname == ".lock"
+              next if path.extname == ".lock" || path.extname == ".metadata"
 
               next unless should_evict?(path, ttl, all:, expired:)
 
               size += path.size
               path.delete
+              # Also delete associated metadata file if it exists
+              metadata_path = Pathname("#{path}.metadata")
+              metadata_path.delete if metadata_path.exist?
               count += 1
               logger.debug("Evicted cache entry", path: path.to_s)
             end

@@ -49,7 +49,7 @@ module Factorix
     def self.from_zip(zip_path)
       cache = Container.resolve(:info_json_cache)
       logger = Container.resolve(:logger)
-      cache_key = cache.key_for(zip_path.to_s)
+      cache_key = zip_path.to_s
 
       if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
         logger.debug("info.json cache hit", path: zip_path.to_s)

@@ -86,13 +86,13 @@ module Factorix
 
         # Invalidate get_mod cache
         mod_uri = build_uri("/api/mods/#{encoded_name}")
-        mod_key = cache.key_for(mod_uri.to_s)
-        cache.with_lock(mod_key) { cache.delete(mod_key) }
+        mod_cache_key = mod_uri.to_s
+        cache.with_lock(mod_cache_key) { cache.delete(mod_cache_key) }
 
         # Invalidate get_mod_full cache
         full_uri = build_uri("/api/mods/#{encoded_name}/full")
-        full_key = cache.key_for(full_uri.to_s)
-        cache.with_lock(full_key) { cache.delete(full_key) }
+        full_cache_key = full_uri.to_s
+        cache.with_lock(full_cache_key) { cache.delete(full_cache_key) }
 
         logger.debug("Invalidated cache for MOD", mod: mod_name)
       end
@@ -106,9 +106,9 @@ module Factorix
       # @param uri [URI::HTTPS] URI to fetch
       # @return [Hash{Symbol => untyped}] parsed JSON response with symbolized keys
       private def fetch_with_cache(uri)
-        key = cache.key_for(uri.to_s)
+        cache_key = uri.to_s
 
-        cached = cache.read(key, encoding: "UTF-8")
+        cached = cache.read(cache_key, encoding: "UTF-8")
         if cached
           logger.debug("API cache hit", uri: uri.to_s)
           return JSON.parse(cached, symbolize_names: true)
@@ -117,7 +117,7 @@ module Factorix
         logger.debug("API cache miss", uri: uri.to_s)
         response_body = fetch_from_api(uri)
 
-        store_in_cache(key, response_body)
+        store_in_cache(cache_key, response_body)
 
         JSON.parse(response_body, symbolize_names: true)
       end
@@ -137,16 +137,16 @@ module Factorix
 
       # Store response body in cache via temporary file
       #
-      # @param key [String] cache key
+      # @param cache_key [String] logical cache key (URL string)
       # @param data [String] response body
       # @return [void]
-      private def store_in_cache(key, data)
+      private def store_in_cache(cache_key, data)
         temp_file = Tempfile.new("cache")
         begin
           temp_file.write(data)
           temp_file.close
-          cache.store(key, Pathname(temp_file.path))
-          logger.debug("Stored API response in cache", key:)
+          cache.store(cache_key, Pathname(temp_file.path))
+          logger.debug("Stored API response in cache", key: cache_key)
         ensure
           temp_file.unlink
         end

@@ -10,7 +10,7 @@ RSpec.describe Factorix::Transfer::Downloader do
   let(:uri) { URI("https://example.com/file.zip") }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }
   let(:output) { output_dir.join("file.zip") }
-  let(:cache_key) { "cache_key" }
+  let(:cache_key) { uri.to_s }
 
   around do |example|
     Dir.glob(File.join(Dir.tmpdir, "factorix*")).each do |dir|
@@ -29,7 +29,6 @@ RSpec.describe Factorix::Transfer::Downloader do
   end
 
   before do
-    allow(cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
     allow(cache).to receive(:size).and_return(1024)
     allow(client).to receive(:get)
   end

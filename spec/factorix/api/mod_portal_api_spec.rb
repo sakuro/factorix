@@ -7,10 +7,6 @@ RSpec.describe Factorix::API::MODPortalAPI do
   let(:cache) { instance_double(Factorix::Cache::FileSystem) }
   let(:api) { Factorix::API::MODPortalAPI.new(cache:, client:) }
 
-  before do
-    allow(cache).to receive(:key_for).and_return("cache_key")
-  end
-
   describe "#get_mods" do
     let(:response_body) { '{"results": [], "pagination": {}}' }
     let(:parsed_response) { {results: [], pagination: {}} }
@@ -30,13 +26,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       it "stores response in cache" do
         api.get_mods
-        expect(cache).to have_received(:store).with("cache_key", kind_of(Pathname))
+        expect(cache).to have_received(:store).with("https://mods.factorio.com/api/mods", kind_of(Pathname))
       end
     end
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data without making HTTP request" do
@@ -92,7 +88,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data" do
@@ -147,7 +143,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("cache_key", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod/full", encoding: "UTF-8").and_return(response_body)
       end
 
       it "returns cached data" do
@@ -279,7 +275,6 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
   describe "#on_mod_changed" do
     before do
-      allow(cache).to receive(:key_for) {|uri| "key_for_#{uri}" }
       allow(cache).to receive(:with_lock).and_yield
       allow(cache).to receive(:delete)
     end
@@ -289,10 +284,10 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       api.on_mod_changed(event)
 
-      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/example-mod")
-      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/example-mod/full")
-      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/example-mod")
-      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/example-mod/full")
+      expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/example-mod")
+      expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/example-mod/full")
+      expect(cache).to have_received(:delete).with("https://mods.factorio.com/api/mods/example-mod")
+      expect(cache).to have_received(:delete).with("https://mods.factorio.com/api/mods/example-mod/full")
     end
 
     it "URL-encodes MOD names with special characters" do
@@ -300,10 +295,10 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
       api.on_mod_changed(event)
 
-      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation")
-      expect(cache).to have_received(:with_lock).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
-      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation")
-      expect(cache).to have_received(:delete).with("key_for_https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
+      expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/Explosive%20Excavation")
+      expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
+      expect(cache).to have_received(:delete).with("https://mods.factorio.com/api/mods/Explosive%20Excavation")
+      expect(cache).to have_received(:delete).with("https://mods.factorio.com/api/mods/Explosive%20Excavation/full")
     end
   end
 end

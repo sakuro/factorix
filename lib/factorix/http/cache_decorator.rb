@@ -50,9 +50,9 @@ module Factorix
         # Don't cache streaming requests
         return client.get(uri, headers:, &block) if block
 
-        key = cache.key_for(uri.to_s)
+        cache_key = uri.to_s
 
-        cached_body = cache.read(key)
+        cached_body = cache.read(cache_key)
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
           publish("cache.hit", url: uri.to_s)
@@ -63,9 +63,9 @@ module Factorix
         publish("cache.miss", url: uri.to_s)
 
         # Locking prevents concurrent downloads of the same resource
-        cache.with_lock(key) do
+        cache.with_lock(cache_key) do
           # Double-check: another thread might have filled the cache
-          cached_body = cache.read(key)
+          cached_body = cache.read(cache_key)
           if cached_body
             publish("cache.hit", url: uri.to_s)
             return CachedResponse.new(cached_body)
@@ -77,7 +77,7 @@ module Factorix
             with_temporary_file do |temp|
               temp.write(response.body)
               temp.close
-              cache.store(key, Pathname(temp.path))
+              cache.store(cache_key, Pathname(temp.path))
             end
           end
 

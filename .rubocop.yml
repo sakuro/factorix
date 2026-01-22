@@ -42,6 +42,10 @@ inherit_from: .rubocop_todo.yml
 Lint/EmptyClass:
   AllowComments: true
 
+Lint/UnusedMethodArgument:
+  Exclude:
+    - lib/factorix/cache/file_system.rb # timeout parameter kept for Base interface compatibility
+
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
@@ -61,6 +65,14 @@ RSpec/IndexedLet:
     - '^node\d+$'     # Allow node1, node2, etc.
     - '^error\d+$'    # Allow error1, error2, etc.
     - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
+
+Style/HashEachMethods:
+  Exclude:
+    - spec/factorix/cache/file_system_spec.rb # cache.each is not Hash#each, it's a custom method
+
+Style/MapIntoArray:
+  Exclude:
+    - spec/factorix/cache/file_system_spec.rb # Testing cache.each method, not optimizing for map
 
 Style/IpAddresses:
   Exclude:

@@ -81,7 +81,7 @@ module Factorix
             entries = []
             cache_dir.glob("**/*").each do |path|
               next unless path.file?
-              next if path.extname == ".lock"
+              next if path.extname == ".lock" || path.extname == ".metadata"
 
               age_seconds = @now - path.mtime
               expired = ttl ? age_seconds > ttl : false
