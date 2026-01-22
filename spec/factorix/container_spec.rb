@@ -218,36 +218,52 @@ RSpec.describe Factorix::Container do
     describe "cache.download" do
       it "defaults dir to runtime.factorix_cache_dir/download" do
         runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.download.dir).to eq(runtime.factorix_cache_dir / "download")
+        expect(Factorix.config.cache.download.file_system.dir).to eq(runtime.factorix_cache_dir / "download")
+      end
+
+      it "has default backend of :file_system" do
+        expect(Factorix.config.cache.download.backend).to eq(:file_system)
       end
 
       it "has default ttl of nil" do
         expect(Factorix.config.cache.download.ttl).to be_nil
       end
 
+      it "has default lock_timeout of 30" do
+        expect(Factorix.config.cache.download.lock_timeout).to eq(30)
+      end
+
       it "has default max_file_size of nil" do
-        expect(Factorix.config.cache.download.max_file_size).to be_nil
+        expect(Factorix.config.cache.download.file_system.max_file_size).to be_nil
       end
 
       it "can be overridden" do
         custom_path = Pathname("/custom/cache/download")
-        Factorix.config.cache.download.dir = custom_path
-        expect(Factorix.config.cache.download.dir).to eq(custom_path)
+        Factorix.config.cache.download.file_system.dir = custom_path
+        expect(Factorix.config.cache.download.file_system.dir).to eq(custom_path)
       end
     end
 
     describe "cache.api" do
       it "defaults dir to runtime.factorix_cache_dir/api" do
         runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.api.dir).to eq(runtime.factorix_cache_dir / "api")
+        expect(Factorix.config.cache.api.file_system.dir).to eq(runtime.factorix_cache_dir / "api")
+      end
+
+      it "has default backend of :file_system" do
+        expect(Factorix.config.cache.api.backend).to eq(:file_system)
       end
 
       it "has default ttl of 3600 seconds" do
         expect(Factorix.config.cache.api.ttl).to eq(3600)
       end
 
+      it "has default lock_timeout of 30" do
+        expect(Factorix.config.cache.api.lock_timeout).to eq(30)
+      end
+
       it "has default max_file_size of 10MiB" do
-        expect(Factorix.config.cache.api.max_file_size).to eq(10 * 1024 * 1024)
+        expect(Factorix.config.cache.api.file_system.max_file_size).to eq(10 * 1024 * 1024)
       end
     end
 

@@ -54,9 +54,9 @@ RSpec.configure do |config|
 
     # Reset configuration to defaults and reconfigure with new runtime
     Factorix.reset_config
-    Factorix.config.cache.download.dir = new_runtime.factorix_cache_dir / "download"
-    Factorix.config.cache.api.dir = new_runtime.factorix_cache_dir / "api"
-    Factorix.config.cache.info_json.dir = new_runtime.factorix_cache_dir / "info_json"
+    Factorix.config.cache.download.file_system.dir = new_runtime.factorix_cache_dir / "download"
+    Factorix.config.cache.api.file_system.dir = new_runtime.factorix_cache_dir / "api"
+    Factorix.config.cache.info_json.file_system.dir = new_runtime.factorix_cache_dir / "info_json"
   end
 
   config.after(:suite) do

@@ -54,15 +54,16 @@ module Factorix
 
           private def collect_stats(name)
             config = Factorix.config.cache.public_send(name)
-            cache_dir = config.dir
+            fs_config = config.file_system
+            cache_dir = fs_config.dir
 
             entries = scan_entries(cache_dir, config.ttl)
 
             {
               directory: cache_dir.to_s,
               ttl: config.ttl,
-              max_file_size: config.max_file_size,
-              compression_threshold: config.compression_threshold,
+              max_file_size: fs_config.max_file_size,
+              compression_threshold: fs_config.compression_threshold,
               entries: build_entry_stats(entries),
               size: build_size_stats(entries),
               age: build_age_stats(entries),

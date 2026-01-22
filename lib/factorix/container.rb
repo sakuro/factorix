@@ -49,19 +49,20 @@ module Factorix
     # Register download cache
     register(:download_cache, memoize: true) do
       c = Factorix.config.cache.download
-      Cache::FileSystem.new(**c.to_h)
+      # Currently only FileSystem backend is supported
+      Cache::FileSystem.new(ttl: c.ttl, lock_timeout: c.lock_timeout, **c.file_system.to_h)
     end
 
     # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
       c = Factorix.config.cache.api
-      Cache::FileSystem.new(**c.to_h)
+      Cache::FileSystem.new(ttl: c.ttl, lock_timeout: c.lock_timeout, **c.file_system.to_h)
     end
 
     # Register info.json cache (for MOD metadata from ZIP files)
     register(:info_json_cache, memoize: true) do
       c = Factorix.config.cache.info_json
-      Cache::FileSystem.new(**c.to_h)
+      Cache::FileSystem.new(ttl: c.ttl, lock_timeout: c.lock_timeout, **c.file_system.to_h)
     end
 
     # Register base HTTP client

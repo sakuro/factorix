@@ -76,13 +76,32 @@ Factorix.configure do |config|
   # ============================================================================
   # Cache Configuration
   # ============================================================================
+  # Each cache type supports multiple backends with hierarchical configuration.
+  # Common settings (backend, ttl, lock_timeout) apply to all backends.
+  # Backend-specific settings are nested under the backend name.
 
   # Download cache settings (for MOD files)
+  # config.cache.download.backend = :file_system  # Currently only :file_system is supported
   # config.cache.download.ttl = nil  # nil = unlimited (MOD files are immutable)
-  # config.cache.download.max_file_size = nil  # nil = unlimited
+  # config.cache.download.lock_timeout = 30  # Lock timeout in seconds
+  # config.cache.download.file_system.dir = Pathname("~/.cache/factorix/download")
+  # config.cache.download.file_system.max_file_size = nil  # nil = unlimited
+  # config.cache.download.file_system.compression_threshold = nil  # nil = no compression
 
   # API cache settings (for API responses)
+  # config.cache.api.backend = :file_system
   # config.cache.api.ttl = 3600  # 1 hour
-  # config.cache.api.max_file_size = 10 * 1024 * 1024  # 10MiB
+  # config.cache.api.lock_timeout = 30
+  # config.cache.api.file_system.dir = Pathname("~/.cache/factorix/api")
+  # config.cache.api.file_system.max_file_size = 10 * 1024 * 1024  # 10MiB
+  # config.cache.api.file_system.compression_threshold = 0  # Always compress
+
+  # info.json cache settings (for MOD metadata from ZIP files)
+  # config.cache.info_json.backend = :file_system
+  # config.cache.info_json.ttl = nil  # nil = unlimited (info.json is immutable)
+  # config.cache.info_json.lock_timeout = 30
+  # config.cache.info_json.file_system.dir = Pathname("~/.cache/factorix/info_json")
+  # config.cache.info_json.file_system.max_file_size = nil  # nil = unlimited
+  # config.cache.info_json.file_system.compression_threshold = 0  # Always compress
 
 end

@@ -10,7 +10,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
     %i[download api info_json].each do |name|
       dir = cache_dir / name.to_s
       dir.mkpath
-      allow(Factorix.config.cache.public_send(name)).to receive(:dir).and_return(dir)
+      allow(Factorix.config.cache.public_send(name).file_system).to receive(:dir).and_return(dir)
     end
   end
 

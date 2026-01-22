@@ -84,6 +84,10 @@ Style/StaticClass:
     - lib/factorix/info_json.rb
     - lib/factorix.rb # Deprecated Application class for backward compatibility
 
+Metrics/BlockLength:
+  Exclude:
+    - lib/factorix.rb # Cache configuration block with hierarchical backend settings
+
 ThreadSafety/NewThread:
   Exclude:
     - spec/factorix/runtime/wsl/wsl_path_spec.rb
