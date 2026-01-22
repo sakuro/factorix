@@ -115,7 +115,7 @@ module Factorix
           # @return [Hash] eviction result with :count and :size
           private def evict_cache(name, all:, expired:)
             config = Factorix.config.cache.public_send(name)
-            cache_dir = config.dir
+            cache_dir = config.file_system.dir
             ttl = config.ttl
 
             return {count: 0, size: 0} unless cache_dir.exist?
