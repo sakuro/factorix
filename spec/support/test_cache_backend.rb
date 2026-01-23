@@ -117,10 +117,11 @@ module Factorix
         return enum_for(__method__) unless block_given?
 
         @entries.each do |key, data|
+          age = Time.now - data[:stored_at]
           entry = Entry.new(
             size: data[:size],
-            age: Time.now - data[:stored_at],
-            expired: @ttl ? (Time.now - data[:stored_at] > @ttl) : false
+            age:,
+            expired: @ttl ? age > @ttl : false
           )
           yield key, entry
         end

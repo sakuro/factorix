@@ -272,10 +272,11 @@ module Factorix
           next unless metadata_path.exist?
 
           logical_key = JSON.parse(metadata_path.read)["logical_key"]
+          age = Time.now - path.mtime
           entry = Entry.new(
             size: path.size,
-            age: Time.now - path.mtime,
-            expired: @ttl ? (Time.now - path.mtime > @ttl) : false
+            age:,
+            expired: @ttl ? age > @ttl : false
           )
 
           yield logical_key, entry
