@@ -8,6 +8,23 @@ require "zip"
 # Suppress warnings about invalid dates in ZIP files
 Zip.warn_invalid_date = false
 
+# Load config early, before dry-cli instantiates commands.
+# This is necessary because command classes use Import which resolves
+# dependencies at instantiation time (before CommandWrapper#call).
+# Without this, cache backends would use default config instead of user config.
+#
+# Note: --config-path option is handled separately in CommandWrapper and
+# will override settings if specified.
+config_path_index = ARGV.index("--config-path") || ARGV.index("-c")
+if config_path_index && ARGV[config_path_index + 1]
+  Factorix.load_config(Pathname(ARGV[config_path_index + 1]))
+elsif ENV["FACTORIX_CONFIG"]
+  Factorix.load_config(Pathname(ENV.fetch("FACTORIX_CONFIG")))
+else
+  default_config = Factorix::Container[:runtime].factorix_config_path
+  Factorix.load_config(default_config) if default_config.exist?
+end
+
 begin
   Dry::CLI.new(Factorix::CLI).call
   exit 0
