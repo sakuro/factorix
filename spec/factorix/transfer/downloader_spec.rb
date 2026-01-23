@@ -7,10 +7,10 @@ RSpec.describe Factorix::Transfer::Downloader do
   let(:cache) { instance_double(Factorix::Cache::FileSystem) }
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:downloader) { Factorix::Transfer::Downloader.new(cache:, client:) }
-  let(:uri) { URI("https://example.com/file.zip") }
+  let(:uri) { URI("https://example.com/file.zip?username=secret&token=secret123") }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }
   let(:output) { output_dir.join("file.zip") }
-  let(:cache_key) { uri.to_s }
+  let(:cache_key) { "https://example.com/file.zip" }
 
   around do |example|
     Dir.glob(File.join(Dir.tmpdir, "factorix*")).each do |dir|

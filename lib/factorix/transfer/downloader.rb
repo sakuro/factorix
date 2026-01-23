@@ -53,7 +53,7 @@ module Factorix
         end
 
         logger.info("Starting download", output: output.to_s)
-        cache_key = url.to_s
+        cache_key = strip_query(url)
 
         case try_cache_hit(cache_key, output, expected_sha1:)
         when :hit
@@ -143,6 +143,14 @@ module Factorix
         logger.error("SHA1 digest mismatch", expected: expected_sha1, actual: actual_sha1)
         raise DigestMismatchError, "SHA1 mismatch: expected #{expected_sha1}, got #{actual_sha1}"
       end
+
+      # Strip query parameters from a URI to create a safe cache key.
+      # This prevents sensitive data (e.g., authentication tokens) from being
+      # stored in cache metadata.
+      #
+      # @param uri [URI] the URI to strip
+      # @return [String] URI string without query parameters
+      private def strip_query(uri) = uri.dup.tap {|u| u.query = nil }.to_s
 
       # Create a temporary file for downloading, ensuring cleanup after use.
       #
