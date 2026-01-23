@@ -34,6 +34,17 @@ module Factorix
       # @abstract
       def read(key, encoding: Encoding::ASCII_8BIT) = raise NotImplementedError, "#{self.class}#read must be implemented"
 
+      # Write cached content to a file.
+      #
+      # Unlike {#read} which returns content as a String, this method writes
+      # directly to a file path, which is more memory-efficient for large files.
+      #
+      # @param key [String] logical cache key
+      # @param output [Pathname] path to write the cached content
+      # @return [Boolean] true if written successfully, false if not found/expired
+      # @abstract
+      def write_to(key, output) = raise NotImplementedError, "#{self.class}#write_to must be implemented"
+
       # Store data in the cache.
       #
       # @param key [String] logical cache key

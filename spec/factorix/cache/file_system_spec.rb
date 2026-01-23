@@ -86,7 +86,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
   end
 
-  describe "#fetch" do
+  describe "#write_to" do
     let(:output_file) { Pathname(Dir.mktmpdir("output")) + "file.zip" }
 
     after do
@@ -100,14 +100,14 @@ RSpec.describe Factorix::Cache::FileSystem do
       end
 
       it "copies the cache file to the output path" do
-        expect(cache.fetch(logical_key, output_file)).to be true
+        expect(cache.write_to(logical_key, output_file)).to be true
         expect(output_file.read).to eq("cached content")
       end
     end
 
     context "when the cache file does not exist" do
       it "returns false" do
-        expect(cache.fetch(logical_key, output_file)).to be false
+        expect(cache.write_to(logical_key, output_file)).to be false
         expect(output_file).not_to exist
       end
     end
@@ -122,7 +122,7 @@ RSpec.describe Factorix::Cache::FileSystem do
 
       it "returns false for expired cache" do
         FileUtils.touch(cache_path, mtime: Time.now - 20)
-        expect(cache.fetch(logical_key, output_file)).to be false
+        expect(cache.write_to(logical_key, output_file)).to be false
         expect(output_file).not_to exist
       end
     end
@@ -133,8 +133,8 @@ RSpec.describe Factorix::Cache::FileSystem do
         cache_path.binwrite(Zlib.deflate("compressed content"))
       end
 
-      it "decompresses the data when fetching" do
-        expect(cache.fetch(logical_key, output_file)).to be true
+      it "decompresses the data when writing" do
+        expect(cache.write_to(logical_key, output_file)).to be true
         expect(output_file.read).to eq("compressed content")
       end
     end

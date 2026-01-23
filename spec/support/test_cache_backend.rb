@@ -42,6 +42,18 @@ module Factorix
         @entries[key][:data].dup.force_encoding(encoding)
       end
 
+      # Write cached content to a file.
+      #
+      # @param key [String] logical cache key
+      # @param output [Pathname] path to write the cached content
+      # @return [Boolean] true if written successfully, false if not found/expired
+      def write_to(key, output)
+        return false unless exist?(key)
+
+        output.binwrite(@entries[key][:data])
+        true
+      end
+
       # Store data in the cache.
       #
       # @param key [String] logical cache key

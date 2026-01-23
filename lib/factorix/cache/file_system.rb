@@ -64,14 +64,14 @@ module Factorix
         !expired?(key)
       end
 
-      # Fetch a cached file and copy it to the output path.
+      # Write cached content to a file.
       # If the cache entry doesn't exist or is expired, returns false without modifying the output path.
       # Automatically decompresses zlib-compressed cache entries.
       #
       # @param key [String] logical cache key
-      # @param output [Pathname] path to copy the cached file to
-      # @return [Boolean] true if the cache entry was found and copied, false otherwise
-      def fetch(key, output)
+      # @param output [Pathname] path to write the cached content to
+      # @return [Boolean] true if written successfully, false if not found/expired
+      def write_to(key, output)
         internal_key = storage_key_for(key)
         path = cache_path_for(internal_key)
         unless path.exist?

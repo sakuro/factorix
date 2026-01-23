@@ -63,6 +63,7 @@ Abstract base class that defines the cache backend interface. All cache backends
 |--------|-------------|
 | `exist?(key)` | Check if entry exists and is not expired |
 | `read(key, encoding)` | Read cached content as string |
+| `write_to(key, output)` | Write cached content to file |
 | `store(key, src)` | Store file in cache |
 | `delete(key)` | Delete specific entry |
 | `clear()` | Clear all entries |
@@ -87,14 +88,6 @@ Represents metadata about a cache entry, used when enumerating entries with `#ea
 Location: `lib/factorix/cache/file_system.rb`
 
 File-based cache backend that extends `Cache::Base`. Provides persistent storage with optional compression and process-safe file locking.
-
-### Additional Methods
-
-In addition to the `Base` interface, `FileSystem` provides:
-
-| Method | Description |
-|--------|-------------|
-| `fetch(key, output)` | Copy cached file to output path |
 
 ### Storage Format
 

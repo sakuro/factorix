@@ -75,7 +75,7 @@ module Factorix
             download_file_with_progress(url, temp_file)
             verify_sha1(temp_file, expected_sha1) if expected_sha1
             cache.store(cache_key, temp_file)
-            cache.fetch(cache_key, output)
+            cache.write_to(cache_key, output)
           end
         end
       end
@@ -117,7 +117,7 @@ module Factorix
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
       # @return [Symbol] :hit if cache hit with valid SHA1, :miss if not cached, :corrupted if SHA1 mismatch
       private def try_cache_hit(cache_key, output, expected_sha1:)
-        return :miss unless cache.fetch(cache_key, output)
+        return :miss unless cache.write_to(cache_key, output)
 
         logger.info("Cache hit", output: output.to_s)
         verify_sha1(output, expected_sha1) if expected_sha1
