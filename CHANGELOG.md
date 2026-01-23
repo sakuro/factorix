@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+### Added
+
+- Add Redis cache backend (`Cache::Redis`) with distributed locking support (#19)
+  - Optional dependency: requires `redis` gem (~> 5) in user's Gemfile
+  - Configure with `config.cache.<type>.backend = :redis`
+  - Supports distributed locking via Lua script for atomic lock release
+  - Auto-namespaced keys: `factorix-cache:{cache_type}:{key}`
+
 ## [0.6.0] - 2026-01-18
 
 ### Changed

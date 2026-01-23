@@ -48,6 +48,10 @@ module Factorix
         setting :max_file_size, default: nil # nil for unlimited
         setting :compression_threshold, default: nil # nil for no compression (binary files)
       end
+      setting :redis do
+        setting :url, default: nil # nil uses REDIS_URL env
+        setting :lock_timeout, default: 30
+      end
     end
 
     # API cache settings (for API responses)
@@ -59,6 +63,10 @@ module Factorix
         setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
+      setting :redis do
+        setting :url, default: nil # nil uses REDIS_URL env
+        setting :lock_timeout, default: 30
+      end
     end
 
     # info.json cache settings (for MOD metadata from ZIP files)
@@ -69,6 +77,10 @@ module Factorix
         setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: nil # nil for unlimited (info.json is small)
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
+      end
+      setting :redis do
+        setting :url, default: nil # nil uses REDIS_URL env
+        setting :lock_timeout, default: 30
       end
     end
   end

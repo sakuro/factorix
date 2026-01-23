@@ -31,7 +31,9 @@ graph TD
     subgraph "Cache Layer"
         CacheDecorator --> Base[Cache::Base]
         Base --> FileSystem[Cache::FileSystem]
+        Base --> Redis[Cache::Redis]
         FileSystem --> Storage[(File Storage)]
+        Redis --> RedisServer[(Redis Server)]
     end
 
     subgraph "Transfer Layer"
@@ -48,6 +50,7 @@ graph TD
 | `Cache::Base` | Abstract interface defining the cache contract |
 | `Cache::Entry` | Data class representing cache entry metadata |
 | `Cache::FileSystem` | File-based backend with compression and locking |
+| `Cache::Redis` | Redis-based backend with distributed locking |
 | `HTTP::CacheDecorator` | HTTP response caching (decorator pattern) |
 | `HTTP::CachedResponse` | Cached response wrapper |
 
@@ -131,6 +134,78 @@ Controlled by `compression_threshold` parameter:
 - Prevents concurrent downloads of same resource
 - Stale lock cleanup: removes locks older than 3600 seconds
 - Double-check pattern in CacheDecorator ensures cache consistency
+
+## Redis Class
+
+Location: `lib/factorix/cache/redis.rb`
+
+Redis-based cache backend that extends `Cache::Base`. Provides distributed caching with automatic TTL management and distributed locking via Lua scripts.
+
+### Dependencies
+
+The `redis` gem is required but not included in the gemspec (optional dependency). Users must add it to their Gemfile:
+
+```ruby
+gem "redis", "~> 5"
+# Optional for performance:
+gem "hiredis-client"
+```
+
+### Key Structure
+
+Keys are auto-namespaced based on cache type:
+
+```
+factorix-cache:{cache_type}:{key}           # Data
+factorix-cache:{cache_type}:meta:{key}      # Metadata (size, created_at)
+factorix-cache:{cache_type}:lock:{key}      # Distributed lock
+```
+
+Example:
+```
+factorix-cache:api:https://mods.factorio.com/api/mods/example
+factorix-cache:api:meta:https://mods.factorio.com/api/mods/example
+factorix-cache:api:lock:https://mods.factorio.com/api/mods/example
+```
+
+### Metadata Storage
+
+Redis doesn't natively store creation time or size, so metadata is stored in separate hash keys:
+
+```ruby
+@redis.hset(meta_key, "size", data.bytesize, "created_at", Time.now.to_i)
+```
+
+### TTL Handling
+
+Redis handles TTL natively with EXPIRE command:
+- Keys automatically disappear after TTL
+- Metadata keys expire with same TTL as data keys
+- `expired?` returns `true` for non-existent keys
+
+### Distributed Locking
+
+Uses Redis SET NX EX pattern with Lua script for atomic release:
+
+```ruby
+# Acquire lock
+@redis.set(lock_key, uuid, nx: true, ex: LOCK_TTL)
+
+# Release lock atomically (only if we own it)
+release_script = <<~LUA
+  if redis.call("get", KEYS[1]) == ARGV[1] then
+    return redis.call("del", KEYS[1])
+  else
+    return 0
+  end
+LUA
+@redis.eval(release_script, keys: [lock_key], argv: [uuid])
+```
+
+- Lock acquired with unique UUID value
+- Lock released only if still owned (prevents releasing others' locks)
+- Configurable timeout for lock acquisition (`lock_timeout` parameter)
+- Raises `LockTimeoutError` if lock cannot be acquired within timeout
 
 ## HTTP Cache Decorator
 
@@ -230,7 +305,21 @@ setting :cache do
       setting :max_file_size, default: nil         # Unlimited
       setting :compression_threshold, default: 0   # Always compress
     end
+    setting :redis do
+      setting :url, default: nil                   # Uses REDIS_URL env
+      setting :lock_timeout, default: 30           # Lock acquisition timeout
+    end
   end
+end
+```
+
+### Redis Configuration Example
+
+```ruby
+Factorix.configure do |config|
+  config.cache.api.backend = :redis
+  config.cache.api.redis.url = "redis://localhost:6379/0"  # Or use REDIS_URL env
+  config.cache.api.redis.lock_timeout = 30
 end
 ```
 

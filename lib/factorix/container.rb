@@ -49,20 +49,40 @@ module Factorix
     # Register download cache
     register(:download_cache, memoize: true) do
       c = Factorix.config.cache.download
-      # Currently only FileSystem backend is supported
-      Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      case c.backend
+      when :file_system
+        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      when :redis
+        Cache::Redis.new(ttl: c.ttl, cache_type: :download, **c.redis.to_h)
+      else
+        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
+      end
     end
 
     # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
       c = Factorix.config.cache.api
-      Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      case c.backend
+      when :file_system
+        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      when :redis
+        Cache::Redis.new(ttl: c.ttl, cache_type: :api, **c.redis.to_h)
+      else
+        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
+      end
     end
 
     # Register info.json cache (for MOD metadata from ZIP files)
     register(:info_json_cache, memoize: true) do
       c = Factorix.config.cache.info_json
-      Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      case c.backend
+      when :file_system
+        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+      when :redis
+        Cache::Redis.new(ttl: c.ttl, cache_type: :info_json, **c.redis.to_h)
+      else
+        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
+      end
     end
 
     # Register base HTTP client
