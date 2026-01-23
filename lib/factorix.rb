@@ -49,7 +49,7 @@ module Factorix
         setting :compression_threshold, default: nil # nil for no compression (binary files)
       end
       setting :redis do
-        setting :url, default: nil # nil uses REDIS_URL env
+        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
         setting :lock_timeout, default: 30
       end
     end
@@ -64,7 +64,7 @@ module Factorix
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
       setting :redis do
-        setting :url, default: nil # nil uses REDIS_URL env
+        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
         setting :lock_timeout, default: 30
       end
     end
@@ -79,7 +79,7 @@ module Factorix
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
       setting :redis do
-        setting :url, default: nil # nil uses REDIS_URL env
+        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
         setting :lock_timeout, default: 30
       end
     end

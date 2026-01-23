@@ -40,6 +40,34 @@ Detection on read uses zlib magic byte (`0x78`) to handle mixed compressed/uncom
 - Acquire exclusive lock with `with_lock` method
 - Cleanup old lock files (more than 1 hour old)
 
+### Redis Backend
+
+Optional Redis-based cache (Cache::Redis) for distributed environments.
+
+**URL Resolution Order**:
+1. Explicit `url` setting in configuration
+2. `REDIS_URL` environment variable
+3. Default: `localhost:6379` (Redis gem default)
+
+**Configuration Example**:
+```ruby
+Factorix.configure do |config|
+  config.cache.api.backend = :redis
+  config.cache.api.redis.url = "redis://redis-server:6379/0"
+  config.cache.api.redis.lock_timeout = 30
+end
+```
+
+**Key Structure**:
+- Data: `factorix-cache:{cache_type}:{key}`
+- Metadata: `factorix-cache:{cache_type}:meta:{key}`
+- Lock: `factorix-cache:{cache_type}:lock:{key}`
+
+**Distributed Locking**:
+- Atomic acquire with `SET NX EX`
+- Atomic release with Lua script (ownership check)
+- Lock timeout configurable (default: 30 seconds)
+
 ## MODSettings
 
 Manages reading and writing of `mod-settings.dat` file. Uses SerDes module to handle Factorio-specific binary format.
