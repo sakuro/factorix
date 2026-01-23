@@ -57,18 +57,9 @@ RSpec.describe Factorix::Cache::Redis do
 
   describe "#read" do
     context "when cache entry exists" do
-      it "reads data with binary encoding by default" do
+      it "reads data from Redis" do
         allow(redis_client).to receive(:get).with(data_key).and_return("cached content")
-        content = cache.read(logical_key)
-        expect(content).to eq("cached content")
-        expect(content.encoding).to eq(Encoding::ASCII_8BIT)
-      end
-
-      it "reads data with specified encoding" do
-        allow(redis_client).to receive(:get).with(data_key).and_return("UTF-8 content")
-        content = cache.read(logical_key, encoding: Encoding::UTF_8)
-        expect(content).to eq("UTF-8 content")
-        expect(content.encoding).to eq(Encoding::UTF_8)
+        expect(cache.read(logical_key)).to eq("cached content")
       end
     end
 

@@ -11,7 +11,7 @@ module Factorix
 
       def exist?: (String key) -> bool
 
-      def read: (String key, ?encoding: Encoding) -> String?
+      def read: (String key) -> String?
 
       def write_to: (String key, Pathname output) -> bool
 

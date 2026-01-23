@@ -29,10 +29,9 @@ module Factorix
       # Read a cached entry as a string.
       #
       # @param key [String] logical cache key
-      # @param encoding [Encoding] encoding to use (default: ASCII-8BIT for binary)
       # @return [String, nil] cached content or nil if not found/expired
       # @abstract
-      def read(key, encoding: Encoding::ASCII_8BIT) = raise NotImplementedError, "#{self.class}#read must be implemented"
+      def read(key) = raise NotImplementedError, "#{self.class}#read must be implemented"
 
       # Write cached content to a file.
       #

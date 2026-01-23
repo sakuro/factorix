@@ -66,16 +66,12 @@ module Factorix
       # @return [Boolean] true if the cache entry exists
       def exist?(key) = @redis.exists?(data_key(key))
 
-      # Read a cached entry as a string.
+      # Read a cached entry.
       #
       # @param key [String] logical cache key
-      # @param encoding [Encoding] encoding to use (default: ASCII-8BIT for binary)
       # @return [String, nil] cached content or nil if not found
-      def read(key, encoding: Encoding::ASCII_8BIT)
-        data = @redis.get(data_key(key))
-        return nil if data.nil?
-
-        data.dup.force_encoding(encoding)
+      def read(key)
+        @redis.get(data_key(key))
       end
 
       # Write cached content to a file.

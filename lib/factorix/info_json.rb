@@ -51,17 +51,17 @@ module Factorix
       logger = Container.resolve(:logger)
       cache_key = zip_path.to_s
 
-      if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
+      if (cached_json = cache.read(cache_key))
         logger.debug("info.json cache hit", path: zip_path.to_s)
-        return from_json(cached_json)
+        return from_json((+cached_json).force_encoding(Encoding::UTF_8))
       end
 
       logger.debug("info.json cache miss", path: zip_path.to_s)
 
       cache.with_lock(cache_key) do
-        if (cached_json = cache.read(cache_key, encoding: Encoding::UTF_8))
+        if (cached_json = cache.read(cache_key))
           logger.debug("info.json cache hit (after lock)", path: zip_path.to_s)
-          return from_json(cached_json)
+          return from_json((+cached_json).force_encoding(Encoding::UTF_8))
         end
 
         json_string = Zip::File.open(zip_path) {|zip_file|

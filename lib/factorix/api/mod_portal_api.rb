@@ -108,10 +108,10 @@ module Factorix
       private def fetch_with_cache(uri)
         cache_key = uri.to_s
 
-        cached = cache.read(cache_key, encoding: "UTF-8")
+        cached = cache.read(cache_key)
         if cached
           logger.debug("API cache hit", uri: uri.to_s)
-          return JSON.parse(cached, symbolize_names: true)
+          return JSON.parse((+cached).force_encoding(Encoding::UTF_8), symbolize_names: true)
         end
 
         logger.debug("API cache miss", uri: uri.to_s)

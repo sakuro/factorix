@@ -95,14 +95,13 @@ module Factorix
         true
       end
 
-      # Read a cached file as a string.
+      # Read a cached file as a binary string.
       # If the cache entry doesn't exist or is expired, returns nil.
       # Automatically decompresses zlib-compressed cache entries.
       #
       # @param key [String] logical cache key
-      # @param encoding [Encoding, String] encoding to use (default: ASCII-8BIT for binary)
       # @return [String, nil] cached content or nil if not found/expired
-      def read(key, encoding: Encoding::ASCII_8BIT)
+      def read(key)
         internal_key = storage_key_for(key)
         path = cache_path_for(internal_key)
         return nil unless path.exist?
@@ -110,7 +109,7 @@ module Factorix
 
         data = path.binread
         data = Zlib.inflate(data) if zlib_compressed?(data)
-        data.force_encoding(encoding)
+        data
       end
 
       # Store a file in the cache.
