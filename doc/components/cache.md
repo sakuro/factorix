@@ -94,7 +94,6 @@ In addition to the `Base` interface, `FileSystem` provides:
 
 | Method | Description |
 |--------|-------------|
-| `key_for(url_string)` | Generate SHA1 cache key from URL |
 | `fetch(key, output)` | Copy cached file to output path |
 
 ### Storage Format
