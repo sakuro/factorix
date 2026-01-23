@@ -147,17 +147,10 @@ RSpec.describe Factorix::Cache::FileSystem do
         File.write(cache_path, "cached content")
       end
 
-      it "reads the cache file as a binary string by default" do
+      it "reads the cache file as a binary string" do
         content = cache.read(logical_key)
         expect(content).to eq("cached content")
         expect(content.encoding).to eq(Encoding::ASCII_8BIT)
-      end
-
-      it "reads the cache file with specified encoding" do
-        File.write(cache_path, "日本語コンテンツ")
-        content = cache.read(logical_key, encoding: Encoding::UTF_8)
-        expect(content).to eq("日本語コンテンツ")
-        expect(content.encoding).to eq(Encoding::UTF_8)
       end
     end
 
@@ -190,13 +183,6 @@ RSpec.describe Factorix::Cache::FileSystem do
       it "decompresses the data when reading" do
         content = cache.read(logical_key)
         expect(content).to eq("compressed content")
-      end
-
-      it "applies the specified encoding after decompression" do
-        cache_path.binwrite(Zlib.deflate("日本語コンテンツ"))
-        content = cache.read(logical_key, encoding: Encoding::UTF_8)
-        expect(content).to eq("日本語コンテンツ")
-        expect(content.encoding).to eq(Encoding::UTF_8)
       end
     end
   end

@@ -32,7 +32,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods").and_return(response_body)
       end
 
       it "returns cached data without making HTTP request" do
@@ -88,7 +88,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod").and_return(response_body)
       end
 
       it "returns cached data" do
@@ -143,7 +143,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
 
     context "when cache hit" do
       before do
-        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod/full", encoding: "UTF-8").and_return(response_body)
+        allow(cache).to receive(:read).with("https://mods.factorio.com/api/mods/example-mod/full").and_return(response_body)
       end
 
       it "returns cached data" do

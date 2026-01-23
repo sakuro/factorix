@@ -13,7 +13,7 @@ module Factorix
 
       def fetch: (String key, Pathname output) -> bool
 
-      def read: (String key, ?encoding: Encoding | String) -> String?
+      def read: (String key) -> String?
 
       def store: (String key, Pathname src) -> bool
 
