@@ -8,12 +8,11 @@ module Factorix
       module MOD
         # Search MODs on Factorio MOD Portal
         class Search < Base
+          include PortalSupport
           # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
           #   # @return [Runtime]
           #   attr_reader :runtime
-          include Import[:portal, :runtime]
+          include Import[:runtime]
 
           desc "Search MOD(s) on Factorio MOD Portal"
 

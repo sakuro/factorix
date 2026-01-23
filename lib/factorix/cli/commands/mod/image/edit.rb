@@ -7,10 +7,7 @@ module Factorix
         module Image
           # Edit MOD's image list on Factorio MOD Portal
           class Edit < Base
-            # @!parse
-            #   # @return [Portal]
-            #   attr_reader :portal
-            include Import[:portal]
+            include PortalSupport
 
             desc "Edit MOD's image list (reorder/remove images)"
 

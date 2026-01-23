@@ -7,10 +7,7 @@ module Factorix
         module Image
           # List images for a MOD on Factorio MOD Portal
           class List < Base
-            # @!parse
-            #   # @return [Portal]
-            #   attr_reader :portal
-            include Import[:portal]
+            include PortalSupport
 
             desc "List images for a MOD"
 

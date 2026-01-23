@@ -20,11 +20,10 @@ module Factorix
           INCOMPATIBLE_MOD_STYLE = TIntMe[:red]
           private_constant :INCOMPATIBLE_MOD_STYLE
           # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
           #   # @return [Runtime]
           #   attr_reader :runtime
-          include Import[:portal, :runtime]
+          include Import[:runtime]
+          include PortalSupport
 
           desc "Show MOD details from Factorio MOD Portal"
 

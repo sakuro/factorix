@@ -6,7 +6,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   let(:command) do
     Factorix::CLI::Commands::MOD::Sync.new(
       runtime:,
-      portal:,
       logger:
     )
   end

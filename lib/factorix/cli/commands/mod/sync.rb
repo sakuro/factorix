@@ -14,15 +14,14 @@ module Factorix
           backup_support!
 
           include DownloadSupport
+          include PortalSupport
 
           # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime
-          include Import[:portal, :logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Sync MOD states and startup settings from a save file"
 

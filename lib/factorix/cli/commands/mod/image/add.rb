@@ -7,10 +7,7 @@ module Factorix
         module Image
           # Add an image to a MOD on Factorio MOD Portal
           class Add < Base
-            # @!parse
-            #   # @return [Portal]
-            #   attr_reader :portal
-            include Import[:portal]
+            include PortalSupport
 
             desc "Add an image to a MOD"
 

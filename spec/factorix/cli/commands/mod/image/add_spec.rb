@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::Add do
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Image::Add.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Image::Add.new }
   let(:tmpdir) { Dir.mktmpdir }
 
   before do

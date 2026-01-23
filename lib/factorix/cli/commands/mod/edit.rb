@@ -6,10 +6,7 @@ module Factorix
       module MOD
         # Edit MOD metadata on Factorio MOD Portal
         class Edit < Base
-          # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
-          include Import[:portal]
+          include PortalSupport
 
           desc "Edit MOD metadata on Factorio MOD Portal"
 

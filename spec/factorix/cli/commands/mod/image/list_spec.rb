@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Image::List.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Image::List.new }
 
   before do
     allow(Factorix::Container).to receive(:[]).and_call_original

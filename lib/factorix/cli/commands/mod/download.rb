@@ -10,14 +10,13 @@ module Factorix
         # Download MOD files from Factorio MOD Portal
         class Download < Base
           include DownloadSupport
+          include PortalSupport
           # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
           #   # @return [Runtime]
           #   attr_reader :runtime
-          include Import[:portal, :logger, :runtime]
+          include Import[:logger, :runtime]
 
           desc "Download MOD files from Factorio MOD Portal"
 

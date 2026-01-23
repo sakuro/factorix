@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   let(:portal) { instance_double(Factorix::Portal) }
   let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
   let(:uploader) { instance_double(Factorix::Transfer::Uploader) }
-  let(:command) { Factorix::CLI::Commands::MOD::Upload.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Upload.new }
 
   let(:temp_dir) { Dir.mktmpdir }
   let(:zip_path) { Pathname(temp_dir) / "test-mod_1.0.0.zip" }

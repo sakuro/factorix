@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::CLI::Commands::MOD::Edit do
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Edit.new(portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Edit.new }
 
   before do
     allow(Factorix::Container).to receive(:[]).and_call_original
