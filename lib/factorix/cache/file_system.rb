@@ -35,16 +35,17 @@ module Factorix
       private_constant :ZLIB_CMF_BYTE
 
       # Initialize a new file system cache storage.
-      # Creates the cache directory if it doesn't exist
+      # Creates the cache directory if it doesn't exist.
+      # Cache directory is auto-calculated as: factorix_cache_dir / cache_type
       #
-      # @param dir [Pathname] path to the cache directory
+      # @param cache_type [Symbol] cache type for directory name (e.g., :api, :download)
       # @param max_file_size [Integer, nil] maximum file size in bytes (nil for unlimited)
       # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
       #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      def initialize(root:, max_file_size: nil, compression_threshold: nil, **)
+      def initialize(cache_type:, max_file_size: nil, compression_threshold: nil, **)
         super(**)
-        @cache_dir = root
+        @cache_dir = Container[:runtime].factorix_cache_dir / cache_type.to_s
         @max_file_size = max_file_size
         @compression_threshold = compression_threshold
         @cache_dir.mkpath
