@@ -29,7 +29,7 @@ setting :cache do
     setting :backend, default: :file_system
     setting :ttl, default: nil
     setting :file_system do
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: nil
       setting :compression_threshold, default: nil
     end
@@ -39,7 +39,7 @@ setting :cache do
     setting :backend, default: :file_system
     setting :ttl, default: 3600
     setting :file_system do
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: 10 * 1024 * 1024
       setting :compression_threshold, default: 0
     end
@@ -49,7 +49,7 @@ setting :cache do
     setting :backend, default: :file_system
     setting :ttl, default: nil
     setting :file_system do
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: nil
       setting :compression_threshold, default: 0
     end

@@ -44,7 +44,7 @@ module Factorix
       setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
       setting :file_system do
-        setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: nil # nil for unlimited
         setting :compression_threshold, default: nil # nil for no compression (binary files)
       end
@@ -55,7 +55,7 @@ module Factorix
       setting :backend, default: :file_system
       setting :ttl, default: 3600 # 1 hour (API responses may change)
       setting :file_system do
-        setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
@@ -66,7 +66,7 @@ module Factorix
       setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
       setting :file_system do
-        setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: nil # nil for unlimited (info.json is small)
         setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
       end
@@ -123,9 +123,9 @@ module Factorix
 
   # Initialize cache directory defaults after Container is loaded
   runtime = Container.resolve(:runtime)
-  config.cache.download.file_system.dir = runtime.factorix_cache_dir / "download"
-  config.cache.api.file_system.dir = runtime.factorix_cache_dir / "api"
-  config.cache.info_json.file_system.dir = runtime.factorix_cache_dir / "info_json"
+  config.cache.download.file_system.root = runtime.factorix_cache_dir / "download"
+  config.cache.api.file_system.root = runtime.factorix_cache_dir / "api"
+  config.cache.info_json.file_system.root = runtime.factorix_cache_dir / "info_json"
 
   # @deprecated Use {Container} for DI and {Factorix} for configuration. Will be removed in v1.0.
   class Application

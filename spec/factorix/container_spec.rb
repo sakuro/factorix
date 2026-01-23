@@ -230,8 +230,8 @@ RSpec.describe Factorix::Container do
 
       it "can be overridden" do
         custom_path = Pathname("/custom/cache/download")
-        Factorix.config.cache.download.file_system.dir = custom_path
-        expect(Factorix.config.cache.download.file_system.dir).to eq(custom_path)
+        Factorix.config.cache.download.file_system.root = custom_path
+        expect(Factorix.config.cache.download.file_system.root).to eq(custom_path)
       end
     end
 

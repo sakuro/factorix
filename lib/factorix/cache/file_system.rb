@@ -42,13 +42,13 @@ module Factorix
       # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
       #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      def initialize(dir:, max_file_size: nil, compression_threshold: nil, **)
+      def initialize(root:, max_file_size: nil, compression_threshold: nil, **)
         super(**)
-        @cache_dir = dir
+        @cache_dir = root
         @max_file_size = max_file_size
         @compression_threshold = compression_threshold
         @cache_dir.mkpath
-        logger.info("Initializing cache", dir: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size, compression_threshold: @compression_threshold)
+        logger.info("Initializing cache", root: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size, compression_threshold: @compression_threshold)
       end
 
       # Check if a cache entry exists and is not expired.
@@ -168,7 +168,7 @@ module Factorix
       #
       # @return [void]
       def clear
-        logger.info("Clearing cache directory", dir: @cache_dir.to_s)
+        logger.info("Clearing cache directory", root: @cache_dir.to_s)
         count = 0
         @cache_dir.glob("**/*").each do |path|
           next unless path.file?

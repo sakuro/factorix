@@ -206,7 +206,7 @@ setting :cache do
     setting :backend, default: :file_system        # Backend selector
     setting :ttl, default: nil                     # Unlimited
     setting :file_system do                        # FileSystem-specific settings
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: nil         # Unlimited
       setting :compression_threshold, default: nil # No compression
     end
@@ -216,7 +216,7 @@ setting :cache do
     setting :backend, default: :file_system
     setting :ttl, default: 3600                    # 1 hour
     setting :file_system do
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: 10 * 1024 * 1024  # 10MiB
       setting :compression_threshold, default: 0   # Always compress
     end
@@ -226,7 +226,7 @@ setting :cache do
     setting :backend, default: :file_system
     setting :ttl, default: nil                     # Unlimited
     setting :file_system do
-      setting :dir, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
       setting :max_file_size, default: nil         # Unlimited
       setting :compression_threshold, default: 0   # Always compress
     end

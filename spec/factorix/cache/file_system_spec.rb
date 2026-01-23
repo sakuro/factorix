@@ -8,7 +8,7 @@ require "tmpdir"
 
 RSpec.describe Factorix::Cache::FileSystem do
   let(:cache_dir) { Pathname(Dir.mktmpdir("cache")) }
-  let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir) }
+  let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir) }
   let(:url) { "https://example.com/file.zip" }
   let(:logical_key) { url }
   let(:internal_key) { Digest(:SHA1).hexdigest(logical_key) }
@@ -24,23 +24,23 @@ RSpec.describe Factorix::Cache::FileSystem do
     it "creates the cache directory if it does not exist" do
       FileUtils.remove_entry(cache_dir)
       expect {
-        Factorix::Cache::FileSystem.new(dir: cache_dir)
+        Factorix::Cache::FileSystem.new(root: cache_dir)
       }.to change(cache_dir, :exist?).from(false).to(true)
     end
 
     it "accepts ttl parameter" do
-      cache_with_ttl = Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 3600)
+      cache_with_ttl = Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 3600)
       expect(cache_with_ttl).to be_a(Factorix::Cache::FileSystem)
       expect(cache_with_ttl.ttl).to eq(3600)
     end
 
     it "accepts max_file_size parameter" do
-      cache_with_limit = Factorix::Cache::FileSystem.new(dir: cache_dir, max_file_size: 1024 * 1024)
+      cache_with_limit = Factorix::Cache::FileSystem.new(root: cache_dir, max_file_size: 1024 * 1024)
       expect(cache_with_limit).to be_a(Factorix::Cache::FileSystem)
     end
 
     it "accepts compression_threshold parameter" do
-      cache_with_compression = Factorix::Cache::FileSystem.new(dir: cache_dir, compression_threshold: 0)
+      cache_with_compression = Factorix::Cache::FileSystem.new(root: cache_dir, compression_threshold: 0)
       expect(cache_with_compression).to be_a(Factorix::Cache::FileSystem)
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with TTL" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 10) }
 
       before do
         cache_path.dirname.mkpath
@@ -113,7 +113,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with TTL" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 10) }
 
       before do
         cache_path.dirname.mkpath
@@ -168,7 +168,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with TTL" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 10) }
 
       before do
         cache_path.dirname.mkpath
@@ -232,7 +232,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with max_file_size limit" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, max_file_size: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, max_file_size: 10) }
 
       it "stores files within the limit" do
         small_file = Pathname(Dir.mktmpdir("small")) + "small.txt"
@@ -256,7 +256,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with compression_threshold: 0 (always compress)" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, compression_threshold: 0) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, compression_threshold: 0) }
 
       it "stores compressed data" do
         expect(cache.store(logical_key, source_file)).to be true
@@ -281,7 +281,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with compression_threshold: N (compress if >= N bytes)" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, compression_threshold: 100) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, compression_threshold: 100) }
 
       it "compresses files meeting the threshold" do
         large_file = Pathname(Dir.mktmpdir("large")) + "large.txt"
@@ -309,7 +309,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with max_file_size and compression" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, max_file_size: 50, compression_threshold: 0) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, max_file_size: 50, compression_threshold: 0) }
 
       it "uses compressed size for max_file_size check" do
         # Create a file that exceeds 50 bytes uncompressed but compresses to under 50
@@ -399,7 +399,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with TTL" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 50) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 50) }
 
       before do
         cache_path.dirname.mkpath
@@ -417,7 +417,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "when cache file does not exist" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 50) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 50) }
 
       it "returns false" do
         expect(cache.expired?(logical_key)).to be false
@@ -444,7 +444,7 @@ RSpec.describe Factorix::Cache::FileSystem do
     end
 
     context "with TTL" do
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 10) }
 
       before do
         cache_path.dirname.mkpath
@@ -555,7 +555,7 @@ RSpec.describe Factorix::Cache::FileSystem do
 
     context "with expired entries" do
       let(:source_file) { Pathname(Dir.mktmpdir("source")) + "data.txt" }
-      let(:cache) { Factorix::Cache::FileSystem.new(dir: cache_dir, ttl: 10) }
+      let(:cache) { Factorix::Cache::FileSystem.new(root: cache_dir, ttl: 10) }
 
       before do
         File.write(source_file, "test")
