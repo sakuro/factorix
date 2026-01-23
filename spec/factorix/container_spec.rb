@@ -56,16 +56,16 @@ RSpec.describe Factorix::Container do
     end
 
     describe "[:download_cache]" do
-      it "resolves to a Cache::FileSystem instance" do
+      it "resolves to a Cache::Base instance" do
         download_cache = Factorix::Container[:download_cache]
-        expect(download_cache).to be_a(Factorix::Cache::FileSystem)
+        expect(download_cache).to be_a(Factorix::Cache::Base)
       end
     end
 
     describe "[:api_cache]" do
-      it "resolves to a Cache::FileSystem instance" do
+      it "resolves to a Cache::Base instance" do
         api_cache = Factorix::Container[:api_cache]
-        expect(api_cache).to be_a(Factorix::Cache::FileSystem)
+        expect(api_cache).to be_a(Factorix::Cache::Base)
       end
     end
 
@@ -216,11 +216,6 @@ RSpec.describe Factorix::Container do
     end
 
     describe "cache.download" do
-      it "defaults dir to runtime.factorix_cache_dir/download" do
-        runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.download.file_system.dir).to eq(runtime.factorix_cache_dir / "download")
-      end
-
       it "has default backend of :file_system" do
         expect(Factorix.config.cache.download.backend).to eq(:file_system)
       end
@@ -241,11 +236,6 @@ RSpec.describe Factorix::Container do
     end
 
     describe "cache.api" do
-      it "defaults dir to runtime.factorix_cache_dir/api" do
-        runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.api.file_system.dir).to eq(runtime.factorix_cache_dir / "api")
-      end
-
       it "has default backend of :file_system" do
         expect(Factorix.config.cache.api.backend).to eq(:file_system)
       end

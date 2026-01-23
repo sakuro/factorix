@@ -2,7 +2,7 @@
 
 require "json"
 
-RSpec.describe Factorix::CLI::Commands::Cache::Stat, :with_test_caches do
+RSpec.describe Factorix::CLI::Commands::Cache::Stat do
   describe "#call" do
     context "with empty caches" do
       it "outputs statistics in text format" do

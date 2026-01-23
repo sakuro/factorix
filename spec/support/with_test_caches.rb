@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
-# Shared context for tests that need test cache backends.
-# Uses Container stubbing to provide TestBackend instances.
+# Shared context that provides TestBackend instances for all tests.
+# Every test gets fresh cache instances via let variables.
 #
-# @example Use with test caches
-#   describe "cache operations", :with_test_caches do
-#     # download_cache, api_cache, info_json_cache are available as let variables
-#   end
-#
-# @example Access the test cache
+# @example Access the test cache directly
 #   it "stores entries" do
 #     download_cache.add_entry("key", "content")
 #     expect(download_cache.exist?("key")).to be true
@@ -23,14 +18,8 @@ RSpec.shared_context "with test caches" do
     Factorix::Container.stub(:api_cache, api_cache)
     Factorix::Container.stub(:info_json_cache, info_json_cache)
   end
-
-  after do
-    Factorix::Container.unstub(:download_cache)
-    Factorix::Container.unstub(:api_cache)
-    Factorix::Container.unstub(:info_json_cache)
-  end
 end
 
 RSpec.configure do |config|
-  config.include_context "with test caches", :with_test_caches
+  config.include_context "with test caches"
 end

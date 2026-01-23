@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Factorix::CLI::Commands::Cache::Evict, :with_test_caches do
+RSpec.describe Factorix::CLI::Commands::Cache::Evict do
   let(:command) { Factorix::CLI::Commands::Cache::Evict.new }
 
   describe "#call" do
