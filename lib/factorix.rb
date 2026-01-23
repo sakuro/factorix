@@ -36,14 +36,13 @@ module Factorix
 
   # Cache settings
   # Each cache type can have its own backend with hierarchical configuration.
-  # Common settings (backend, ttl, lock_timeout) apply to all backends.
+  # Common settings (backend, ttl) apply to all backends.
   # Backend-specific settings are nested under the backend name.
   setting :cache do
     # Download cache settings (for MOD files)
     setting :download do
       setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
-      setting :lock_timeout, default: 30
       setting :file_system do
         setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: nil # nil for unlimited
@@ -55,7 +54,6 @@ module Factorix
     setting :api do
       setting :backend, default: :file_system
       setting :ttl, default: 3600 # 1 hour (API responses may change)
-      setting :lock_timeout, default: 30
       setting :file_system do
         setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
@@ -67,7 +65,6 @@ module Factorix
     setting :info_json do
       setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
-      setting :lock_timeout, default: 30
       setting :file_system do
         setting :dir, constructor: ->(value) { value ? Pathname(value) : nil }
         setting :max_file_size, default: nil # nil for unlimited (info.json is small)

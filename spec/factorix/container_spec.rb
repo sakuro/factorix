@@ -229,10 +229,6 @@ RSpec.describe Factorix::Container do
         expect(Factorix.config.cache.download.ttl).to be_nil
       end
 
-      it "has default lock_timeout of 30" do
-        expect(Factorix.config.cache.download.lock_timeout).to eq(30)
-      end
-
       it "has default max_file_size of nil" do
         expect(Factorix.config.cache.download.file_system.max_file_size).to be_nil
       end
@@ -256,10 +252,6 @@ RSpec.describe Factorix::Container do
 
       it "has default ttl of 3600 seconds" do
         expect(Factorix.config.cache.api.ttl).to eq(3600)
-      end
-
-      it "has default lock_timeout of 30" do
-        expect(Factorix.config.cache.api.lock_timeout).to eq(30)
       end
 
       it "has default max_file_size of 10MiB" do

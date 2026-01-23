@@ -4,9 +4,8 @@ module Factorix
   module Cache
     class Base
       attr_reader ttl: Integer?
-      attr_reader lock_timeout: Integer
 
-      def initialize: (?ttl: Integer?, ?lock_timeout: Integer) -> void
+      def initialize: (?ttl: Integer?) -> void
 
       def exist?: (String key) -> bool
       def read: (String key, ?encoding: Encoding) -> String?
@@ -14,7 +13,7 @@ module Factorix
       def delete: (String key) -> bool
       def clear: () -> void
 
-      def with_lock: (String key, ?timeout: Integer?) { () -> void } -> void
+      def with_lock: (String key) { () -> void } -> void
 
       def age: (String key) -> Float?
       def expired?: (String key) -> bool

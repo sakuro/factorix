@@ -7,7 +7,7 @@ module Factorix
     class FileSystem < Base
       LOCK_FILE_LIFETIME: Integer
 
-      def initialize: (dir: Pathname, ?ttl: Integer?, ?lock_timeout: Integer, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
+      def initialize: (dir: Pathname, ?ttl: Integer?, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
 
       def exist?: (String key) -> bool
 
@@ -27,7 +27,7 @@ module Factorix
 
       def size: (String key) -> Integer?
 
-      def with_lock: [T] (String key, ?timeout: Integer?) { () -> T } -> T
+      def with_lock: [T] (String key) { () -> T } -> T
 
       def each: () { (String, Entry) -> void } -> void
               | () -> Enumerator[[String, Entry], void]

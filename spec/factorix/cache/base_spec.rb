@@ -4,19 +4,13 @@ RSpec.describe Factorix::Cache::Base do
   let(:base) { Factorix::Cache::Base.new }
 
   describe "#initialize" do
-    it "sets default values for ttl and lock_timeout" do
+    it "sets default value for ttl" do
       expect(base.ttl).to be_nil
-      expect(base.lock_timeout).to eq(30)
     end
 
     it "accepts custom ttl" do
       cache = Factorix::Cache::Base.new(ttl: 3600)
       expect(cache.ttl).to eq(3600)
-    end
-
-    it "accepts custom lock_timeout" do
-      cache = Factorix::Cache::Base.new(lock_timeout: 60)
-      expect(cache.lock_timeout).to eq(60)
     end
   end
 

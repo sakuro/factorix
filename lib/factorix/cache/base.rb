@@ -12,16 +12,11 @@ module Factorix
       # @return [Integer, nil] time-to-live in seconds (nil for unlimited)
       attr_reader :ttl
 
-      # @return [Integer] lock timeout in seconds
-      attr_reader :lock_timeout
-
       # Initialize a new cache backend.
       #
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      # @param lock_timeout [Integer] lock timeout in seconds (default: 30)
-      def initialize(ttl: nil, lock_timeout: 30)
+      def initialize(ttl: nil)
         @ttl = ttl
-        @lock_timeout = lock_timeout
       end
 
       # Check if a cache entry exists and is not expired.
@@ -63,11 +58,9 @@ module Factorix
       # Execute a block with an exclusive lock on the cache entry.
       #
       # @param key [String] logical cache key
-      # @param timeout [Integer, nil] lock timeout in seconds (default: @lock_timeout)
       # @yield block to execute with lock held
-      # @raise [LockTimeoutError] if lock cannot be acquired within timeout
       # @abstract
-      def with_lock(key, timeout: @lock_timeout) = raise NotImplementedError, "#{self.class}#with_lock must be implemented"
+      def with_lock(key) = raise NotImplementedError, "#{self.class}#with_lock must be implemented"
 
       # Get the age of a cache entry in seconds.
       #

@@ -42,7 +42,6 @@ module Factorix
       # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
       #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      # @param lock_timeout [Integer] lock timeout in seconds (default: 30)
       def initialize(dir:, max_file_size: nil, compression_threshold: nil, **)
         super(**)
         @cache_dir = dir
@@ -225,14 +224,10 @@ module Factorix
       # Executes the given block with a file lock.
       # Uses flock for process-safe file locking and automatically removes stale locks.
       #
-      # Note: The timeout parameter is accepted to match the Base interface but is
-      # currently unused. flock blocks until the lock is acquired.
-      #
       # @param key [String] logical cache key
-      # @param timeout [Integer, nil] lock timeout (unused, for interface compatibility)
       # @yield Executes the block with exclusive file lock
       # @return [void]
-      def with_lock(key, timeout: @lock_timeout)
+      def with_lock(key)
         internal_key = storage_key_for(key)
         lock_path = lock_path_for(internal_key)
         cleanup_stale_lock(lock_path)

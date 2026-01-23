@@ -16,8 +16,7 @@ module Factorix
       # Initialize a new test backend.
       #
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      # @param lock_timeout [Integer] lock timeout in seconds (default: 30)
-      def initialize(ttl: nil, lock_timeout: 30)
+      def initialize(ttl: nil)
         super
         @entries = {}
       end
@@ -72,9 +71,8 @@ module Factorix
       # Execute a block with an exclusive lock on the cache entry.
       #
       # @param key [String] logical cache key
-      # @param timeout [Integer, nil] lock timeout in seconds (ignored in test backend)
       # @yield block to execute with lock held
-      def with_lock(_key, timeout: @lock_timeout)
+      def with_lock(_key)
         yield
       end
 

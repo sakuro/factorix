@@ -42,11 +42,6 @@ inherit_from: .rubocop_todo.yml
 Lint/EmptyClass:
   AllowComments: true
 
-Lint/UnusedMethodArgument:
-  Exclude:
-    - lib/factorix/cache/file_system.rb # timeout parameter kept for Base interface compatibility
-    - spec/support/test_cache_backend.rb # timeout parameter kept for Base interface compatibility
-
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
