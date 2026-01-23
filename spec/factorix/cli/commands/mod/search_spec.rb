@@ -4,7 +4,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   let(:data_dir) { Pathname(Dir.mktmpdir) }
   let(:runtime) { instance_double(Factorix::Runtime::Base, data_dir:) }
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Search.new(runtime:, portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Search.new(runtime:) }
 
   let(:mod_info) do
     Factorix::API::MODInfo.new(

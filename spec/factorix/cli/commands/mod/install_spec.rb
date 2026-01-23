@@ -16,8 +16,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   let(:command) do
     Factorix::CLI::Commands::MOD::Install.new(
       runtime:,
-      logger:,
-      portal:
+      logger:
     )
   end
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }

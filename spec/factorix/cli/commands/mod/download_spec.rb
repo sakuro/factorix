@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
-  let(:command) { Factorix::CLI::Commands::MOD::Download.new(portal:, logger:, runtime:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Download.new(logger:, runtime:) }
   let(:mod_info) do
     Factorix::API::MODInfo.new(
       name: "test-mod",

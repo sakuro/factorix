@@ -6,10 +6,7 @@ module Factorix
       module MOD
         # Upload MOD to Factorio MOD Portal (handles both new and update)
         class Upload < Base
-          # @!parse
-          #   # @return [Portal]
-          #   attr_reader :portal
-          include Import[:portal]
+          include PortalSupport
 
           desc "Upload MOD to Factorio MOD Portal (handles both new and update)"
 

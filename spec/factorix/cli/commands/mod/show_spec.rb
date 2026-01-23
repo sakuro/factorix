@@ -5,7 +5,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
   let(:mod_list_path) { Pathname(Dir.mktmpdir) / "mod-list.json" }
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir:, mod_list_path:) }
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:command) { Factorix::CLI::Commands::MOD::Show.new(runtime:, portal:) }
+  let(:command) { Factorix::CLI::Commands::MOD::Show.new(runtime:) }
 
   let(:release_data) do
     {
