@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Changed
+
+- Refactor `Cache::FileSystem` to use `cache_type:` parameter instead of `root:` (#25)
+  - Aligns interface with `Cache::Redis` for consistent backend initialization
+  - Cache directory is now auto-computed from `Container[:runtime].factorix_cache_dir / cache_type`
+
 ### Added
 
 - Add Redis cache backend (`Cache::Redis`) with distributed locking support (#19)

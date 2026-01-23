@@ -227,12 +227,6 @@ RSpec.describe Factorix::Container do
       it "has default max_file_size of nil" do
         expect(Factorix.config.cache.download.file_system.max_file_size).to be_nil
       end
-
-      it "can be overridden" do
-        custom_path = Pathname("/custom/cache/download")
-        Factorix.config.cache.download.file_system.root = custom_path
-        expect(Factorix.config.cache.download.file_system.root).to eq(custom_path)
-      end
     end
 
     describe "cache.api" do

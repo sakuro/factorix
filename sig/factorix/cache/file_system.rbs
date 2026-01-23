@@ -7,11 +7,11 @@ module Factorix
     class FileSystem < Base
       LOCK_FILE_LIFETIME: Integer
 
-      def initialize: (dir: Pathname, ?ttl: Integer?, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
+      def initialize: (cache_type: Symbol, ?ttl: Integer?, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
 
       def exist?: (String key) -> bool
 
-      def fetch: (String key, Pathname output) -> bool
+      def write_to: (String key, Pathname output) -> bool
 
       def read: (String key) -> String?
 

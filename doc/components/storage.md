@@ -14,6 +14,15 @@ Filesystem-based cache (Cache::FileSystem).
 - Cache expiration management
 - Caches are created independently (API, download, info.json)
 
+### Backend Initialization
+
+Both cache backends (`FileSystem` and `Redis`) receive a `cache_type` parameter (`:download`, `:api`, or `:info_json`) and auto-compute their storage locations:
+
+- **FileSystem**: Cache directory is `{factorix_cache_dir}/{cache_type}`
+- **Redis**: Namespace prefix is `factorix-cache:{cache_type}:`
+
+This ensures consistent naming across backends and simplifies configuration.
+
 ### Compression Support
 
 Optional zlib compression for cached data:

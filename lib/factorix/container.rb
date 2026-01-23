@@ -51,9 +51,9 @@ module Factorix
       c = Factorix.config.cache.download
       case c.backend
       when :file_system
-        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+        Cache::FileSystem.new(cache_type: :download, ttl: c.ttl, **c.file_system.to_h)
       when :redis
-        Cache::Redis.new(ttl: c.ttl, cache_type: :download, **c.redis.to_h)
+        Cache::Redis.new(cache_type: :download, ttl: c.ttl, **c.redis.to_h)
       else
         raise ConfigurationError, "Unknown cache backend: #{c.backend}"
       end
@@ -64,9 +64,9 @@ module Factorix
       c = Factorix.config.cache.api
       case c.backend
       when :file_system
-        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+        Cache::FileSystem.new(cache_type: :api, ttl: c.ttl, **c.file_system.to_h)
       when :redis
-        Cache::Redis.new(ttl: c.ttl, cache_type: :api, **c.redis.to_h)
+        Cache::Redis.new(cache_type: :api, ttl: c.ttl, **c.redis.to_h)
       else
         raise ConfigurationError, "Unknown cache backend: #{c.backend}"
       end
@@ -77,9 +77,9 @@ module Factorix
       c = Factorix.config.cache.info_json
       case c.backend
       when :file_system
-        Cache::FileSystem.new(ttl: c.ttl, **c.file_system.to_h)
+        Cache::FileSystem.new(cache_type: :info_json, ttl: c.ttl, **c.file_system.to_h)
       when :redis
-        Cache::Redis.new(ttl: c.ttl, cache_type: :info_json, **c.redis.to_h)
+        Cache::Redis.new(cache_type: :info_json, ttl: c.ttl, **c.redis.to_h)
       else
         raise ConfigurationError, "Unknown cache backend: #{c.backend}"
       end
