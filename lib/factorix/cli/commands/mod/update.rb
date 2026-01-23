@@ -14,6 +14,7 @@ module Factorix
           backup_support!
 
           include PortalSupport
+          include DownloadSupport
           # @!parse
           #   # @return [Dry::Logger::Dispatcher]
           #   attr_reader :logger
@@ -140,7 +141,7 @@ module Factorix
               mod:,
               mod_info:,
               current_version:,
-              latest_release:,
+              release: latest_release,
               output_path: runtime.mod_dir / latest_release.file_name
             }
           rescue MODNotOnPortalError
@@ -155,7 +156,7 @@ module Factorix
           private def show_plan(targets)
             say "Planning to update #{targets.size} MOD(s):", prefix: :info
             targets.each do |target|
-              say "  - #{target[:mod]}: #{target[:current_version]} -> #{target[:latest_release].version}"
+              say "  - #{target[:mod]}: #{target[:current_version]} -> #{target[:release].version}"
             end
           end
 
@@ -175,44 +176,12 @@ module Factorix
                 current_enabled = mod_list.enabled?(mod)
                 mod_list.remove(mod)
                 mod_list.add(mod, enabled: current_enabled)
-                say "Updated #{mod} to #{target[:latest_release].version}", prefix: :success
+                say "Updated #{mod} to #{target[:release].version}", prefix: :success
               else
                 mod_list.add(mod, enabled: true)
                 say "Added #{mod} to mod-list.json", prefix: :success
               end
             end
-          end
-
-          # Download MODs in parallel
-          #
-          # @param targets [Array<Hash>] Update targets
-          # @param jobs [Integer] Number of parallel jobs
-          # @return [void]
-          private def download_mods(targets, jobs)
-            multi_presenter = Progress::MultiPresenter.new(title: "\u{1F4E5}\u{FE0E} Downloads", output: err)
-
-            pool = Concurrent::FixedThreadPool.new(jobs)
-
-            futures = targets.map {|target|
-              Concurrent::Future.execute(executor: pool) do
-                downloader = portal.mod_download_api.downloader
-
-                presenter = multi_presenter.register(
-                  target[:mod].name,
-                  title: target[:latest_release].file_name
-                )
-                handler = Progress::DownloadHandler.new(presenter)
-
-                downloader.subscribe(handler)
-                portal.download_mod(target[:latest_release], target[:output_path])
-                downloader.unsubscribe(handler)
-              end
-            }
-
-            futures.each(&:wait!)
-          ensure
-            pool&.shutdown
-            pool&.wait_for_termination
           end
         end
       end
