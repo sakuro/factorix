@@ -53,9 +53,9 @@ module Factorix
         end
 
         logger.info("Starting download", output: output.to_s)
-        key = cache.key_for(url.to_s)
+        cache_key = url.to_s
 
-        case try_cache_hit(key, output, expected_sha1:)
+        case try_cache_hit(cache_key, output, expected_sha1:)
         when :hit
           return
         when :miss
@@ -68,14 +68,14 @@ module Factorix
           raise RuntimeError, "Unexpected cache state"
         end
 
-        cache.with_lock(key) do
-          return if try_cache_hit(key, output, expected_sha1:) == :hit
+        cache.with_lock(cache_key) do
+          return if try_cache_hit(cache_key, output, expected_sha1:) == :hit
 
           with_temporary_file do |temp_file|
             download_file_with_progress(url, temp_file)
             verify_sha1(temp_file, expected_sha1) if expected_sha1
-            cache.store(key, temp_file)
-            cache.fetch(key, output)
+            cache.store(cache_key, temp_file)
+            cache.write_to(cache_key, output)
           end
         end
       end
@@ -112,21 +112,21 @@ module Factorix
       # If the cached file exists but fails SHA1 verification, the cache entry
       # is invalidated and :corrupted is returned to trigger re-download.
       #
-      # @param key [String] cache key
+      # @param cache_key [String] logical cache key (URL string)
       # @param output [Pathname] path to save the cached file
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
       # @return [Symbol] :hit if cache hit with valid SHA1, :miss if not cached, :corrupted if SHA1 mismatch
-      private def try_cache_hit(key, output, expected_sha1:)
-        return :miss unless cache.fetch(key, output)
+      private def try_cache_hit(cache_key, output, expected_sha1:)
+        return :miss unless cache.write_to(cache_key, output)
 
         logger.info("Cache hit", output: output.to_s)
         verify_sha1(output, expected_sha1) if expected_sha1
-        total_size = cache.size(key)
+        total_size = cache.size(cache_key)
         publish("cache.hit", output: output.to_s, total_size:)
         :hit
       rescue DigestMismatchError => e
         logger.warn("Cache corrupted, invalidating", output: output.to_s, error: e.message)
-        cache.delete(key)
+        cache.delete(cache_key)
         :corrupted
       end
 

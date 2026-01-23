@@ -48,6 +48,9 @@ module Factorix
   class HTTPNotFoundError < HTTPClientError; end
   class HTTPServerError < HTTPError; end
 
+  # Cache lock timeout errors
+  class LockTimeoutError < InfrastructureError; end
+
   # Digest verification errors
   class DigestMismatchError < InfrastructureError; end
 

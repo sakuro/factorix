@@ -1,0 +1,14 @@
+# RBS type signature file
+
+module Factorix
+  module Cache
+    class Entry
+      attr_reader size: Integer
+      attr_reader age: Float
+
+      def expired?: () -> bool
+
+      def initialize: (size: Integer, age: Float, expired: bool) -> void
+    end
+  end
+end

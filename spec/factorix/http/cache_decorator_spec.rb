@@ -7,12 +7,11 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
   let(:decorator) { Factorix::HTTP::CacheDecorator.new(client:, cache:, logger:) }
 
   let(:uri) { URI("https://example.com/api/data.json") }
-  let(:cache_key) { "cache_key_123" }
+  let(:cache_key) { uri.to_s }
   let(:response) { instance_double(Factorix::HTTP::Response, success?: true, body: "response data") }
 
   before do
     allow(logger).to receive(:debug)
-    allow(cache).to receive(:key_for).with(uri.to_s).and_return(cache_key)
   end
 
   describe "#request" do

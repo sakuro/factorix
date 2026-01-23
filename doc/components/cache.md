@@ -1,10 +1,10 @@
 # Cache System
 
-File-system based caching infrastructure for MOD files, API responses, and metadata.
+Multi-backend caching infrastructure for MOD files, API responses, and metadata.
 
 ## Overview
 
-Factorix uses three specialized cache instances optimized for different data types:
+Factorix uses a pluggable cache backend system with a common abstract interface (`Cache::Base`). Three specialized cache instances are configured with settings optimized for different data types:
 
 | Cache | Purpose | TTL | Compression |
 |-------|---------|-----|-------------|
@@ -29,12 +29,13 @@ graph TD
     end
 
     subgraph "Cache Layer"
-        CacheDecorator --> FileSystem[Cache::FileSystem]
+        CacheDecorator --> Base[Cache::Base]
+        Base --> FileSystem[Cache::FileSystem]
         FileSystem --> Storage[(File Storage)]
     end
 
     subgraph "Transfer Layer"
-        Downloader --> FileSystem
+        Downloader --> Base
     end
 
     CacheDecorator -.-> CachedResponse
@@ -44,29 +45,49 @@ graph TD
 
 | Class | Responsibility |
 |-------|----------------|
-| `Cache::FileSystem` | Core caching with file storage, compression, locking |
+| `Cache::Base` | Abstract interface defining the cache contract |
+| `Cache::Entry` | Data class representing cache entry metadata |
+| `Cache::FileSystem` | File-based backend with compression and locking |
 | `HTTP::CacheDecorator` | HTTP response caching (decorator pattern) |
 | `HTTP::CachedResponse` | Cached response wrapper |
 
-## FileSystem Class
+## Base Class
 
-Location: `lib/factorix/cache/file_system.rb`
+Location: `lib/factorix/cache/base.rb`
+
+Abstract base class that defines the cache backend interface. All cache backends must inherit from this class and implement its abstract methods.
 
 ### Public API
 
 | Method | Description |
 |--------|-------------|
-| `key_for(url_string)` | Generate SHA1 cache key from URL |
 | `exist?(key)` | Check if entry exists and is not expired |
-| `fetch(key, output)` | Copy cached file to output path |
 | `read(key, encoding)` | Read cached content as string |
+| `write_to(key, output)` | Write cached content to file |
 | `store(key, src)` | Store file in cache |
 | `delete(key)` | Delete specific entry |
 | `clear()` | Clear all entries |
 | `age(key)` | Get entry age in seconds |
 | `expired?(key)` | Check if entry exceeded TTL |
 | `size(key)` | Get cached file size |
-| `with_lock(key)` | Execute block with exclusive file lock |
+| `with_lock(key)` | Execute block with exclusive lock |
+| `each` | Enumerate cache entries |
+
+### Entry Data Class
+
+Location: `lib/factorix/cache/entry.rb`
+
+```ruby
+Entry = Data.define(:size, :age, :expired)
+```
+
+Represents metadata about a cache entry, used when enumerating entries with `#each`.
+
+## FileSystem Class
+
+Location: `lib/factorix/cache/file_system.rb`
+
+File-based cache backend that extends `Cache::Base`. Provides persistent storage with optional compression and process-safe file locking.
 
 ### Storage Format
 
@@ -173,51 +194,61 @@ sequenceDiagram
 
 ## Configuration
 
-Location: `lib/factorix/application.rb`
+Location: `lib/factorix.rb`
 
 ### Cache Settings
+
+Each cache type has a `backend` selector and backend-specific nested settings:
 
 ```ruby
 setting :cache do
   setting :download do
-    setting :dir, constructor: ->(v) { Pathname(v) }
-    setting :ttl, default: nil                      # Unlimited
-    setting :max_file_size, default: nil            # Unlimited
-    setting :compression_threshold, default: nil    # No compression
+    setting :backend, default: :file_system        # Backend selector
+    setting :ttl, default: nil                     # Unlimited
+    setting :file_system do                        # FileSystem-specific settings
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: nil         # Unlimited
+      setting :compression_threshold, default: nil # No compression
+    end
   end
 
   setting :api do
-    setting :dir, constructor: ->(v) { Pathname(v) }
-    setting :ttl, default: 3600                     # 1 hour
-    setting :max_file_size, default: 10 * 1024 * 1024  # 10MiB
-    setting :compression_threshold, default: 0      # Always compress
+    setting :backend, default: :file_system
+    setting :ttl, default: 3600                    # 1 hour
+    setting :file_system do
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: 10 * 1024 * 1024  # 10MiB
+      setting :compression_threshold, default: 0   # Always compress
+    end
   end
 
   setting :info_json do
-    setting :dir, constructor: ->(v) { Pathname(v) }
-    setting :ttl, default: nil                      # Unlimited
-    setting :max_file_size, default: nil            # Unlimited
-    setting :compression_threshold, default: 0      # Always compress
+    setting :backend, default: :file_system
+    setting :ttl, default: nil                     # Unlimited
+    setting :file_system do
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: nil         # Unlimited
+      setting :compression_threshold, default: 0   # Always compress
+    end
   end
 end
 ```
 
 ### DI Container Registration
 
+The container resolves cache instances based on the configured backend:
+
 ```ruby
 register(:download_cache, memoize: true) do
-  c = config.cache.download
-  Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
+  build_cache(:download)  # Resolves to configured backend
 end
 
 register(:api_cache, memoize: true) do
-  c = config.cache.api
-  Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
+  build_cache(:api)
 end
 
 register(:info_json_cache, memoize: true) do
-  c = config.cache.info_json
-  Cache::FileSystem.new(c.dir, **c.to_h.except(:dir))
+  build_cache(:info_json)
 end
 ```
 

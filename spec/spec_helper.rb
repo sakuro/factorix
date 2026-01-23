@@ -52,11 +52,8 @@ RSpec.configure do |config|
     new_runtime = Factorix::Runtime.detect
     Factorix::Container.stub(:runtime, new_runtime)
 
-    # Reset configuration to defaults and reconfigure with new runtime
+    # Reset configuration to defaults
     Factorix.reset_config
-    Factorix.config.cache.download.dir = new_runtime.factorix_cache_dir / "download"
-    Factorix.config.cache.api.dir = new_runtime.factorix_cache_dir / "api"
-    Factorix.config.cache.info_json.dir = new_runtime.factorix_cache_dir / "info_json"
   end
 
   config.after(:suite) do

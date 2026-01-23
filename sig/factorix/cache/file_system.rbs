@@ -4,12 +4,10 @@
 
 module Factorix
   module Cache
-    class FileSystem
+    class FileSystem < Base
       LOCK_FILE_LIFETIME: Integer
 
-      def initialize: (Pathname cache_dir, ?ttl: Integer?, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
-
-      def key_for: (String url_string) -> String
+      def initialize: (dir: Pathname, ?ttl: Integer?, ?max_file_size: Integer?, ?compression_threshold: Integer?) -> void
 
       def exist?: (String key) -> bool
 
@@ -30,6 +28,9 @@ module Factorix
       def size: (String key) -> Integer?
 
       def with_lock: [T] (String key) { () -> T } -> T
+
+      def each: () { (String, Entry) -> void } -> void
+              | () -> Enumerator[[String, Entry], void]
     end
   end
 end

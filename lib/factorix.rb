@@ -35,29 +35,41 @@ module Factorix
   end
 
   # Cache settings
+  # Each cache type can have its own backend with hierarchical configuration.
+  # Common settings (backend, ttl) apply to all backends.
+  # Backend-specific settings are nested under the backend name.
   setting :cache do
     # Download cache settings (for MOD files)
     setting :download do
-      setting :dir, constructor: ->(value) { Pathname(value) }
+      setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
-      setting :max_file_size, default: nil # nil for unlimited
-      setting :compression_threshold, default: nil # nil for no compression (binary files)
+      setting :file_system do
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :max_file_size, default: nil # nil for unlimited
+        setting :compression_threshold, default: nil # nil for no compression (binary files)
+      end
     end
 
     # API cache settings (for API responses)
     setting :api do
-      setting :dir, constructor: ->(value) { Pathname(value) }
+      setting :backend, default: :file_system
       setting :ttl, default: 3600 # 1 hour (API responses may change)
-      setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
-      setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
+      setting :file_system do
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
+        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
+      end
     end
 
     # info.json cache settings (for MOD metadata from ZIP files)
     setting :info_json do
-      setting :dir, constructor: ->(value) { Pathname(value) }
+      setting :backend, default: :file_system
       setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
-      setting :max_file_size, default: nil # nil for unlimited (info.json is small)
-      setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
+      setting :file_system do
+        setting :root, constructor: ->(value) { value ? Pathname(value) : nil }
+        setting :max_file_size, default: nil # nil for unlimited (info.json is small)
+        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
+      end
     end
   end
 
@@ -111,9 +123,9 @@ module Factorix
 
   # Initialize cache directory defaults after Container is loaded
   runtime = Container.resolve(:runtime)
-  config.cache.download.dir = runtime.factorix_cache_dir / "download"
-  config.cache.api.dir = runtime.factorix_cache_dir / "api"
-  config.cache.info_json.dir = runtime.factorix_cache_dir / "info_json"
+  config.cache.download.file_system.root = runtime.factorix_cache_dir / "download"
+  config.cache.api.file_system.root = runtime.factorix_cache_dir / "api"
+  config.cache.info_json.file_system.root = runtime.factorix_cache_dir / "info_json"
 
   # @deprecated Use {Container} for DI and {Factorix} for configuration. Will be removed in v1.0.
   class Application

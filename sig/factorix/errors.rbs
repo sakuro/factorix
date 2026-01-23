@@ -49,6 +49,9 @@ module Factorix
   class HTTPServerError < HTTPError
   end
 
+  class LockTimeoutError < InfrastructureError
+  end
+
   class DigestMismatchError < InfrastructureError
   end
 

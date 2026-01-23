@@ -48,7 +48,6 @@ module Factorix
           def call(caches: nil, all: false, expired: false, older_than: nil, **)
             validate_options!(all, expired, older_than)
 
-            @now = Time.now
             @older_than_seconds = parse_age(older_than) if older_than
 
             cache_names = resolve_cache_names(caches)
@@ -114,25 +113,26 @@ module Factorix
           # @param expired [Boolean] remove expired entries only
           # @return [Hash] eviction result with :count and :size
           private def evict_cache(name, all:, expired:)
-            config = Factorix.config.cache.public_send(name)
-            cache_dir = config.dir
-            ttl = config.ttl
-
-            return {count: 0, size: 0} unless cache_dir.exist?
+            cache = Container.resolve(:"#{name}_cache")
 
             count = 0
             size = 0
 
-            cache_dir.glob("**/*").each do |path|
-              next unless path.file?
-              next if path.extname == ".lock"
+            # Collect keys to evict (we can't modify during iteration)
+            to_evict = []
+            cache.each do |key, entry|
+              next unless should_evict?(entry, all:, expired:)
 
-              next unless should_evict?(path, ttl, all:, expired:)
+              to_evict << [key, entry.size]
+            end
 
-              size += path.size
-              path.delete
+            # Perform eviction
+            to_evict.each do |key, entry_size|
+              next unless cache.delete(key)
+
               count += 1
-              logger.debug("Evicted cache entry", path: path.to_s)
+              size += entry_size
+              logger.debug("Evicted cache entry", key:)
             end
 
             logger.info("Evicted cache entries", cache: name, count:, size:)
@@ -141,23 +141,18 @@ module Factorix
 
           # Determine if a cache entry should be evicted
           #
-          # @param path [Pathname] path to cache entry
-          # @param ttl [Integer, nil] cache TTL
+          # @param entry [Cache::Entry] cache entry
           # @param all [Boolean] remove all entries
           # @param expired [Boolean] remove expired entries only
           # @return [Boolean] true if entry should be evicted
-          private def should_evict?(path, ttl, all:, expired:)
+          private def should_evict?(entry, all:, expired:)
             return true if all
 
-            age_seconds = @now - path.mtime
-
             if expired
-              return false if ttl.nil? # No TTL means never expires
-
-              age_seconds > ttl
+              entry.expired?
             else
               # --older-than
-              age_seconds > @older_than_seconds
+              entry.age > @older_than_seconds
             end
           end
 

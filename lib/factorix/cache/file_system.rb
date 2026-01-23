@@ -2,6 +2,7 @@
 
 require "digest"
 require "fileutils"
+require "json"
 require "pathname"
 require "zlib"
 
@@ -12,7 +13,12 @@ module Factorix
     # Uses a two-level directory structure to store cached files,
     # with file locking to handle concurrent access and TTL support
     # for cache expiration.
-    class FileSystem
+    #
+    # Cache entries consist of:
+    # - Data file: the cached content (optionally compressed)
+    # - Metadata file (.metadata): JSON containing the logical key
+    # - Lock file (.lock): used for concurrent access control
+    class FileSystem < Base
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
@@ -31,50 +37,43 @@ module Factorix
       # Initialize a new file system cache storage.
       # Creates the cache directory if it doesn't exist
       #
-      # @param cache_dir [Pathname] path to the cache directory
-      # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
+      # @param dir [Pathname] path to the cache directory
       # @param max_file_size [Integer, nil] maximum file size in bytes (nil for unlimited)
       # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
       #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
-      def initialize(cache_dir, ttl: nil, max_file_size: nil, compression_threshold: nil, logger: nil)
-        super(logger:)
-        @cache_dir = cache_dir
-        @ttl = ttl
+      # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
+      def initialize(root:, max_file_size: nil, compression_threshold: nil, **)
+        super(**)
+        @cache_dir = root
         @max_file_size = max_file_size
         @compression_threshold = compression_threshold
         @cache_dir.mkpath
-        logger.info("Initializing cache", dir: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size, compression_threshold: @compression_threshold)
+        logger.info("Initializing cache", root: @cache_dir.to_s, ttl: @ttl, max_size: @max_file_size, compression_threshold: @compression_threshold)
       end
-
-      # Generate a cache key for the given URL string.
-      # Uses SHA1 to create a unique, deterministic key
-      #
-      # @param url_string [String] URL string to generate key for
-      # @return [String] cache key
-      # Use Digest(:SHA1) instead of Digest::SHA1 for thread-safety (Ruby 2.2+)
-      def key_for(url_string) = Digest(:SHA1).hexdigest(url_string)
 
       # Check if a cache entry exists and is not expired.
       # A cache entry is considered to exist if its file exists and is not expired
       #
-      # @param key [String] cache key to check
+      # @param key [String] logical cache key
       # @return [Boolean] true if the cache entry exists and is valid, false otherwise
       def exist?(key)
-        return false unless cache_path_for(key).exist?
+        internal_key = storage_key_for(key)
+        return false unless cache_path_for(internal_key).exist?
         return true if @ttl.nil?
 
         !expired?(key)
       end
 
-      # Fetch a cached file and copy it to the output path.
+      # Write cached content to a file.
       # If the cache entry doesn't exist or is expired, returns false without modifying the output path.
       # Automatically decompresses zlib-compressed cache entries.
       #
-      # @param key [String] cache key to fetch
-      # @param output [Pathname] path to copy the cached file to
-      # @return [Boolean] true if the cache entry was found and copied, false otherwise
-      def fetch(key, output)
-        path = cache_path_for(key)
+      # @param key [String] logical cache key
+      # @param output [Pathname] path to write the cached content to
+      # @return [Boolean] true if written successfully, false if not found/expired
+      def write_to(key, output)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
         unless path.exist?
           logger.debug("Cache miss", key:)
           return false
@@ -100,11 +99,12 @@ module Factorix
       # If the cache entry doesn't exist or is expired, returns nil.
       # Automatically decompresses zlib-compressed cache entries.
       #
-      # @param key [String] cache key to read
+      # @param key [String] logical cache key
       # @param encoding [Encoding, String] encoding to use (default: ASCII-8BIT for binary)
       # @return [String, nil] cached content or nil if not found/expired
       def read(key, encoding: Encoding::ASCII_8BIT)
-        path = cache_path_for(key)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
         return nil unless path.exist?
         return nil if expired?(key)
 
@@ -118,7 +118,7 @@ module Factorix
       # Optionally compresses data based on compression_threshold setting.
       # If the (possibly compressed) size exceeds max_file_size, skips caching and returns false.
       #
-      # @param key [String] cache key to store under
+      # @param key [String] logical cache key
       # @param src [Pathname] path of the file to store
       # @return [Boolean] true if cached successfully, false if skipped due to size limit
       def store(key, src)
@@ -135,22 +135,30 @@ module Factorix
           return false
         end
 
-        path = cache_path_for(key)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
+        metadata_path = metadata_path_for(internal_key)
+
         path.dirname.mkpath
         path.binwrite(data)
+        metadata_path.write(JSON.generate({logical_key: key}))
         logger.debug("Stored in cache", key:, size_bytes: data.bytesize)
         true
       end
 
       # Delete a specific cache entry.
       #
-      # @param key [String] cache key to delete
+      # @param key [String] logical cache key
       # @return [Boolean] true if the entry was deleted, false if it didn't exist
       def delete(key)
-        path = cache_path_for(key)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
+        metadata_path = metadata_path_for(internal_key)
+
         return false unless path.exist?
 
         path.delete
+        metadata_path.delete if metadata_path.exist?
         logger.debug("Deleted from cache", key:)
         true
       end
@@ -160,13 +168,14 @@ module Factorix
       #
       # @return [void]
       def clear
-        logger.info("Clearing cache directory", dir: @cache_dir.to_s)
+        logger.info("Clearing cache directory", root: @cache_dir.to_s)
         count = 0
         @cache_dir.glob("**/*").each do |path|
-          if path.file?
-            path.delete
-            count += 1
-          end
+          next unless path.file?
+          next if path.extname == ".lock"
+
+          path.delete
+          count += 1
         end
         logger.info("Cache cleared", files_removed: count)
       end
@@ -174,10 +183,11 @@ module Factorix
       # Get the age of a cache entry in seconds.
       # Returns nil if the entry doesn't exist.
       #
-      # @param key [String] cache key
+      # @param key [String] logical cache key
       # @return [Float, nil] age in seconds, or nil if entry doesn't exist
       def age(key)
-        path = cache_path_for(key)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
         return nil unless path.exist?
 
         Time.now - path.mtime
@@ -186,7 +196,7 @@ module Factorix
       # Check if a cache entry has expired based on TTL.
       # Returns false if TTL is not set (unlimited) or if entry doesn't exist.
       #
-      # @param key [String] cache key
+      # @param key [String] logical cache key
       # @return [Boolean] true if expired, false otherwise
       def expired?(key)
         return false if @ttl.nil?
@@ -200,10 +210,11 @@ module Factorix
       # Get the size of a cached file in bytes.
       # Returns nil if the entry doesn't exist or is expired.
       #
-      # @param key [String] cache key
+      # @param key [String] logical cache key
       # @return [Integer, nil] file size in bytes, or nil if entry doesn't exist/expired
       def size(key)
-        path = cache_path_for(key)
+        internal_key = storage_key_for(key)
+        path = cache_path_for(internal_key)
         return nil unless path.exist?
         return nil if expired?(key)
 
@@ -211,13 +222,14 @@ module Factorix
       end
 
       # Executes the given block with a file lock.
-      # Uses flock for process-safe file locking and automatically removes stale locks
+      # Uses flock for process-safe file locking and automatically removes stale locks.
       #
-      # @param key [String] cache key to lock
+      # @param key [String] logical cache key
       # @yield Executes the block with exclusive file lock
       # @return [void]
       def with_lock(key)
-        lock_path = lock_path_for(key)
+        internal_key = storage_key_for(key)
+        lock_path = lock_path_for(internal_key)
         cleanup_stale_lock(lock_path)
 
         lock_path.dirname.mkpath
@@ -240,23 +252,70 @@ module Factorix
         end
       end
 
-      # Get the cache file path for the given key.
-      # Uses a two-level directory structure to avoid too many files in one directory
+      # Enumerate cache entries.
       #
-      # @param key [String] cache key
-      # @return [Pathname] path to the cache file
-      private def cache_path_for(key)
-        prefix = key[0, 2]
-        @cache_dir.join(prefix, key[2..])
+      # Yields [key, entry] pairs similar to Hash#each.
+      # Skips entries without metadata files (legacy entries).
+      #
+      # @yield [key, entry] logical key and Entry object
+      # @yieldparam key [String] logical cache key
+      # @yieldparam entry [Entry] cache entry metadata
+      # @return [Enumerator] if no block given
+      def each
+        return enum_for(__method__) unless block_given?
+
+        @cache_dir.glob("**/*").each do |path|
+          next unless path.file?
+          next if path.extname == ".metadata" || path.extname == ".lock"
+
+          metadata_path = Pathname("#{path}.metadata")
+          next unless metadata_path.exist?
+
+          logical_key = JSON.parse(metadata_path.read)["logical_key"]
+          age = Time.now - path.mtime
+          entry = Entry.new(
+            size: path.size,
+            age:,
+            expired: @ttl ? age > @ttl : false
+          )
+
+          yield logical_key, entry
+        end
       end
 
-      # Get the lock file path for the given key.
+      # Generate a storage key for the given logical key.
+      # Uses SHA1 to create a unique, deterministic key.
+      # Use Digest(:SHA1) instead of Digest::SHA1 for thread-safety (Ruby 2.2+)
+      #
+      # @param logical_key [String] logical key to generate storage key for
+      # @return [String] storage key (SHA1 hash)
+      private def storage_key_for(logical_key) = Digest(:SHA1).hexdigest(logical_key)
+
+      # Get the cache file path for the given internal key.
+      # Uses a two-level directory structure to avoid too many files in one directory
+      #
+      # @param internal_key [String] internal storage key
+      # @return [Pathname] path to the cache file
+      private def cache_path_for(internal_key)
+        prefix = internal_key[0, 2]
+        @cache_dir.join(prefix, internal_key[2..])
+      end
+
+      # Get the metadata file path for the given internal key.
+      #
+      # @param internal_key [String] internal storage key
+      # @return [Pathname] path to the metadata file
+      private def metadata_path_for(internal_key)
+        Pathname("#{cache_path_for(internal_key)}.metadata")
+      end
+
+      # Get the lock file path for the given internal key.
       # Lock files are stored alongside cache files with a .lock extension
       #
-      # @param key [String] cache key
+      # @param internal_key [String] internal storage key
       # @return [Pathname] path to the lock file
-      private def lock_path_for(key)
-        cache_path_for(key).sub_ext(".lock")
+      private def lock_path_for(internal_key)
+        cache_path_for(internal_key).sub_ext(".lock")
       end
 
       # Check if data should be compressed based on compression_threshold setting.

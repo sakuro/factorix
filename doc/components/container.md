@@ -26,21 +26,33 @@ end
 
 setting :cache do
   setting :download do
-    setting :dir, constructor: ->(value) { Pathname(value) }
+    setting :backend, default: :file_system
     setting :ttl, default: nil
-    setting :max_file_size, default: nil
+    setting :file_system do
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: nil
+      setting :compression_threshold, default: nil
+    end
   end
 
   setting :api do
-    setting :dir, constructor: ->(value) { Pathname(value) }
+    setting :backend, default: :file_system
     setting :ttl, default: 3600
-    setting :max_file_size, default: 10 * 1024 * 1024
+    setting :file_system do
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: 10 * 1024 * 1024
+      setting :compression_threshold, default: 0
+    end
   end
 
   setting :info_json do
-    setting :dir, constructor: ->(value) { Pathname(value) }
-    setting :ttl, default: nil  # nil for unlimited (info.json is immutable within a MOD ZIP)
-    setting :max_file_size, default: nil
+    setting :backend, default: :file_system
+    setting :ttl, default: nil
+    setting :file_system do
+      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
+      setting :max_file_size, default: nil
+      setting :compression_threshold, default: 0
+    end
   end
 end
 ```
@@ -51,6 +63,9 @@ end
 - `retry_strategy` - Retry strategy
 - `service_credential` - Factorio service credentials
 - `api_credential` - Portal API credentials
+- `download_cache` - Cache for MOD files
+- `api_cache` - Cache for API responses
+- `info_json_cache` - Cache for MOD metadata
 - Other common services
 
 ## Configuration File Loading
@@ -88,5 +103,6 @@ end
 ## Related Documentation
 
 - [Architecture](../architecture.md)
+- [Cache System](cache.md)
 - [Credentials Management](credentials.md)
 - [Technology Stack](../technology-stack.md)

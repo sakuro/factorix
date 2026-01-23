@@ -10,7 +10,7 @@ RSpec.describe Factorix::Transfer::Downloader do
   let(:uri) { URI("https://example.com/file.zip") }
   let(:output_dir) { Pathname(Dir.mktmpdir("output")) }
   let(:output) { output_dir.join("file.zip") }
-  let(:cache_key) { "cache_key" }
+  let(:cache_key) { uri.to_s }
 
   around do |example|
     Dir.glob(File.join(Dir.tmpdir, "factorix*")).each do |dir|
@@ -29,7 +29,6 @@ RSpec.describe Factorix::Transfer::Downloader do
   end
 
   before do
-    allow(cache).to receive(:key_for).with("https://example.com/file.zip").and_return(cache_key)
     allow(cache).to receive(:size).and_return(1024)
     allow(client).to receive(:get)
   end
@@ -43,7 +42,7 @@ RSpec.describe Factorix::Transfer::Downloader do
       let(:cached_content) { "cached file content" }
 
       before do
-        allow(cache).to receive(:fetch).with(cache_key, output) do
+        allow(cache).to receive(:write_to).with(cache_key, output) do
           output.write(cached_content)
           true
         end
@@ -51,7 +50,7 @@ RSpec.describe Factorix::Transfer::Downloader do
 
       it "fetches the file from cache" do
         downloader.download(uri, output)
-        expect(cache).to have_received(:fetch).with(cache_key, output).once
+        expect(cache).to have_received(:write_to).with(cache_key, output).once
       end
 
       it "does not download the file" do
@@ -78,7 +77,7 @@ RSpec.describe Factorix::Transfer::Downloader do
 
             # After cache invalidation, fetch returns false
             fetch_count = 0
-            allow(cache).to receive(:fetch).with(cache_key, output) do
+            allow(cache).to receive(:write_to).with(cache_key, output) do
               fetch_count += 1
               if fetch_count == 1
                 # First call: cached content (corrupted)
@@ -118,7 +117,7 @@ RSpec.describe Factorix::Transfer::Downloader do
       let(:response_body) { "file content" }
 
       before do
-        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:write_to).with(cache_key, output).and_return(false)
         allow(cache).to receive(:with_lock).with(cache_key).and_yield
         allow(cache).to receive(:store)
 
@@ -142,15 +141,15 @@ RSpec.describe Factorix::Transfer::Downloader do
       end
 
       it "fetches the file from cache after download" do
-        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:write_to).with(cache_key, output).and_return(false)
         downloader.download(uri, output)
-        expect(cache).to have_received(:fetch).with(cache_key, output).exactly(3).times
+        expect(cache).to have_received(:write_to).with(cache_key, output).exactly(3).times
       end
 
       context "when another process is downloading" do
         before do
           fetch_results = [false, true]
-          allow(cache).to receive(:fetch) do
+          allow(cache).to receive(:write_to) do
             fetch_results.shift
           end
         end
@@ -212,7 +211,7 @@ RSpec.describe Factorix::Transfer::Downloader do
 
     context "when download fails with 404" do
       before do
-        allow(cache).to receive(:fetch).with(cache_key, output).and_return(false)
+        allow(cache).to receive(:write_to).with(cache_key, output).and_return(false)
         allow(cache).to receive(:with_lock).with(cache_key).and_yield
         allow(client).to receive(:get).and_raise(Factorix::HTTPNotFoundError.new("404 Not Found"))
       end

@@ -56,16 +56,16 @@ RSpec.describe Factorix::Container do
     end
 
     describe "[:download_cache]" do
-      it "resolves to a Cache::FileSystem instance" do
+      it "resolves to a Cache::Base instance" do
         download_cache = Factorix::Container[:download_cache]
-        expect(download_cache).to be_a(Factorix::Cache::FileSystem)
+        expect(download_cache).to be_a(Factorix::Cache::Base)
       end
     end
 
     describe "[:api_cache]" do
-      it "resolves to a Cache::FileSystem instance" do
+      it "resolves to a Cache::Base instance" do
         api_cache = Factorix::Container[:api_cache]
-        expect(api_cache).to be_a(Factorix::Cache::FileSystem)
+        expect(api_cache).to be_a(Factorix::Cache::Base)
       end
     end
 
@@ -216,9 +216,8 @@ RSpec.describe Factorix::Container do
     end
 
     describe "cache.download" do
-      it "defaults dir to runtime.factorix_cache_dir/download" do
-        runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.download.dir).to eq(runtime.factorix_cache_dir / "download")
+      it "has default backend of :file_system" do
+        expect(Factorix.config.cache.download.backend).to eq(:file_system)
       end
 
       it "has default ttl of nil" do
@@ -226,20 +225,19 @@ RSpec.describe Factorix::Container do
       end
 
       it "has default max_file_size of nil" do
-        expect(Factorix.config.cache.download.max_file_size).to be_nil
+        expect(Factorix.config.cache.download.file_system.max_file_size).to be_nil
       end
 
       it "can be overridden" do
         custom_path = Pathname("/custom/cache/download")
-        Factorix.config.cache.download.dir = custom_path
-        expect(Factorix.config.cache.download.dir).to eq(custom_path)
+        Factorix.config.cache.download.file_system.root = custom_path
+        expect(Factorix.config.cache.download.file_system.root).to eq(custom_path)
       end
     end
 
     describe "cache.api" do
-      it "defaults dir to runtime.factorix_cache_dir/api" do
-        runtime = Factorix::Container[:runtime]
-        expect(Factorix.config.cache.api.dir).to eq(runtime.factorix_cache_dir / "api")
+      it "has default backend of :file_system" do
+        expect(Factorix.config.cache.api.backend).to eq(:file_system)
       end
 
       it "has default ttl of 3600 seconds" do
@@ -247,7 +245,7 @@ RSpec.describe Factorix::Container do
       end
 
       it "has default max_file_size of 10MiB" do
-        expect(Factorix.config.cache.api.max_file_size).to eq(10 * 1024 * 1024)
+        expect(Factorix.config.cache.api.file_system.max_file_size).to eq(10 * 1024 * 1024)
       end
     end
 

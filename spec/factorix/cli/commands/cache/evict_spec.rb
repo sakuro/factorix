@@ -2,20 +2,6 @@
 
 RSpec.describe Factorix::CLI::Commands::Cache::Evict do
   let(:command) { Factorix::CLI::Commands::Cache::Evict.new }
-  let(:cache_dir) { Pathname(Dir.mktmpdir) }
-
-  before do
-    # Set up test cache directories
-    %i[download api info_json].each do |name|
-      dir = cache_dir / name.to_s
-      dir.mkpath
-      allow(Factorix.config.cache.public_send(name)).to receive(:dir).and_return(dir)
-    end
-  end
-
-  after do
-    FileUtils.rm_rf(cache_dir)
-  end
 
   describe "#call" do
     context "without any option" do
@@ -32,92 +18,70 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
 
     context "with --all option" do
       before do
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-        (download_dir / "ab" / "cdef1234").write("test content 1")
-        (download_dir / "ab" / "cdef5678").write("test content 2")
+        download_cache.add_entry("http://example.com/file1", "test content 1")
+        download_cache.add_entry("http://example.com/file2", "test content 2")
       end
 
       it "removes all entries" do
         result = run_command(command, %w[--all])
 
         expect(result.stdout).to match(/download.*2 entries removed/)
-        expect((cache_dir / "download").glob("**/*").select(&:file?)).to be_empty
+        expect(download_cache.each.to_a).to be_empty
       end
 
       it "respects cache name argument" do
-        api_dir = cache_dir / "api"
-        (api_dir / "ab").mkpath
-        (api_dir / "ab" / "api_entry").write("api content")
+        api_cache.add_entry("http://example.com/api_entry", "api content")
 
         result = run_command(command, %w[download --all])
 
         expect(result.stdout).to match(/download/)
         expect(result.stdout).not_to match(/\bapi\s*:/)
         # api cache should still have its entry
-        expect(cache_dir / "api" / "ab" / "api_entry").to exist
+        expect(api_cache.exist?("http://example.com/api_entry")).to be true
       end
     end
 
     context "with --expired option" do
       before do
-        api_dir = cache_dir / "api"
-        (api_dir / "ab").mkpath
-
-        # Create an expired file (older than TTL of 3600s)
-        old_file = api_dir / "ab" / "old_entry"
-        old_file.write("old content")
-        FileUtils.touch(old_file, mtime: Time.now - 7200)
-
-        # Create a valid file
-        new_file = api_dir / "ab" / "new_entry"
-        new_file.write("new content")
+        # Create an expired entry (older than TTL of 3600s)
+        api_cache.add_entry("http://example.com/old", "old content", age: 7200)
+        # Create a valid entry
+        api_cache.add_entry("http://example.com/new", "new content", age: 0)
       end
 
       it "removes only expired entries" do
         result = run_command(command, %w[--expired])
 
         expect(result.stdout).to match(/api.*1 entries removed/)
-        expect(cache_dir / "api" / "ab" / "old_entry").not_to exist
-        expect(cache_dir / "api" / "ab" / "new_entry").to exist
+        expect(api_cache.exist?("http://example.com/old")).to be false
+        expect(api_cache.exist?("http://example.com/new")).to be true
       end
 
       it "does not remove entries from caches without TTL" do
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-        old_file = download_dir / "ab" / "old_download"
-        old_file.write("old download content")
-        FileUtils.touch(old_file, mtime: Time.now - 86400) # 1 day old
+        download_cache.add_entry("http://example.com/old", "old download content", age: 86400) # 1 day old
 
         result = run_command(command, %w[--expired])
 
         # download cache has no TTL, so no entries should be removed
         expect(result.stdout).to match(/download.*0 entries removed/)
-        expect(cache_dir / "download" / "ab" / "old_download").to exist
+        expect(download_cache.exist?("http://example.com/old")).to be true
       end
     end
 
     context "with --older-than option" do
       before do
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-
-        # Create an old file
-        old_file = download_dir / "ab" / "old_entry"
-        old_file.write("old content")
-        FileUtils.touch(old_file, mtime: Time.now - 86400) # 1 day old
-
-        # Create a new file
-        new_file = download_dir / "ab" / "new_entry"
-        new_file.write("new content")
+        # Create an old entry
+        download_cache.add_entry("http://example.com/old", "old content", age: 86400) # 1 day old
+        # Create a new entry
+        download_cache.add_entry("http://example.com/new", "new content", age: 0)
       end
 
       it "removes entries older than specified age" do
         result = run_command(command, %w[--older-than=12h])
 
         expect(result.stdout).to match(/download.*1 entries removed/)
-        expect(cache_dir / "download" / "ab" / "old_entry").not_to exist
-        expect(cache_dir / "download" / "ab" / "new_entry").to exist
+        expect(download_cache.exist?("http://example.com/old")).to be false
+        expect(download_cache.exist?("http://example.com/new")).to be true
       end
 
       it "parses various age formats" do
@@ -140,29 +104,11 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
         expect { run_command(command, %w[unknown --all]) }.to raise_error(SystemExit)
       end
     end
-
-    context "with lock files" do
-      before do
-        download_dir = cache_dir / "download"
-        (download_dir / "ab").mkpath
-        (download_dir / "ab" / "entry").write("content")
-        (download_dir / "ab" / "entry.lock").write("")
-      end
-
-      it "does not remove lock files" do
-        run_command(command, %w[--all])
-
-        expect(cache_dir / "download" / "ab" / "entry").not_to exist
-        expect(cache_dir / "download" / "ab" / "entry.lock").to exist
-      end
-    end
   end
 
   describe "output format" do
     before do
-      download_dir = cache_dir / "download"
-      (download_dir / "ab").mkpath
-      (download_dir / "ab" / "entry").write("x" * 2048) # 2 KiB
+      download_cache.add_entry("http://example.com/large", "x" * 2048) # 2 KiB
     end
 
     it "formats sizes using binary prefixes" do
