@@ -2,7 +2,6 @@
 
 require "erb"
 require "json"
-require "tempfile"
 require "uri"
 
 module Factorix
@@ -101,55 +100,13 @@ module Factorix
         URI.join(BASE_URL, path).tap {|uri| uri.query = URI.encode_www_form(params.sort.to_h) unless params.empty? }
       end
 
-      # Fetch data with cache support
+      # Fetch data from API (caching is handled by CacheDecorator in api_http_client)
       #
       # @param uri [URI::HTTPS] URI to fetch
       # @return [Hash{Symbol => untyped}] parsed JSON response with symbolized keys
       private def fetch_with_cache(uri)
-        cache_key = uri.to_s
-
-        cached = cache.read(cache_key)
-        if cached
-          logger.debug("API cache hit", uri: uri.to_s)
-          return JSON.parse((+cached).force_encoding(Encoding::UTF_8), symbolize_names: true)
-        end
-
-        logger.debug("API cache miss", uri: uri.to_s)
-        response_body = fetch_from_api(uri)
-
-        store_in_cache(cache_key, response_body)
-
-        JSON.parse(response_body, symbolize_names: true)
-      end
-
-      # Fetch data from API via HTTP
-      #
-      # @param uri [URI::HTTPS] URI to fetch
-      # @return [String] response body
-      # @raise [HTTPClientError] for 4xx errors
-      # @raise [HTTPServerError] for 5xx errors
-      private def fetch_from_api(uri)
-        logger.info("Fetching from API", uri: uri.to_s)
         response = client.get(uri)
-        logger.info("API response", code: response.code, size_bytes: response.body.bytesize)
-        response.body
-      end
-
-      # Store response body in cache via temporary file
-      #
-      # @param cache_key [String] logical cache key (URL string)
-      # @param data [String] response body
-      # @return [void]
-      private def store_in_cache(cache_key, data)
-        temp_file = Tempfile.new("cache")
-        begin
-          temp_file.write(data)
-          temp_file.close
-          cache.store(cache_key, Pathname(temp_file.path))
-          logger.debug("Stored API response in cache", key: cache_key)
-        ensure
-          temp_file.unlink
-        end
+        JSON.parse((+response.body).force_encoding(Encoding::UTF_8), symbolize_names: true)
       end
 
       # Validate page_size parameter
