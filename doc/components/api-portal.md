@@ -238,13 +238,14 @@ Retrieves full MOD information including dependencies (Full API).
 
 **Return**: `API::MODInfo` (with Detail if available)
 
-#### `Portal#download_mod(release, output)`
+#### `Portal#download_mod(release, output, handler: nil)`
 
 Downloads a MOD file.
 
 **Parameters**:
 - `release`: `API::Release` object with download_url
 - `output`: `Pathname` output path
+- `handler`: Optional event handler for progress tracking (receives `download.started`, `download.progress`, `download.completed` events)
 
 **Note**: Use `releases.max_by(&:released_at)` to get the latest release (order not guaranteed)
 

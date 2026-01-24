@@ -30,12 +30,10 @@ module Factorix
     end
     private_class_method :build_cache
 
-    # Some items are registered with memoize: false to support independent event handlers
+    # :downloader is registered with memoize: false to support independent event handlers
     # for each parallel download task (e.g., progress tracking).
-    # Items registered with memoize: false:
-    # - :downloader (event handlers for progress tracking)
-    # - :mod_download_api (contains :downloader)
-    # - :portal (contains :mod_download_api)
+    # MODDownloadAPI resolves :downloader lazily per download call, allowing
+    # :mod_download_api and :portal to be safely memoized.
 
     # Register runtime detector
     register(:runtime, memoize: true) do
@@ -132,7 +130,7 @@ module Factorix
     end
 
     # Register MOD Download API client
-    register(:mod_download_api, memoize: false) do
+    register(:mod_download_api, memoize: true) do
       API::MODDownloadAPI.new
     end
 
@@ -148,7 +146,7 @@ module Factorix
     end
 
     # Register portal (high-level API wrapper)
-    register(:portal, memoize: false) do
+    register(:portal, memoize: true) do
       Portal.new
     end
   end

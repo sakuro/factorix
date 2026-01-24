@@ -70,14 +70,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(graph).to receive_messages(nodes: [], node?: false, node: nil, edges_from: [], cyclic?: false)
     allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
-    allow(portal).to receive(:download_mod)
+    allow(portal).to receive_messages(download_mod: nil, get_mod_full: mod_info_a)
     allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
-
-    downloader = instance_double(Factorix::Transfer::Downloader)
-    allow(downloader).to receive(:subscribe)
-    allow(downloader).to receive(:unsubscribe)
-    mod_download_api = instance_double(Factorix::API::MODDownloadAPI, downloader:)
-    allow(portal).to receive_messages(get_mod_full: mod_info_a, mod_download_api:)
   end
 
   describe "#call" do

@@ -97,17 +97,13 @@ module Factorix
 
           futures = targets.map {|target|
             Concurrent::Future.execute(executor: pool) do
-              downloader = portal.mod_download_api.downloader
-
               presenter = multi_presenter.register(
                 target[:mod].name,
                 title: target[:release].file_name
               )
               handler = Progress::DownloadHandler.new(presenter)
 
-              downloader.subscribe(handler)
-              portal.download_mod(target[:release], target[:output_path])
-              downloader.unsubscribe(handler)
+              portal.download_mod(target[:release], target[:output_path], handler:)
             end
           }
 
