@@ -1,24 +1,22 @@
 ## [Unreleased]
 
+### Added
+
+- Add pluggable cache backend architecture with Redis and S3 support (#18, #19)
+  - Configure backend per cache type: `config.cache.<type>.backend = :file_system | :redis | :s3`
+  - **Redis backend** (`Cache::Redis`): requires `redis` gem (~> 5)
+    - Distributed locking via Lua script for atomic lock release
+    - Auto-namespaced keys: `factorix-cache:{cache_type}:{key}`
+  - **S3 backend** (`Cache::S3`): requires `aws-sdk-s3` gem
+    - Distributed locking via conditional PUT (`if_none_match: "*"`)
+    - TTL managed via S3 custom metadata, age from native `Last-Modified`
+  - `cache stat` command displays backend-specific information (directory, URL, bucket, etc.)
+
 ### Changed
 
 - Refactor `Cache::FileSystem` to use `cache_type:` parameter instead of `root:` (#25)
-  - Aligns interface with `Cache::Redis` for consistent backend initialization
+  - Aligns interface with other backends for consistent initialization
   - Cache directory is now auto-computed from `Container[:runtime].factorix_cache_dir / cache_type`
-
-### Added
-
-- Add S3 cache backend (`Cache::S3`) for cloud-native deployments (#18)
-  - Optional dependency: requires `aws-sdk-s3` gem in user's Gemfile
-  - Configure with `config.cache.<type>.backend = :s3`
-  - Distributed locking via conditional PUT (`if_none_match: "*"`)
-  - TTL managed via S3 custom metadata, age from native `Last-Modified`
-
-- Add Redis cache backend (`Cache::Redis`) with distributed locking support (#19)
-  - Optional dependency: requires `redis` gem (~> 5) in user's Gemfile
-  - Configure with `config.cache.<type>.backend = :redis`
-  - Supports distributed locking via Lua script for atomic lock release
-  - Auto-namespaced keys: `factorix-cache:{cache_type}:{key}`
 
 ## [0.6.0] - 2026-01-18
 
