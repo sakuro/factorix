@@ -51,6 +51,11 @@ module Factorix
         setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
         setting :lock_timeout, default: 30
       end
+      setting :s3 do
+        setting :bucket, default: nil # required when using S3 backend
+        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
+        setting :lock_timeout, default: 30
+      end
     end
 
     # API cache settings (for API responses)
@@ -65,6 +70,11 @@ module Factorix
         setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
         setting :lock_timeout, default: 30
       end
+      setting :s3 do
+        setting :bucket, default: nil # required when using S3 backend
+        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
+        setting :lock_timeout, default: 30
+      end
     end
 
     # info.json cache settings (for MOD metadata from ZIP files)
@@ -77,6 +87,11 @@ module Factorix
       end
       setting :redis do
         setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
+        setting :lock_timeout, default: 30
+      end
+      setting :s3 do
+        setting :bucket, default: nil # required when using S3 backend
+        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
         setting :lock_timeout, default: 30
       end
     end

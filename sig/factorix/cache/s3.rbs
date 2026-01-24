@@ -1,0 +1,38 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module Cache
+    class S3 < Base
+      DEFAULT_LOCK_TIMEOUT: Integer
+
+      def initialize: (bucket: String, cache_type: String | Symbol, ?region: String?, ?lock_timeout: Integer, ?ttl: Integer?) -> void
+
+      def exist?: (String key) -> bool
+
+      def read: (String key) -> String?
+
+      def write_to: (String key, Pathname output) -> bool
+
+      def store: (String key, Pathname src) -> bool
+
+      def delete: (String key) -> bool
+
+      def clear: () -> void
+
+      def age: (String key) -> Integer?
+
+      def expired?: (String key) -> bool
+
+      def size: (String key) -> Integer?
+
+      def with_lock: [T] (String key) { () -> T } -> T
+
+      def each: () { (String, Entry) -> void } -> void
+              | () -> Enumerator[[String, Entry], void]
+
+      def backend_info: () -> Hash[Symbol, untyped]
+    end
+  end
+end
