@@ -41,10 +41,6 @@ module Factorix
       EXPIRES_AT_KEY = "expires-at"
       private_constant :EXPIRES_AT_KEY
 
-      # Metadata key for storing creation timestamp.
-      CREATED_AT_KEY = "created-at"
-      private_constant :CREATED_AT_KEY
-
       # Initialize a new S3 cache storage.
       #
       # @param bucket [String] S3 bucket name (required)
@@ -107,8 +103,7 @@ module Factorix
       # @param src [Pathname] path to the source file
       # @return [Boolean] true if stored successfully
       def store(key, src)
-        metadata = {CREATED_AT_KEY => Time.now.to_i.to_s}
-        metadata[EXPIRES_AT_KEY] = (Time.now.to_i + @ttl).to_s if @ttl
+        metadata = @ttl ? {EXPIRES_AT_KEY => (Time.now.to_i + @ttl).to_s} : {}
 
         @client.put_object(
           bucket: @bucket,
@@ -154,13 +149,10 @@ module Factorix
       # Get the age of a cache entry in seconds.
       #
       # @param key [String] logical cache key
-      # @return [Integer, nil] age in seconds, or nil if entry doesn't exist
+      # @return [Float, nil] age in seconds, or nil if entry doesn't exist
       def age(key)
         resp = head_object(key)
-        value = resp.metadata[CREATED_AT_KEY]
-        return nil if value.nil?
-
-        Time.now.to_i - Integer(value, 10)
+        Time.now - resp.last_modified
       rescue Aws::S3::Errors::NotFound
         nil
       end

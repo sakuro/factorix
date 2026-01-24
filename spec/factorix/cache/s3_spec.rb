@@ -218,17 +218,16 @@ RSpec.describe Factorix::Cache::S3 do
   end
 
   describe "#age" do
-    context "when object exists with created-at metadata" do
-      let(:created_at) { Time.now.to_i - 3600 }
-
+    context "when object exists" do
       before do
         s3_client.stub_responses(:head_object, {
           content_length: 100,
-          metadata: {"created-at" => created_at.to_s}
+          last_modified: Time.now - 3600,
+          metadata: {}
         })
       end
 
-      it "returns age in seconds" do
+      it "returns age in seconds based on last_modified" do
         expect(cache.age(logical_key)).to be_within(1).of(3600)
       end
     end
@@ -236,16 +235,6 @@ RSpec.describe Factorix::Cache::S3 do
     context "when object does not exist" do
       before do
         s3_client.stub_responses(:head_object, "NotFound")
-      end
-
-      it "returns nil" do
-        expect(cache.age(logical_key)).to be_nil
-      end
-    end
-
-    context "when object exists without created-at metadata" do
-      before do
-        s3_client.stub_responses(:head_object, {content_length: 100, metadata: {}})
       end
 
       it "returns nil" do
