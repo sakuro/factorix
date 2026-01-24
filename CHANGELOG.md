@@ -18,6 +18,12 @@
   - Aligns interface with other backends for consistent initialization
   - Cache directory is now auto-computed from `Container[:runtime].factorix_cache_dir / cache_type`
 
+### Removed
+
+- Remove deprecated `Factorix::Application` compatibility class
+  - Use `Factorix::Container` for DI (`[]`, `resolve`, `register`)
+  - Use `Factorix.config` and `Factorix.configure` for configuration
+
 ## [0.6.0] - 2026-01-18
 
 ### Changed

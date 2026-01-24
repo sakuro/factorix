@@ -144,42 +144,4 @@ module Factorix
 
   Import = Dry::AutoInject(Container)
   public_constant :Import
-
-  # @deprecated Use {Container} for DI and {Factorix} for configuration. Will be removed in v1.0.
-  class Application
-    # @!method [](key)
-    #   @deprecated Use {Container.[]} instead
-    def self.[](key)
-      warn "[factorix] Factorix::Application is deprecated, use Factorix::Container for DI"
-      Container[key]
-    end
-
-    # @!method resolve(key)
-    #   @deprecated Use {Container.resolve} instead
-    def self.resolve(key)
-      warn "[factorix] Factorix::Application is deprecated, use Factorix::Container for DI"
-      Container.resolve(key)
-    end
-
-    # @!method register(...)
-    #   @deprecated Use {Container.register} instead
-    def self.register(...)
-      warn "[factorix] Factorix::Application is deprecated, use Factorix::Container for DI"
-      Container.register(...)
-    end
-
-    # @!method config
-    #   @deprecated Use {Factorix.config} instead
-    def self.config
-      warn "[factorix] Factorix::Application is deprecated, use Factorix.config for configuration"
-      Factorix.config
-    end
-
-    # @!method configure(&block)
-    #   @deprecated Use {Factorix.configure} instead
-    def self.configure(&)
-      warn "[factorix] Factorix::Application is deprecated, use Factorix.configure for configuration"
-      Factorix.configure(&)
-    end
-  end
 end
