@@ -48,5 +48,5 @@ Provide a command-line interface for Factorio MOD management, including dependen
 ## Related Documentation
 
 - [Architecture](architecture.md) - Overall system design
-- [Technology Stack](technology-stack.md) - Technologies and libraries used
+- [Architecture](architecture.md) - Technologies and libraries used
 - [Component Details](components/) - Detailed design of each component

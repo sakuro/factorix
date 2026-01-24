@@ -423,4 +423,4 @@ Restore MOD settings from JSON format.
 
 - [Storage Management](storage.md)
 - [API/Portal Layer](api-portal.md)
-- [Technology Stack](../technology-stack.md)
+- [Architecture](../architecture.md)

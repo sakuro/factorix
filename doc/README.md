@@ -10,8 +10,7 @@ This directory contains technical documentation for the Factorix project.
 
 - [`DEVELOPMENT.md`](../DEVELOPMENT.md) - Development setup, coding conventions, and workflow
 - [`overview.md`](overview.md) - Project overview and goals
-- [`architecture.md`](architecture.md) - System architecture and class structure
-- [`technology-stack.md`](technology-stack.md) - Libraries and dependencies
+- [`architecture.md`](architecture.md) - System architecture and technology stack
 
 ## Component Documentation
 

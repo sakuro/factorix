@@ -171,4 +171,4 @@ Internal class that scans MOD directory for installed MODs.
 ## Related Documentation
 
 - [CLI Commands](cli.md)
-- [Technology Stack](../technology-stack.md)
+- [Architecture](../architecture.md)
