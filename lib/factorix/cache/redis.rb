@@ -280,13 +280,7 @@ module Factorix
       # @param url [String, nil] Redis URL
       # @return [String] URL with credentials masked (defaults to redis://localhost:6379/0)
       private def mask_url(url)
-        url ||= DEFAULT_URL
-
-        uri = URI.parse(url)
-        return url unless uri.userinfo
-
-        uri.userinfo = "***:***"
-        uri.to_s
+        URI.parse(url || DEFAULT_URL).tap {|uri| uri.userinfo = "***:***" if uri.userinfo }.to_s
       end
     end
   end
