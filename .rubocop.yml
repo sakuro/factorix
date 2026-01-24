@@ -46,6 +46,7 @@ Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
     - lib/factorix/cache/redis.rb # write_to/store/delete return boolean but are standard cache API names
+    - lib/factorix/cache/s3.rb # store/delete return boolean but are standard cache API names
     - lib/factorix/ser_des/deserializer.rb # read_bool follows binary deserialization naming convention
     - spec/support/test_cache_backend.rb # store/delete return boolean but are standard cache API names
 
