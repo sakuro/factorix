@@ -283,6 +283,19 @@ module Factorix
         end
       end
 
+      # Return backend-specific information.
+      #
+      # @return [Hash] backend configuration and status
+      def backend_info
+        {
+          type: "file_system",
+          directory: @cache_dir.to_s,
+          max_file_size: @max_file_size,
+          compression_threshold: @compression_threshold,
+          stale_locks: count_stale_locks
+        }
+      end
+
       # Generate a storage key for the given logical key.
       # Uses SHA1 to create a unique, deterministic key.
       # Use Digest(:SHA1) instead of Digest::SHA1 for thread-safety (Ruby 2.2+)
@@ -360,6 +373,14 @@ module Factorix
           logger.debug("Failed to remove stale lock", path: lock_path.to_s, error: e.message)
           nil
         end
+      end
+
+      # Count stale lock files in the cache directory.
+      #
+      # @return [Integer] number of stale lock files
+      private def count_stale_locks
+        cutoff = Time.now - LOCK_FILE_LIFETIME
+        @cache_dir.glob("**/*.lock").count {|path| path.mtime < cutoff }
       end
     end
   end

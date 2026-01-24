@@ -54,7 +54,8 @@ module Factorix
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
       def initialize(cache_type:, url: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, **)
         super(**)
-        @redis = ::Redis.new(url: url || ENV.fetch("REDIS_URL", nil))
+        @url = url || ENV.fetch("REDIS_URL", nil)
+        @redis = ::Redis.new(url: @url)
         @namespace = "factorix-cache:#{cache_type}"
         @lock_timeout = lock_timeout
         logger.info("Initializing Redis cache", namespace: @namespace, ttl: @ttl, lock_timeout: @lock_timeout)
@@ -235,6 +236,18 @@ module Factorix
         end
       end
 
+      # Return backend-specific information.
+      #
+      # @return [Hash] backend configuration
+      def backend_info
+        {
+          type: "redis",
+          url: mask_url(@url),
+          namespace: @namespace,
+          lock_timeout: @lock_timeout
+        }
+      end
+
       # Generate data key for the given logical key.
       #
       # @param logical_key [String] logical key
@@ -258,6 +271,17 @@ module Factorix
       # @param data_k [String] namespaced data key
       # @return [String] logical key
       private def logical_key_from_data_key(data_k) = data_k.delete_prefix("#{@namespace}:")
+
+      DEFAULT_URL = "redis://localhost:6379/0"
+      private_constant :DEFAULT_URL
+
+      # Mask credentials in Redis URL for safe display.
+      #
+      # @param url [String, nil] Redis URL
+      # @return [String] URL with credentials masked (defaults to redis://localhost:6379/0)
+      private def mask_url(url)
+        URI.parse(url || DEFAULT_URL).tap {|uri| uri.userinfo = "***:***" if uri.userinfo }.to_s
+      end
     end
   end
 end

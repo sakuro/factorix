@@ -278,4 +278,48 @@ RSpec.describe Factorix::Cache::Redis do
       expect(entries.first.expired?).to be false
     end
   end
+
+  describe "#backend_info" do
+    it "returns type as redis" do
+      expect(cache.backend_info[:type]).to eq("redis")
+    end
+
+    it "returns namespace" do
+      expect(cache.backend_info[:namespace]).to eq("factorix-cache:api")
+    end
+
+    it "returns default lock_timeout" do
+      expect(cache.backend_info[:lock_timeout]).to eq(Factorix::Cache::Redis::DEFAULT_LOCK_TIMEOUT)
+    end
+
+    context "with custom lock_timeout" do
+      let(:cache) { Factorix::Cache::Redis.new(cache_type: "api", lock_timeout: 60) }
+
+      it "returns configured lock_timeout" do
+        expect(cache.backend_info[:lock_timeout]).to eq(60)
+      end
+    end
+
+    context "with URL without credentials" do
+      let(:cache) { Factorix::Cache::Redis.new(cache_type: "api", url: "redis://localhost:6379/0") }
+
+      it "returns URL as-is" do
+        expect(cache.backend_info[:url]).to eq("redis://localhost:6379/0")
+      end
+    end
+
+    context "with URL containing credentials" do
+      let(:cache) { Factorix::Cache::Redis.new(cache_type: "api", url: "redis://user:password@localhost:6379/0") }
+
+      it "masks credentials in URL" do
+        expect(cache.backend_info[:url]).to eq("redis://***:***@localhost:6379/0")
+      end
+    end
+
+    context "without URL" do
+      it "returns default URL" do
+        expect(cache.backend_info[:url]).to eq("redis://localhost:6379/0")
+      end
+    end
+  end
 end

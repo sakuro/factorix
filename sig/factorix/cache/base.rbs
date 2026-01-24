@@ -21,6 +21,8 @@ module Factorix
 
       def each: () -> Enumerator[[String, Entry], void]
               | () { ([String, Entry]) -> void } -> void
+
+      def backend_info: () -> Hash[Symbol, untyped]
     end
   end
 end

@@ -578,4 +578,62 @@ RSpec.describe Factorix::Cache::FileSystem do
       end
     end
   end
+
+  describe "#backend_info" do
+    it "returns type as file_system" do
+      expect(cache.backend_info[:type]).to eq("file_system")
+    end
+
+    it "returns directory path" do
+      expect(cache.backend_info[:directory]).to eq(cache_dir.to_s)
+    end
+
+    it "returns nil for max_file_size when not set" do
+      expect(cache.backend_info[:max_file_size]).to be_nil
+    end
+
+    it "returns nil for compression_threshold when not set" do
+      expect(cache.backend_info[:compression_threshold]).to be_nil
+    end
+
+    context "with max_file_size and compression_threshold" do
+      let(:cache) { Factorix::Cache::FileSystem.new(cache_type: :test, max_file_size: 1024, compression_threshold: 100) }
+
+      it "returns configured max_file_size" do
+        expect(cache.backend_info[:max_file_size]).to eq(1024)
+      end
+
+      it "returns configured compression_threshold" do
+        expect(cache.backend_info[:compression_threshold]).to eq(100)
+      end
+    end
+
+    context "with no stale locks" do
+      it "returns zero stale_locks count" do
+        expect(cache.backend_info[:stale_locks]).to eq(0)
+      end
+    end
+
+    context "with stale lock files" do
+      before do
+        lock_path.dirname.mkpath
+        FileUtils.touch(lock_path, mtime: Time.now - Factorix::Cache::FileSystem::LOCK_FILE_LIFETIME - 1)
+      end
+
+      it "counts stale lock files" do
+        expect(cache.backend_info[:stale_locks]).to eq(1)
+      end
+    end
+
+    context "with recent lock files" do
+      before do
+        lock_path.dirname.mkpath
+        FileUtils.touch(lock_path)
+      end
+
+      it "does not count recent lock files as stale" do
+        expect(cache.backend_info[:stale_locks]).to eq(0)
+      end
+    end
+  end
 end
