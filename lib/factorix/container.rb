@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "dry/core"
+require "dry/inflector"
 require "dry/logger"
 
 module Factorix
@@ -12,6 +13,22 @@ module Factorix
   #   runtime = Factorix::Container[:runtime]
   class Container
     extend Dry::Core::Container::Mixin
+
+    INFLECTOR = Dry::Inflector.new
+    private_constant :INFLECTOR
+
+    # Build a cache instance from configuration.
+    #
+    # @param cache_type [Symbol] cache type (:download, :api, :info_json)
+    # @param config [Dry::Configurable::Config] cache configuration
+    # @return [Cache::Base] cache instance
+    def self.build_cache(cache_type, config)
+      backend = config.backend
+      backend_config = config.public_send(backend).to_h
+      backend_class = Cache.const_get(INFLECTOR.classify(backend.to_s))
+      backend_class.new(cache_type:, ttl: config.ttl, **backend_config)
+    end
+    private_class_method :build_cache
 
     # Some items are registered with memoize: false to support independent event handlers
     # for each parallel download task (e.g., progress tracking).
@@ -48,41 +65,17 @@ module Factorix
 
     # Register download cache
     register(:download_cache, memoize: true) do
-      c = Factorix.config.cache.download
-      case c.backend
-      when :file_system
-        Cache::FileSystem.new(cache_type: :download, ttl: c.ttl, **c.file_system.to_h)
-      when :redis
-        Cache::Redis.new(cache_type: :download, ttl: c.ttl, **c.redis.to_h)
-      else
-        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
-      end
+      build_cache(:download, Factorix.config.cache.download)
     end
 
     # Register API cache (with compression for JSON responses)
     register(:api_cache, memoize: true) do
-      c = Factorix.config.cache.api
-      case c.backend
-      when :file_system
-        Cache::FileSystem.new(cache_type: :api, ttl: c.ttl, **c.file_system.to_h)
-      when :redis
-        Cache::Redis.new(cache_type: :api, ttl: c.ttl, **c.redis.to_h)
-      else
-        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
-      end
+      build_cache(:api, Factorix.config.cache.api)
     end
 
     # Register info.json cache (for MOD metadata from ZIP files)
     register(:info_json_cache, memoize: true) do
-      c = Factorix.config.cache.info_json
-      case c.backend
-      when :file_system
-        Cache::FileSystem.new(cache_type: :info_json, ttl: c.ttl, **c.file_system.to_h)
-      when :redis
-        Cache::Redis.new(cache_type: :info_json, ttl: c.ttl, **c.redis.to_h)
-      else
-        raise ConfigurationError, "Unknown cache backend: #{c.backend}"
-      end
+      build_cache(:info_json, Factorix.config.cache.info_json)
     end
 
     # Register base HTTP client
