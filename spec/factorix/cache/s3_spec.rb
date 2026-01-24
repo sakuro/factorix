@@ -24,9 +24,9 @@ RSpec.describe Factorix::Cache::S3 do
       expect(Aws::S3::Client).to have_received(:new).with(region: "us-west-2")
     end
 
-    it "creates S3 client with nil region when not provided" do
+    it "creates S3 client without region when not provided (uses SDK default)" do
       Factorix::Cache::S3.new(bucket:, cache_type:)
-      expect(Aws::S3::Client).to have_received(:new).with(region: nil)
+      expect(Aws::S3::Client).to have_received(:new).with(no_args)
     end
 
     it "accepts ttl parameter" do

@@ -50,7 +50,7 @@ module Factorix
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
       def initialize(bucket:, cache_type:, region: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, **)
         super(**)
-        @client = Aws::S3::Client.new(region:)
+        @client = Aws::S3::Client.new(**{region:}.compact)
         @bucket = bucket
         @prefix = "cache/#{cache_type}/"
         @lock_timeout = lock_timeout
