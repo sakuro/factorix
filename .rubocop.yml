@@ -91,6 +91,10 @@ Metrics/BlockLength:
   Exclude:
     - lib/factorix.rb # Cache configuration block with hierarchical backend settings
 
+Metrics/ModuleLength:
+  Exclude:
+    - lib/factorix.rb # Cache configuration with hierarchical backend settings
+
 ThreadSafety/NewThread:
   Exclude:
     - spec/factorix/runtime/wsl/wsl_path_spec.rb
