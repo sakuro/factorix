@@ -10,33 +10,28 @@ Provide a command-line interface for Factorio MOD management, including dependen
 
 ## Features
 
-### 1. Game Information and Control
+### Game Information and Control
 - Retrieve Factorio installation paths and directories
 - Launch Factorio with custom options
 - Automatic process management for certain commands
 
-### 2. MOD Management
+### MOD Management
 - **Discovery**: List and search MODs from MOD Portal
 - **Installation**: Install MODs with automatic dependency resolution
 - **State Management**: Enable/disable MODs with dependency tracking
 - **Validation**: Check dependency integrity (`mod check`)
 - **Synchronization**: Sync MOD states from save files (`mod sync`)
 - **Uninstallation**: Remove MODs from MOD directory
+- **Dependency Resolution**: Graph-based resolution with cycle detection and incompatibility checking
 
-### 3. Dependency Resolution
-- **Graph-based resolution**: Uses directed acyclic graph (DAG) with topological sorting
-- **Cyclic dependency detection**: Detects and reports circular dependencies
-- **Incompatibility checking**: Validates bidirectional incompatibilities
-- **Version requirements**: Supports complex version constraints
-
-### 4. Settings Management
+### Settings Management
 - Export/import MOD settings in JSON format
 
-### 5. Save File Analysis
+### Save File Analysis
 - Extract MOD information from Factorio save files
 - Parse startup settings from save files
 
-### 6. MOD Portal Integration
+### MOD Portal Integration
 - **Upload**: Publish new MODs or updates
 - **Edit**: Modify MOD metadata
 - **Download**: Fetch MOD files with caching
@@ -45,7 +40,7 @@ Provide a command-line interface for Factorio MOD management, including dependen
 ## Key Technical Features
 
 - **Dependency Injection**: Clean architecture using dry-rb
-- **HTTP Caching**: File system-based cache with decorator pattern
+- **HTTP Caching**: Multi-backend cache with decorator pattern
 - **Retry Strategy**: Automatic retry for network operations
 - **Progress Tracking**: Multi-presenter progress bars for downloads
 - **Concurrent Downloads**: Parallel processing for bulk operations
