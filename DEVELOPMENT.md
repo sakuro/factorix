@@ -353,9 +353,7 @@ Releases are automated via GitHub Actions workflows. See [`.github/workflows/REA
    - Review changes in [`version.rb`](lib/factorix/version.rb) and [`CHANGELOG.md`](CHANGELOG.md)
 
 4. **Merge and Publish**
-   ```bash
-   gh pr merge release-v1.0.0 --merge
-   ```
+   - Merge the release PR
    - Merging automatically triggers gem publishing to RubyGems
    - GitHub release is created with changelog and gem file
 
