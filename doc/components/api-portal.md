@@ -38,13 +38,6 @@ Split into three classes based on authentication method.
   - [MOD Details API](https://wiki.factorio.com/Mod_details_API)
   - [MOD Images API](https://wiki.factorio.com/Mod_images_API)
 
-### Benefits
-
-- Hold only necessary authentication information (improved security)
-- Comply with single responsibility principle
-- Good compatibility with dry-auto_inject
-- Focus on HTTP communication, delegate data conversion to Portal layer
-
 ## Available APIs (In Scope)
 
 **Out of scope**: Matchmaking API, Multiplayer authentication API
