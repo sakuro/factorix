@@ -17,10 +17,11 @@ This directory contains technical documentation for the Factorix project.
 
 See [`components/`](components/) directory for detailed documentation on each component:
 
-- [`application.md`](components/application.md) - DI container and configuration
 - [`api-portal.md`](components/api-portal.md) - API layer and Portal layer
-- [`cache.md`](components/cache.md) - File-based caching system
+- [`cache.md`](components/cache.md) - Multi-backend caching system
 - [`cli.md`](components/cli.md) - CLI commands
+- [`configuration.md`](components/configuration.md) - Configuration settings
+- [`container.md`](components/container.md) - DI container
 - [`credentials.md`](components/credentials.md) - Authentication credential management
 - [`dependency.md`](components/dependency.md) - Dependency resolution and validation
 - [`runtime.md`](components/runtime.md) - Platform abstraction
