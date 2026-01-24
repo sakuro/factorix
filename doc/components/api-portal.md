@@ -8,9 +8,9 @@ Classes that wrap the MOD Portal API.
 - **Return value**: Hash (parsed JSON)
 - **Reference**: https://wiki.factorio.com/Factorio_HTTP_API_usage_guidelines
 
-### Design Policy
+### API Classes
 
-Split into three classes based on authentication method.
+Three classes based on authentication method:
 
 #### 1. MODPortalAPI - API without authentication
 
@@ -190,12 +190,6 @@ Class that wraps the API for more object-oriented handling.
 - **Responsibility**: Convert JSON to domain objects, domain logic
 - **Return value**: `Data.define` objects under `API` namespace
 - Return value example: `Portal#list_mods` → `Array[API::MODInfo]`
-
-### Design Policy
-
-- Convert Hash received from API layer to `API::*`
-- Implement business logic
-- Used directly from CLI layer
 
 ### Portal Methods
 

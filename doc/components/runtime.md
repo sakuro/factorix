@@ -15,12 +15,6 @@ All platforms provide auto-detection for Steam installations by default.
 
 For non-Steam installations (standalone, Flatpak, Snap, etc.), configure paths via the configuration file.
 
-## Design Policy
-
-- Define common interface (Runtime::Base)
-- Platform-specific implementations provided by each subclass
-- Implement file path and directory retrieval methods for each platform
-
 ## Main Features
 
 Each Runtime class provides methods such as:
