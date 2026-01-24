@@ -10,8 +10,7 @@ A Ruby gem providing a CLI for Factorio MOD management, settings synchronization
 |---------|----------|
 | Project overview & usage | [README.md](README.md) |
 | Development guide | [DEVELOPMENT.md](DEVELOPMENT.md) |
-| Architecture & design | [doc/architecture.md](doc/architecture.md) |
-| Technology stack | [doc/technology-stack.md](doc/technology-stack.md) |
+| Architecture & technology stack | [doc/architecture.md](doc/architecture.md) |
 | Feature overview | [doc/overview.md](doc/overview.md) |
 | All documentation | [doc/README.md](doc/README.md) |
 
@@ -21,7 +20,7 @@ Located in [doc/components/](doc/components/):
 
 - [cli.md](doc/components/cli.md) - CLI commands
 - [api-portal.md](doc/components/api-portal.md) - MOD Portal API integration
-- [application.md](doc/components/application.md) - DI container
+- [container.md](doc/components/container.md) - DI container
 - [storage.md](doc/components/storage.md) - MOD storage management
 - [runtime.md](doc/components/runtime.md) - Platform abstraction
 - [credentials.md](doc/components/credentials.md) - Authentication
