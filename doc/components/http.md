@@ -44,7 +44,6 @@ Core HTTP client using `Net::HTTP`.
 
 **Constraints**:
 - HTTPS only (raises `URLError` for non-HTTPS)
-- Timeouts configured via `Factorix.config.http`
 
 ### Response
 
@@ -98,7 +97,7 @@ Adds caching for GET requests. See [`cache.md`](cache.md) for detailed cache arc
 
 **Behavior**:
 - Only caches non-streaming GET requests (no block given)
-- Uses `Cache::FileSystem` for storage
+- Uses configured cache backend for storage
 - Thread-safe with locking
 - Publishes `cache.hit` and `cache.miss` events
 
@@ -130,14 +129,6 @@ graph TD
 **HTTPClientError** attributes:
 - `api_error` - Error code from API response JSON
 - `api_message` - Error message from API response JSON
-
-## Configuration
-
-Timeouts are configured via `Factorix.config.http`:
-
-- `connect_timeout` - Connection timeout (seconds)
-- `read_timeout` - Read timeout (seconds)
-- `write_timeout` - Write timeout (seconds)
 
 ## Usage Examples
 
@@ -175,5 +166,6 @@ end
 ## Related Documentation
 
 - [API and Portal Layers](api-portal.md)
-- [Container Container](application.md)
 - [Cache System](cache.md)
+- [Configuration](configuration.md)
+- [Container (DI)](container.md)
