@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "dry/inflector"
 require "json"
 
 module Factorix
@@ -64,7 +65,8 @@ module Factorix
               ttl: config.ttl,
               entries: build_entry_stats(entries),
               size: build_size_stats(entries),
-              age: build_age_stats(entries)
+              age: build_age_stats(entries),
+              backend_info: cache.backend_info
             }
           end
 
@@ -143,6 +145,44 @@ module Factorix
               out.puts "  Age:            #{format_duration(age[:newest])} - #{format_duration(age[:oldest])} (avg #{format_duration(age[:avg])})"
             else
               out.puts "  Age:            -"
+            end
+
+            output_backend_info(data[:backend_info])
+          end
+
+          INFLECTOR = Dry::Inflector.new do |inflections|
+            inflections.acronym("URL")
+          end
+          private_constant :INFLECTOR
+
+          # Output backend-specific information
+          #
+          # @param info [Hash] backend-specific information
+          # @return [void]
+          private def output_backend_info(info)
+            return if info.empty?
+
+            out.puts "  Backend:"
+            info.each do |key, value|
+              label = INFLECTOR.humanize(key)
+              formatted_value = format_backend_value(key, value)
+              out.puts "    %-20s %s" % [label + ":", formatted_value]
+            end
+          end
+
+          # Format a backend info value for display
+          #
+          # @param key [Symbol] the key name
+          # @param value [Object] the value to format
+          # @return [String] formatted value
+          private def format_backend_value(key, value)
+            case key
+            when :max_file_size, :compression_threshold
+              value.nil? ? "unlimited" : format_size(value)
+            when :lock_timeout
+              format_duration(value)
+            else
+              value.to_s
             end
           end
 

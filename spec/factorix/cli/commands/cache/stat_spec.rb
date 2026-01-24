@@ -89,4 +89,28 @@ RSpec.describe Factorix::CLI::Commands::Cache::Stat do
       expect(result.stdout).to include("KiB")
     end
   end
+
+  describe "backend info output" do
+    it "outputs backend-specific information section" do
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
+
+      expect(result.stdout).to include("Backend:")
+    end
+
+    it "outputs test backend type" do
+      result = run_command(Factorix::CLI::Commands::Cache::Stat)
+
+      expect(result.stdout).to include("Type:")
+      expect(result.stdout).to include("memory")
+    end
+
+    it "includes backend_info in JSON output" do
+      result = run_command(Factorix::CLI::Commands::Cache::Stat, %w[--json])
+
+      json = JSON.parse(result.stdout, symbolize_names: true)
+      expect(json[:download]).to have_key(:backend_info)
+      expect(json[:download][:backend_info]).to have_key(:type)
+      expect(json[:download][:backend_info][:type]).to eq("memory")
+    end
+  end
 end

@@ -163,6 +163,16 @@ module Factorix
           size: content.bytesize
         }
       end
+
+      # Return backend-specific information.
+      #
+      # @return [Hash] test backend configuration
+      def backend_info
+        {
+          type: "memory",
+          entries_count: @entries.size
+        }
+      end
     end
   end
 end

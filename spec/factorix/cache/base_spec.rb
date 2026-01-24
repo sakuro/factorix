@@ -55,4 +55,10 @@ RSpec.describe Factorix::Cache::Base do
       expect { base.each }.to raise_error(NotImplementedError, /each/)
     end
   end
+
+  describe "#backend_info" do
+    it "returns an empty hash by default" do
+      expect(base.backend_info).to eq({})
+    end
+  end
 end

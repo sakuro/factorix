@@ -103,6 +103,14 @@ module Factorix
       # @return [Enumerator] if no block given
       # @abstract
       def each = raise NotImplementedError, "#{self.class}#each must be implemented"
+
+      # Return backend-specific information.
+      #
+      # Subclasses should override this method to provide configuration details
+      # specific to their backend implementation.
+      #
+      # @return [Hash] backend-specific information (empty by default)
+      def backend_info = {}
     end
   end
 end
