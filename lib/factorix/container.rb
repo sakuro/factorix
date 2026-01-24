@@ -14,7 +14,9 @@ module Factorix
   class Container
     extend Dry::Core::Container::Mixin
 
-    INFLECTOR = Dry::Inflector.new
+    INFLECTOR = Dry::Inflector.new do |inflections|
+      inflections.uncountable("redis")
+    end
     private_constant :INFLECTOR
 
     # Build a cache instance from configuration.
