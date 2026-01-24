@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.7.0] - 2026-01-24
+
 ### Added
 
 - Add pluggable cache backend architecture with Redis and S3 support (#18, #19)
