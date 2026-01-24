@@ -77,7 +77,7 @@ module Factorix
 
         resp = @client.get_object(bucket: @bucket, key: storage_key(key))
         resp.body.read
-      rescue Aws::S3::Errors::NotFound
+      rescue Aws::S3::Errors::NoSuchKey
         nil
       end
 
@@ -92,7 +92,7 @@ module Factorix
         @client.get_object(bucket: @bucket, key: storage_key(key), response_target: output.to_s)
         logger.debug("Cache hit", key:)
         true
-      rescue Aws::S3::Errors::NotFound
+      rescue Aws::S3::Errors::NoSuchKey
         false
       end
 
@@ -316,7 +316,7 @@ module Factorix
           @client.delete_object(bucket: @bucket, key: lkey)
           logger.debug("Cleaned up stale lock", key: lkey)
         end
-      rescue Aws::S3::Errors::NotFound
+      rescue Aws::S3::Errors::NoSuchKey
         # Lock doesn't exist, nothing to clean up
       end
 
