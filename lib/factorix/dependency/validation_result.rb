@@ -81,7 +81,7 @@ module Factorix
       # @param mod [Factorix::MOD, nil] Related MOD
       # @param dependency [Factorix::MOD, nil] Dependency MOD
       # @return [void]
-      def add_error(type:, message:, mod: nil, dependency: nil) = @errors << Error.new(type:, message:, mod:, dependency:)
+      def add_error(type:, message:, mod: nil, dependency: nil) = @errors << Error[type:, message:, mod:, dependency:]
 
       # Add a warning
       #
@@ -89,7 +89,7 @@ module Factorix
       # @param message [String] Warning message
       # @param mod [Factorix::MOD, nil] Related MOD
       # @return [void]
-      def add_warning(type:, message:, mod: nil) = @warnings << Warning.new(type:, message:, mod:)
+      def add_warning(type:, message:, mod: nil) = @warnings << Warning[type:, message:, mod:]
 
       # Add a suggestion
       #
@@ -97,7 +97,7 @@ module Factorix
       # @param mod [Factorix::MOD] Related MOD
       # @param version [Factorix::MODVersion] Suggested version
       # @return [void]
-      def add_suggestion(message:, mod:, version:) = @suggestions << Suggestion.new(message:, mod:, version:)
+      def add_suggestion(message:, mod:, version:) = @suggestions << Suggestion[message:, mod:, version:]
 
       # Get all errors
       #

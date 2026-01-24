@@ -432,6 +432,6 @@ RSpec.describe Factorix::InstalledMOD do
       "factorio_version" => "1.1"
     }.to_json)
 
-    Factorix::InstalledMOD.new(mod:, version: mod_version, form:, path:, info:)
+    Factorix::InstalledMOD[mod:, version: mod_version, form:, path:, info:]
   end
 end

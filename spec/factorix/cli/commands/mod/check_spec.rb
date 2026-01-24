@@ -65,11 +65,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
     context "when validation succeeds with warnings" do
       let(:node1) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:warning) do
-        Factorix::Dependency::ValidationResult::Warning.new(
+        Factorix::Dependency::ValidationResult::Warning[
           type: :mod_installed_not_in_list,
           message: "MOD X may have compatibility issues",
           mod: nil
-        )
+        ]
       end
 
       before do
@@ -109,20 +109,20 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       let(:node1) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:node2) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:error1) do
-        Factorix::Dependency::ValidationResult::Error.new(
+        Factorix::Dependency::ValidationResult::Error[
           type: :missing_dependency,
           message: "Missing dependency: mod-a",
           mod: nil,
           dependency: nil
-        )
+        ]
       end
       let(:error2) do
-        Factorix::Dependency::ValidationResult::Error.new(
+        Factorix::Dependency::ValidationResult::Error[
           type: :circular_dependency,
           message: "Circular dependency detected",
           mod: nil,
           dependency: nil
-        )
+        ]
       end
 
       before do
@@ -158,19 +158,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
     context "when validation fails with both errors and warnings" do
       let(:node1) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:error) do
-        Factorix::Dependency::ValidationResult::Error.new(
+        Factorix::Dependency::ValidationResult::Error[
           type: :missing_dependency,
           message: "Missing dependency",
           mod: nil,
           dependency: nil
-        )
+        ]
       end
       let(:warning) do
-        Factorix::Dependency::ValidationResult::Warning.new(
+        Factorix::Dependency::ValidationResult::Warning[
           type: :mod_in_list_not_installed,
           message: "Version mismatch",
           mod: nil
-        )
+        ]
       end
 
       before do
@@ -202,18 +202,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
     context "when there are suggestions" do
       let(:node1) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:suggestion1) do
-        Factorix::Dependency::ValidationResult::Suggestion.new(
+        Factorix::Dependency::ValidationResult::Suggestion[
           message: "Consider enabling mod-x",
           mod: Factorix::MOD[name: "mod-x"],
           version: "1.0.0"
-        )
+        ]
       end
       let(:suggestion2) do
-        Factorix::Dependency::ValidationResult::Suggestion.new(
+        Factorix::Dependency::ValidationResult::Suggestion[
           message: "Update mod-y to latest version",
           mod: Factorix::MOD[name: "mod-y"],
           version: "2.0.0"
-        )
+        ]
       end
 
       before do
@@ -238,19 +238,19 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
     context "with singular counts in summary" do
       let(:node1) { instance_double(Factorix::Dependency::Node, enabled?: true) }
       let(:error) do
-        Factorix::Dependency::ValidationResult::Error.new(
+        Factorix::Dependency::ValidationResult::Error[
           type: :missing_dependency,
           message: "Error",
           mod: nil,
           dependency: nil
-        )
+        ]
       end
       let(:warning) do
-        Factorix::Dependency::ValidationResult::Warning.new(
+        Factorix::Dependency::ValidationResult::Warning[
           type: :mod_in_list_not_installed,
           message: "Warning",
           mod: nil
-        )
+        ]
       end
 
       before do

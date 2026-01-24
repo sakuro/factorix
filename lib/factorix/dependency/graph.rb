@@ -75,7 +75,7 @@ module Factorix
           return
         end
 
-        node = Node.new(mod:, version: release.version, enabled: false, installed: false, operation:)
+        node = Node[mod:, version: release.version, enabled: false, installed: false, operation:]
         add_node(node)
 
         dependencies = release.info_json[:dependencies] || []
@@ -85,7 +85,7 @@ module Factorix
           dependency = parser.parse(dep_string)
           next if dependency.mod.base?
 
-          edge = Edge.new(from_mod: mod, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement)
+          edge = Edge[from_mod: mod, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement]
 
           add_edge(edge)
         end

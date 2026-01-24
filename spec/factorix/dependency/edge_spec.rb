@@ -11,7 +11,7 @@ RSpec.describe Factorix::Dependency::Edge do
 
   describe "#initialize" do
     it "creates an edge with minimal parameters" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
 
       expect(edge.from_mod).to eq(mod_a)
       expect(edge.to_mod).to eq(mod_b)
@@ -20,12 +20,12 @@ RSpec.describe Factorix::Dependency::Edge do
     end
 
     it "creates an edge with version requirement" do
-      edge = Factorix::Dependency::Edge.new(
+      edge = Factorix::Dependency::Edge[
         from_mod: mod_a,
         to_mod: mod_b,
         type: :required,
         version_requirement: requirement
-      )
+      ]
 
       expect(edge.from_mod).to eq(mod_a)
       expect(edge.to_mod).to eq(mod_b)
@@ -36,7 +36,7 @@ RSpec.describe Factorix::Dependency::Edge do
 
   describe "type predicates" do
     it "#required? returns true for required edges" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
       expect(edge.required?).to be true
       expect(edge.optional?).to be false
       expect(edge.incompatible?).to be false
@@ -44,7 +44,7 @@ RSpec.describe Factorix::Dependency::Edge do
     end
 
     it "#optional? returns true for optional edges" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :optional)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :optional]
       expect(edge.required?).to be false
       expect(edge.optional?).to be true
       expect(edge.incompatible?).to be false
@@ -52,7 +52,7 @@ RSpec.describe Factorix::Dependency::Edge do
     end
 
     it "#optional? returns true for hidden optional edges" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :hidden)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :hidden]
       expect(edge.required?).to be false
       expect(edge.optional?).to be true
       expect(edge.incompatible?).to be false
@@ -60,7 +60,7 @@ RSpec.describe Factorix::Dependency::Edge do
     end
 
     it "#incompatible? returns true for incompatible edges" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :incompatible]
       expect(edge.required?).to be false
       expect(edge.optional?).to be false
       expect(edge.incompatible?).to be true
@@ -68,7 +68,7 @@ RSpec.describe Factorix::Dependency::Edge do
     end
 
     it "#load_neutral? returns true for load-neutral edges" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :load_neutral)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :load_neutral]
       expect(edge.required?).to be false
       expect(edge.optional?).to be false
       expect(edge.incompatible?).to be false
@@ -78,7 +78,7 @@ RSpec.describe Factorix::Dependency::Edge do
 
   describe "#satisfied_by?" do
     context "without version requirement" do
-      let(:edge) { Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required) }
+      let(:edge) { Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required] }
 
       it "returns true for any version" do
         expect(edge.satisfied_by?(version_1_0_0)).to be true
@@ -88,12 +88,12 @@ RSpec.describe Factorix::Dependency::Edge do
 
     context "with version requirement" do
       let(:edge) do
-        Factorix::Dependency::Edge.new(
+        Factorix::Dependency::Edge[
           from_mod: mod_a,
           to_mod: mod_b,
           type: :required,
           version_requirement: requirement
-        )
+        ]
       end
 
       it "returns true when version satisfies requirement" do
@@ -120,24 +120,24 @@ RSpec.describe Factorix::Dependency::Edge do
 
   describe "#to_s" do
     it "shows edge without version requirement" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
       expect(edge.to_s).to eq("mod-a --[required]--> mod-b")
     end
 
     it "shows edge with version requirement" do
-      edge = Factorix::Dependency::Edge.new(
+      edge = Factorix::Dependency::Edge[
         from_mod: mod_a,
         to_mod: mod_b,
         type: :required,
         version_requirement: requirement
-      )
+      ]
       expect(edge.to_s).to eq("mod-a --[required >= 1.0.0]--> mod-b")
     end
   end
 
   describe "#inspect" do
     it "includes class name and to_s output" do
-      edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
       expect(edge.inspect).to match(/^#<Factorix::Dependency::Edge mod-a --\[required\]--> mod-b>$/)
     end
   end

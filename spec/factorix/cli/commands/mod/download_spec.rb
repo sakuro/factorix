@@ -8,7 +8,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }
   let(:command) { Factorix::CLI::Commands::MOD::Download.new(logger:, runtime:) }
   let(:mod_info) do
-    Factorix::API::MODInfo.new(
+    Factorix::API::MODInfo[
       name: "test-mod",
       title: "Test MOD",
       owner: "test-owner",
@@ -31,7 +31,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
           sha1: "abc123"
         }
       ]
-    )
+    ]
   end
 
   let(:tmpdir) { Dir.mktmpdir }
@@ -79,7 +79,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     end
 
     it "downloads multiple mods" do
-      mod1_info = Factorix::API::MODInfo.new(
+      mod1_info = Factorix::API::MODInfo[
         name: "mod1",
         title: "MOD 1",
         owner: "test-owner",
@@ -96,8 +96,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
             sha1: "abc1"
           }
         ]
-      )
-      mod2_info = Factorix::API::MODInfo.new(
+      ]
+      mod2_info = Factorix::API::MODInfo[
         name: "mod2",
         title: "MOD 2",
         owner: "test-owner",
@@ -114,7 +114,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
             sha1: "abc2"
           }
         ]
-      )
+      ]
 
       allow(portal).to receive(:get_mod_full).with("mod1").and_return(mod1_info)
       allow(portal).to receive(:get_mod_full).with("mod2").and_return(mod2_info)
@@ -154,7 +154,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
     context "with invalid filename" do
       let(:mod_info_with_bad_filename) do
-        Factorix::API::MODInfo.new(
+        Factorix::API::MODInfo[
           name: "evil-mod",
           title: "Evil MOD",
           owner: "test-owner",
@@ -171,7 +171,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
               sha1: "abc123"
             }
           ]
-        )
+        ]
       end
 
       it "raises error for path traversal attempt" do
@@ -244,7 +244,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
 
   describe "with --recursive option" do
     let(:mod_with_dep) do
-      Factorix::API::MODInfo.new(
+      Factorix::API::MODInfo[
         name: "mod-with-dep",
         title: "MOD With Dependency",
         owner: "test-owner",
@@ -268,11 +268,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
           }
         ],
         detail: nil
-      )
+      ]
     end
 
     let(:dep_mod) do
-      Factorix::API::MODInfo.new(
+      Factorix::API::MODInfo[
         name: "dep-mod",
         title: "Dependency MOD",
         owner: "test-owner",
@@ -296,7 +296,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
           }
         ],
         detail: nil
-      )
+      ]
     end
 
     it "downloads dependencies recursively when --recursive is true" do

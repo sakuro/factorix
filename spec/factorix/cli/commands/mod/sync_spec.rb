@@ -23,11 +23,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
   let(:save_data) do
     mods = {
-      "base" => Factorix::MODState.new(enabled: true, version: base_mod_version),
-      "test-mod" => Factorix::MODState.new(enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
+      "base" => Factorix::MODState[enabled: true, version: base_mod_version],
+      "test-mod" => Factorix::MODState[enabled: true, version: Factorix::MODVersion.from_string("1.0.0")]
     }
     startup_settings = Factorix::MODSettings::Section.new("startup")
-    Factorix::SaveFile.new(version: game_version, mods:, startup_settings:)
+    Factorix::SaveFile[version: game_version, mods:, startup_settings:]
   end
 
   let(:mod_list) { Factorix::MODList.new }
@@ -64,7 +64,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   describe "#call" do
     context "when all MODs from save file are already installed" do
       let(:base_info) do
-        Factorix::InfoJSON.new(
+        Factorix::InfoJSON[
           name: "base",
           version: base_mod_version,
           title: "Base MOD",
@@ -72,11 +72,11 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
           description: "Base game",
           factorio_version: "2.0",
           dependencies: []
-        )
+        ]
       end
 
       let(:test_mod_info) do
-        Factorix::InfoJSON.new(
+        Factorix::InfoJSON[
           name: "test-mod",
           version: Factorix::MODVersion.from_string("1.0.0"),
           title: "Test MOD",
@@ -84,25 +84,25 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
           description: "Test description",
           factorio_version: "2.0",
           dependencies: []
-        )
+        ]
       end
 
       let(:installed_mods) do
         [
-          Factorix::InstalledMOD.new(
+          Factorix::InstalledMOD[
             mod: Factorix::MOD[name: "base"],
             version: base_mod_version,
             form: Factorix::InstalledMOD::DIRECTORY_FORM,
             path: Pathname("/path/to/base"),
             info: base_info
-          ),
-          Factorix::InstalledMOD.new(
+          ],
+          Factorix::InstalledMOD[
             mod: Factorix::MOD[name: "test-mod"],
             version: Factorix::MODVersion.from_string("1.0.0"),
             form: Factorix::InstalledMOD::ZIP_FORM,
             path: Pathname("/path/to/test-mod_1.0.0.zip"),
             info: test_mod_info
-          )
+          ]
         ]
       end
 

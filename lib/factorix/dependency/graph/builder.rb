@@ -53,7 +53,7 @@ module Factorix
           version = select_version_for_mod(mod)
           enabled = mod_enabled?(mod)
 
-          node = Node.new(mod:, version:, enabled:, installed: true)
+          node = Node[mod:, version:, enabled:, installed: true]
           graph.add_node(node)
         end
 
@@ -88,7 +88,7 @@ module Factorix
             # Expansion MODs can be disabled, so they must be validated
             next if dependency.mod.base?
 
-            edge = Edge.new(from_mod:, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement)
+            edge = Edge[from_mod:, to_mod: dependency.mod, type: dependency.type, version_requirement: dependency.version_requirement]
             graph.add_edge(edge)
           end
         end

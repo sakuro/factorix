@@ -152,7 +152,7 @@ module Factorix
 
         # Filter detail_fields to only include keys that Detail.new accepts
         # Exclude deprecated fields like github_path
-        detail = Detail.new(**detail_fields.slice(*DETAIL_ALLOWED_KEYS)) if all_required_detail_fields?(detail_fields)
+        detail = Detail[**detail_fields.slice(*DETAIL_ALLOWED_KEYS)] if all_required_detail_fields?(detail_fields)
 
         super(name:, title:, owner:, summary:, downloads_count:, category:, score:, thumbnail:, latest_release:, releases:, detail:)
       end

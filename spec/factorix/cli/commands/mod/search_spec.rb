@@ -7,7 +7,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
   let(:command) { Factorix::CLI::Commands::MOD::Search.new(runtime:) }
 
   let(:mod_info) do
-    Factorix::API::MODInfo.new(
+    Factorix::API::MODInfo[
       name: "test-mod",
       title: "Test MOD",
       owner: "test-owner",
@@ -18,7 +18,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
       thumbnail: nil,
       latest_release: nil,
       releases: []
-    )
+    ]
   end
 
   before do
@@ -62,7 +62,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
 
   describe "table output" do
     let(:mod_info_with_release) do
-      Factorix::API::MODInfo.new(
+      Factorix::API::MODInfo[
         name: "test-mod",
         title: "Test MOD",
         owner: "test-owner",
@@ -80,7 +80,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Search do
           sha1: "abc123"
         },
         releases: []
-      )
+      ]
     end
 
     before do

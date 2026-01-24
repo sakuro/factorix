@@ -147,7 +147,7 @@ module Factorix
               enabled = mod_list.exist?(mod) && mod_list.enabled?(mod)
               error = error_map[mod.name]
 
-              MODInfo.new(name: mod.name, version: display_version, enabled:, error:, latest_version: nil)
+              MODInfo[name: mod.name, version: display_version, enabled:, error:, latest_version: nil]
             }
           end
 
@@ -256,13 +256,13 @@ module Factorix
           private def fetch_latest_version_for_mod(info)
             portal_info = mod_portal_api.get_mod(info.name)
             latest = portal_info[:releases]&.map {|r| MODVersion.from_string(r[:version]) }&.max
-            MODInfo.new(
+            MODInfo[
               name: info.name,
               version: info.version,
               enabled: info.enabled,
               error: info.error,
               latest_version: latest
-            )
+            ]
           rescue MODNotOnPortalError
             logger.debug("MOD not found on portal", mod: info.name)
             info

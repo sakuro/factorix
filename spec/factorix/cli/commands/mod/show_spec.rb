@@ -27,7 +27,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
   end
 
   let(:mod_info) do
-    Factorix::API::MODInfo.new(
+    Factorix::API::MODInfo[
       name: "test-mod",
       title: "Test MOD Title",
       owner: "test-author",
@@ -43,7 +43,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
       homepage: "https://example.com",
       source_url: "https://github.com/test/test-mod",
       license: {id: "default_mit", name: "mit", title: "MIT", description: "MIT", url: "https://opensource.org/licenses/MIT"}
-    )
+    ]
   end
 
   before do

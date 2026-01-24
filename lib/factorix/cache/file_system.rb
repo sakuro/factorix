@@ -273,11 +273,11 @@ module Factorix
 
           logical_key = JSON.parse(metadata_path.read)["logical_key"]
           age = Time.now - path.mtime
-          entry = Entry.new(
+          entry = Entry[
             size: path.size,
             age:,
             expired: @ttl ? age > @ttl : false
-          )
+          ]
 
           yield logical_key, entry
         end

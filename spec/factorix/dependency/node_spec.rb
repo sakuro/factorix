@@ -6,7 +6,7 @@ RSpec.describe Factorix::Dependency::Node do
 
   describe "#initialize" do
     it "creates a node with minimal parameters" do
-      node = Factorix::Dependency::Node.new(mod:, version:)
+      node = Factorix::Dependency::Node[mod:, version:]
 
       expect(node.mod).to eq(mod)
       expect(node.version).to eq(version)
@@ -16,13 +16,13 @@ RSpec.describe Factorix::Dependency::Node do
     end
 
     it "creates a node with all parameters" do
-      node = Factorix::Dependency::Node.new(
+      node = Factorix::Dependency::Node[
         mod:,
         version:,
         enabled: true,
         installed: true,
         operation: :enable
-      )
+      ]
 
       expect(node.mod).to eq(mod)
       expect(node.version).to eq(version)
@@ -34,76 +34,76 @@ RSpec.describe Factorix::Dependency::Node do
 
   describe "#enabled?" do
     it "returns true when enabled is true" do
-      node = Factorix::Dependency::Node.new(mod:, version:, enabled: true)
+      node = Factorix::Dependency::Node[mod:, version:, enabled: true]
       expect(node.enabled?).to be true
     end
 
     it "returns false when enabled is false" do
-      node = Factorix::Dependency::Node.new(mod:, version:, enabled: false)
+      node = Factorix::Dependency::Node[mod:, version:, enabled: false]
       expect(node.enabled?).to be false
     end
   end
 
   describe "#installed?" do
     it "returns true when installed is true" do
-      node = Factorix::Dependency::Node.new(mod:, version:, installed: true)
+      node = Factorix::Dependency::Node[mod:, version:, installed: true]
       expect(node.installed?).to be true
     end
 
     it "returns false when installed is false" do
-      node = Factorix::Dependency::Node.new(mod:, version:, installed: false)
+      node = Factorix::Dependency::Node[mod:, version:, installed: false]
       expect(node.installed?).to be false
     end
   end
 
   describe "#operation?" do
     it "returns true when operation is set" do
-      node = Factorix::Dependency::Node.new(mod:, version:, operation: :enable)
+      node = Factorix::Dependency::Node[mod:, version:, operation: :enable]
       expect(node.operation?).to be true
     end
 
     it "returns false when operation is nil" do
-      node = Factorix::Dependency::Node.new(mod:, version:, operation: nil)
+      node = Factorix::Dependency::Node[mod:, version:, operation: nil]
       expect(node.operation?).to be false
     end
   end
 
   describe "#to_s" do
     it "shows new state when no flags are set" do
-      node = Factorix::Dependency::Node.new(mod:, version:)
+      node = Factorix::Dependency::Node[mod:, version:]
       expect(node.to_s).to eq("test-mod v1.2.3 (new)")
     end
 
     it "shows enabled state" do
-      node = Factorix::Dependency::Node.new(mod:, version:, enabled: true)
+      node = Factorix::Dependency::Node[mod:, version:, enabled: true]
       expect(node.to_s).to eq("test-mod v1.2.3 (enabled)")
     end
 
     it "shows installed state" do
-      node = Factorix::Dependency::Node.new(mod:, version:, installed: true)
+      node = Factorix::Dependency::Node[mod:, version:, installed: true]
       expect(node.to_s).to eq("test-mod v1.2.3 (installed)")
     end
 
     it "shows operation when set" do
-      node = Factorix::Dependency::Node.new(mod:, version:, operation: :enable)
+      node = Factorix::Dependency::Node[mod:, version:, operation: :enable]
       expect(node.to_s).to eq("test-mod v1.2.3 (op:enable)")
     end
 
     it "shows combined states" do
-      node = Factorix::Dependency::Node.new(
+      node = Factorix::Dependency::Node[
         mod:,
         version:,
         enabled: true,
         installed: true,
         operation: :disable
-      )
+      ]
       expect(node.to_s).to eq("test-mod v1.2.3 (enabled, installed, op:disable)")
     end
   end
 
   describe "#inspect" do
     it "includes class name and to_s output" do
-      node = Factorix::Dependency::Node.new(mod:, version:, enabled: true)
+      node = Factorix::Dependency::Node[mod:, version:, enabled: true]
       expect(node.inspect).to match(/^#<Factorix::Dependency::Node test-mod v1\.2\.3 \(enabled\)>$/)
     end
   end

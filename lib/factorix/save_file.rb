@@ -49,7 +49,7 @@ module Factorix
           parse_startup_settings(deserializer)
         end
 
-        SaveFile.new(version: @version, mods: @mods, startup_settings: @startup_settings)
+        SaveFile[version: @version, mods: @mods, startup_settings: @startup_settings]
       end
 
       private def open_level_file
@@ -143,7 +143,7 @@ module Factorix
           _crc = deserializer.read_u32
 
           # All MODs in save file are enabled
-          @mods[name] = MODState.new(enabled: true, version:)
+          @mods[name] = MODState[enabled: true, version:]
         end
       end
 

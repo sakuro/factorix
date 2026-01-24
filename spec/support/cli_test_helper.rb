@@ -30,7 +30,7 @@ module CLITestHelper
       raise unless rescue_exception
     end
 
-    CLIResult.new(stdout.string, stderr.string, exception)
+    CLIResult[stdout.string, stderr.string, exception]
   end
 end
 

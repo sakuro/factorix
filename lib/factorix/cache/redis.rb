@@ -223,11 +223,11 @@ module Factorix
             logical_key = logical_key_from_data_key(data_k)
             meta = @redis.hgetall(meta_key(logical_key))
 
-            entry = Entry.new(
+            entry = Entry[
               size: meta["size"] ? Integer(meta["size"], 10) : 0,
               age: meta["created_at"] ? Time.now.to_i - Integer(meta["created_at"], 10) : 0,
               expired: false # Redis handles expiry natively
-            )
+            ]
 
             yield logical_key, entry
           end

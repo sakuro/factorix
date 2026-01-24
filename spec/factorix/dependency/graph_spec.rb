@@ -6,9 +6,9 @@ RSpec.describe Factorix::Dependency::Graph do
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
   let(:version) { Factorix::MODVersion.from_string("1.0.0") }
 
-  let(:node_a) { Factorix::Dependency::Node.new(mod: mod_a, version:) }
-  let(:node_b) { Factorix::Dependency::Node.new(mod: mod_b, version:) }
-  let(:node_c) { Factorix::Dependency::Node.new(mod: mod_c, version:) }
+  let(:node_a) { Factorix::Dependency::Node[mod: mod_a, version:] }
+  let(:node_b) { Factorix::Dependency::Node[mod: mod_b, version:] }
+  let(:node_c) { Factorix::Dependency::Node[mod: mod_c, version:] }
 
   describe "#initialize" do
     it "creates an empty graph" do
@@ -43,7 +43,7 @@ RSpec.describe Factorix::Dependency::Graph do
 
   describe "#set_node_operation" do
     let(:graph) { Factorix::Dependency::Graph.new }
-    let(:node_a_installed) { Factorix::Dependency::Node.new(mod: mod_a, version:, installed: true, enabled: false) }
+    let(:node_a_installed) { Factorix::Dependency::Node[mod: mod_a, version:, installed: true, enabled: false] }
 
     before do
       graph.add_node(node_a_installed)
@@ -76,7 +76,7 @@ RSpec.describe Factorix::Dependency::Graph do
   describe "#add_edge" do
     let(:graph) { Factorix::Dependency::Graph.new }
     let(:edge) do
-      Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+      Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
     end
 
     before do
@@ -93,7 +93,7 @@ RSpec.describe Factorix::Dependency::Graph do
 
     it "raises error when from_mod node doesn't exist" do
       mod_x = Factorix::MOD[name: "mod-x"]
-      edge_x = Factorix::Dependency::Edge.new(from_mod: mod_x, to_mod: mod_b, type: :required)
+      edge_x = Factorix::Dependency::Edge[from_mod: mod_x, to_mod: mod_b, type: :required]
 
       expect {
         graph.add_edge(edge_x)
@@ -129,8 +129,8 @@ RSpec.describe Factorix::Dependency::Graph do
 
   describe "#edges_from" do
     let(:graph) { Factorix::Dependency::Graph.new }
-    let(:edge1) { Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required) }
-    let(:edge2) { Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_c, type: :optional) }
+    let(:edge1) { Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required] }
+    let(:edge2) { Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_c, type: :optional] }
 
     before do
       graph.add_node(node_a)
@@ -157,8 +157,8 @@ RSpec.describe Factorix::Dependency::Graph do
 
   describe "#edges_to" do
     let(:graph) { Factorix::Dependency::Graph.new }
-    let(:edge1) { Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required) }
-    let(:edge2) { Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_b, type: :optional) }
+    let(:edge1) { Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required] }
+    let(:edge2) { Factorix::Dependency::Edge[from_mod: mod_c, to_mod: mod_b, type: :optional] }
 
     before do
       graph.add_node(node_a)
@@ -187,11 +187,11 @@ RSpec.describe Factorix::Dependency::Graph do
     let(:graph) { Factorix::Dependency::Graph.new }
 
     context "when MOD has enabled dependents with required dependencies" do
-      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
-      let(:node_b_enabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: true) }
-      let(:node_c_enabled) { Factorix::Dependency::Node.new(mod: mod_c, version:, enabled: true) }
-      let(:edge_b_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :required) }
-      let(:edge_c_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_a, type: :required) }
+      let(:node_a_enabled) { Factorix::Dependency::Node[mod: mod_a, version:, enabled: true] }
+      let(:node_b_enabled) { Factorix::Dependency::Node[mod: mod_b, version:, enabled: true] }
+      let(:node_c_enabled) { Factorix::Dependency::Node[mod: mod_c, version:, enabled: true] }
+      let(:edge_b_to_a) { Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_a, type: :required] }
+      let(:edge_c_to_a) { Factorix::Dependency::Edge[from_mod: mod_c, to_mod: mod_a, type: :required] }
 
       before do
         graph.add_node(node_a_enabled)
@@ -208,9 +208,9 @@ RSpec.describe Factorix::Dependency::Graph do
     end
 
     context "when dependent is disabled" do
-      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
-      let(:node_b_disabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: false) }
-      let(:edge_b_to_a) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :required) }
+      let(:node_a_enabled) { Factorix::Dependency::Node[mod: mod_a, version:, enabled: true] }
+      let(:node_b_disabled) { Factorix::Dependency::Node[mod: mod_b, version:, enabled: false] }
+      let(:edge_b_to_a) { Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_a, type: :required] }
 
       before do
         graph.add_node(node_a_enabled)
@@ -225,9 +225,9 @@ RSpec.describe Factorix::Dependency::Graph do
     end
 
     context "when dependency is optional" do
-      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
-      let(:node_b_enabled) { Factorix::Dependency::Node.new(mod: mod_b, version:, enabled: true) }
-      let(:edge_b_to_a_optional) { Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :optional) }
+      let(:node_a_enabled) { Factorix::Dependency::Node[mod: mod_a, version:, enabled: true] }
+      let(:node_b_enabled) { Factorix::Dependency::Node[mod: mod_b, version:, enabled: true] }
+      let(:edge_b_to_a_optional) { Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_a, type: :optional] }
 
       before do
         graph.add_node(node_a_enabled)
@@ -242,7 +242,7 @@ RSpec.describe Factorix::Dependency::Graph do
     end
 
     context "when MOD has no dependents" do
-      let(:node_a_enabled) { Factorix::Dependency::Node.new(mod: mod_a, version:, enabled: true) }
+      let(:node_a_enabled) { Factorix::Dependency::Node[mod: mod_a, version:, enabled: true] }
 
       before do
         graph.add_node(node_a_enabled)
@@ -264,8 +264,8 @@ RSpec.describe Factorix::Dependency::Graph do
         graph.add_node(node_a)
         graph.add_node(node_b)
         graph.add_node(node_c)
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_c, type: :required))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_c, type: :required])
       end
 
       it "returns MODs in dependency order" do
@@ -279,17 +279,17 @@ RSpec.describe Factorix::Dependency::Graph do
       # A -> B -> D
       # A -> C -> D
       let(:mod_d) { Factorix::MOD[name: "mod-d"] }
-      let(:node_d) { Factorix::Dependency::Node.new(mod: mod_d, version:) }
+      let(:node_d) { Factorix::Dependency::Node[mod: mod_d, version:] }
 
       before do
         graph.add_node(node_a)
         graph.add_node(node_b)
         graph.add_node(node_c)
         graph.add_node(node_d)
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_c, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_d, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_d, type: :required))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_c, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_d, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_c, to_mod: mod_d, type: :required])
       end
 
       it "returns MODs in valid dependency order" do
@@ -309,7 +309,7 @@ RSpec.describe Factorix::Dependency::Graph do
       before do
         graph.add_node(node_a)
         graph.add_node(node_b)
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
       end
 
       it "returns false" do
@@ -323,9 +323,9 @@ RSpec.describe Factorix::Dependency::Graph do
         graph.add_node(node_b)
         graph.add_node(node_c)
         # Create cycle: A -> B -> C -> A
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_c, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_a, type: :required))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_c, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_c, to_mod: mod_a, type: :required])
       end
 
       it "returns true" do
@@ -342,8 +342,8 @@ RSpec.describe Factorix::Dependency::Graph do
         graph.add_node(node_a)
         graph.add_node(node_b)
         # Incompatible edges don't create cycles for topological sort
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :incompatible))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :incompatible])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_a, type: :incompatible])
       end
 
       it "returns false" do
@@ -361,9 +361,9 @@ RSpec.describe Factorix::Dependency::Graph do
         graph.add_node(node_b)
         graph.add_node(node_c)
         # Create cycle: A -> B -> C -> A
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_c, type: :required))
-        graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_c, to_mod: mod_a, type: :required))
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_c, type: :required])
+        graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_c, to_mod: mod_a, type: :required])
       end
 
       it "returns the cycle as a strongly connected component" do
@@ -380,7 +380,7 @@ RSpec.describe Factorix::Dependency::Graph do
     before do
       graph.add_node(node_a)
       graph.add_node(node_b)
-      graph.add_edge(Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required))
+      graph.add_edge(Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required])
     end
 
     it "#to_s shows node and edge counts" do

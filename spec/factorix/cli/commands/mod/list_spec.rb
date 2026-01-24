@@ -27,7 +27,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
   let(:version_0_5_0) { Factorix::MODVersion.from_string("0.5.0") }
 
   let(:base_info) do
-    Factorix::InfoJSON.new(
+    Factorix::InfoJSON[
       name: "base",
       version: version_2_0_28,
       title: "Base",
@@ -35,10 +35,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       description: "",
       factorio_version: "2.0",
       dependencies: []
-    )
+    ]
   end
   let(:space_age_info) do
-    Factorix::InfoJSON.new(
+    Factorix::InfoJSON[
       name: "space-age",
       version: version_2_0_28,
       title: "Space Age",
@@ -46,10 +46,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       description: "",
       factorio_version: "2.0",
       dependencies: []
-    )
+    ]
   end
   let(:quality_info) do
-    Factorix::InfoJSON.new(
+    Factorix::InfoJSON[
       name: "quality",
       version: version_2_0_28,
       title: "Quality",
@@ -57,10 +57,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       description: "",
       factorio_version: "2.0",
       dependencies: []
-    )
+    ]
   end
   let(:custom_info) do
-    Factorix::InfoJSON.new(
+    Factorix::InfoJSON[
       name: "custom-mod",
       version: version_1_0_0,
       title: "Custom Mod",
@@ -68,10 +68,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       description: "",
       factorio_version: "2.0",
       dependencies: []
-    )
+    ]
   end
   let(:another_info) do
-    Factorix::InfoJSON.new(
+    Factorix::InfoJSON[
       name: "another-mod",
       version: version_0_5_0,
       title: "Another Mod",
@@ -79,7 +79,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       description: "",
       factorio_version: "2.0",
       dependencies: []
-    )
+    ]
   end
 
   let(:base_installed) do

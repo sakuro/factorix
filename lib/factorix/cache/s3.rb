@@ -360,11 +360,11 @@ module Factorix
         age = Time.now - obj.last_modified
         expired = check_expired_from_head_response(resp)
 
-        entry = Entry.new(
+        entry = Entry[
           size: obj.size,
           age:,
           expired:
-        )
+        ]
 
         [logical_key, entry]
       rescue Aws::S3::Errors::NotFound

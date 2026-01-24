@@ -24,7 +24,7 @@ RSpec.describe Factorix::Dependency::Validator do
     context "with valid graph" do
       it "returns valid result with no errors" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
 
         validator = build_validator(graph:)
@@ -39,14 +39,14 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when circular dependency exists" do
       it "detects circular dependency" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # Create circular dependency: A -> B -> A
-        edge_a_to_b = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
-        edge_b_to_a = Factorix::Dependency::Edge.new(from_mod: mod_b, to_mod: mod_a, type: :required)
+        edge_a_to_b = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
+        edge_b_to_a = Factorix::Dependency::Edge[from_mod: mod_b, to_mod: mod_a, type: :required]
         graph.add_edge(edge_a_to_b)
         graph.add_edge(edge_b_to_a)
 
@@ -64,11 +64,11 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when dependencies are missing" do
       it "detects missing required dependency" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
 
         # A requires B, but B is not installed
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -87,11 +87,11 @@ RSpec.describe Factorix::Dependency::Validator do
 
       it "ignores optional dependencies" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
 
         # A optionally depends on B (not installed) - should not error
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :optional)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :optional]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -105,13 +105,13 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when dependencies are disabled" do
       it "detects disabled required dependency" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: false, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: false, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A requires B, but B is disabled
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -132,14 +132,14 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when version requirements are not satisfied" do
       it "detects version mismatch" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A requires B >= 2.0.0, but B is 1.0.0
         requirement = Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_2_0_0]
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -158,14 +158,14 @@ RSpec.describe Factorix::Dependency::Validator do
 
       it "accepts satisfied version requirement" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_2_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_2_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A requires B >= 2.0.0, and B is 2.0.0 - should be valid
         requirement = Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_2_0_0]
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required, version_requirement: requirement]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -179,13 +179,13 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when conflicts exist" do
       it "detects conflict between enabled MODs" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A conflicts with B, and both are enabled
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :incompatible]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -204,13 +204,13 @@ RSpec.describe Factorix::Dependency::Validator do
 
       it "ignores conflict when one MOD is disabled" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: false, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: false, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A conflicts with B, but B is disabled - should be valid
-        edge = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :incompatible)
+        edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :incompatible]
         graph.add_edge(edge)
 
         validator = build_validator(graph:)
@@ -244,7 +244,7 @@ RSpec.describe Factorix::Dependency::Validator do
 
       it "warns about installed MOD not in list" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
         graph.add_node(node_a)
 
         custom_mod_list = instance_double(Factorix::MODList)
@@ -268,17 +268,17 @@ RSpec.describe Factorix::Dependency::Validator do
     context "when multiple errors occur" do
       it "reports multiple errors and warnings" do
         graph = Factorix::Dependency::Graph.new
-        node_a = Factorix::Dependency::Node.new(mod: mod_a, version: version_1_0_0, enabled: true, installed: true)
-        node_b = Factorix::Dependency::Node.new(mod: mod_b, version: version_1_0_0, enabled: false, installed: true)
+        node_a = Factorix::Dependency::Node[mod: mod_a, version: version_1_0_0, enabled: true, installed: true]
+        node_b = Factorix::Dependency::Node[mod: mod_b, version: version_1_0_0, enabled: false, installed: true]
         graph.add_node(node_a)
         graph.add_node(node_b)
 
         # A requires B (disabled) - error
-        edge1 = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_b, type: :required)
+        edge1 = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :required]
         graph.add_edge(edge1)
 
         # A requires C (missing) - error
-        edge2 = Factorix::Dependency::Edge.new(from_mod: mod_a, to_mod: mod_c, type: :required)
+        edge2 = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_c, type: :required]
         graph.add_edge(edge2)
 
         custom_mod_list = instance_double(Factorix::MODList)
