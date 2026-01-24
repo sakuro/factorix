@@ -41,6 +41,10 @@ module Factorix
       EXPIRES_AT_KEY = "expires-at"
       private_constant :EXPIRES_AT_KEY
 
+      # Metadata key for storing logical key.
+      LOGICAL_KEY_KEY = "logical-key"
+      private_constant :LOGICAL_KEY_KEY
+
       # Initialize a new S3 cache storage.
       #
       # @param bucket [String] S3 bucket name (required)
@@ -102,7 +106,8 @@ module Factorix
       # @param src [Pathname] path to the source file
       # @return [Boolean] true if stored successfully
       def store(key, src)
-        metadata = @ttl ? {EXPIRES_AT_KEY => (Time.now.to_i + @ttl).to_s} : {}
+        metadata = {LOGICAL_KEY_KEY => key}
+        metadata[EXPIRES_AT_KEY] = (Time.now.to_i + @ttl).to_s if @ttl
 
         @client.put_object(
           bucket: @bucket,
@@ -229,8 +234,8 @@ module Factorix
           objects.each do |obj|
             next if obj.key.end_with?(".lock")
 
-            logical_key = logical_key_from_storage_key(obj.key)
-            entry = build_entry(obj)
+            logical_key, entry = build_entry_with_metadata(obj)
+            next if logical_key.nil? # Skip entries without logical key metadata
 
             yield logical_key, entry
           end
@@ -249,23 +254,25 @@ module Factorix
         }
       end
 
+      # Generate a hashed internal key for the given logical key.
+      # Uses SHA1 to create a unique, deterministic key.
+      # Use Digest(:SHA1) instead of Digest::SHA1 for thread-safety (Ruby 2.2+)
+      #
+      # @param logical_key [String] logical key to hash
+      # @return [String] SHA1 hash of the logical key
+      private def storage_key_for(logical_key) = Digest(:SHA1).hexdigest(logical_key)
+
       # Generate storage key for the given logical key.
       #
       # @param logical_key [String] logical key
-      # @return [String] prefixed storage key
-      private def storage_key(logical_key) = "#{@prefix}#{logical_key}"
+      # @return [String] prefixed hashed storage key
+      private def storage_key(logical_key) = "#{@prefix}#{storage_key_for(logical_key)}"
 
       # Generate lock key for the given logical key.
       #
       # @param logical_key [String] logical key
       # @return [String] lock key
-      private def lock_key(logical_key) = "#{@prefix}#{logical_key}.lock"
-
-      # Extract logical key from storage key.
-      #
-      # @param s_key [String] prefixed storage key
-      # @return [String] logical key
-      private def logical_key_from_storage_key(s_key) = s_key.delete_prefix(@prefix)
+      private def lock_key(logical_key) = "#{@prefix}#{storage_key_for(logical_key)}.lock"
 
       # Get object metadata.
       #
@@ -341,35 +348,40 @@ module Factorix
         end
       end
 
-      # Build an Entry from an S3 object.
+      # Build an Entry from an S3 object, fetching metadata to get logical key.
       #
       # @param obj [Aws::S3::Types::Object] S3 object
-      # @return [Entry] cache entry
-      private def build_entry(obj)
-        age = Time.now - obj.last_modified
-        expired = check_expired_from_metadata(obj.key)
+      # @return [Array(String, Entry), Array(nil, nil)] logical key and entry, or nils if metadata missing
+      private def build_entry_with_metadata(obj)
+        resp = @client.head_object(bucket: @bucket, key: obj.key)
+        logical_key = resp.metadata[LOGICAL_KEY_KEY]
+        return [nil, nil] if logical_key.nil?
 
-        Entry.new(
+        age = Time.now - obj.last_modified
+        expired = check_expired_from_head_response(resp)
+
+        entry = Entry.new(
           size: obj.size,
           age:,
           expired:
         )
+
+        [logical_key, entry]
+      rescue Aws::S3::Errors::NotFound
+        [nil, nil]
       end
 
-      # Check if object is expired by fetching metadata.
+      # Check if object is expired from head_object response.
       #
-      # @param storage_key [String] storage key
+      # @param resp [Aws::S3::Types::HeadObjectOutput] head_object response
       # @return [Boolean] true if expired
-      private def check_expired_from_metadata(storage_key)
+      private def check_expired_from_head_response(resp)
         return false if @ttl.nil?
 
-        resp = @client.head_object(bucket: @bucket, key: storage_key)
         value = resp.metadata[EXPIRES_AT_KEY]
         return false if value.nil?
 
         Time.now.to_i > Integer(value, 10)
-      rescue Aws::S3::Errors::NotFound
-        true
       end
     end
   end
