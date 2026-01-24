@@ -75,14 +75,6 @@ credential.api_key  # => "xxxxxxxxxx"
 
 - `PortalAPI` - Upload/publish/edit MODs
 
-## Container Registration
-
-```ruby
-register(:service_credential, memoize: true) { ServiceCredential.load }
-
-register(:api_credential, memoize: true) { APICredential.load }
-```
-
 ## Credential Masking in Logs
 
 When downloading MODs, URLs may contain sensitive parameters. These are automatically masked with `*****` in HTTP logs.
@@ -116,5 +108,5 @@ Implementation: `Factorix::HTTP::Client#mask_credentials`
 ## Related Documentation
 
 - [API/Portal Layer](api-portal.md)
-- [Container Configuration](container.md)
+- [Container (DI)](container.md)
 - [Technology Stack](../technology-stack.md)
