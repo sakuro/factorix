@@ -8,6 +8,12 @@
 
 ### Added
 
+- Add S3 cache backend (`Cache::S3`) for cloud-native deployments (#18)
+  - Optional dependency: requires `aws-sdk-s3` gem in user's Gemfile
+  - Configure with `config.cache.<type>.backend = :s3`
+  - Distributed locking via conditional PUT (`if_none_match: "*"`)
+  - TTL managed via S3 custom metadata, age from native `Last-Modified`
+
 - Add Redis cache backend (`Cache::Redis`) with distributed locking support (#19)
   - Optional dependency: requires `redis` gem (~> 5) in user's Gemfile
   - Configure with `config.cache.<type>.backend = :redis`

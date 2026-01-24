@@ -16,10 +16,11 @@ Filesystem-based cache (Cache::FileSystem).
 
 ### Backend Initialization
 
-Both cache backends (`FileSystem` and `Redis`) receive a `cache_type` parameter (`:download`, `:api`, or `:info_json`) and auto-compute their storage locations:
+All cache backends (`FileSystem`, `Redis`, and `S3`) receive a `cache_type` parameter (`:download`, `:api`, or `:info_json`) and auto-compute their storage locations:
 
 - **FileSystem**: Cache directory is `{factorix_cache_dir}/{cache_type}`
 - **Redis**: Namespace prefix is `factorix-cache:{cache_type}:`
+- **S3**: Object prefix is `cache/{cache_type}/`
 
 This ensures consistent naming across backends and simplifies configuration.
 
@@ -76,6 +77,60 @@ end
 - Atomic acquire with `SET NX EX`
 - Atomic release with Lua script (ownership check)
 - Lock timeout configurable (default: 30 seconds)
+
+### S3 Backend
+
+Optional S3-based cache (Cache::S3) for cloud-native deployments.
+
+**Configuration Example**:
+```ruby
+Factorix.configure do |config|
+  config.cache.download.backend = :s3
+  config.cache.download.s3.bucket = "factorix-cache"
+  config.cache.download.s3.region = "ap-northeast-1"
+  config.cache.download.s3.lock_timeout = 30
+end
+```
+
+**Region Resolution Order**:
+1. Explicit `region` setting in configuration
+2. `AWS_REGION` environment variable
+3. AWS SDK default behavior
+
+**Key Structure**:
+- Data: `cache/{cache_type}/{key}`
+- Lock: `cache/{cache_type}/{key}.lock`
+
+**TTL Management**:
+- TTL stored in S3 object custom metadata (`expires-at`)
+- Age calculated from S3's native `Last-Modified` header
+
+**Distributed Locking**:
+- Atomic acquire with conditional PUT (`if_none_match: "*"`)
+- Lock value includes UUID and expiration timestamp
+- Stale locks auto-cleaned on acquisition attempt
+- Lock timeout configurable (default: 30 seconds)
+
+**Required IAM Permissions**:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:ListBucket",
+      "s3:HeadObject"
+    ],
+    "Resource": [
+      "arn:aws:s3:::factorix-cache",
+      "arn:aws:s3:::factorix-cache/*"
+    ]
+  }]
+}
+```
 
 ## MODSettings
 
