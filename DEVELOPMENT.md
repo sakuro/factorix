@@ -86,8 +86,6 @@ end
   - Method/variable names follow Ruby convention: `mod_list`, `mod_dir`, `mods`
 - Other abbreviations: `API`, `CLI`, `HTTP`, `MacOS`, `WSL`
 
-See [`doc/architecture.md`](doc/architecture.md) for Zeitwerk configuration and file-to-class mapping details.
-
 ### Testing Style
 - **RSpec** with `expect` syntax (no should syntax)
 - **NEVER use `described_class`**: Always use explicit class names in RSpec tests
