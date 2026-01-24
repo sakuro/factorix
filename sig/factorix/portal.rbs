@@ -18,7 +18,7 @@ module Factorix
 
     def get_mod_full: (String name) -> API::MODInfo
 
-    def download_mod: (API::Release release, Pathname output) -> void
+    def download_mod: (API::Release release, Pathname output, ?handler: untyped?) -> void
 
     def upload_mod: (String mod_name, Pathname file_path, **untyped metadata) -> void
 

@@ -6,7 +6,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
   let(:portal) { instance_double(Factorix::Portal) }
   let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
   let(:runtime) { instance_double(Factorix::Runtime::Base, mod_dir: Pathname("/fake/mods")) }
-  let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
   let(:command) { Factorix::CLI::Commands::MOD::Download.new(logger:, runtime:) }
   let(:mod_info) do
     Factorix::API::MODInfo.new(
@@ -47,12 +46,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Download do
     allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
     allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(portal).to receive(:download_mod)
-    allow(downloader).to receive(:subscribe)
-    allow(downloader).to receive(:unsubscribe)
-
-    mod_download_api = instance_double(Factorix::API::MODDownloadAPI)
-    allow(portal).to receive(:mod_download_api).and_return(mod_download_api)
-    allow(mod_download_api).to receive(:downloader).and_return(downloader)
   end
 
   describe "#call" do

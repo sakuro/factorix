@@ -72,12 +72,13 @@ module Factorix
     #
     # @param release [API::Release] release object containing download_url and sha1
     # @param output [Pathname] output file path
+    # @param handler [Object, nil] event handler for download progress (optional)
     # @return [void]
     # @raise [DigestMismatchError] if SHA1 verification fails
-    def download_mod(release, output)
+    def download_mod(release, output, handler: nil)
       # Extract path from URI::HTTPS
       download_path = release.download_url.path
-      mod_download_api.download(download_path, output, expected_sha1: release.sha1)
+      mod_download_api.download(download_path, output, expected_sha1: release.sha1, handler:)
     end
 
     # Upload a MOD file to the portal

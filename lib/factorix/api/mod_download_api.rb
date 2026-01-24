@@ -12,11 +12,9 @@ module Factorix
       # when FACTORIO_USERNAME/FACTORIO_TOKEN environment variables are not set.
       # It's resolved lazily via reader method instead.
       # @!parse
-      #   # @return [Transfer::Downloader]
-      #   attr_reader :downloader
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
-      include Import[:downloader, :logger]
+      include Import[:logger]
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -34,17 +32,24 @@ module Factorix
       # @param download_url [String] relative download URL from API response (e.g., "/download/mod-name/...")
       # @param output [Pathname] output file path
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
+      # @param handler [Object, nil] event handler for download progress (optional)
       # @return [void]
       # @raise [ArgumentError] if download_url is not a relative path starting with "/"
       # @raise [DigestMismatchError] if SHA1 verification fails
-      def download(download_url, output, expected_sha1: nil)
+      def download(download_url, output, expected_sha1: nil, handler: nil)
         unless download_url.start_with?("/")
           logger.error("Invalid download_url", url: download_url)
           raise ArgumentError, "download_url must be a relative path starting with '/'"
         end
 
         uri = build_download_uri(download_url)
-        downloader.download(uri, output, expected_sha1:)
+        downloader = Container[:downloader]
+        downloader.subscribe(handler) if handler
+        begin
+          downloader.download(uri, output, expected_sha1:)
+        ensure
+          downloader.unsubscribe(handler) if handler
+        end
       end
 
       private def service_credential

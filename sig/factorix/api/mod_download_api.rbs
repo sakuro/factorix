@@ -7,12 +7,11 @@ module Factorix
     class MODDownloadAPI
       BASE_URL: String
 
-      attr_reader downloader: Transfer::Downloader
       attr_reader logger: Dry::Logger::Dispatcher
 
       def initialize: (**untyped deps) -> void
 
-      def download: (String download_url, Pathname output, ?expected_sha1: String?) -> void
+      def download: (String download_url, Pathname output, ?expected_sha1: String?, ?handler: untyped?) -> void
     end
   end
 end

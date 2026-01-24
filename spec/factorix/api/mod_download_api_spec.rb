@@ -3,14 +3,17 @@
 RSpec.describe Factorix::API::MODDownloadAPI do
   let(:service_credential) { instance_double(Factorix::ServiceCredential, username: "test_user", token: "test_token") }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }
-  let(:api) { Factorix::API::MODDownloadAPI.new(downloader:) }
+  let(:api) { Factorix::API::MODDownloadAPI.new }
   let(:download_url) { "/download/example-mod/abc123" }
   let(:output) { Pathname("/tmp/example-mod.zip") }
 
   before do
-    # Stub service_credential in Application container for lazy loading
+    # Stub Container to return our mocks
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
+    allow(Factorix::Container).to receive(:[]).with(:downloader).and_return(downloader)
+    allow(downloader).to receive(:subscribe)
+    allow(downloader).to receive(:unsubscribe)
   end
 
   describe "#download" do

@@ -78,11 +78,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
     allow(mod_list).to receive_messages(save: nil, exist?: true, enabled?: true, remove: nil, add: nil)
     allow(mod_dir).to receive(:/).and_return(Pathname("/fake/path/mods/mod-a_2.0.0.zip"))
 
-    downloader = instance_double(Factorix::Transfer::Downloader)
-    allow(downloader).to receive(:subscribe)
-    allow(downloader).to receive(:unsubscribe)
-    mod_download_api = instance_double(Factorix::API::MODDownloadAPI, downloader:)
-    allow(portal).to receive_messages(get_mod_full: mod_info_a, mod_download_api:, download_mod: nil)
+    allow(portal).to receive_messages(get_mod_full: mod_info_a, download_mod: nil)
 
     # Simulate user confirmation
     allow(command).to receive(:confirm?).and_return(true)
