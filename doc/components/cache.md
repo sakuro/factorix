@@ -32,8 +32,10 @@ graph TD
         CacheDecorator --> Base[Cache::Base]
         Base --> FileSystem[Cache::FileSystem]
         Base --> Redis[Cache::Redis]
+        Base --> S3[Cache::S3]
         FileSystem --> Storage[(File Storage)]
         Redis --> RedisServer[(Redis Server)]
+        S3 --> S3Bucket[(S3 Bucket)]
     end
 
     subgraph "Transfer Layer"
@@ -51,6 +53,7 @@ graph TD
 | `Cache::Entry` | Data class representing cache entry metadata |
 | `Cache::FileSystem` | File-based backend with compression and locking |
 | `Cache::Redis` | Redis-based backend with distributed locking |
+| `Cache::S3` | S3-based backend with distributed locking |
 | `HTTP::CacheDecorator` | HTTP response caching (decorator pattern) |
 | `HTTP::CachedResponse` | Cached response wrapper |
 
@@ -76,6 +79,11 @@ Abstract base class that defines the cache backend interface. All cache backends
 | `with_lock(key)` | Execute block with exclusive lock |
 | `each` | Enumerate cache entries |
 
+### Common Behaviors
+
+- **TTL**: Configurable time-to-live in seconds; `nil` means unlimited
+- **Exclusive locking**: `with_lock` prevents concurrent operations on the same key (implementation varies by backend)
+
 ### Entry Data Class
 
 Location: `lib/factorix/cache/entry.rb`
@@ -94,25 +102,18 @@ File-based cache backend that extends `Cache::Base`. Provides persistent storage
 
 ### Storage Format
 
-Two-level directory structure to prevent filesystem overload:
+Keys are hashed using SHA1, and stored in a two-level directory structure using the first 2 characters of the hash as a subdirectory:
 
 ```
 cache_dir/
 ├── ab/
-│   └── cdef1234567890...  # Full key after first 2 chars
+│   └── cdef1234567890...  # Remaining hash after first 2 chars
 ├── 12/
 │   └── 3456789abcdef0...
 └── ...
 ```
 
-### Key Generation
-
-Cache keys are generated using SHA1 hash of the full URL:
-
-```ruby
-key = cache.key_for("https://mods.factorio.com/api/mods/example")
-# => "a1b2c3d4e5f6..."
-```
+This prevents filesystem overload from too many files in a single directory.
 
 ### Compression
 
@@ -121,19 +122,17 @@ Controlled by `compression_threshold` parameter:
 | Value | Behavior |
 |-------|----------|
 | `nil` | No compression |
-| `0` | Always compress |
-| `N` | Compress if size >= N bytes |
+| `N` | Compress if size >= N bytes (0 means always compress) |
 
 - Uses zlib compression
 - Auto-detects compression on read via CMF byte validation (`0x78`)
 - Transparent to callers (compression/decompression is automatic)
 
-### File Locking
+### Locking
 
 - Uses `flock()` for process-safe exclusive locking
-- Prevents concurrent downloads of same resource
-- Stale lock cleanup: removes locks older than 3600 seconds
-- Double-check pattern in CacheDecorator ensures cache consistency
+- Blocks until lock is acquired (no timeout)
+- Stale lock cleanup: removes lock files older than 3600 seconds
 
 ## Redis Class
 
@@ -147,8 +146,6 @@ The `redis` gem is required but not included in the gemspec (optional dependency
 
 ```ruby
 gem "redis", "~> 5"
-# Optional for performance:
-gem "hiredis-client"
 ```
 
 ### Key Structure
@@ -207,6 +204,70 @@ LUA
 - Configurable timeout for lock acquisition (`lock_timeout` parameter)
 - Raises `LockTimeoutError` if lock cannot be acquired within timeout
 
+## S3 Class
+
+Location: `lib/factorix/cache/s3.rb`
+
+S3-based cache backend that extends `Cache::Base`. Provides distributed caching with TTL via object metadata and distributed locking via conditional PUT.
+
+### Dependencies
+
+The `aws-sdk-s3` gem is required but not included in the gemspec (optional dependency). Users must add it to their Gemfile:
+
+```ruby
+gem "aws-sdk-s3"
+```
+
+### Key Structure
+
+Keys are hashed using SHA1 to avoid deep directory structures from URL slashes:
+
+```
+cache/{cache_type}/{sha1_hash}           # Data object
+cache/{cache_type}/{sha1_hash}.lock      # Lock object
+```
+
+The original logical key is stored in object metadata (`logical-key`) for enumeration.
+
+### TTL Handling
+
+TTL is managed via S3 object metadata:
+- Expiration timestamp stored in `expires-at` metadata
+- Age calculated from S3 native `Last-Modified` timestamp
+- `expired?` checks metadata against current time
+
+### Distributed Locking
+
+Uses conditional PUT with `if_none_match: "*"` for lock acquisition:
+
+- Lock object contains UUID and expiration timestamp
+- Lock released by deleting the lock object
+- Stale lock cleanup based on expiration in lock content
+- Configurable timeout for lock acquisition (`lock_timeout` parameter)
+- Raises `LockTimeoutError` if lock cannot be acquired within timeout
+
+### Required IAM Permissions
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+      "s3:ListBucket",
+      "s3:HeadObject"
+    ],
+    "Resource": [
+      "arn:aws:s3:::YOUR-BUCKET-NAME",
+      "arn:aws:s3:::YOUR-BUCKET-NAME/*"
+    ]
+  }]
+}
+```
+
 ## HTTP Cache Decorator
 
 Location: `lib/factorix/http/cache_decorator.rb`
@@ -231,8 +292,8 @@ Location: `lib/factorix/http/cache_decorator.rb`
 
 | Event | Payload | Description |
 |-------|---------|-------------|
-| `cache.hit` | `{uri:}` | Cache hit occurred |
-| `cache.miss` | `{uri:}` | Cache miss, request executed |
+| `cache.hit` | `{url:}` | Cache hit occurred |
+| `cache.miss` | `{url:}` | Cache miss, request executed |
 
 ## Event-Driven Cache Invalidation
 
@@ -273,45 +334,39 @@ Location: `lib/factorix.rb`
 
 ### Cache Settings
 
-Each cache type has a `backend` selector and backend-specific nested settings:
+Each cache type (`download`, `api`, `info_json`) has a `backend` selector and backend-specific nested settings:
 
 ```ruby
 setting :cache do
   setting :download do
     setting :backend, default: :file_system        # Backend selector
-    setting :ttl, default: nil                     # Unlimited
-    setting :file_system do                        # FileSystem-specific settings
+    setting :ttl, default: nil                     # Time-to-live
+    setting :file_system do                        # FileSystem-specific
       setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
-      setting :max_file_size, default: nil         # Unlimited
-      setting :compression_threshold, default: nil # No compression
+      setting :max_file_size, default: nil
+      setting :compression_threshold, default: nil
+    end
+    setting :redis do                              # Redis-specific
+      setting :url, default: nil
+      setting :lock_timeout, default: 30
+    end
+    setting :s3 do                                 # S3-specific
+      setting :bucket, default: nil
+      setting :region, default: nil
+      setting :lock_timeout, default: 30
     end
   end
-
-  setting :api do
-    setting :backend, default: :file_system
-    setting :ttl, default: 3600                    # 1 hour
-    setting :file_system do
-      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
-      setting :max_file_size, default: 10 * 1024 * 1024  # 10MiB
-      setting :compression_threshold, default: 0   # Always compress
-    end
-  end
-
-  setting :info_json do
-    setting :backend, default: :file_system
-    setting :ttl, default: nil                     # Unlimited
-    setting :file_system do
-      setting :root, constructor: ->(v) { v ? Pathname(v) : nil }
-      setting :max_file_size, default: nil         # Unlimited
-      setting :compression_threshold, default: 0   # Always compress
-    end
-    setting :redis do
-      setting :url, default: nil                   # Uses REDIS_URL env
-      setting :lock_timeout, default: 30           # Lock acquisition timeout
-    end
-  end
+  # api and info_json have the same structure
 end
 ```
+
+**Default values by cache type:**
+
+| Setting | `download` | `api` | `info_json` |
+|---------|------------|-------|-------------|
+| `ttl` | `nil` | `3600` | `nil` |
+| `max_file_size` | `nil` | `10MiB` | `nil` |
+| `compression_threshold` | `nil` | `0` | `0` |
 
 ### Redis Configuration Example
 
@@ -320,6 +375,17 @@ Factorix.configure do |config|
   config.cache.api.backend = :redis
   config.cache.api.redis.url = "redis://localhost:6379/0"  # Or use REDIS_URL env
   config.cache.api.redis.lock_timeout = 30
+end
+```
+
+### S3 Configuration Example
+
+```ruby
+Factorix.configure do |config|
+  config.cache.download.backend = :s3
+  config.cache.download.s3.bucket = "my-cache-bucket"
+  config.cache.download.s3.region = "ap-northeast-1"  # Or use AWS_REGION env
+  config.cache.download.s3.lock_timeout = 30
 end
 ```
 
