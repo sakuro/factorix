@@ -100,7 +100,7 @@ RSpec.describe Factorix::Cache::S3 do
     context "when cache entry does not exist" do
       before do
         s3_client.stub_responses(:head_object, "NotFound")
-        s3_client.stub_responses(:get_object, "NotFound")
+        s3_client.stub_responses(:get_object, "NoSuchKey")
       end
 
       it "returns nil" do
@@ -144,7 +144,7 @@ RSpec.describe Factorix::Cache::S3 do
     context "when cache entry does not exist" do
       before do
         s3_client.stub_responses(:head_object, "NotFound")
-        s3_client.stub_responses(:get_object, "NotFound")
+        s3_client.stub_responses(:get_object, "NoSuchKey")
       end
 
       it "returns false" do
