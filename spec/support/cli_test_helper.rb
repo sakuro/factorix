@@ -4,10 +4,12 @@ require "stringio"
 
 # Helper module for testing CLI commands using dry-cli 1.4.0's out:/err: feature
 module CLITestHelper
+  CLIResult = Data.define(:stdout, :stderr, :exception)
+
   # Result object containing captured stdout, stderr, and optional exception
-  CLIResult = Data.define(:stdout, :stderr, :exception) {
+  class CLIResult
     def success? = exception.nil?
-  }
+  end
 
   # Run a CLI command with captured output
   #
