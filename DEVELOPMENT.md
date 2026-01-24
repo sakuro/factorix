@@ -30,16 +30,12 @@ bin/console
 
 This opens an IRB session where you can experiment with the Factorix API.
 
-## Technology Stack
+## Project Structure
 
-See [`doc/technology-stack.md`](doc/technology-stack.md) for details.
+See [`doc/architecture.md`](doc/architecture.md) for module structure and technology stack.
 
 - **Required Ruby version**: Oldest non-EOL version or later
 - **CI tested**: All non-EOL Ruby versions (see [CI workflow](.github/workflows/ci.yml))
-
-## Project Structure
-
-See [`doc/architecture.md`](doc/architecture.md) for detailed class hierarchy and design patterns.
 
 ## Language Policy
 
