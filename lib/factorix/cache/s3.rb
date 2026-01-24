@@ -89,8 +89,7 @@ module Factorix
       def write_to(key, output)
         return false if expired?(key)
 
-        resp = @client.get_object(bucket: @bucket, key: storage_key(key))
-        output.binwrite(resp.body.read)
+        @client.get_object(bucket: @bucket, key: storage_key(key), response_target: output.to_s)
         logger.debug("Cache hit", key:)
         true
       rescue Aws::S3::Errors::NotFound
