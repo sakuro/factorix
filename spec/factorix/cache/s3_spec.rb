@@ -11,8 +11,9 @@ RSpec.describe Factorix::Cache::S3 do
   let(:cache_type) { "download" }
   let(:cache) { Factorix::Cache::S3.new(bucket:, cache_type:) }
   let(:logical_key) { "test-key" }
-  let(:storage_key) { "cache/#{cache_type}/#{logical_key}" }
-  let(:lock_key) { "cache/#{cache_type}/#{logical_key}.lock" }
+  let(:hashed_key) { Digest(:SHA1).hexdigest(logical_key) }
+  let(:storage_key) { "cache/#{cache_type}/#{hashed_key}" }
+  let(:lock_key) { "cache/#{cache_type}/#{hashed_key}.lock" }
 
   before do
     allow(Aws::S3::Client).to receive(:new).and_return(s3_client)
@@ -374,16 +375,25 @@ RSpec.describe Factorix::Cache::S3 do
   end
 
   describe "#each" do
+    let(:key1_hash) { Digest(:SHA1).hexdigest("key1") }
+    let(:key2_hash) { Digest(:SHA1).hexdigest("key2") }
+    let(:key3_hash) { Digest(:SHA1).hexdigest("key3") }
+
     before do
       s3_client.stub_responses(:list_objects_v2, {
         contents: [
-          {key: "cache/download/key1", size: 100, last_modified: Time.now - 3600},
-          {key: "cache/download/key2", size: 200, last_modified: Time.now - 1800},
-          {key: "cache/download/key3.lock", size: 50, last_modified: Time.now}
+          {key: "cache/download/#{key1_hash}", size: 100, last_modified: Time.now - 3600},
+          {key: "cache/download/#{key2_hash}", size: 200, last_modified: Time.now - 1800},
+          {key: "cache/download/#{key3_hash}.lock", size: 50, last_modified: Time.now}
         ],
         is_truncated: false
       })
-      s3_client.stub_responses(:head_object, {content_length: 100, metadata: {}})
+      call_count = 0
+      s3_client.stub_responses(:head_object, ->(_context) {
+        call_count += 1
+        logical_key = call_count == 1 ? "key1" : "key2"
+        {content_length: 100, metadata: {"logical-key" => logical_key}}
+      })
     end
 
     it "returns an enumerator when no block given" do
@@ -403,22 +413,41 @@ RSpec.describe Factorix::Cache::S3 do
       expect(entry.size).to eq(100)
       expect(entry.age).to be_within(10).of(3600)
     end
+
+    context "when metadata is missing logical-key" do
+      before do
+        s3_client.stub_responses(:head_object, {content_length: 100, metadata: {}})
+      end
+
+      it "skips entries without logical-key metadata" do
+        entries = cache.each.to_a
+        expect(entries).to be_empty
+      end
+    end
   end
 
   describe "#each with pagination" do
+    let(:key1_hash) { Digest(:SHA1).hexdigest("key1") }
+    let(:key2_hash) { Digest(:SHA1).hexdigest("key2") }
+
     before do
       s3_client.stub_responses(:list_objects_v2, [
         {
-          contents: [{key: "cache/download/key1", size: 100, last_modified: Time.now}],
+          contents: [{key: "cache/download/#{key1_hash}", size: 100, last_modified: Time.now}],
           is_truncated: true,
           next_continuation_token: "token1"
         },
         {
-          contents: [{key: "cache/download/key2", size: 200, last_modified: Time.now}],
+          contents: [{key: "cache/download/#{key2_hash}", size: 200, last_modified: Time.now}],
           is_truncated: false
         }
       ])
-      s3_client.stub_responses(:head_object, {content_length: 100, metadata: {}})
+      call_count = 0
+      s3_client.stub_responses(:head_object, ->(_context) {
+        call_count += 1
+        logical_key = call_count == 1 ? "key1" : "key2"
+        {content_length: 100, metadata: {"logical-key" => logical_key}}
+      })
     end
 
     it "handles pagination correctly" do
