@@ -42,6 +42,14 @@ inherit_from: .rubocop_todo.yml
 Lint/EmptyClass:
   AllowComments: true
 
+Metrics/BlockLength:
+  Exclude:
+    - lib/factorix.rb # Cache configuration block with hierarchical backend settings
+
+Metrics/ModuleLength:
+  Exclude:
+    - lib/factorix.rb # Cache configuration with hierarchical backend settings
+
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
@@ -71,12 +79,6 @@ Style/HashEachMethods:
     - spec/factorix/cache/file_system_spec.rb # cache.each is not Hash#each, it's a custom method
     - spec/factorix/cache/redis_spec.rb # cache.each is not Hash#each, it's Cache::Base#each
 
-Style/MapIntoArray:
-  Exclude:
-    - lib/factorix/cli/commands/cache/stat.rb # cache.each is Cache::Base#each, not Hash#each
-    - spec/factorix/cache/file_system_spec.rb # Testing cache.each method, not optimizing for map
-    - spec/factorix/cache/redis_spec.rb # Testing cache.each method, not optimizing for map
-
 Style/HashLookupMethod:
     Enabled: false
 
@@ -85,18 +87,16 @@ Style/IpAddresses:
     - spec/factorix/game_version_spec.rb
     - spec/factorix/mod_version_spec.rb
 
+Style/MapIntoArray:
+  Exclude:
+    - lib/factorix/cli/commands/cache/stat.rb # cache.each is Cache::Base#each, not Hash#each
+    - spec/factorix/cache/file_system_spec.rb # Testing cache.each method, not optimizing for map
+    - spec/factorix/cache/redis_spec.rb # Testing cache.each method, not optimizing for map
+
 Style/StaticClass:
   Exclude:
     - lib/factorix/info_json.rb
     - lib/factorix.rb # Deprecated Application class for backward compatibility
-
-Metrics/BlockLength:
-  Exclude:
-    - lib/factorix.rb # Cache configuration block with hierarchical backend settings
-
-Metrics/ModuleLength:
-  Exclude:
-    - lib/factorix.rb # Cache configuration with hierarchical backend settings
 
 ThreadSafety/NewThread:
   Exclude:
