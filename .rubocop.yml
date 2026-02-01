@@ -77,6 +77,9 @@ Style/MapIntoArray:
     - spec/factorix/cache/file_system_spec.rb # Testing cache.each method, not optimizing for map
     - spec/factorix/cache/redis_spec.rb # Testing cache.each method, not optimizing for map
 
+Style/HashLookupMethod:
+    Enabled: false
+
 Style/IpAddresses:
   Exclude:
     - spec/factorix/game_version_spec.rb
