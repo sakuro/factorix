@@ -17,7 +17,7 @@ _factorix() {
   local confirmable_opts="-y --yes"
 
   # Top-level commands
-  local commands="version man launch path mod cache completion"
+  local commands="version man launch path download mod cache completion"
 
   # mod subcommands
   local mod_commands="check list show enable disable install uninstall update download upload edit search sync image settings"
@@ -49,6 +49,20 @@ _factorix() {
         COMPREPLY=($(compgen -W "zsh bash fish" -- "$cur"))
       else
         COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
+      fi
+      return
+      ;;
+    download)
+      if [[ "$cur" == -* ]]; then
+        COMPREPLY=($(compgen -W "$global_opts -b --build -p --platform -c --channel -d --directory -o --output" -- "$cur"))
+      elif [[ "$prev" == "--build" ]] || [[ "$prev" == "-b" ]]; then
+        COMPREPLY=($(compgen -W "alpha expansion demo headless" -- "$cur"))
+      elif [[ "$prev" == "--platform" ]] || [[ "$prev" == "-p" ]]; then
+        COMPREPLY=($(compgen -W "win64 win64-manual osx linux64" -- "$cur"))
+      elif [[ "$prev" == "--channel" ]] || [[ "$prev" == "-c" ]]; then
+        COMPREPLY=($(compgen -W "stable experimental" -- "$cur"))
+      elif [[ "$prev" == "--directory" ]] || [[ "$prev" == "-d" ]]; then
+        COMPREPLY=($(compgen -d -- "$cur"))
       fi
       return
       ;;

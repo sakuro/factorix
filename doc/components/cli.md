@@ -129,6 +129,56 @@ factorix completion fish | source  # fish shell
 
 **Use case**: Enable tab completion for factorix commands
 
+### Download
+
+Download Factorio game files from the official download API.
+
+**Arguments**:
+- `version` (optional) - Version to download (e.g., `2.0.73`, `latest`). Defaults to `latest`.
+
+**Options**:
+- `-b`, `--build` - Build type: `alpha`, `expansion`, `demo`, `headless` (default: `alpha`)
+- `-p`, `--platform` - Platform: `win64`, `win64-manual`, `osx`, `linux64` (default: auto-detect)
+- `-c`, `--channel` - Release channel: `stable`, `experimental` (default: `stable`)
+- `-d`, `--directory` - Download directory (default: current directory)
+- `-o`, `--output` - Output filename (default: from server response)
+
+**Platform Auto-Detection**:
+
+| Runtime | Default Platform |
+|---------|------------------|
+| MacOS | `osx` |
+| Linux | `linux64` |
+| Windows | `win64` |
+| WSL | `win64` |
+
+**Examples**:
+```bash
+# Download latest stable version (auto-detect platform)
+factorix download
+
+# Download specific version
+factorix download 2.0.73
+
+# Download expansion build
+factorix download --build expansion
+
+# Download headless server for Linux
+factorix download --build headless --platform linux64
+
+# Download experimental release
+factorix download --channel experimental
+
+# Specify output filename
+factorix download -o factorio-server.tar.xz
+```
+
+**Restrictions**:
+- Only Factorio 2.x versions are supported
+- Requires service credentials (username/token from player-data.json)
+
+**Use case**: Download Factorio game files for installation or server deployment
+
 ### Launch
 
 Launch the game.

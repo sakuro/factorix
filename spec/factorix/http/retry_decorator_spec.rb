@@ -126,4 +126,25 @@ RSpec.describe Factorix::HTTP::RetryDecorator do
       )
     end
   end
+
+  describe "#head" do
+    before do
+      allow(retry_strategy).to receive(:with_retry).and_yield
+      allow(client).to receive(:head).and_return(response)
+    end
+
+    it "delegates to client.head with retry" do
+      result = decorator.head(uri, headers: {"Authorization" => "Bearer token"})
+
+      expect(retry_strategy).to have_received(:with_retry)
+      expect(client).to have_received(:head).with(uri, headers: {"Authorization" => "Bearer token"})
+      expect(result).to eq(response)
+    end
+
+    it "defaults headers to empty hash" do
+      decorator.head(uri)
+
+      expect(client).to have_received(:head).with(uri, headers: {})
+    end
+  end
 end

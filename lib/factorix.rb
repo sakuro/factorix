@@ -129,6 +129,7 @@ module Factorix
     "installed_mod" => "InstalledMOD",
     "mac_os" => "MacOS",
     "mod" => "MOD",
+    "game_download_api" => "GameDownloadAPI",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",
     "mod_management_api" => "MODManagementAPI",

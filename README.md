@@ -20,6 +20,7 @@ Factorix simplifies Factorio MOD management by providing:
 - **Settings Management**: Export/import MOD settings in JSON format
 - **MOD Portal Integration**: Upload new MODs or update existing ones, edit metadata
 - **Game Control**: Launch Factorio from the command line
+- **Game Download**: Download Factorio game files (alpha, expansion, demo, headless)
 - **Cross-platform Support**: Works on Windows, Linux, macOS, and WSL
 
 ## Requirements
@@ -37,6 +38,8 @@ export FACTORIO_API_KEY=your_api_key_here
 ```
 
 API key is not required for downloading, installing, or managing local MODs.
+
+For downloading the game itself (`factorix download`), service credentials are required. These are automatically loaded from `player-data.json` if you have logged into Factorio, or you can set `FACTORIO_USERNAME` and `FACTORIO_TOKEN` environment variables.
 
 ## Configuration
 

@@ -8,13 +8,16 @@ module Factorix
       attr_reader :body
       attr_reader :headers
       attr_reader :raw_response
+      attr_reader :uri
 
       # @param net_http_response [Net::HTTPResponse] Raw Net::HTTP response
-      def initialize(net_http_response)
+      # @param uri [URI, nil] Final URI after following redirects
+      def initialize(net_http_response, uri: nil)
         @code = Integer(net_http_response.code, 10)
         @body = net_http_response.body
         @headers = net_http_response.to_hash
         @raw_response = net_http_response
+        @uri = uri
       end
 
       # Check if response is successful (2xx)

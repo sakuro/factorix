@@ -56,7 +56,7 @@ module Factorix
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
           publish("cache.hit", url: uri.to_s)
-          return CachedResponse.new(cached_body)
+          return CachedResponse.new(cached_body, uri:)
         end
 
         logger.debug("Cache miss", uri: uri.to_s)
@@ -68,7 +68,7 @@ module Factorix
           cached_body = cache.read(cache_key)
           if cached_body
             publish("cache.hit", url: uri.to_s)
-            return CachedResponse.new(cached_body)
+            return CachedResponse.new(cached_body, uri:)
           end
 
           response = client.get(uri, headers:)
@@ -93,6 +93,13 @@ module Factorix
       # @param content_type [String, nil] Content-Type header
       # @return [Response] response object
       def post(uri, body:, headers: {}, content_type: nil) = client.post(uri, body:, headers:, content_type:)
+
+      # Execute a HEAD request (never cached)
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @return [Response] response object
+      def head(uri, headers: {}) = client.head(uri, headers:)
 
       private def with_temporary_file
         temp_file = Tempfile.new("http_cache")

@@ -54,6 +54,17 @@ module Factorix
           client.post(uri, body:, headers:, content_type:)
         end
       end
+
+      # Execute a HEAD request with retry
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @return [Response] response object
+      def head(uri, headers: {})
+        retry_strategy.with_retry do
+          client.head(uri, headers:)
+        end
+      end
     end
   end
 end

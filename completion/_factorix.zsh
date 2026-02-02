@@ -39,6 +39,7 @@ _factorix() {
         'man:Display the Factorix manual page'
         'launch:Launch Factorio game'
         'path:Display Factorio and Factorix paths'
+        'download:Download Factorio game files'
         'mod:MOD management commands'
         'cache:Cache management commands'
         'completion:Generate shell completion script'
@@ -60,6 +61,9 @@ _factorix() {
           _arguments \
             $global_opts \
             '--json[Output in JSON format]'
+          ;;
+        download)
+          _factorix_download
           ;;
         completion)
           _factorix_completion
@@ -86,6 +90,24 @@ _factorix_completion() {
   _arguments \
     $global_opts \
     '1:shell:(zsh bash fish)'
+}
+
+_factorix_download() {
+  local -a global_opts
+  global_opts=(
+    '(-c --config-path)'{-c,--config-path}'[Path to configuration file]:config file:_files'
+    '--log-level[Set log level]:level:(debug info warn error fatal)'
+    '(-q --quiet)'{-q,--quiet}'[Suppress non-essential output]'
+  )
+
+  _arguments \
+    $global_opts \
+    '(-b --build)'{-b,--build}'[Build type]:build:(alpha expansion demo headless)' \
+    '(-p --platform)'{-p,--platform}'[Platform]:platform:(win64 win64-manual osx linux64)' \
+    '(-c --channel)'{-c,--channel}'[Release channel]:channel:(stable experimental)' \
+    '(-d --directory)'{-d,--directory}'[Download directory]:directory:_files -/' \
+    '(-o --output)'{-o,--output}'[Output filename]:filename:' \
+    '1:version:'
 }
 
 _factorix_mod() {

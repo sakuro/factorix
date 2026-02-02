@@ -73,13 +73,14 @@ complete -c factorix -l log-level -d 'Set log level' -xa 'debug info warn error 
 complete -c factorix -s q -l quiet -d 'Suppress non-essential output'
 
 # Top-level commands
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a version -d 'Display Factorix version'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a man -d 'Display the Factorix manual page'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a launch -d 'Launch Factorio game'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a path -d 'Display Factorio and Factorix paths'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a mod -d 'MOD management commands'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a cache -d 'Cache management commands'
-complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a completion -d 'Generate shell completion script'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a version -d 'Display Factorix version'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a man -d 'Display the Factorix manual page'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a launch -d 'Launch Factorio game'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a path -d 'Display Factorio and Factorix paths'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a download -d 'Download Factorio game files'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a mod -d 'MOD management commands'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a cache -d 'Cache management commands'
+complete -c factorix -n "not __factorix_using_command version; and not __factorix_using_command man; and not __factorix_using_command launch; and not __factorix_using_command path; and not __factorix_using_command download; and not __factorix_using_command mod; and not __factorix_using_command cache; and not __factorix_using_command completion" -a completion -d 'Generate shell completion script'
 
 # launch options
 complete -c factorix -n "__factorix_using_command launch" -s w -l wait -d 'Wait for the game to finish'
@@ -89,6 +90,13 @@ complete -c factorix -n "__factorix_using_command path" -l json -d 'Output in JS
 
 # completion shell argument
 complete -c factorix -n "__factorix_using_command completion" -a 'zsh bash fish' -d 'Shell type'
+
+# download options
+complete -c factorix -n "__factorix_using_command download" -s b -l build -d 'Build type' -xa 'alpha expansion demo headless'
+complete -c factorix -n "__factorix_using_command download" -s p -l platform -d 'Platform' -xa 'win64 win64-manual osx linux64'
+complete -c factorix -n "__factorix_using_command download" -s c -l channel -d 'Release channel' -xa 'stable experimental'
+complete -c factorix -n "__factorix_using_command download" -s d -l directory -d 'Download directory' -ra '(__fish_complete_directories)'
+complete -c factorix -n "__factorix_using_command download" -s o -l output -d 'Output filename' -r
 
 # cache subcommands
 complete -c factorix -n "__factorix_using_command cache" -a stat -d 'Display cache statistics'
