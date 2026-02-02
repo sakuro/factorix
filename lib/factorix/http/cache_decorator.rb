@@ -94,6 +94,13 @@ module Factorix
       # @return [Response] response object
       def post(uri, body:, headers: {}, content_type: nil) = client.post(uri, body:, headers:, content_type:)
 
+      # Execute a HEAD request (never cached)
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @return [Response] response object
+      def head(uri, headers: {}) = client.head(uri, headers:)
+
       private def with_temporary_file
         temp_file = Tempfile.new("http_cache")
         yield temp_file

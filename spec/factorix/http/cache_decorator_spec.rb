@@ -213,4 +213,27 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
       expect(result).to eq(response)
     end
   end
+
+  describe "#head" do
+    it "delegates to client.head without caching" do
+      allow(cache).to receive(:read)
+      allow(cache).to receive(:store)
+      allow(client).to receive(:head).and_return(response)
+
+      result = decorator.head(uri, headers: {"Authorization" => "Bearer token"})
+
+      expect(cache).not_to have_received(:read)
+      expect(cache).not_to have_received(:store)
+      expect(client).to have_received(:head).with(uri, headers: {"Authorization" => "Bearer token"})
+      expect(result).to eq(response)
+    end
+
+    it "defaults headers to empty hash" do
+      allow(client).to receive(:head).and_return(response)
+
+      decorator.head(uri)
+
+      expect(client).to have_received(:head).with(uri, headers: {})
+    end
+  end
 end
