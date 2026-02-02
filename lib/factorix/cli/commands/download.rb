@@ -27,20 +27,9 @@ module Factorix
 
         argument :version, required: false, default: "latest", desc: "Version (e.g., 2.0.73, latest)"
 
-        option :build,
-          aliases: ["-b"],
-          default: "alpha",
-          values: API::GameDownloadAPI::BUILDS,
-          desc: "Build type"
-        option :platform,
-          aliases: ["-p"],
-          values: API::GameDownloadAPI::PLATFORMS,
-          desc: "Platform (default: auto-detect)"
-        option :channel,
-          aliases: ["-c"],
-          default: "stable",
-          values: API::GameDownloadAPI::CHANNELS,
-          desc: "Release channel"
+        option :build, aliases: ["-b"], default: "alpha", values: API::GameDownloadAPI::BUILDS, desc: "Build type"
+        option :platform, aliases: ["-p"], values: API::GameDownloadAPI::PLATFORMS, desc: "Platform (default: auto-detect)"
+        option :channel, aliases: ["-c"], default: "stable", values: API::GameDownloadAPI::CHANNELS, desc: "Release channel"
         option :directory, aliases: ["-d"], default: ".", desc: "Download directory"
         option :output, aliases: ["-o"], desc: "Output filename (default: from server)"
 
