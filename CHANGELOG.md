@@ -6,6 +6,7 @@
   - Supports alpha, expansion, demo, and headless builds
   - Auto-detects platform (Windows, Linux, macOS, WSL)
   - Resolves latest version from stable/experimental channels
+- Add `head` method to HTTP client and decorators (`Client`, `RetryDecorator`, `CacheDecorator`)
 
 ## [0.7.0] - 2026-01-24
 
