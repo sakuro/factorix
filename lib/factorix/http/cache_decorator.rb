@@ -56,7 +56,7 @@ module Factorix
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
           publish("cache.hit", url: uri.to_s)
-          return CachedResponse.new(cached_body)
+          return CachedResponse.new(cached_body, uri:)
         end
 
         logger.debug("Cache miss", uri: uri.to_s)
@@ -68,7 +68,7 @@ module Factorix
           cached_body = cache.read(cache_key)
           if cached_body
             publish("cache.hit", url: uri.to_s)
-            return CachedResponse.new(cached_body)
+            return CachedResponse.new(cached_body, uri:)
           end
 
           response = client.get(uri, headers:)

@@ -58,6 +58,13 @@ module Factorix
       # @return [Response] response object
       def get(uri, headers: {}, &) = request(:get, uri, headers:, &)
 
+      # Execute a HEAD request
+      #
+      # @param uri [URI::HTTPS] target URI
+      # @param headers [Hash<String, String>] request headers
+      # @return [Response] response object
+      def head(uri, headers: {}) = request(:head, uri, headers:)
+
       # Execute a POST request
       #
       # @param uri [URI::HTTPS] target URI
@@ -86,11 +93,11 @@ module Factorix
         result
       end
 
-      private def handle_response(response, _method, _uri, redirect_count, &block)
+      private def handle_response(response, _method, uri, redirect_count, &block)
         case response
         when Net::HTTPSuccess, Net::HTTPPartialContent
           yield(response) if block
-          Response.new(response)
+          Response.new(response, uri:)
 
         when Net::HTTPRedirection
           location = response["Location"]
@@ -139,6 +146,7 @@ module Factorix
       private def build_request(method, uri, headers:, body:)
         request = case method
                   when :get then Net::HTTP::Get.new(uri)
+                  when :head then Net::HTTP::Head.new(uri)
                   when :post then Net::HTTP::Post.new(uri)
                   when :put then Net::HTTP::Put.new(uri)
                   when :delete then Net::HTTP::Delete.new(uri)

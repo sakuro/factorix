@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+### Added
+
+- Add `download` command to download Factorio game files from the official Download API (#51)
+  - Supports alpha, expansion, demo, and headless builds
+  - Auto-detects platform (Windows, Linux, macOS, WSL)
+  - Resolves latest version from stable/experimental channels
+
 ## [0.7.0] - 2026-01-24
 
 ### Added

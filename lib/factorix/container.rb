@@ -136,6 +136,11 @@ module Factorix
       API::MODDownloadAPI.new
     end
 
+    # Register Game Download API client
+    register(:game_download_api, memoize: true) do
+      API::GameDownloadAPI.new
+    end
+
     # Register API credential (for MOD upload/management)
     register(:api_credential, memoize: true) { APICredential.load }
 

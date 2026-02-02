@@ -12,12 +12,15 @@ module Factorix
       attr_reader :body
       attr_reader :code
       attr_reader :headers
+      attr_reader :uri
 
       # @param body [String] cached response body
-      def initialize(body)
+      # @param uri [URI, nil] original request URI (not stored in cache, always nil)
+      def initialize(body, uri: nil)
         @body = body
         @code = 200
         @headers = {"content-type" => ["application/octet-stream"]}
+        @uri = uri
       end
 
       # Always returns true for cached responses

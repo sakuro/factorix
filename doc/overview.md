@@ -14,6 +14,7 @@ Provide a command-line interface for Factorio MOD management, including dependen
 - Retrieve Factorio installation paths and directories
 - Launch Factorio with custom options
 - Automatic process management for certain commands
+- Download Factorio game files (alpha, expansion, demo, headless)
 
 ### MOD Management
 - **Discovery**: List and search MODs from MOD Portal
