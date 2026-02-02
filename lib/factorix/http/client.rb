@@ -93,7 +93,7 @@ module Factorix
         result
       end
 
-      private def handle_response(response, _method, uri, redirect_count, &block)
+      private def handle_response(response, method, uri, redirect_count, &block)
         case response
         when Net::HTTPSuccess, Net::HTTPPartialContent
           yield(response) if block
@@ -104,7 +104,9 @@ module Factorix
           redirect_url = URI(location)
           logger.info("Following redirect", location: mask_credentials(redirect_url))
 
-          perform_request(:get, redirect_url, redirect_count: redirect_count + 1, headers: {}, body: nil, &block)
+          # HEAD stays HEAD, others become GET (standard redirect behavior)
+          redirect_method = method == :head ? :head : :get
+          perform_request(redirect_method, redirect_url, redirect_count: redirect_count + 1, headers: {}, body: nil, &block)
 
         when Net::HTTPNotFound
           api_error, api_message = parse_api_error(response)
