@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.8.0] - 2026-02-03
+
 ### Added
 
 - Add `download` command to download Factorio game files from the official Download API (#51)
