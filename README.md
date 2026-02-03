@@ -37,9 +37,9 @@ For uploading MODs or editing MOD metadata, set the `FACTORIO_API_KEY` environme
 export FACTORIO_API_KEY=your_api_key_here
 ```
 
-API key is not required for downloading, installing, or managing local MODs.
+API key is not required for managing local MODs.
 
-For downloading the game itself (`factorix download`), service credentials are required. These are automatically loaded from `player-data.json` if you have logged into Factorio, or you can set `FACTORIO_USERNAME` and `FACTORIO_TOKEN` environment variables.
+For downloading MODs from the MOD Portal (including via `factorix mod install`) or downloading the game itself, service credentials are required. These are automatically loaded from `player-data.json` if you have logged into Factorio, or you can set `FACTORIO_USERNAME` and `FACTORIO_TOKEN` environment variables.
 
 ## Configuration
 

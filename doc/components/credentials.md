@@ -34,7 +34,8 @@ credential.token     # => "mytoken123"
 
 ### Consumers
 
-- `DownloadAPI` - Download MOD files
+- `MODDownloadAPI` - Download MOD files
+- `GameDownloadAPI` - Download game files
 
 ## APICredential
 

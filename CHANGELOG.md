@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Fixed
+
+- Fix documentation to clarify that ServiceCredential is required for MOD downloads from the portal
+
 ## [0.8.0] - 2026-02-03
 
 ### Added
