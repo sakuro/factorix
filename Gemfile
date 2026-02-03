@@ -7,11 +7,11 @@ gemspec
 group :development, :test do
   gem "rake", require: false
 
-  gem "irb", require: false
   # AWS SDK for Cache::S3 backend testing
   gem "aws-sdk-s3", "~> 1", require: false
   # Redis client for Cache::Redis backend testing
   gem "redis", "~> 5", require: false
+
   gem "repl_type_completor", require: false
 end
 
