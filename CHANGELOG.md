@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.8.1] - 2026-02-17
+
 ### Added
 
 - Add `tsort` as explicit dependency for Ruby 4.1 compatibility (#55)
