@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+### Added
+
+- Add `tsort` as explicit dependency for Ruby 4.1 compatibility (#55)
+
+### Removed
+
+- Remove `irb` from development dependencies
+
 ### Fixed
 
 - Fix documentation to clarify that ServiceCredential is required for MOD downloads from the portal
