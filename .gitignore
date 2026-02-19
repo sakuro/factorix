@@ -31,11 +31,5 @@
 ## Gem should ignore Gemfile.lock
 /Gemfile.lock
 
-# MCP
-/.mcp.json
-## Ignore serena stuff except project.yml
-/.serena/
-!/.serena/project.yml
-
 # RBS collection
 /.gem_rbs_collection/
