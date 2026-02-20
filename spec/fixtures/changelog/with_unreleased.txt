@@ -1,0 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: Unreleased
+  Features:
+    - Added new experimental feature
+  Bugfixes:
+    - Fixed edge case in parser
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+  Features:
+    - Initial release

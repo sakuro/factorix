@@ -20,7 +20,7 @@ _factorix() {
   local commands="version man launch path download mod cache completion"
 
   # mod subcommands
-  local mod_commands="check list show enable disable install uninstall update download upload edit search sync image settings"
+  local mod_commands="changelog check list show enable disable install uninstall update download upload edit search sync image settings"
 
   # cache subcommands
   local cache_commands="stat evict"
@@ -168,6 +168,29 @@ _factorix() {
               COMPREPLY=($(compgen -W "$global_opts $confirmable_opts -j --jobs" -- "$cur"))
             else
               COMPREPLY=($(compgen -f -X '!*.zip' -- "$cur"))
+            fi
+            ;;
+          changelog)
+            if [[ $cword -eq 3 ]]; then
+              COMPREPLY=($(compgen -W "add" -- "$cur"))
+            else
+              case "${words[3]}" in
+                add)
+                  if [[ "$prev" == "--version" ]]; then
+                    COMPREPLY=($(compgen -W "Unreleased" -- "$cur"))
+                  elif [[ "$prev" == "--category" ]]; then
+                    local categories="'Major Features' Features 'Minor Features' Graphics Sounds Optimizations Balancing 'Combat Balancing' 'Circuit Network' Changes Bugfixes Modding Scripting Gui Control Translation Debug 'Ease of use' Info Locale Compatibility"
+                    COMPREPLY=($(compgen -W "$categories" -- "$cur"))
+                  elif [[ "$prev" == "--changelog" ]]; then
+                    COMPREPLY=($(compgen -f -- "$cur"))
+                  elif [[ "$cur" == -* ]]; then
+                    COMPREPLY=($(compgen -W "$global_opts --version --category --changelog" -- "$cur"))
+                  fi
+                  ;;
+                *)
+                  COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
+                  ;;
+              esac
             fi
             ;;
           image)

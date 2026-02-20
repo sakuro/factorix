@@ -1,0 +1,30 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class Changelog
+    class Section < Data
+      attr_reader version: MODVersion | String
+      attr_reader date: String?
+      attr_reader categories: Hash[String, Array[String]]
+
+      def self.[]: (version: MODVersion | String, date: String?, categories: Hash[String, Array[String]]) -> Section
+    end
+
+    SEPARATOR: String
+    UNRELEASED: String
+
+    def self.load: (Pathname path) -> Changelog
+
+    def self.parse: (String text) -> Changelog
+
+    private def self.new: (Array[Section] sections) -> instance
+
+    def save: (Pathname path) -> void
+
+    def add_entry: (MODVersion | String version, String category, String entry) -> void
+
+    def to_s: () -> String
+  end
+end

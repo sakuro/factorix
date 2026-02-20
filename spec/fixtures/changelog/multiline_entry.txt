@@ -1,0 +1,6 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+  Features:
+    - Added a complex feature that spans
+      multiple lines of description
+    - Simple entry

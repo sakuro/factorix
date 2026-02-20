@@ -147,6 +147,7 @@ _factorix_mod() {
         'edit:Edit MOD metadata on Factorio MOD Portal'
         'search:Search MODs on Factorio MOD Portal'
         'sync:Sync MOD states from a save file'
+        'changelog:MOD changelog management'
         'image:MOD image management'
         'settings:MOD settings management'
       )
@@ -257,11 +258,52 @@ _factorix_mod() {
             '(-j --jobs)'{-j,--jobs}'[Number of parallel downloads]:jobs:' \
             '1:save file:_files -g "*.zip"'
           ;;
+        changelog)
+          _factorix_mod_changelog
+          ;;
         image)
           _factorix_mod_image
           ;;
         settings)
           _factorix_mod_settings
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_factorix_mod_changelog() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  local -a global_opts
+  global_opts=(
+    '(-c --config-path)'{-c,--config-path}'[Path to configuration file]:config file:_files'
+    '--log-level[Set log level]:level:(debug info warn error fatal)'
+    '(-q --quiet)'{-q,--quiet}'[Suppress non-essential output]'
+  )
+
+  _arguments -C \
+    '1:subcommand:->subcommand' \
+    '*::arg:->args'
+
+  case $state in
+    subcommand)
+      local -a subcommands
+      subcommands=(
+        'add:Add an entry to MOD changelog'
+      )
+      _describe -t subcommands 'changelog subcommand' subcommands
+      ;;
+    args)
+      case $line[1] in
+        add)
+          _arguments \
+            $global_opts \
+            '--version[Version (X.Y.Z or Unreleased)]:version:(Unreleased)' \
+            '--category[Category name]:category:(Major\ Features Features Minor\ Features Graphics Sounds Optimizations Balancing Combat\ Balancing Circuit\ Network Changes Bugfixes Modding Scripting Gui Control Translation Debug Ease\ of\ use Info Locale Compatibility)' \
+            '--changelog[Path to changelog file]:changelog file:_files' \
+            '*:entry text:'
           ;;
       esac
       ;;
