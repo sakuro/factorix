@@ -64,6 +64,8 @@ module Factorix
     # @return [void]
     # @raise [InvalidArgumentError] if the entry already exists
     def add_entry(version, category, entry)
+      raise InvalidArgumentError, "entry must not be blank" if entry.strip.empty?
+
       section = find_or_create_section(version)
       entries = (section.categories[category] ||= [])
       raise InvalidArgumentError, "duplicate entry: #{entry}" if entries.include?(entry)
