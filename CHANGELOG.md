@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Added
+
+- Add `mod changelog add` command to add entries to MOD changelog
+- Add `mod changelog check` command to validate MOD changelog structure
+- Add `mod changelog release` command to convert Unreleased section to a versioned section
+
 ## [0.8.1] - 2026-02-17
 
 ### Added
