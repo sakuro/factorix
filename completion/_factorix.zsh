@@ -293,6 +293,7 @@ _factorix_mod_changelog() {
       subcommands=(
         'add:Add an entry to MOD changelog'
         'check:Validate MOD changelog structure'
+        'extract:Extract a changelog section for a specific version'
         'release:Release Unreleased changelog section with a version'
       )
       _describe -t subcommands 'changelog subcommand' subcommands
@@ -313,6 +314,13 @@ _factorix_mod_changelog() {
             '--release[Disallow Unreleased section]' \
             '--changelog[Path to changelog file]:changelog file:_files' \
             '--info-json[Path to info.json file]:info.json file:_files'
+          ;;
+        extract)
+          _arguments \
+            $global_opts \
+            '--version[Version (X.Y.Z or Unreleased)]:version:(Unreleased)' \
+            '--json[Output in JSON format]' \
+            '--changelog[Path to changelog file]:changelog file:_files'
           ;;
         release)
           _arguments \

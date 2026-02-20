@@ -21,6 +21,7 @@ module Factorix
     register "completion", Commands::Completion
     register "mod changelog add", Commands::MOD::Changelog::Add
     register "mod changelog check", Commands::MOD::Changelog::Check
+    register "mod changelog extract", Commands::MOD::Changelog::Extract
     register "mod changelog release", Commands::MOD::Changelog::Release
     register "mod check", Commands::MOD::Check
     register "mod list", Commands::MOD::List
