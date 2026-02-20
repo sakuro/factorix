@@ -172,7 +172,7 @@ _factorix() {
             ;;
           changelog)
             if [[ $cword -eq 3 ]]; then
-              COMPREPLY=($(compgen -W "add" -- "$cur"))
+              COMPREPLY=($(compgen -W "add check" -- "$cur"))
             else
               case "${words[3]}" in
                 add)
@@ -185,6 +185,13 @@ _factorix() {
                     COMPREPLY=($(compgen -f -- "$cur"))
                   elif [[ "$cur" == -* ]]; then
                     COMPREPLY=($(compgen -W "$global_opts --version --category --changelog" -- "$cur"))
+                  fi
+                  ;;
+                check)
+                  if [[ "$prev" == "--changelog" ]] || [[ "$prev" == "--info-json" ]]; then
+                    COMPREPLY=($(compgen -f -- "$cur"))
+                  elif [[ "$cur" == -* ]]; then
+                    COMPREPLY=($(compgen -W "$global_opts --release --changelog --info-json" -- "$cur"))
                   fi
                   ;;
                 *)

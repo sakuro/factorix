@@ -475,6 +475,23 @@ Add an entry to a MOD's changelog.txt file.
 **Arguments**:
 - `entry` - Entry text (remaining arguments joined with spaces)
 
+### MOD::Changelog::Check
+
+Validate the structure of a MOD changelog.txt file.
+
+**Options**:
+- `--release` - Disallow Unreleased section and verify info.json version match
+- `--changelog` - Path to changelog file (default: ./changelog.txt)
+- `--info-json` - Path to info.json file (default: ./info.json, used with `--release`)
+
+**Validations**:
+- Changelog must be parseable
+- Unreleased section, if present, must be the first section
+- Versioned sections must be in descending order
+- In release mode: no Unreleased section allowed, info.json version must match first versioned section
+
+**Use case**: CI validation of changelog structure before release
+
 ### MOD::Settings::Restore
 
 Restore MOD settings from JSON format.
