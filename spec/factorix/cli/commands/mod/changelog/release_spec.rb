@@ -17,7 +17,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Changelog::Release do
       result = run_command(command, %W[--version=1.1.0 --date=2025-06-15 --changelog=#{changelog_path}])
 
       expect(result).to be_success
-      expect(result.stdout).to include("Released 1.1.0 (2025-06-15)")
+      expect(result.stdout).to include("Converted Unreleased to 1.1.0 (2025-06-15)")
 
       content = File.read(changelog_path)
       expect(content).to include("Version: 1.1.0")
@@ -34,7 +34,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Changelog::Release do
       result = run_command(command, %W[--date=2025-06-15 --changelog=#{changelog_path} --info-json=#{info_json_path}])
 
       expect(result).to be_success
-      expect(result.stdout).to include("Released 2.0.0 (2025-06-15)")
+      expect(result.stdout).to include("Converted Unreleased to 2.0.0 (2025-06-15)")
     end
 
     it "defaults date to today UTC when --date is omitted" do
@@ -45,7 +45,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Changelog::Release do
       result = run_command(command, %W[--version=1.1.0 --changelog=#{changelog_path}])
 
       expect(result).to be_success
-      expect(result.stdout).to include("Released 1.1.0 (#{today})")
+      expect(result.stdout).to include("Converted Unreleased to 1.1.0 (#{today})")
     end
 
     it "raises error when first section is not Unreleased" do

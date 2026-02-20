@@ -7,7 +7,7 @@ module Factorix
         module Changelog
           # Convert the Unreleased section to a versioned release
           class Release < Base
-            desc "Release Unreleased changelog section with a version"
+            desc "Convert Unreleased changelog section to a versioned section"
 
             option :version, desc: "Version (X.Y.Z, default: from info.json)"
             option :date, desc: "Release date (YYYY-MM-DD, default: today UTC)"
@@ -26,7 +26,7 @@ module Factorix
               log = Factorix::Changelog.load(path)
               log.release_section(parsed_version, date: release_date)
               log.save(path)
-              say "Released #{parsed_version} (#{release_date})", prefix: :success
+              say "Converted Unreleased to #{parsed_version} (#{release_date})", prefix: :success
             end
 
             private def resolve_version(version, info_json_path)
