@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.9.0] - 2026-02-20
+
 ### Added
 
 - Add `mod changelog add` command to add entries to MOD changelog
