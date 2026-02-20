@@ -30,6 +30,14 @@ RSpec.describe Factorix::Changelog do
       expect(text).to include("      multiple lines of description")
     end
 
+    it "parses an Unreleased section" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "with_unreleased.txt")
+      text = changelog.to_s
+
+      expect(text).to include("Version: Unreleased")
+      expect(text).to include("    - Added new experimental feature")
+    end
+
     it "returns an empty changelog when the file does not exist" do
       changelog = Factorix::Changelog.load(Pathname("/nonexistent/changelog.txt"))
       expect(changelog.to_s).to eq("\n")
@@ -71,6 +79,16 @@ RSpec.describe Factorix::Changelog do
       expect(pos_new).to be < pos_old
     end
 
+    it "adds an entry to an Unreleased section" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
+
+      changelog.add_entry(Factorix::Changelog::UNRELEASED, "Features", "New unreleased feature")
+      text = changelog.to_s
+
+      expect(text).to include("Version: Unreleased")
+      expect(text).to include("    - New unreleased feature")
+    end
+
     it "raises InvalidArgumentError for duplicate entries" do
       changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
       version = Factorix::MODVersion.from_string("1.1.0")
@@ -94,6 +112,14 @@ RSpec.describe Factorix::Changelog do
 
     it "preserves Date lines through round-trip" do
       original = Factorix::Changelog.load(fixtures_dir / "with_date.txt")
+      original_text = original.to_s
+
+      reparsed = Factorix::Changelog.parse(original_text)
+      expect(reparsed.to_s).to eq(original_text)
+    end
+
+    it "preserves Unreleased section through round-trip" do
+      original = Factorix::Changelog.load(fixtures_dir / "with_unreleased.txt")
       original_text = original.to_s
 
       reparsed = Factorix::Changelog.parse(original_text)

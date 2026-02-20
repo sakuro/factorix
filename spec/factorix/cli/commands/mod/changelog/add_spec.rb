@@ -47,6 +47,18 @@ RSpec.describe Factorix::CLI::Commands::MOD::Changelog::Add do
       expect(result.stdout).to include("Bugfixes")
     end
 
+    it "creates an Unreleased section with --version Unreleased" do
+      changelog_path = File.join(tmpdir, "changelog.txt")
+
+      result = run_command(command, %W[--version=Unreleased --category=Features --changelog=#{changelog_path} New feature])
+
+      expect(result).to be_success
+      content = File.read(changelog_path)
+      expect(content).to include("Version: Unreleased")
+      expect(content).to include("  Features:")
+      expect(content).to include("    - New feature")
+    end
+
     it "raises error for duplicate entries" do
       changelog_path = File.join(tmpdir, "changelog.txt")
       File.write(changelog_path, <<~CHANGELOG)

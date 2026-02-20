@@ -10,6 +10,9 @@ module Factorix
     SEPARATOR = ("-" * 99).freeze
     public_constant :SEPARATOR
 
+    UNRELEASED = "Unreleased"
+    public_constant :UNRELEASED
+
     Section = Data.define(:version, :date, :categories)
 
     # Load a changelog from a file
@@ -51,7 +54,7 @@ module Factorix
 
     # Add an entry to the changelog
     #
-    # @param version [MODVersion] target version
+    # @param version [MODVersion, String] target version (or Changelog::UNRELEASED)
     # @param category [String] category name
     # @param entry [String] entry text
     # @return [void]
@@ -146,7 +149,8 @@ module Factorix
       end
 
       rule(version: simple(:ver), date_line: subtree(:date_data), categories: subtree(:cats)) do
-        version = MODVersion.from_string(ver.to_s.strip)
+        ver_str = ver.to_s.strip
+        version = ver_str.casecmp("unreleased").zero? ? UNRELEASED : MODVersion.from_string(ver_str)
 
         date = date_data.is_a?(Hash) ? date_data[:date].to_s.strip : nil
 

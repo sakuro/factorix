@@ -5,14 +5,15 @@
 module Factorix
   class Changelog
     class Section < Data
-      attr_reader version: MODVersion
+      attr_reader version: MODVersion | String
       attr_reader date: String?
       attr_reader categories: Hash[String, Array[String]]
 
-      def self.[]: (version: MODVersion, date: String?, categories: Hash[String, Array[String]]) -> Section
+      def self.[]: (version: MODVersion | String, date: String?, categories: Hash[String, Array[String]]) -> Section
     end
 
     SEPARATOR: String
+    UNRELEASED: String
 
     def self.load: (Pathname path) -> Changelog
 
@@ -22,7 +23,7 @@ module Factorix
 
     def save: (Pathname path) -> void
 
-    def add_entry: (MODVersion version, String category, String entry) -> void
+    def add_entry: (MODVersion | String version, String category, String entry) -> void
 
     def to_s: () -> String
   end
