@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.9.1] - 2026-02-20
+
 ### Added
 
 - Add `mod changelog extract` command to extract a specific version's changelog section
