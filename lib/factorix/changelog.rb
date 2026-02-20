@@ -89,21 +89,24 @@ module Factorix
     #
     # @return [String]
     def to_s
-      @sections.map {|section| format_section(section) }.join("\n") + "\n"
+      @sections.map {|section| "#{SEPARATOR}\n#{format_section(section)}" }.join("\n") + "\n"
     end
 
-    private def find_or_create_section(version)
-      @sections.find {|s| s.version == version } || create_section(version)
+    # Find a section by version
+    #
+    # @param version [MODVersion, String] target version (or Changelog::UNRELEASED)
+    # @return [Section]
+    # @raise [InvalidArgumentError] if the version is not found
+    def find_section(version)
+      @sections.find {|s| s.version == version } or raise InvalidArgumentError, "version not found: #{version}"
     end
 
-    private def create_section(version)
-      section = Section[version:, date: nil, categories: {}]
-      @sections.unshift(section)
-      section
-    end
-
-    private def format_section(section)
-      lines = [SEPARATOR]
+    # Format a section as plain text (without separator line)
+    #
+    # @param section [Section] changelog section
+    # @return [String]
+    def format_section(section)
+      lines = []
       lines << "Version: #{section.version}"
       lines << "Date: #{section.date}" if section.date
       section.categories.each do |cat, entries|
@@ -115,6 +118,16 @@ module Factorix
         end
       end
       lines.join("\n")
+    end
+
+    private def find_or_create_section(version)
+      @sections.find {|s| s.version == version } || create_section(version)
+    end
+
+    private def create_section(version)
+      section = Section[version:, date: nil, categories: {}]
+      @sections.unshift(section)
+      section
     end
 
     # Parslet grammar for Factorio changelog.txt

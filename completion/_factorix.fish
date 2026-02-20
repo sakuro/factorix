@@ -233,12 +233,18 @@ complete -c factorix -n "__factorix_using_subcommand mod sync" -ra '(__fish_comp
 # mod changelog subcommands
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a add -d 'Add an entry to MOD changelog'
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a check -d 'Validate MOD changelog structure'
+complete -c factorix -n "__factorix_using_subcommand mod changelog" -a extract -d 'Extract a changelog section for a specific version'
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a release -d 'Release Unreleased changelog section with a version'
 
 # mod changelog add options
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l version -d 'Version (X.Y.Z or Unreleased)' -ra 'Unreleased'
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l category -d 'Category name' -xa "'Major Features' Features 'Minor Features' Graphics Sounds Optimizations Balancing 'Combat Balancing' 'Circuit Network' Changes Bugfixes Modding Scripting Gui Control Translation Debug 'Ease of use' Info Locale Compatibility"
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l changelog -d 'Path to changelog file' -rF
+
+# mod changelog extract options
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog extract" -l version -d 'Version (X.Y.Z or Unreleased)' -ra 'Unreleased'
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog extract" -l json -d 'Output in JSON format'
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog extract" -l changelog -d 'Path to changelog file' -rF
 
 # mod changelog check options
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog check" -l release -d 'Disallow Unreleased section'

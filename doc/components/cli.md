@@ -487,6 +487,21 @@ Convert the Unreleased section in a MOD changelog to a versioned release.
 
 **Use case**: Stamp the Unreleased section with a version and date as part of the release workflow
 
+### MOD::Changelog::Extract
+
+Extract a specific version's changelog section.
+
+**Options**:
+- `--version` (required) - Version to extract (X.Y.Z or `Unreleased`)
+- `--json` - Output in JSON format
+- `--changelog` - Path to changelog file (default: ./changelog.txt)
+
+**Plain text output**: Section body (version, date, categories with entries)
+
+**JSON output**: `{version, date, entries}` where `entries` is a hash of category names to entry arrays
+
+**Use case**: Extract release notes for CI pipelines, GitHub releases, or other automation
+
 ### MOD::Changelog::Check
 
 Validate the structure of a MOD changelog.txt file.
