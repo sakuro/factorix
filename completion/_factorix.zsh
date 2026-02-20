@@ -300,7 +300,7 @@ _factorix_mod_changelog() {
         add)
           _arguments \
             $global_opts \
-            '--version[Version (X.Y.Z)]:version:' \
+            '--version[Version (X.Y.Z or Unreleased)]:version:(Unreleased)' \
             '--category[Category name]:category:(Major\ Features Features Minor\ Features Graphics Sounds Optimizations Balancing Combat\ Balancing Circuit\ Network Changes Bugfixes Modding Scripting Gui Control Translation Debug Ease\ of\ use Info Locale Compatibility)' \
             '--changelog[Path to changelog file]:changelog file:_files' \
             '*:entry text:'

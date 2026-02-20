@@ -234,7 +234,7 @@ complete -c factorix -n "__factorix_using_subcommand mod sync" -ra '(__fish_comp
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a add -d 'Add an entry to MOD changelog'
 
 # mod changelog add options
-complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l version -d 'Version (X.Y.Z)' -r
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l version -d 'Version (X.Y.Z or Unreleased)' -ra 'Unreleased'
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l category -d 'Category name' -xa "'Major Features' Features 'Minor Features' Graphics Sounds Optimizations Balancing 'Combat Balancing' 'Circuit Network' Changes Bugfixes Modding Scripting Gui Control Translation Debug 'Ease of use' Info Locale Compatibility"
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l changelog -d 'Path to changelog file' -rF
 

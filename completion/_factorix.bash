@@ -176,7 +176,9 @@ _factorix() {
             else
               case "${words[3]}" in
                 add)
-                  if [[ "$prev" == "--category" ]]; then
+                  if [[ "$prev" == "--version" ]]; then
+                    COMPREPLY=($(compgen -W "Unreleased" -- "$cur"))
+                  elif [[ "$prev" == "--category" ]]; then
                     local categories="'Major Features' Features 'Minor Features' Graphics Sounds Optimizations Balancing 'Combat Balancing' 'Circuit Network' Changes Bugfixes Modding Scripting Gui Control Translation Debug 'Ease of use' Info Locale Compatibility"
                     COMPREPLY=($(compgen -W "$categories" -- "$cur"))
                   elif [[ "$prev" == "--changelog" ]]; then
