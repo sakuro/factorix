@@ -47,6 +47,17 @@ RSpec.describe Factorix::CLI::Commands::MOD::Changelog::Add do
       expect(result.stdout).to include("Bugfixes")
     end
 
+    it "defaults to Unreleased when --version is omitted" do
+      changelog_path = File.join(tmpdir, "changelog.txt")
+
+      result = run_command(command, %W[--category=Features --changelog=#{changelog_path} Default version entry])
+
+      expect(result).to be_success
+      content = File.read(changelog_path)
+      expect(content).to include("Version: Unreleased")
+      expect(content).to include("    - Default version entry")
+    end
+
     it "creates an Unreleased section with --version Unreleased" do
       changelog_path = File.join(tmpdir, "changelog.txt")
 

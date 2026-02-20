@@ -8,7 +8,7 @@ module Factorix
       module MOD
         module Changelog
           class Add < Base
-            def call: (version: String, category: String, entry: Array[String], ?changelog: String, **untyped) -> void
+            def call: (?version: String, category: String, entry: Array[String], ?changelog: String, **untyped) -> void
           end
         end
       end

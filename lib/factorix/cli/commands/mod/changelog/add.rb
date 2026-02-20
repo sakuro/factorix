@@ -9,7 +9,7 @@ module Factorix
           class Add < Base
             desc "Add an entry to MOD changelog"
 
-            option :version, required: true, desc: "Version (X.Y.Z or Unreleased)"
+            option :version, default: "Unreleased", desc: "Version (X.Y.Z or Unreleased)"
             option :category, required: true, desc: "Category (e.g., Features, Bugfixes)"
             option :changelog, default: "changelog.txt", desc: "Path to changelog file"
 

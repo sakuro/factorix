@@ -468,7 +468,7 @@ Export MOD settings to JSON format.
 Add an entry to a MOD's changelog.txt file.
 
 **Options**:
-- `--version` (required) - Target version (X.Y.Z or `Unreleased`)
+- `--version` - Target version (X.Y.Z or `Unreleased`, default: `Unreleased`)
 - `--category` (required) - Category name (e.g., Features, Bugfixes)
 - `--changelog` - Path to changelog file (default: ./changelog.txt)
 
