@@ -19,7 +19,7 @@ module Factorix
 
     def self.parse: (String text) -> Changelog
 
-    def initialize: (Array[Section] sections) -> void
+    private def self.new: (Array[Section] sections) -> instance
 
     def save: (Pathname path) -> void
 

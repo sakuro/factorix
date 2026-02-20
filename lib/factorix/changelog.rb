@@ -14,6 +14,7 @@ module Factorix
     public_constant :UNRELEASED
 
     Section = Data.define(:version, :date, :categories)
+    private_class_method :new
 
     # Load a changelog from a file
     #
