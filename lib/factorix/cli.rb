@@ -19,6 +19,7 @@ module Factorix
     register "path", Commands::Path
     register "download", Commands::Download
     register "completion", Commands::Completion
+    register "mod changelog add", Commands::MOD::Changelog::Add
     register "mod check", Commands::MOD::Check
     register "mod list", Commands::MOD::List
     register "mod show", Commands::MOD::Show

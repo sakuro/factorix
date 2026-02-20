@@ -69,6 +69,8 @@ module Factorix
   # MOD settings file errors
   class MODSectionNotFoundError < FileFormatError; end
 
+  class ChangelogParseError < FileFormatError; end
+
   # =====================================
   # Domain layer errors
   # =====================================

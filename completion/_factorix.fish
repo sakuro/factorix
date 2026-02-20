@@ -64,6 +64,40 @@ function __factorix_using_subcommand
     return 1
 end
 
+# Helper function to check 3-level nested subcommand (e.g., mod changelog add)
+function __factorix_using_sub_subcommand
+    set -l cmd (commandline -opc)
+    set -l argc (count $cmd)
+
+    if test $argc -lt 4
+        return 1
+    end
+
+    set -l parent $argv[1]
+    set -l sub $argv[2]
+    set -l subsub $argv[3]
+
+    set -l level 0
+    for i in (seq 2 $argc)
+        switch $cmd[$i]
+            case '-*'
+                continue
+            case '*'
+                if test $level -eq 0
+                    test "$cmd[$i]" = "$parent"; or return 1
+                    set level 1
+                else if test $level -eq 1
+                    test "$cmd[$i]" = "$sub"; or return 1
+                    set level 2
+                else
+                    test "$cmd[$i]" = "$subsub"; and return 0
+                    return 1
+                end
+        end
+    end
+    return 1
+end
+
 # Disable file completion by default
 complete -c factorix -f
 
@@ -125,6 +159,7 @@ complete -c factorix -n "__factorix_using_command mod" -a upload -d 'Upload MOD 
 complete -c factorix -n "__factorix_using_command mod" -a edit -d 'Edit MOD metadata on Factorio MOD Portal'
 complete -c factorix -n "__factorix_using_command mod" -a search -d 'Search MODs on Factorio MOD Portal'
 complete -c factorix -n "__factorix_using_command mod" -a sync -d 'Sync MOD states from a save file'
+complete -c factorix -n "__factorix_using_command mod" -a changelog -d 'MOD changelog management'
 complete -c factorix -n "__factorix_using_command mod" -a image -d 'MOD image management'
 complete -c factorix -n "__factorix_using_command mod" -a settings -d 'MOD settings management'
 
@@ -194,6 +229,14 @@ complete -c factorix -n "__factorix_using_subcommand mod search" -l json -d 'Out
 complete -c factorix -n "__factorix_using_subcommand mod sync" -s y -l yes -d 'Skip confirmation prompts'
 complete -c factorix -n "__factorix_using_subcommand mod sync" -s j -l jobs -d 'Number of parallel downloads' -r
 complete -c factorix -n "__factorix_using_subcommand mod sync" -ra '(__fish_complete_suffix .zip)'
+
+# mod changelog subcommands
+complete -c factorix -n "__factorix_using_subcommand mod changelog" -a add -d 'Add an entry to MOD changelog'
+
+# mod changelog add options
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l version -d 'Version (X.Y.Z)' -r
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l category -d 'Category name' -xa "'Major Features' Features 'Minor Features' Graphics Sounds Optimizations Balancing 'Combat Balancing' 'Circuit Network' Changes Bugfixes Modding Scripting Gui Control Translation Debug 'Ease of use' Info Locale Compatibility"
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l changelog -d 'Path to changelog file' -rF
 
 # mod image subcommands
 complete -c factorix -n "__factorix_using_subcommand mod image" -a list -d 'List MOD images'

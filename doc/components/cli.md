@@ -463,6 +463,18 @@ Export MOD settings to JSON format.
 
 **File format**: The binary `mod-settings.dat` file is converted to human-readable JSON with proper indentation.
 
+### MOD::Changelog::Add
+
+Add an entry to a MOD's changelog.txt file.
+
+**Options**:
+- `--version` (required) - Target version (X.Y.Z)
+- `--category` (required) - Category name (e.g., Features, Bugfixes)
+- `--changelog` - Path to changelog file (default: ./changelog.txt)
+
+**Arguments**:
+- `entry` - Entry text (remaining arguments joined with spaces)
+
 ### MOD::Settings::Restore
 
 Restore MOD settings from JSON format.
