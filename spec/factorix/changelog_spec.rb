@@ -97,6 +97,33 @@ RSpec.describe Factorix::Changelog do
         changelog.add_entry(version, "Features", "Added new feature A")
       }.to raise_error(Factorix::InvalidArgumentError, /duplicate entry/)
     end
+
+    it "raises InvalidArgumentError for empty string entry" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
+      version = Factorix::MODVersion.from_string("1.1.0")
+
+      expect {
+        changelog.add_entry(version, "Features", "")
+      }.to raise_error(Factorix::InvalidArgumentError, /entry must not be blank/)
+    end
+
+    it "raises InvalidArgumentError for whitespace-only entry" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
+      version = Factorix::MODVersion.from_string("1.1.0")
+
+      expect {
+        changelog.add_entry(version, "Features", "   ")
+      }.to raise_error(Factorix::InvalidArgumentError, /entry must not be blank/)
+    end
+
+    it "raises InvalidArgumentError for full-width whitespace-only entry" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
+      version = Factorix::MODVersion.from_string("1.1.0")
+
+      expect {
+        changelog.add_entry(version, "Features", "\u3000")
+      }.to raise_error(Factorix::InvalidArgumentError, /entry must not be blank/)
+    end
   end
 
   describe "#release_section" do
