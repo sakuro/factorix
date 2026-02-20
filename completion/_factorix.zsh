@@ -292,6 +292,7 @@ _factorix_mod_changelog() {
       local -a subcommands
       subcommands=(
         'add:Add an entry to MOD changelog'
+        'check:Validate MOD changelog structure'
       )
       _describe -t subcommands 'changelog subcommand' subcommands
       ;;
@@ -304,6 +305,13 @@ _factorix_mod_changelog() {
             '--category[Category name]:category:(Major\ Features Features Minor\ Features Graphics Sounds Optimizations Balancing Combat\ Balancing Circuit\ Network Changes Bugfixes Modding Scripting Gui Control Translation Debug Ease\ of\ use Info Locale Compatibility)' \
             '--changelog[Path to changelog file]:changelog file:_files' \
             '*:entry text:'
+          ;;
+        check)
+          _arguments \
+            $global_opts \
+            '--release[Disallow Unreleased section]' \
+            '--changelog[Path to changelog file]:changelog file:_files' \
+            '--info-json[Path to info.json file]:info.json file:_files'
           ;;
       esac
       ;;

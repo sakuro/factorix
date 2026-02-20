@@ -25,6 +25,8 @@ module Factorix
 
     def add_entry: (MODVersion | String version, String category, String entry) -> void
 
+    attr_reader sections: Array[Section]
+
     def to_s: () -> String
   end
 end

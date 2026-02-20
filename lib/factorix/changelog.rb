@@ -45,6 +45,9 @@ module Factorix
       @sections = sections
     end
 
+    # @return [Array<Section>]
+    attr_reader :sections
+
     # Save the changelog to a file
     #
     # @param path [Pathname] path to write
