@@ -71,6 +71,18 @@ module Factorix
       entries << entry
     end
 
+    # Replace the first section (Unreleased) with a versioned section
+    # @param version [MODVersion] target version
+    # @param date [String] release date (YYYY-MM-DD)
+    # @return [void]
+    def release_section(version, date:)
+      raise InvalidOperationError, "First section is not Unreleased" unless @sections.first&.version == UNRELEASED
+      raise InvalidOperationError, "Version #{version} already exists" if @sections.any? {|s| s.version == version }
+
+      unreleased = @sections.first
+      @sections[0] = Section[version:, date:, categories: unreleased.categories]
+    end
+
     # Render the changelog as a string
     #
     # @return [String]

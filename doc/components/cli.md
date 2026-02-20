@@ -475,6 +475,18 @@ Add an entry to a MOD's changelog.txt file.
 **Arguments**:
 - `entry` - Entry text (remaining arguments joined with spaces)
 
+### MOD::Changelog::Release
+
+Convert the Unreleased section in a MOD changelog to a versioned release.
+
+**Options**:
+- `--version` - Target version (X.Y.Z, default: from info.json)
+- `--date` - Release date (YYYY-MM-DD, default: today UTC)
+- `--changelog` - Path to changelog file (default: ./changelog.txt)
+- `--info-json` - Path to info.json file (default: ./info.json, used for default version)
+
+**Use case**: Stamp the Unreleased section with a version and date as part of the release workflow
+
 ### MOD::Changelog::Check
 
 Validate the structure of a MOD changelog.txt file.

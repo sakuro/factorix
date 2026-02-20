@@ -233,6 +233,7 @@ complete -c factorix -n "__factorix_using_subcommand mod sync" -ra '(__fish_comp
 # mod changelog subcommands
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a add -d 'Add an entry to MOD changelog'
 complete -c factorix -n "__factorix_using_subcommand mod changelog" -a check -d 'Validate MOD changelog structure'
+complete -c factorix -n "__factorix_using_subcommand mod changelog" -a release -d 'Release Unreleased changelog section with a version'
 
 # mod changelog add options
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l version -d 'Version (X.Y.Z or Unreleased)' -ra 'Unreleased'
@@ -243,6 +244,12 @@ complete -c factorix -n "__factorix_using_sub_subcommand mod changelog add" -l c
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog check" -l release -d 'Disallow Unreleased section'
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog check" -l changelog -d 'Path to changelog file' -rF
 complete -c factorix -n "__factorix_using_sub_subcommand mod changelog check" -l info-json -d 'Path to info.json file' -rF
+
+# mod changelog release options
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog release" -l version -d 'Version (X.Y.Z)' -r
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog release" -l date -d 'Release date (YYYY-MM-DD)' -r
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog release" -l changelog -d 'Path to changelog file' -rF
+complete -c factorix -n "__factorix_using_sub_subcommand mod changelog release" -l info-json -d 'Path to info.json file' -rF
 
 # mod image subcommands
 complete -c factorix -n "__factorix_using_subcommand mod image" -a list -d 'List MOD images'

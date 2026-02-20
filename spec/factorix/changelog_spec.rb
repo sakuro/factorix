@@ -99,6 +99,49 @@ RSpec.describe Factorix::Changelog do
     end
   end
 
+  describe "#release_section" do
+    it "converts Unreleased section to versioned section with date" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "with_unreleased.txt")
+      version = Factorix::MODVersion.from_string("1.1.0")
+
+      changelog.release_section(version, date: "2025-06-15")
+      text = changelog.to_s
+
+      expect(text).to include("Version: 1.1.0")
+      expect(text).to include("Date: 2025-06-15")
+      expect(text).not_to include("Version: Unreleased")
+    end
+
+    it "preserves categories from Unreleased section" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "with_unreleased.txt")
+      version = Factorix::MODVersion.from_string("1.1.0")
+
+      changelog.release_section(version, date: "2025-06-15")
+      text = changelog.to_s
+
+      expect(text).to include("    - Added new experimental feature")
+      expect(text).to include("    - Fixed edge case in parser")
+    end
+
+    it "raises InvalidOperationError when first section is not Unreleased" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "basic.txt")
+      version = Factorix::MODVersion.from_string("2.0.0")
+
+      expect {
+        changelog.release_section(version, date: "2025-06-15")
+      }.to raise_error(Factorix::InvalidOperationError, /First section is not Unreleased/)
+    end
+
+    it "raises InvalidOperationError when target version already exists" do
+      changelog = Factorix::Changelog.load(fixtures_dir / "with_unreleased.txt")
+      version = Factorix::MODVersion.from_string("1.0.0")
+
+      expect {
+        changelog.release_section(version, date: "2025-06-15")
+      }.to raise_error(Factorix::InvalidOperationError, /Version 1.0.0 already exists/)
+    end
+  end
+
   describe "round-trip" do
     it "preserves content through load and save" do
       original = Factorix::Changelog.load(fixtures_dir / "basic.txt")
