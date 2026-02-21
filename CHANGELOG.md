@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.10.0] - 2026-02-21
+
 ### Changed
 
 - Refactor `License` to use flyweight pattern for standard licenses with `.for(id)` method
