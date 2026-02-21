@@ -184,6 +184,53 @@ Skip confirmation prompts.
 .TP
 .BR \-j ", " \-\-jobs =\fIVALUE\fR
 Number of parallel downloads (default: 4).
+.SS factorix mod changelog add ENTRY
+Add an entry to MOD changelog.
+.TP
+.BR \-\-version =\fIVALUE\fR
+Version (X.Y.Z or Unreleased, default: Unreleased).
+.TP
+.BR \-\-category =\fIVALUE\fR
+Category (e.g., Features, Bugfixes). Required.
+.TP
+.BR \-\-changelog =\fIVALUE\fR
+Path to changelog file (default: changelog.txt).
+.SS factorix mod changelog extract
+Extract a changelog section for a specific version.
+.TP
+.BR \-\-version =\fIVALUE\fR
+Version (X.Y.Z or Unreleased). Required.
+.TP
+.B \-\-json
+Output in JSON format.
+.TP
+.BR \-\-changelog =\fIVALUE\fR
+Path to changelog file (default: changelog.txt).
+.SS factorix mod changelog check
+Validate MOD changelog structure.
+.TP
+.B \-\-release
+Disallow Unreleased section.
+.TP
+.BR \-\-changelog =\fIVALUE\fR
+Path to changelog file (default: changelog.txt).
+.TP
+.BR \-\-info\-json =\fIVALUE\fR
+Path to info.json file (default: info.json).
+.SS factorix mod changelog release
+Convert Unreleased changelog section to a versioned section.
+.TP
+.BR \-\-version =\fIVALUE\fR
+Version (X.Y.Z, default: from info.json).
+.TP
+.BR \-\-date =\fIVALUE\fR
+Release date (YYYY-MM-DD, default: today UTC).
+.TP
+.BR \-\-changelog =\fIVALUE\fR
+Path to changelog file (default: changelog.txt).
+.TP
+.BR \-\-info\-json =\fIVALUE\fR
+Path to info.json file (default: info.json).
 .SH MOD PORTAL COMMANDS
 These commands interact with the Factorio MOD Portal and require authentication.
 .SS factorix mod upload FILE
