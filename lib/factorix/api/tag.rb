@@ -79,6 +79,9 @@ module Factorix
       }.freeze
       private_constant :TAGS
 
+      # @return [Array<String>] all tag identifiers
+      def self.identifiers = TAGS.keys
+
       # Get Tag instance for the given value
       #
       # Returns predefined instance for known tags (flyweight pattern).

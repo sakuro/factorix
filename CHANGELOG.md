@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Changed
+
+- Refactor `License` to use flyweight pattern for standard licenses with `.for(id)` method
+- Add `.identifiers` class method to `Category`, `License`, and `Tag`
+- Replace `License.identifier_values` with `License.identifiers`
+
 ## [0.9.1] - 2026-02-20
 
 ### Added

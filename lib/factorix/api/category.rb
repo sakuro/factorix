@@ -53,6 +53,9 @@ module Factorix
       }.freeze
       private_constant :CATEGORIES
 
+      # @return [Array<String>] all category identifiers
+      def self.identifiers = CATEGORIES.keys
+
       # Get Category instance for the given value
       #
       # Returns predefined instance for known categories (flyweight pattern).

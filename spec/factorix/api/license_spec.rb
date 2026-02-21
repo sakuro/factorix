@@ -1,6 +1,40 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::API::License do
+  describe ".for" do
+    context "with known license identifiers" do
+      it "returns predefined instance for default_mit" do
+        license = Factorix::API::License.for("default_mit")
+        expect(license.id).to eq("default_mit")
+        expect(license.name).to eq("MIT")
+        expect(license.title).to eq("MIT License")
+      end
+
+      it "returns predefined instance for default_apache2" do
+        license = Factorix::API::License.for("default_apache2")
+        expect(license.id).to eq("default_apache2")
+        expect(license.name).to eq("Apache License 2.0")
+        expect(license.title).to eq("Apache License, Version 2.0")
+      end
+    end
+
+    context "with flyweight pattern" do
+      it "returns same instance for same license identifier" do
+        license1 = Factorix::API::License.for("default_mit")
+        license2 = Factorix::API::License.for("default_mit")
+        expect(license1).to be(license2)
+      end
+    end
+
+    context "with unknown license identifier" do
+      it "raises KeyError" do
+        expect {
+          Factorix::API::License.for("unknown")
+        }.to raise_error(KeyError)
+      end
+    end
+  end
+
   describe "#initialize" do
     it "creates a License with URI object for url" do
       license = Factorix::API::License[
@@ -53,9 +87,9 @@ RSpec.describe Factorix::API::License do
     end
   end
 
-  describe ".identifier_values" do
-    it "returns all standard license identifier values" do
-      values = Factorix::API::License.identifier_values
+  describe ".identifiers" do
+    it "returns all standard license identifiers" do
+      values = Factorix::API::License.identifiers
 
       expect(values).to include("default_mit")
       expect(values).to include("default_gnugplv3")

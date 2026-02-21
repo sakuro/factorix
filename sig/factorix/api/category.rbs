@@ -9,6 +9,7 @@ module Factorix
       attr_reader name: String
       attr_reader description: String
 
+      def self.identifiers: () -> Array[String]
       def self.for: (String value) -> Category
     end
   end

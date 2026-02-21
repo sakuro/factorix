@@ -100,7 +100,7 @@ module Factorix
             return if API::License.valid_identifier?(license)
 
             say "Invalid license identifier: #{license}", prefix: :error
-            say "Valid identifiers: #{API::License.identifier_values.join(", ")}"
+            say "Valid identifiers: #{API::License.identifiers.join(", ")}"
             say "Custom licenses: custom_<24 hex chars> (e.g., custom_0123456789abcdef01234567)"
             raise InvalidArgumentError, "Invalid license identifier"
           end
