@@ -178,12 +178,16 @@ Disable all MOD(s) except base.
 Validate MOD dependencies. Reports missing, disabled, or incompatible dependencies.
 .SS factorix mod sync SAVE_FILE
 Sync MOD states and startup settings from a save file.
+Enabled MODs not listed in the save file are disabled by default.
 .TP
 .BR \-y ", " \-\-yes
 Skip confirmation prompts.
 .TP
 .BR \-j ", " \-\-jobs =\fIVALUE\fR
 Number of parallel downloads (default: 4).
+.TP
+.B \-\-keep\-unlisted
+Keep MODs not listed in the save file enabled.
 .SS factorix mod changelog add ENTRY
 Add an entry to MOD changelog.
 .TP

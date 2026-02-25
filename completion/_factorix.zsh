@@ -256,6 +256,7 @@ _factorix_mod() {
             $global_opts \
             $confirmable_opts \
             '(-j --jobs)'{-j,--jobs}'[Number of parallel downloads]:jobs:' \
+            '--keep-unlisted[Keep MODs not listed in save file enabled]' \
             '1:save file:_files -g "*.zip"'
           ;;
         changelog)

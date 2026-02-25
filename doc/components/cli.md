@@ -374,10 +374,15 @@ Show detailed MOD information from Factorio MOD Portal.
 
 Synchronize MOD states from a save file.
 
+**Options**:
+- `-j`, `--jobs` - Number of parallel downloads (default: 4)
+- `--keep-unlisted` - Keep MODs not listed in the save file enabled (default: disable them)
+
 **Features**:
 - Extracts MOD information from save file
 - Downloads missing MODs concurrently
-- Enables MODs to match save file state
+- Enables/disables MODs to match save file state
+- Disables enabled MODs (including expansion MODs) not listed in the save file (unless `--keep-unlisted` is specified)
 - Preserves existing MOD files when possible
 
 **Use case**: Set up MOD environment to match a specific save file

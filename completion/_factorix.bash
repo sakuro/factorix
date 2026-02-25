@@ -165,7 +165,7 @@ _factorix() {
             ;;
           sync)
             if [[ "$cur" == -* ]]; then
-              COMPREPLY=($(compgen -W "$global_opts $confirmable_opts -j --jobs" -- "$cur"))
+              COMPREPLY=($(compgen -W "$global_opts $confirmable_opts -j --jobs --keep-unlisted" -- "$cur"))
             else
               COMPREPLY=($(compgen -f -X '!*.zip' -- "$cur"))
             fi
