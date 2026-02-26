@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Changed
+
+- `mod sync` now disables enabled MODs (including expansion MODs) not listed in the save file by default (#70)
+- Add `--keep-unlisted` option to `mod sync` to preserve MODs not listed in the save file (#70)
+
 ## [0.10.0] - 2026-02-21
 
 ### Changed

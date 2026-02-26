@@ -26,19 +26,21 @@ module Factorix
           desc "Sync MOD states and startup settings from a save file"
 
           example [
-            "save.zip           # Sync MOD(s) from save file",
-            "-j 8 save.zip      # Use 8 parallel downloads"
+            "save.zip                 # Sync MOD(s) from save file",
+            "-j 8 save.zip            # Use 8 parallel downloads",
+            "--keep-unlisted save.zip # Keep MOD(s) not in save file enabled"
           ]
 
           argument :save_file, required: true, desc: "Path to Factorio save file (.zip)"
           option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
+          option :keep_unlisted, type: :flag, default: false, desc: "Keep MOD(s) not listed in save file enabled"
 
           # Execute the sync command
           #
           # @param save_file [String] Path to save file
           # @param jobs [Integer] Number of parallel downloads
           # @return [void]
-          def call(save_file:, jobs: "4", **)
+          def call(save_file:, jobs: "4", keep_unlisted: false, **)
             jobs = Integer(jobs)
             # Load save file
             say "Loading save file: #{save_file}", prefix: :info
@@ -79,6 +81,7 @@ module Factorix
 
             # Update mod-list.json
             update_mod_list(mod_list, save_data.mods)
+            disable_unlisted_mods(mod_list, save_data.mods) unless keep_unlisted
             backup_if_exists(runtime.mod_list_path)
             mod_list.save
             say "Updated mod-list.json", prefix: :success
@@ -262,6 +265,23 @@ module Factorix
                 mod_list.add(mod, enabled: mod_state.enabled?, version: mod_state.version)
                 logger.debug("Added to mod-list.json", mod_name:, version: mod_state.version&.to_s)
               end
+            end
+          end
+
+          # Disable enabled MODs that are not listed in the save file
+          #
+          # @param mod_list [MODList] Current MOD list
+          # @param save_mods [Hash<String, MODState>] MODs from save file
+          # @return [void]
+          private def disable_unlisted_mods(mod_list, save_mods)
+            mod_list.each_mod do |mod|
+              next if mod.base?
+              next unless mod_list.enabled?(mod)
+              next if save_mods.key?(mod.name)
+
+              mod_list.disable(mod)
+              say "Disabled #{mod} (not listed in save file)", prefix: :info
+              logger.debug("Disabled unlisted MOD", mod_name: mod.name)
             end
           end
 

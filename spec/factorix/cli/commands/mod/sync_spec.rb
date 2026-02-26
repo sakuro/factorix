@@ -31,8 +31,50 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   end
 
   let(:mod_list) { Factorix::MODList.new }
-  let(:installed_mods) { [] }
   let(:graph) { instance_double(Factorix::Dependency::Graph) }
+
+  let(:base_info) do
+    Factorix::InfoJSON[
+      name: "base",
+      version: base_mod_version,
+      title: "Base MOD",
+      author: "Wube",
+      description: "Base game",
+      factorio_version: "2.0",
+      dependencies: []
+    ]
+  end
+
+  let(:test_mod_info) do
+    Factorix::InfoJSON[
+      name: "test-mod",
+      version: Factorix::MODVersion.from_string("1.0.0"),
+      title: "Test MOD",
+      author: "Test Author",
+      description: "Test description",
+      factorio_version: "2.0",
+      dependencies: []
+    ]
+  end
+
+  let(:installed_mods) do
+    [
+      Factorix::InstalledMOD[
+        mod: Factorix::MOD[name: "base"],
+        version: base_mod_version,
+        form: Factorix::InstalledMOD::DIRECTORY_FORM,
+        path: Pathname("/path/to/base"),
+        info: base_info
+      ],
+      Factorix::InstalledMOD[
+        mod: Factorix::MOD[name: "test-mod"],
+        version: Factorix::MODVersion.from_string("1.0.0"),
+        form: Factorix::InstalledMOD::ZIP_FORM,
+        path: Pathname("/path/to/test-mod_1.0.0.zip"),
+        info: test_mod_info
+      ]
+    ]
+  end
 
   before do
     allow(runtime).to receive_messages(running?: false, mod_dir:, mod_list_path:, mod_settings_path:)
@@ -63,49 +105,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
   describe "#call" do
     context "when all MODs from save file are already installed" do
-      let(:base_info) do
-        Factorix::InfoJSON[
-          name: "base",
-          version: base_mod_version,
-          title: "Base MOD",
-          author: "Wube",
-          description: "Base game",
-          factorio_version: "2.0",
-          dependencies: []
-        ]
-      end
-
-      let(:test_mod_info) do
-        Factorix::InfoJSON[
-          name: "test-mod",
-          version: Factorix::MODVersion.from_string("1.0.0"),
-          title: "Test MOD",
-          author: "Test Author",
-          description: "Test description",
-          factorio_version: "2.0",
-          dependencies: []
-        ]
-      end
-
-      let(:installed_mods) do
-        [
-          Factorix::InstalledMOD[
-            mod: Factorix::MOD[name: "base"],
-            version: base_mod_version,
-            form: Factorix::InstalledMOD::DIRECTORY_FORM,
-            path: Pathname("/path/to/base"),
-            info: base_info
-          ],
-          Factorix::InstalledMOD[
-            mod: Factorix::MOD[name: "test-mod"],
-            version: Factorix::MODVersion.from_string("1.0.0"),
-            form: Factorix::InstalledMOD::ZIP_FORM,
-            path: Pathname("/path/to/test-mod_1.0.0.zip"),
-            info: test_mod_info
-          ]
-        ]
-      end
-
       before do
         mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
         mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
@@ -115,6 +114,29 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
         run_command(command, %W[#{save_file_path}])
 
         expect(mod_list).to have_received(:save).with(no_args)
+      end
+    end
+
+    context "when there are enabled MODs not listed in the save file" do
+      before do
+        mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+        mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
+        mod_list.add(Factorix::MOD[name: "extra-mod"], enabled: true)
+        mod_list.add(Factorix::MOD[name: "space-age"], enabled: true)
+      end
+
+      it "disables unlisted regular and expansion MODs by default" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(mod_list.enabled?(Factorix::MOD[name: "extra-mod"])).to be false
+        expect(mod_list.enabled?(Factorix::MOD[name: "space-age"])).to be false
+      end
+
+      it "keeps unlisted MODs enabled when --keep-unlisted is given" do
+        run_command(command, %W[--keep-unlisted #{save_file_path}])
+
+        expect(mod_list.enabled?(Factorix::MOD[name: "extra-mod"])).to be true
+        expect(mod_list.enabled?(Factorix::MOD[name: "space-age"])).to be true
       end
     end
   end
