@@ -238,7 +238,7 @@ module Factorix
             to_enabled = mod_state.enabled?
             to_version = mod_state.version
             enabled_changed = current_enabled != to_enabled
-            version_changed = current_version != to_version
+            version_changed = current_version && current_version != to_version
 
             if enabled_changed
               action = to_enabled ? :enable : :disable
