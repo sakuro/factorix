@@ -13,6 +13,8 @@ module Factorix
   class CLI
     extend Dry::CLI::Registry
 
+    register "blueprint decode", Commands::Blueprint::Decode
+    register "blueprint encode", Commands::Blueprint::Encode
     register "version", Commands::Version
     register "man", Commands::Man
     register "launch", Commands::Launch

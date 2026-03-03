@@ -18,6 +18,7 @@ Factorix simplifies Factorio MOD management by providing:
 - **Installation & Uninstallation**: Install MODs directly from the portal or uninstall existing MODs
 - **Save File Sync**: Synchronize MOD states and startup settings from Factorio save files
 - **Settings Management**: Export/import MOD settings in JSON format
+- **Blueprint Conversion**: Decode/encode Factorio blueprint strings to/from JSON
 - **MOD Portal Integration**: Upload new MODs or update existing ones, edit metadata
 - **Game Control**: Launch Factorio from the command line
 - **Game Download**: Download Factorio game files (alpha, expansion, demo, headless)

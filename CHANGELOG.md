@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Added
+
+- Add `blueprint decode` command to decode Factorio blueprint strings to JSON (#76)
+- Add `blueprint encode` command to encode JSON to Factorio blueprint strings (#76)
+
 ### Changed
 
 - `mod sync` now disables enabled MODs (including expansion MODs) not listed in the save file by default (#70)

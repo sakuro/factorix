@@ -71,6 +71,10 @@ module Factorix
 
   class ChangelogParseError < FileFormatError; end
 
+  # Blueprint format errors
+  class BlueprintFormatError < FileFormatError; end
+  class UnsupportedBlueprintVersionError < BlueprintFormatError; end
+
   # =====================================
   # Domain layer errors
   # =====================================

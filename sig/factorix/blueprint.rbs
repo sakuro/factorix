@@ -1,0 +1,14 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class Blueprint
+    attr_reader data: Hash[String, untyped]
+
+    def initialize: (Hash[String, untyped] data) -> void
+    def self.decode: (String string) -> Blueprint
+    def encode: () -> String
+    def to_json: (*untyped) -> String
+  end
+end

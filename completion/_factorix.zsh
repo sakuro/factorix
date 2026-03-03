@@ -40,6 +40,7 @@ _factorix() {
         'launch:Launch Factorio game'
         'path:Display Factorio and Factorix paths'
         'download:Download Factorio game files'
+        'blueprint:Blueprint decode/encode commands'
         'mod:MOD management commands'
         'cache:Cache management commands'
         'completion:Generate shell completion script'
@@ -62,6 +63,9 @@ _factorix() {
             $global_opts \
             '--json[Output in JSON format]'
           ;;
+        blueprint)
+          _factorix_blueprint
+          ;;
         download)
           _factorix_download
           ;;
@@ -73,6 +77,43 @@ _factorix() {
           ;;
         cache)
           _factorix_cache
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_factorix_blueprint() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  local -a global_opts
+  global_opts=(
+    '(-c --config-path)'{-c,--config-path}'[Path to configuration file]:config file:_files'
+    '--log-level[Set log level]:level:(debug info warn error fatal)'
+    '(-q --quiet)'{-q,--quiet}'[Suppress non-essential output]'
+  )
+
+  _arguments -C \
+    '1:subcommand:->subcommand' \
+    '*::arg:->args'
+
+  case $state in
+    subcommand)
+      local -a subcommands
+      subcommands=(
+        'decode:Decode a Factorio blueprint string to JSON'
+        'encode:Encode JSON to a Factorio blueprint string'
+      )
+      _describe -t subcommands 'blueprint subcommand' subcommands
+      ;;
+    args)
+      case $line[1] in
+        decode|encode)
+          _arguments \
+            $global_opts \
+            '(-o --output)'{-o,--output}'[Output file path]:output file:_files' \
+            '1:input file:_files'
           ;;
       esac
       ;;
