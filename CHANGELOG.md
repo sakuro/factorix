@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.11.0] - 2026-03-03
+
 ### Added
 
 - Add `blueprint decode` command to decode Factorio blueprint strings to JSON (#76)
