@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.11.1] - 2026-03-03
+
 ### Fixed
 
 - Fix `mod sync` incorrectly saving `mod-list.json` and `mod-settings.dat` when nothing changed (#74)
