@@ -104,17 +104,28 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   end
 
   describe "#call" do
-    context "when mod-list.json is already in sync with the save file" do
+    context "when mod-list.json is already in sync with the save file and startup settings have not changed" do
       before do
         mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
         mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
       end
 
-      it "saves mod-list.json without asking for confirmation" do
+      it "does not ask for confirmation" do
         run_command(command, %W[#{save_file_path}])
 
         expect(command).not_to have_received(:confirm?)
-        expect(mod_list).to have_received(:save).with(no_args)
+      end
+
+      it "does not save mod-list.json" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(mod_list).not_to have_received(:save)
+      end
+
+      it "does not update mod-settings.dat" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(mod_settings).not_to have_received(:save)
       end
     end
 
