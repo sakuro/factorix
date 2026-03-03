@@ -19,6 +19,14 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
   let(:mod_settings_path) { Pathname("/tmp/mod-settings.dat") }
 
   let(:game_version) { Factorix::GameVersion.from_string("2.0.72") }
+  let(:mod_settings) do
+    Factorix::MODSettings.new(
+      game_version,
+      Factorix::MODSettings::VALID_SECTIONS.to_h {|section_name|
+        [section_name, Factorix::MODSettings::Section.new(section_name)]
+      }
+    )
+  end
   let(:base_mod_version) { Factorix::MODVersion.from_string("2.0.72") }
 
   let(:save_data) do
@@ -87,32 +95,25 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
     allow(mod_dir).to receive(:exist?).and_return(true)
     allow(logger).to receive(:debug)
 
-    # Create a mock MODSettings if needed
-    mod_settings = Factorix::MODSettings.new(
-      game_version,
-      Factorix::MODSettings::VALID_SECTIONS.to_h {|section_name|
-        [section_name, Factorix::MODSettings::Section.new(section_name)]
-      }
-    )
     allow(Factorix::MODSettings).to receive_messages(load: mod_settings, new: mod_settings)
     allow(mod_settings).to receive(:save)
     allow(mod_settings_path).to receive(:exist?).and_return(true)
     allow(mod_settings_path).to receive(:rename)
 
-    # Stub confirmation to always return true
     allow(command).to receive(:confirm?).and_return(true)
   end
 
   describe "#call" do
-    context "when all MODs from save file are already installed" do
+    context "when mod-list.json is already in sync with the save file" do
       before do
         mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
         mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
       end
 
-      it "updates mod-list.json" do
+      it "saves mod-list.json without asking for confirmation" do
         run_command(command, %W[#{save_file_path}])
 
+        expect(command).not_to have_received(:confirm?)
         expect(mod_list).to have_received(:save).with(no_args)
       end
     end
@@ -123,6 +124,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
         mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: Factorix::MODVersion.from_string("1.0.0"))
         mod_list.add(Factorix::MOD[name: "extra-mod"], enabled: true)
         mod_list.add(Factorix::MOD[name: "space-age"], enabled: true)
+      end
+
+      it "asks for confirmation exactly once before applying changes" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(command).to have_received(:confirm?).once
       end
 
       it "disables unlisted regular and expansion MODs by default" do
@@ -137,6 +144,62 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
         expect(mod_list.enabled?(Factorix::MOD[name: "extra-mod"])).to be true
         expect(mod_list.enabled?(Factorix::MOD[name: "space-age"])).to be true
+      end
+
+      context "when user declines confirmation" do
+        before do
+          allow(command).to receive(:confirm?).and_return(false)
+        end
+
+        it "does not save mod-list.json" do
+          run_command(command, %W[#{save_file_path}])
+
+          expect(mod_list).not_to have_received(:save)
+        end
+
+        it "does not update mod-settings.dat" do
+          run_command(command, %W[#{save_file_path}])
+
+          expect(mod_settings).not_to have_received(:save)
+        end
+      end
+    end
+
+    context "when there are MODs to install and user declines confirmation" do
+      let(:fake_release) do
+        instance_double(
+          Factorix::API::Release,
+          version: Factorix::MODVersion.from_string("2.0.0"),
+          file_name: "new-mod_2.0.0.zip"
+        )
+      end
+
+      before do
+        fake_targets = [{
+          mod: Factorix::MOD[name: "new-mod"],
+          release: fake_release,
+          output_path: mod_dir / "new-mod_2.0.0.zip"
+        }]
+        allow(command).to receive(:execute_installation)
+        allow(command).to receive_messages(find_mods_to_install: {"new-mod" => nil}, plan_installation: fake_targets, confirm?: false)
+      end
+
+      it "does not install MODs" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(command).not_to have_received(:execute_installation)
+      end
+
+      it "does not save mod-list.json" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(mod_list).not_to have_received(:save)
+      end
+
+      it "does not update mod-settings.dat" do
+        run_command(command, %W[#{save_file_path}])
+
+        expect(mod_settings).not_to have_received(:save)
       end
     end
   end
