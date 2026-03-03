@@ -61,12 +61,17 @@ module Factorix
             conflict_mods = find_conflict_mods(mod_list, save_data.mods, graph)
             changes = plan_mod_list_changes(mod_list, save_data.mods)
             unlisted_mods = keep_unlisted ? [] : find_unlisted_mods(mod_list, save_data.mods, conflict_mods)
+            mod_list_changed = needs_confirmation?(install_targets, conflict_mods, changes, unlisted_mods)
+            settings_changed = startup_settings_changed?(save_data.startup_settings)
 
             # Show combined plan and ask once
-            show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods)
+            unless mod_list_changed || settings_changed
+              say "Nothing to change", prefix: :info
+              return
+            end
 
-            return if needs_confirmation?(install_targets, conflict_mods, changes, unlisted_mods) &&
-                      !confirm?("Do you want to apply these changes?")
+            show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods, settings_changed)
+            return unless confirm?("Do you want to apply these changes?")
 
             # Execute phase
             if install_targets.any?
@@ -74,13 +79,17 @@ module Factorix
               say "Installed #{install_targets.size} MOD(s)", prefix: :success
             end
 
-            apply_mod_list_changes(mod_list, conflict_mods, changes, unlisted_mods)
-            backup_if_exists(runtime.mod_list_path)
-            mod_list.save
-            say "Updated mod-list.json", prefix: :success
+            if mod_list_changed
+              apply_mod_list_changes(mod_list, conflict_mods, changes, unlisted_mods)
+              backup_if_exists(runtime.mod_list_path)
+              mod_list.save
+              say "Updated mod-list.json", prefix: :success
+            end
 
-            update_mod_settings(save_data.startup_settings, save_data.version)
-            say "Updated mod-settings.dat", prefix: :success
+            if settings_changed
+              update_mod_settings(save_data.startup_settings, save_data.version)
+              say "Updated mod-settings.dat", prefix: :success
+            end
 
             say "Sync completed successfully", prefix: :success
           end
@@ -289,13 +298,9 @@ module Factorix
           # @param conflict_mods [Array<Hash>] MODs to disable due to conflicts
           # @param changes [Array<Hash>] MOD list changes from save file
           # @param unlisted_mods [Array<MOD>] MODs to disable as unlisted
+          # @param settings_changed [Boolean] Whether startup settings will be updated
           # @return [void]
-          private def show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods)
-            unless needs_confirmation?(install_targets, conflict_mods, changes, unlisted_mods)
-              say "Nothing to change", prefix: :info
-              return
-            end
-
+          private def show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods, settings_changed)
             say "Planning to sync MOD(s):", prefix: :info
 
             if install_targets.any?
@@ -319,10 +324,12 @@ module Factorix
             end
 
             update_changes = changes.select {|c| c[:action] == :update }
-            return if update_changes.none?
+            if update_changes.any?
+              say "  Update:"
+              update_changes.each {|c| say "    - #{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" }
+            end
 
-            say "  Update:"
-            update_changes.each {|c| say "    - #{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" }
+            say "  Update startup settings" if settings_changed
           end
 
           # Apply all mod-list.json changes
@@ -426,6 +433,20 @@ module Factorix
               conflict_mods.any? ||
               changes.any? {|c| c[:action] != :add || c[:to_enabled] } ||
               unlisted_mods.any?
+          end
+
+          # Check whether startup settings from the save file differ from the current mod-settings.dat
+          #
+          # @param startup_settings [MODSettings::Section] Startup settings from save file
+          # @return [Boolean]
+          private def startup_settings_changed?(startup_settings)
+            return true unless runtime.mod_settings_path.exist?
+
+            mod_settings = MODSettings.load(runtime.mod_settings_path)
+            startup_section = mod_settings["startup"]
+            startup_settings.any? do |key, value|
+              startup_section[key] != value
+            end
           end
         end
       end

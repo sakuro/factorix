@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+### Fixed
+
+- Fix `mod sync` incorrectly saving `mod-list.json` and `mod-settings.dat` when nothing changed (#74)
+- Include startup settings changes in the `mod sync` plan and confirmation flow (#74)
+
 ## [0.11.0] - 2026-03-03
 
 ### Added
