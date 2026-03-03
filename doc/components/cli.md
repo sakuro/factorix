@@ -67,6 +67,46 @@ Display all Factorio and Factorix paths.
 - `factorix_config_path` - Factorix configuration file
 - `factorix_log_path` - Factorix log file
 
+### Blueprint::Decode
+
+Decode a Factorio blueprint string to JSON.
+
+**Arguments**:
+- `file` - Path to file containing blueprint string (optional, defaults to stdin)
+
+**Options**:
+- `-o`, `--output` - Output file path (defaults to stdout)
+
+**Output**: Pretty-printed JSON representation of the blueprint data
+
+**Examples**:
+```bash
+factorix blueprint decode blueprint.txt
+factorix blueprint decode blueprint.txt -o decoded.json
+cat blueprint.txt | factorix blueprint decode
+```
+
+**Use case**: Inspect or edit blueprint contents as JSON
+
+### Blueprint::Encode
+
+Encode JSON to a Factorio blueprint string.
+
+**Arguments**:
+- `file` - Path to JSON file (optional, defaults to stdin)
+
+**Options**:
+- `-o`, `--output` - Output file path (defaults to stdout)
+
+**Examples**:
+```bash
+factorix blueprint encode decoded.json
+factorix blueprint encode decoded.json -o blueprint.txt
+cat decoded.json | factorix blueprint encode
+```
+
+**Use case**: Convert edited JSON back to a blueprint string for use in Factorio
+
 ### Cache::Stat
 
 Display cache statistics.

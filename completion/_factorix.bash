@@ -17,7 +17,10 @@ _factorix() {
   local confirmable_opts="-y --yes"
 
   # Top-level commands
-  local commands="version man launch path download mod cache completion"
+  local commands="version man launch path download blueprint mod cache completion"
+
+  # blueprint subcommands
+  local blueprint_commands="decode encode"
 
   # mod subcommands
   local mod_commands="changelog check list show enable disable install uninstall update download upload edit search sync image settings"
@@ -63,6 +66,25 @@ _factorix() {
         COMPREPLY=($(compgen -W "stable experimental" -- "$cur"))
       elif [[ "$prev" == "--directory" ]] || [[ "$prev" == "-d" ]]; then
         COMPREPLY=($(compgen -d -- "$cur"))
+      fi
+      return
+      ;;
+    blueprint)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=($(compgen -W "$blueprint_commands" -- "$cur"))
+      else
+        case "${words[2]}" in
+          decode|encode)
+            if [[ "$cur" == -* ]]; then
+              COMPREPLY=($(compgen -W "$global_opts -o --output" -- "$cur"))
+            else
+              COMPREPLY=($(compgen -f -- "$cur"))
+            fi
+            ;;
+          *)
+            COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
+            ;;
+        esac
       fi
       return
       ;;
