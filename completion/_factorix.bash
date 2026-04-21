@@ -122,7 +122,7 @@ _factorix() {
             COMPREPLY=($(compgen -W "$global_opts --enabled --disabled --errors --outdated --json" -- "$cur"))
             ;;
           show)
-            COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
+            COMPREPLY=($(compgen -W "$global_opts --json" -- "$cur"))
             ;;
           enable|disable)
             if [[ "$cur" == -* ]]; then

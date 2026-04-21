@@ -125,6 +125,12 @@ Displays title, summary, latest version, author, category, license, Factorio ver
 downloads count, links (portal, source, homepage), dependencies, and
 incompatibilities. When the MOD is locally installed, also shows the installed
 version; "(update available)" is appended when the installed version is outdated.
+.TP
+.B \-\-json
+Output in JSON format. Produces a single object with name, title, summary, author,
+category, license, factorio_version, downloads_count, status, latest_version,
+installed_version, update_available, links (mod_portal, source, homepage), and
+dependencies (strings in info.json format).
 .SS factorix mod install MOD_SPECS
 Install MOD(s) from Factorio MOD Portal. Downloads to MOD directory and enables.
 .PP

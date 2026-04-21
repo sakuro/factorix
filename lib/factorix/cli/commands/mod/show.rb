@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "tint_me"
 
 module Factorix
@@ -28,17 +29,21 @@ module Factorix
           desc "Show MOD details from Factorio MOD Portal"
 
           example [
-            "some-mod          # Show details for some-mod"
+            "some-mod          # Show details for some-mod",
+            "some-mod --json   # Show details in JSON format"
           ]
 
           argument :mod_name, required: true, desc: "MOD name to show"
 
+          option :json, type: :flag, default: false, desc: "Output in JSON format"
+
           # Execute the show command
           #
           # @param mod_name [String] MOD name to show details for
+          # @param json [Boolean] output in JSON format
           # @return [void]
           # @raise [BundledMODError] if mod_name is base or an expansion MOD
-          def call(mod_name:, **)
+          def call(mod_name:, json:, **)
             mod = Factorix::MOD[mod_name]
             raise BundledMODError, "Cannot show base MOD" if mod.base?
             raise BundledMODError, "Cannot show expansion MOD: #{mod_name}" if mod.expansion?
@@ -46,11 +51,15 @@ module Factorix
             mod_info = portal.get_mod_full(mod_name)
             local_status = fetch_local_status(mod_name)
 
-            display_header(mod_info)
-            display_basic_info(mod_info, local_status)
-            display_links(mod_info)
-            display_dependencies(mod_info)
-            display_incompatibilities(mod_info)
+            if json
+              output_json(mod_info, local_status)
+            else
+              display_header(mod_info)
+              display_basic_info(mod_info, local_status)
+              display_links(mod_info)
+              display_dependencies(mod_info)
+              display_incompatibilities(mod_info)
+            end
           end
 
           private def fetch_local_status(mod_name)
@@ -104,6 +113,48 @@ module Factorix
               out.puts "#{label.ljust(max_label_width)}  #{value}"
             end
             out.puts
+          end
+
+          private def output_json(mod_info, local_status)
+            latest_release = mod_info.latest_release || mod_info.releases.max_by(&:version)
+            factorio_version = latest_release&.info_json&.dig(:factorio_version)
+            latest_ver = latest_release&.version&.to_s
+
+            installed_version = local_status[:installed] ? local_status[:local_version]&.to_s : nil
+            update_available = if local_status[:installed] && local_status[:local_version]
+                                 local_status[:local_version].to_s != latest_ver
+                               end
+
+            data = {
+              name: mod_info.name,
+              title: mod_info.title,
+              summary: mod_info.summary,
+              author: mod_info.owner,
+              category: mod_info.category.name,
+              license: mod_info.detail&.license&.title,
+              factorio_version:,
+              downloads_count: mod_info.downloads_count,
+              status: json_status(local_status),
+              latest_version: latest_ver,
+              installed_version:,
+              update_available:,
+              links: {
+                mod_portal: "https://mods.factorio.com/mod/#{mod_info.name}",
+                source: mod_info.detail&.source_url&.to_s,
+                homepage: mod_info.detail&.homepage&.to_s
+              },
+              dependencies: latest_release&.info_json&.dig(:dependencies) || []
+            }
+
+            out.puts JSON.pretty_generate(data)
+          end
+
+          private def json_status(local_status)
+            if local_status[:installed]
+              local_status[:enabled] ? "enabled" : "disabled"
+            else
+              "not_installed"
+            end
           end
 
           private def format_status(local_status)

@@ -398,6 +398,9 @@ Show detailed MOD information from Factorio MOD Portal.
 **Arguments**:
 - `mod_name` - MOD name to show (required)
 
+**Options**:
+- `--json` - Output in JSON format
+
 **Output**: Text format showing:
 - Title, summary
 - Status (Enabled/Disabled/Not installed)
@@ -407,6 +410,8 @@ Show detailed MOD information from Factorio MOD Portal.
 - Links (MOD Portal, source URL, homepage)
 - Dependencies (required and optional)
 - Incompatibilities
+
+**JSON output**: Single object with `name`, `title`, `summary`, `author`, `category`, `license`, `factorio_version`, `downloads_count`, `status` (`"enabled"`/`"disabled"`/`"not_installed"`), `latest_version`, `installed_version` (null if not installed), `update_available` (null if not installed, boolean otherwise), `links` (nested: `mod_portal`, `source`, `homepage`), and `dependencies` (strings in info.json format)
 
 **Use case**: View detailed MOD information before installing or to check for updates
 
