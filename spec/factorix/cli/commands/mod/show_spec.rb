@@ -146,6 +146,141 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
     end
   end
 
+  describe "--json option" do
+    let(:json) { JSON.parse(run_command(command, %w[test-mod --json]).stdout) }
+
+    it "includes basic MOD fields" do
+      expect(json).to include(
+        "name" => "test-mod",
+        "title" => "Test MOD Title",
+        "summary" => "A test MOD summary",
+        "author" => "test-author",
+        "latest_version" => "1.2.3",
+        "downloads_count" => 12_345
+      )
+    end
+
+    context "when MOD is not installed" do
+      it "reports not_installed status" do
+        expect(json["status"]).to eq("not_installed")
+      end
+
+      it "has null installed_version and update_available" do
+        expect(json["installed_version"]).to be_nil
+        expect(json["update_available"]).to be_nil
+      end
+    end
+
+    context "when MOD is installed and enabled" do
+      let(:installed_mod) do
+        instance_double(
+          Factorix::InstalledMOD,
+          mod: Factorix::MOD["test-mod"],
+          version: Factorix::MODVersion.from_string("1.2.3")
+        )
+      end
+
+      before do
+        mod_list = instance_double(Factorix::MODList)
+        allow(mod_list).to receive_messages(exist?: true, enabled?: true)
+        allow(Factorix::MODList).to receive(:load).and_return(mod_list)
+        allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod])
+      end
+
+      it "reports enabled status and installed version" do
+        expect(json["status"]).to eq("enabled")
+        expect(json["installed_version"]).to eq("1.2.3")
+      end
+
+      it "reports update_available as false when up to date" do
+        expect(json["update_available"]).to be(false)
+      end
+    end
+
+    context "when MOD is installed and disabled" do
+      let(:installed_mod) do
+        instance_double(
+          Factorix::InstalledMOD,
+          mod: Factorix::MOD["test-mod"],
+          version: Factorix::MODVersion.from_string("1.2.3")
+        )
+      end
+
+      before do
+        mod_list = instance_double(Factorix::MODList)
+        allow(mod_list).to receive_messages(exist?: true, enabled?: false)
+        allow(Factorix::MODList).to receive(:load).and_return(mod_list)
+        allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod])
+      end
+
+      it "reports disabled status" do
+        expect(json["status"]).to eq("disabled")
+      end
+    end
+
+    context "when installed MOD is outdated" do
+      let(:installed_mod) do
+        instance_double(
+          Factorix::InstalledMOD,
+          mod: Factorix::MOD["test-mod"],
+          version: Factorix::MODVersion.from_string("1.0.0")
+        )
+      end
+
+      before do
+        mod_list = instance_double(Factorix::MODList)
+        allow(mod_list).to receive_messages(exist?: true, enabled?: true)
+        allow(Factorix::MODList).to receive(:load).and_return(mod_list)
+        allow(Factorix::InstalledMOD).to receive(:all).and_return([installed_mod])
+      end
+
+      it "reports update_available as true with installed version" do
+        expect(json["update_available"]).to be(true)
+        expect(json["installed_version"]).to eq("1.0.0")
+      end
+    end
+
+    it "outputs dependencies in info.json format" do
+      expect(json["dependencies"]).to eq([
+        "base >= 2.0",
+        "? optional-dep >= 1.0",
+        "! incompatible-mod"
+      ])
+    end
+
+    it "outputs nested links" do
+      expect(json["links"]).to eq(
+        "mod_portal" => "https://mods.factorio.com/mod/test-mod",
+        "source" => "https://github.com/test/test-mod",
+        "homepage" => "https://example.com"
+      )
+    end
+
+    context "when MOD has no detail" do
+      let(:mod_info_without_detail) do
+        Factorix::API::MODInfo[
+          name: "test-mod",
+          title: "Test MOD Title",
+          owner: "test-author",
+          summary: "A test MOD summary",
+          downloads_count: 12_345,
+          category: "utilities",
+          releases: [release_data]
+        ]
+      end
+
+      before do
+        allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info_without_detail)
+      end
+
+      it "outputs null for license and link fields" do
+        expect(json["license"]).to be_nil
+        expect(json["links"]["source"]).to be_nil
+        expect(json["links"]["homepage"]).to be_nil
+      end
+    end
+  end
+
   describe "installed MOD detection" do
     let(:installed_mod) do
       instance_double(
