@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+
+- Add `--strict-version` flag to `mod sync` to install exact MOD versions from the save file (#75)
+
 ### Changed
 
 - Raise minimum Ruby version requirement to 3.3 (#81)

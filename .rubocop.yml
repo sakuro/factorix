@@ -50,6 +50,9 @@ Metrics/ModuleLength:
   Exclude:
     - lib/factorix.rb # Cache configuration with hierarchical backend settings
 
+Metrics/ParameterLists:
+  Max: 6
+
 Naming/PredicateMethod:
   Exclude:
     - lib/factorix/cache/file_system.rb # fetch/store/delete return boolean but are standard cache API names
