@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.12.0] - 2026-04-21
+
 ### Added
 
 - Add `--strict-version` flag to `mod sync` to install exact MOD versions from the save file (#75)
