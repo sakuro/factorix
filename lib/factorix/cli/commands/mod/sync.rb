@@ -355,14 +355,28 @@ module Factorix
           private def show_sync_plan(install_targets, mods_to_delete, conflict_mods, changes, unlisted_mods, settings_changed)
             say "Planning to sync MOD(s):", prefix: :info
 
-            if mods_to_delete.any?
-              say "  Delete (newer than save version):"
-              mods_to_delete.each {|m| say "    - #{m.mod}@#{m.version} (#{m.path.basename})" }
+            # Mods appearing in both delete and install are downgrades (newer zip removed,
+            # save version downloaded). Show them once instead of in three separate sections.
+            downgrade_mod_set = Set.new(mods_to_delete.map(&:mod) & install_targets.map {|t| t[:mod] })
+
+            downgrade_targets = install_targets.select {|t| downgrade_mod_set.include?(t[:mod]) }
+            if downgrade_targets.any?
+              say "  Downgrade:"
+              downgrade_targets.each do |t|
+                say "    - #{t[:mod]} (#{t[:from_version]} \u2192 #{t[:release].version})"
+              end
             end
 
-            if install_targets.any?
+            remaining_deletes = mods_to_delete.reject {|m| downgrade_mod_set.include?(m.mod) }
+            if remaining_deletes.any?
+              say "  Delete (newer than save version):"
+              remaining_deletes.each {|m| say "    - #{m.mod}@#{m.version} (#{m.path.basename})" }
+            end
+
+            remaining_installs = install_targets.reject {|t| downgrade_mod_set.include?(t[:mod]) }
+            if remaining_installs.any?
               say "  Install:"
-              install_targets.each do |t|
+              remaining_installs.each do |t|
                 label = t[:from_version] ? "#{t[:mod]} (#{t[:from_version]} \u2192 #{t[:release].version})" : "#{t[:mod]}@#{t[:release].version}"
                 say "    - #{label}"
               end
@@ -383,7 +397,7 @@ module Factorix
               all_disables.each {|d| say "    - #{d[:mod]} #{d[:reason]}" }
             end
 
-            update_changes = changes.select {|c| c[:action] == :update }
+            update_changes = changes.select {|c| c[:action] == :update && !downgrade_mod_set.include?(c[:mod]) }
             if update_changes.any?
               say "  Update:"
               update_changes.each do |c|
