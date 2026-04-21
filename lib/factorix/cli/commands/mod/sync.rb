@@ -61,6 +61,7 @@ module Factorix
             # Plan phase (no side effects)
             mods_to_install = find_mods_to_install(save_data.mods, installed_mods, strict_version:)
             install_targets = mods_to_install.any? ? plan_installation(mods_to_install, graph, jobs, strict_version:) : []
+            enrich_install_targets_with_current_version(install_targets, installed_mods)
             mods_to_delete = strict_version ? find_mods_to_delete(save_data.mods, installed_mods) : []
             conflict_mods = find_conflict_mods(mod_list, save_data.mods, graph)
             changes = plan_mod_list_changes(mod_list, save_data.mods, strict_version:)
@@ -114,6 +115,18 @@ module Factorix
               else
                 installed_mods.any? {|i| i.mod == mod }
               end
+            end
+          end
+
+          # Enrich install targets with the currently installed version for display purposes
+          #
+          # @param install_targets [Array<Hash>] Install targets to enrich in-place
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
+          # @return [void]
+          private def enrich_install_targets_with_current_version(install_targets, installed_mods)
+            install_targets.each do |target|
+              current = installed_mods.find {|i| i.mod == target[:mod] }
+              target[:from_version] = current&.version
             end
           end
 
@@ -345,7 +358,10 @@ module Factorix
 
             if install_targets.any?
               say "  Install:"
-              install_targets.each {|t| say "    - #{t[:mod]}@#{t[:release].version}" }
+              install_targets.each do |t|
+                label = t[:from_version] ? "#{t[:mod]} (#{t[:from_version]} \u2192 #{t[:release].version})" : "#{t[:mod]}@#{t[:release].version}"
+                say "    - #{label}"
+              end
             end
 
             enable_changes = changes.select {|c| c[:action] == :enable }
