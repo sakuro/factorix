@@ -2,8 +2,9 @@
 
 ### Changed
 
+- Raise minimum Ruby version requirement to 3.3 (#81)
 - `mod show` always displays both Latest Version and Installed Version when a MOD is installed; "(update available)" is appended only when the local version is outdated (#82)
-- Add `--json` option to `mod show` for machine-readable output
+- Add `--json` option to `mod show` for machine-readable output (#83)
 
 ## [0.11.1] - 2026-03-03
 
