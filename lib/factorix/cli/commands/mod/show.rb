@@ -86,13 +86,12 @@ module Factorix
 
             rows = []
             rows << ["Status", format_status(local_status)]
-            rows << ["Version", latest_release&.version&.to_s || "N/A"]
+            rows << ["Latest Version", latest_release&.version&.to_s || "N/A"]
             if local_status[:installed] && local_status[:local_version]
               local_ver = local_status[:local_version].to_s
               latest_ver = latest_release&.version&.to_s
-              if latest_ver && local_ver != latest_ver
-                rows << ["Installed Version", "#{local_ver} (update available)"]
-              end
+              update_note = latest_ver && local_ver != latest_ver ? " (update available)" : ""
+              rows << ["Installed Version", "#{local_ver}#{update_note}"]
             end
             rows << ["Author", mod_info.owner]
             rows << ["Category", mod_info.category.name]

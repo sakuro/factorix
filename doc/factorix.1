@@ -121,9 +121,10 @@ Output in JSON format.
 .SS factorix mod show MOD_NAME
 Show MOD details from Factorio MOD Portal.
 .PP
-Displays title, summary, version, author, category, license, Factorio version,
+Displays title, summary, latest version, author, category, license, Factorio version,
 downloads count, links (portal, source, homepage), dependencies, and
-incompatibilities. Shows installation status if the MOD is locally installed.
+incompatibilities. When the MOD is locally installed, also shows the installed
+version; "(update available)" is appended when the installed version is outdated.
 .SS factorix mod install MOD_SPECS
 Install MOD(s) from Factorio MOD Portal. Downloads to MOD directory and enables.
 .PP

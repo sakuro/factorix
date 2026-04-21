@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- `mod show` always displays both Latest Version and Installed Version when a MOD is installed; "(update available)" is appended only when the local version is outdated (#82)
+
 ## [0.11.1] - 2026-03-03
 
 ### Fixed

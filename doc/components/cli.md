@@ -401,9 +401,9 @@ Show detailed MOD information from Factorio MOD Portal.
 **Output**: Text format showing:
 - Title, summary
 - Status (Enabled/Disabled/Not installed)
-- Version (latest from portal)
+- Latest Version (from portal)
+- Installed Version (when installed; "(update available)" appended when outdated)
 - Author, category, license, Factorio version, downloads count
-- Installed version with update indicator (if installed)
 - Links (MOD Portal, source URL, homepage)
 - Dependencies (required and optional)
 - Incompatibilities
