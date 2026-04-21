@@ -16,6 +16,11 @@ module Factorix
         # @param options [Hash] command options passed to the original call method
         # @return [void]
         def call(**options)
+          # Set @quiet before check_game_stopped because this module is prepended
+          # after CommandWrapper (which normally sets @quiet), making it outer in
+          # the call chain. If the game is running, the exception escapes before
+          # CommandWrapper's rescue block is ever entered.
+          @quiet = options[:quiet]
           check_game_stopped
           super
         end
@@ -23,8 +28,12 @@ module Factorix
         private def check_game_stopped
           return unless runtime.running?
 
+          message = "Cannot perform this operation while Factorio is running. Please stop the game and try again."
           logger.error("Operation blocked: game is running")
-          raise GameRunningError, "Cannot perform this operation while Factorio is running. Please stop the game and try again."
+          # CommandWrapper's rescue would normally display this, but it is never
+          # reached when the exception is raised here (see call above).
+          say "Error: #{message}", prefix: :error
+          raise GameRunningError, message
         end
       end
     end
