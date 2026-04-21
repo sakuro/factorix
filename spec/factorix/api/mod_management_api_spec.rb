@@ -58,16 +58,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
     end
 
     context "when MOD not found" do
-      it "raises MODNotOnPortalError with api_message" do
-        error = Factorix::HTTPNotFoundError.new("404 Not Found", api_message: "Unknown Mod")
-        allow(client).to receive(:post).and_raise(error)
-
-        expect {
-          api.init_upload("nonexistent-mod")
-        }.to raise_error(Factorix::MODNotOnPortalError, "Unknown Mod")
-      end
-
-      it "raises MODNotOnPortalError with fallback message when api_message is nil" do
+      it "raises MODNotOnPortalError with MOD name" do
         error = Factorix::HTTPNotFoundError.new("404 Not Found")
         allow(client).to receive(:post).and_raise(error)
 

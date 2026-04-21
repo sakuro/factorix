@@ -243,6 +243,7 @@ complete -c factorix -n "__factorix_using_subcommand mod search" -l json -d 'Out
 complete -c factorix -n "__factorix_using_subcommand mod sync" -s y -l yes -d 'Skip confirmation prompts'
 complete -c factorix -n "__factorix_using_subcommand mod sync" -s j -l jobs -d 'Number of parallel downloads' -r
 complete -c factorix -n "__factorix_using_subcommand mod sync" -l keep-unlisted -d 'Keep MODs not listed in save file enabled'
+complete -c factorix -n "__factorix_using_subcommand mod sync" -l strict-version -d 'Install exact MOD versions from save file'
 complete -c factorix -n "__factorix_using_subcommand mod sync" -ra '(__fish_complete_suffix .zip)'
 
 # mod changelog subcommands

@@ -26,22 +26,25 @@ module Factorix
           desc "Sync MOD states and startup settings from a save file"
 
           example [
-            "save.zip                 # Sync MOD(s) from save file",
-            "-j 8 save.zip            # Use 8 parallel downloads",
-            "--keep-unlisted save.zip # Keep MOD(s) not in save file enabled"
+            "save.zip                          # Sync MOD(s) from save file",
+            "-j 8 save.zip                     # Use 8 parallel downloads",
+            "--keep-unlisted save.zip          # Keep MOD(s) not in save file enabled",
+            "--strict-version save.zip         # Install exact versions from save file"
           ]
 
           argument :save_file, required: true, desc: "Path to Factorio save file (.zip)"
           option :jobs, aliases: ["-j"], default: "4", desc: "Number of parallel downloads"
           option :keep_unlisted, type: :flag, default: false, desc: "Keep MOD(s) not listed in save file enabled"
+          option :strict_version, type: :flag, default: false, desc: "Install exact MOD versions from save file"
 
           # Execute the sync command
           #
           # @param save_file [String] Path to save file
           # @param jobs [Integer] Number of parallel downloads
           # @param keep_unlisted [Boolean] Whether to keep unlisted MODs enabled
+          # @param strict_version [Boolean] Whether to install exact versions from save file
           # @return [void]
-          def call(save_file:, jobs: "4", keep_unlisted: false, **)
+          def call(save_file:, jobs: "4", keep_unlisted: false, strict_version: false, **)
             jobs = Integer(jobs)
             say "Loading save file: #{save_file}", prefix: :info
             save_data = SaveFile.load(Pathname(save_file))
@@ -56,24 +59,32 @@ module Factorix
             raise DirectoryNotFoundError, "MOD directory does not exist: #{runtime.mod_dir}" unless runtime.mod_dir.exist?
 
             # Plan phase (no side effects)
-            mods_to_install = find_mods_to_install(save_data.mods, installed_mods)
-            install_targets = mods_to_install.any? ? plan_installation(mods_to_install, graph, jobs) : []
+            mods_to_install = find_mods_to_install(save_data.mods, installed_mods, strict_version:)
+            install_targets = mods_to_install.any? ? plan_installation(mods_to_install, graph, jobs, strict_version:) : []
+            enrich_install_targets_with_current_version(install_targets, installed_mods)
+            mods_to_delete = strict_version ? find_mods_to_delete(save_data.mods, installed_mods) : []
             conflict_mods = find_conflict_mods(mod_list, save_data.mods, graph)
-            changes = plan_mod_list_changes(mod_list, save_data.mods)
+            changes = plan_mod_list_changes(mod_list, save_data.mods, installed_mods, strict_version:)
             unlisted_mods = keep_unlisted ? [] : find_unlisted_mods(mod_list, save_data.mods, conflict_mods)
             mod_list_changed = needs_confirmation?(install_targets, conflict_mods, changes, unlisted_mods)
+            has_changes = mod_list_changed || mods_to_delete.any?
             settings_changed = startup_settings_changed?(save_data.startup_settings)
 
             # Show combined plan and ask once
-            unless mod_list_changed || settings_changed
+            unless has_changes || settings_changed
               say "Nothing to change", prefix: :info
               return
             end
 
-            show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods, settings_changed)
+            show_sync_plan(install_targets, mods_to_delete, conflict_mods, changes, unlisted_mods, settings_changed)
             return unless confirm?("Do you want to apply these changes?")
 
             # Execute phase
+            if mods_to_delete.any?
+              execute_deletions(mods_to_delete)
+              say "Deleted #{mods_to_delete.size} MOD package(s)", prefix: :success
+            end
+
             if install_targets.any?
               execute_installation(install_targets, jobs)
               say "Installed #{install_targets.size} MOD(s)", prefix: :success
@@ -94,12 +105,46 @@ module Factorix
             say "Sync completed successfully", prefix: :success
           end
 
-          private def find_mods_to_install(save_mods, installed_mods)
-            save_mods.reject do |mod_name, _mod_state|
-              next true if mod_name == "base"
-
+          private def find_mods_to_install(save_mods, installed_mods, strict_version: false)
+            save_mods.reject do |mod_name, mod_state|
               mod = Factorix::MOD[name: mod_name]
-              installed_mods.any? {|installed| installed.mod == mod }
+              next true if mod.base? || mod.expansion?
+
+              if strict_version
+                installed_mods.any? {|i| i.mod == mod && i.version == mod_state.version }
+              else
+                installed_mods.any? {|i| i.mod == mod }
+              end
+            end
+          end
+
+          # Enrich install targets with the currently installed version for display purposes
+          #
+          # @param install_targets [Array<Hash>] Install targets to enrich in-place
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
+          # @return [void]
+          private def enrich_install_targets_with_current_version(install_targets, installed_mods)
+            install_targets.each do |target|
+              current = installed_mods.find {|i| i.mod == target[:mod] }
+              target[:from_version] = current&.version
+            end
+          end
+
+          # Find installed MODs with a version newer than what the save file requires
+          #
+          # These must be deleted when using --strict-version because Factorio picks the
+          # newest available zip when multiple versions coexist in the MOD directory.
+          #
+          # @param save_mods [Hash<String, MODState>] MODs from save file
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
+          # @return [Array<InstalledMOD>] Installed MODs with newer versions than the save requires
+          private def find_mods_to_delete(save_mods, installed_mods)
+            save_mods.flat_map do |mod_name, mod_state|
+              mod = Factorix::MOD[name: mod_name]
+              next [] if mod.base? || mod.expansion?
+
+              save_version = mod_state.version
+              installed_mods.select {|i| i.mod == mod && i.version > save_version }
             end
           end
 
@@ -108,10 +153,11 @@ module Factorix
           # @param mods_to_install [Hash<String, MODState>] MODs to install
           # @param graph [Dependency::Graph] Current dependency graph
           # @param jobs [Integer] Number of parallel jobs
+          # @param strict_version [Boolean] Whether to fetch exact save versions
           # @return [Array<Hash>] Installation targets with MOD info and releases
-          private def plan_installation(mods_to_install, graph, jobs)
+          private def plan_installation(mods_to_install, graph, jobs, strict_version:)
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Fetching MOD info", output: err)
-            target_infos = fetch_target_mod_info(mods_to_install, jobs, presenter)
+            target_infos = fetch_target_mod_info(mods_to_install, jobs, presenter, strict_version:)
 
             target_infos.each do |info|
               graph.add_uninstalled_mod(info[:mod_info], info[:release])
@@ -125,15 +171,16 @@ module Factorix
           # @param mods_to_install [Hash<String, MODState>] MODs to install
           # @param jobs [Integer] Number of parallel jobs
           # @param presenter [Progress::Presenter] Progress presenter
+          # @param strict_version [Boolean] Whether to fetch exact save versions
           # @return [Array<Hash>] Array of {mod_name:, mod_info:, release:, version:}
-          private def fetch_target_mod_info(mods_to_install, jobs, presenter)
+          private def fetch_target_mod_info(mods_to_install, jobs, presenter, strict_version:)
             presenter.start(total: mods_to_install.size)
 
             pool = Concurrent::FixedThreadPool.new(jobs)
 
             futures = mods_to_install.map {|mod_name, mod_state|
               Concurrent::Future.execute(executor: pool) do
-                result = fetch_single_mod_info(mod_name, mod_state.version)
+                result = fetch_single_mod_info(mod_name, mod_state.version, strict_version:)
                 presenter.update
                 result
               end
@@ -149,26 +196,22 @@ module Factorix
           # Fetch information for a single MOD
           #
           # @param mod_name [String] MOD name
-          # @param version [MODVersion] Target version
+          # @param version [MODVersion] Version from save file (used only when strict_version is true)
+          # @param strict_version [Boolean] Whether to fetch exact save version or latest
           # @return [Hash] {mod_name:, mod_info:, release:, version:}
-          private def fetch_single_mod_info(mod_name, version)
+          private def fetch_single_mod_info(mod_name, version, strict_version:)
             mod_info = portal.get_mod_full(mod_name)
-            release = mod_info.releases.find {|r| r.version == version }
+            release = if strict_version
+                        mod_info.releases.find {|r| r.version == version }
+                      else
+                        mod_info.latest_release || mod_info.releases.max_by(&:version)
+                      end
 
             unless release
               raise MODNotOnPortalError, "Release not found for #{mod_name}@#{version}"
             end
 
-            {mod_name:, mod_info:, release:, version:}
-          end
-
-          # Execute the installation
-          #
-          # @param targets [Array<Hash>] Installation targets
-          # @param jobs [Integer] Number of parallel jobs
-          # @return [void]
-          private def execute_installation(targets, jobs)
-            download_mods(targets, jobs)
+            {mod_name:, mod_info:, release:, version: release.version}
           end
 
           # Find MODs that conflict with enabled MODs from the save file
@@ -214,8 +257,10 @@ module Factorix
           #
           # @param mod_list [MODList] Current MOD list
           # @param save_mods [Hash<String, MODState>] MODs from save file
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
+          # @param strict_version [Boolean] Whether to record exact versions in mod-list.json
           # @return [Array<Hash>] Change entries: {mod:, action:, ...}
-          private def plan_mod_list_changes(mod_list, save_mods)
+          private def plan_mod_list_changes(mod_list, save_mods, installed_mods, strict_version: false)
             changes = []
 
             save_mods.each do |mod_name, mod_state|
@@ -223,10 +268,10 @@ module Factorix
               next if mod.base?
 
               if mod_list.exist?(mod)
-                changes.concat(plan_existing_mod_changes(mod_list, mod, mod_state))
+                changes.concat(plan_existing_mod_changes(mod_list, mod, mod_state, installed_mods, strict_version:))
               else
-                # Not in list: add it (silently if disabled)
-                changes << {mod:, action: :add, to_enabled: mod_state.enabled?, to_version: mod_state.version}
+                to_version = strict_version ? mod_state.version : nil
+                changes << {mod:, action: :add, to_enabled: mod_state.enabled?, to_version:}
               end
             end
 
@@ -238,20 +283,26 @@ module Factorix
           # @param mod_list [MODList] Current MOD list
           # @param mod [MOD] The MOD to plan changes for
           # @param mod_state [MODState] MOD state from save file
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
+          # @param strict_version [Boolean] Whether to sync versions in mod-list.json
           # @return [Array<Hash>] Change entries for this MOD
-          private def plan_existing_mod_changes(mod_list, mod, mod_state)
+          private def plan_existing_mod_changes(mod_list, mod, mod_state, installed_mods, strict_version: false)
             current_enabled = mod_list.enabled?(mod)
             return plan_expansion_mod_changes(mod, mod_state, current_enabled) if mod.expansion?
 
-            current_version = mod_list.version(mod)
+            # When mod-list.json has no version recorded, fall back to the installed version.
+            # This avoids treating already-correct installations as needing an update.
+            recorded_current_version = mod_list.version(mod)
+            current_version = recorded_current_version || installed_mods.find {|i| i.mod == mod }&.version
             to_enabled = mod_state.enabled?
             to_version = mod_state.version
             enabled_changed = current_enabled != to_enabled
-            version_changed = current_version && current_version != to_version
+            # Only sync versions when --strict-version is given
+            version_changed = strict_version && current_version != to_version
 
             if enabled_changed
-              action = to_enabled ? :enable : :disable
-              [{mod:, action:, from_version: current_version, to_version:, from_enabled: current_enabled}]
+              apply_version = strict_version ? to_version : recorded_current_version
+              [{mod:, action: to_enabled ? :enable : :disable, from_version: current_version, to_version: apply_version, from_enabled: current_enabled}]
             elsif version_changed
               [{mod:, action: :update, from_version: current_version, to_version:, from_enabled: current_enabled}]
             else
@@ -295,17 +346,40 @@ module Factorix
           # Show the combined sync plan
           #
           # @param install_targets [Array<Hash>] MODs to install
+          # @param mods_to_delete [Array<InstalledMOD>] Installed MODs to delete (newer than save version)
           # @param conflict_mods [Array<Hash>] MODs to disable due to conflicts
           # @param changes [Array<Hash>] MOD list changes from save file
           # @param unlisted_mods [Array<MOD>] MODs to disable as unlisted
           # @param settings_changed [Boolean] Whether startup settings will be updated
           # @return [void]
-          private def show_sync_plan(install_targets, conflict_mods, changes, unlisted_mods, settings_changed)
+          private def show_sync_plan(install_targets, mods_to_delete, conflict_mods, changes, unlisted_mods, settings_changed)
             say "Planning to sync MOD(s):", prefix: :info
 
-            if install_targets.any?
+            # Mods appearing in both delete and install are downgrades (newer zip removed,
+            # save version downloaded). Show them once instead of in three separate sections.
+            downgrade_mod_set = Set.new(mods_to_delete.map(&:mod) & install_targets.map {|t| t[:mod] })
+
+            downgrade_targets = install_targets.select {|t| downgrade_mod_set.include?(t[:mod]) }
+            if downgrade_targets.any?
+              say "  Downgrade:"
+              downgrade_targets.each do |t|
+                say "    - #{t[:mod]} (#{t[:from_version]} \u2192 #{t[:release].version})"
+              end
+            end
+
+            remaining_deletes = mods_to_delete.reject {|m| downgrade_mod_set.include?(m.mod) }
+            if remaining_deletes.any?
+              say "  Delete (newer than save version):"
+              remaining_deletes.each {|m| say "    - #{m.mod}@#{m.version} (#{m.path.basename})" }
+            end
+
+            remaining_installs = install_targets.reject {|t| downgrade_mod_set.include?(t[:mod]) }
+            if remaining_installs.any?
               say "  Install:"
-              install_targets.each {|t| say "    - #{t[:mod]}@#{t[:release].version}" }
+              remaining_installs.each do |t|
+                label = t[:from_version] ? "#{t[:mod]} (#{t[:from_version]} \u2192 #{t[:release].version})" : "#{t[:mod]}@#{t[:release].version}"
+                say "    - #{label}"
+              end
             end
 
             enable_changes = changes.select {|c| c[:action] == :enable }
@@ -323,10 +397,13 @@ module Factorix
               all_disables.each {|d| say "    - #{d[:mod]} #{d[:reason]}" }
             end
 
-            update_changes = changes.select {|c| c[:action] == :update }
+            update_changes = changes.select {|c| c[:action] == :update && !downgrade_mod_set.include?(c[:mod]) }
             if update_changes.any?
               say "  Update:"
-              update_changes.each {|c| say "    - #{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" }
+              update_changes.each do |c|
+                label = c[:from_version] && c[:from_version] != c[:to_version] ? "#{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" : "#{c[:mod]}@#{c[:to_version]}"
+                say "    - #{label}"
+              end
             end
 
             say "  Update startup settings" if settings_changed
@@ -395,6 +472,30 @@ module Factorix
             else
               raise ArgumentError, "Unexpected change action: #{change[:action]}"
             end
+          end
+
+          # Delete installed MOD packages that are newer than the save file requires
+          #
+          # @param mods_to_delete [Array<InstalledMOD>] MOD packages to delete
+          # @return [void]
+          private def execute_deletions(mods_to_delete)
+            mods_to_delete.each do |installed_mod|
+              if installed_mod.form == InstalledMOD::DIRECTORY_FORM
+                installed_mod.path.rmtree
+              else
+                installed_mod.path.delete
+              end
+              logger.debug("Deleted MOD package", mod_name: installed_mod.mod.name, version: installed_mod.version.to_s, path: installed_mod.path.to_s)
+            end
+          end
+
+          # Execute the installation
+          #
+          # @param targets [Array<Hash>] Installation targets
+          # @param jobs [Integer] Number of parallel jobs
+          # @return [void]
+          private def execute_installation(targets, jobs)
+            download_mods(targets, jobs)
           end
 
           # Update mod-settings.dat with startup settings from save file

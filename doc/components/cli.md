@@ -422,13 +422,15 @@ Synchronize MOD states from a save file.
 **Options**:
 - `-j`, `--jobs` - Number of parallel downloads (default: 4)
 - `--keep-unlisted` - Keep MODs not listed in the save file enabled (default: disable them)
+- `--strict-version` - Install exact MOD versions recorded in the save file (default: install latest)
 
 **Features**:
 - Extracts MOD information from save file
 - Downloads missing MODs concurrently
 - Enables/disables MODs to match save file state
 - Disables enabled MODs (including expansion MODs) not listed in the save file (unless `--keep-unlisted` is specified)
-- Preserves existing MOD files when possible
+- Without `--strict-version`: installs missing MODs at their latest available version, does not record or change version in mod-list.json
+- With `--strict-version`: installs MODs at the exact version from the save file, records version in mod-list.json; deletes any installed version newer than the save version (Factorio picks the newest zip when multiple versions coexist)
 
 **Use case**: Set up MOD environment to match a specific save file
 

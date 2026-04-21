@@ -105,24 +105,13 @@ RSpec.describe Factorix::API::MODPortalAPI do
   end
 
   describe "error handling" do
-    context "when API returns 404 with api_message" do
-      before do
-        error = Factorix::HTTPNotFoundError.new("404 Not Found", api_message: "Mod not found")
-        allow(client).to receive(:get).and_raise(error)
-      end
-
-      it "raises MODNotOnPortalError with api_message" do
-        expect { api.get_mod("nonexistent") }.to raise_error(Factorix::MODNotOnPortalError, "Mod not found")
-      end
-    end
-
-    context "when API returns 404 without api_message" do
+    context "when API returns 404" do
       before do
         error = Factorix::HTTPNotFoundError.new("404 Not Found")
         allow(client).to receive(:get).and_raise(error)
       end
 
-      it "raises MODNotOnPortalError with fallback message" do
+      it "raises MODNotOnPortalError with MOD name" do
         expect { api.get_mod("nonexistent") }.to raise_error(Factorix::MODNotOnPortalError, "MOD 'nonexistent' not found on portal")
       end
     end

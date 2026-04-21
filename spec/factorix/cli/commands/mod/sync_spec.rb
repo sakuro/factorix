@@ -213,5 +213,197 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
         expect(mod_settings).not_to have_received(:save)
       end
     end
+
+    describe "--strict-version" do
+      let(:save_version) { Factorix::MODVersion.from_string("1.0.0") }
+      let(:newer_version) { Factorix::MODVersion.from_string("1.1.0") }
+      let(:older_version) { Factorix::MODVersion.from_string("0.9.0") }
+
+      let(:newer_mod_path) { Pathname("/tmp/mods/test-mod_1.1.0.zip") }
+      let(:newer_installed_mod) do
+        Factorix::InstalledMOD[
+          mod: Factorix::MOD[name: "test-mod"],
+          version: newer_version,
+          form: Factorix::InstalledMOD::ZIP_FORM,
+          path: newer_mod_path,
+          info: Factorix::InfoJSON[
+            name: "test-mod",
+            version: newer_version,
+            title: "Test MOD",
+            author: "Test Author",
+            description: "Test description",
+            factorio_version: "2.0",
+            dependencies: []
+          ]
+        ]
+      end
+
+      let(:older_installed_mod) do
+        Factorix::InstalledMOD[
+          mod: Factorix::MOD[name: "test-mod"],
+          version: older_version,
+          form: Factorix::InstalledMOD::ZIP_FORM,
+          path: Pathname("/tmp/mods/test-mod_0.9.0.zip"),
+          info: Factorix::InfoJSON[
+            name: "test-mod",
+            version: older_version,
+            title: "Test MOD",
+            author: "Test Author",
+            description: "Test description",
+            factorio_version: "2.0",
+            dependencies: []
+          ]
+        ]
+      end
+
+      context "when already in sync at exact version" do
+        before do
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: save_version)
+        end
+
+        it "does not ask for confirmation" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(command).not_to have_received(:confirm?)
+        end
+
+        it "does not save mod-list.json" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(mod_list).not_to have_received(:save)
+        end
+      end
+
+      context "when mod-list.json has no version recorded but installed version matches save version" do
+        before do
+          # Version not recorded (nil) - happens after a non-strict sync
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true)
+        end
+
+        it "does not ask for confirmation" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(command).not_to have_received(:confirm?)
+        end
+
+        it "does not save mod-list.json" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(mod_list).not_to have_received(:save)
+        end
+      end
+
+      context "when a newer version is installed" do
+        before do
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: newer_version)
+          allow(Factorix::InstalledMOD).to receive(:all).and_return([
+            Factorix::InstalledMOD[
+              mod: Factorix::MOD[name: "base"],
+              version: base_mod_version,
+              form: Factorix::InstalledMOD::DIRECTORY_FORM,
+              path: Pathname("/path/to/base"),
+              info: base_info
+            ],
+            newer_installed_mod
+          ])
+          allow(command).to receive(:execute_deletions).and_call_original
+          allow(newer_mod_path).to receive(:delete)
+        end
+
+        context "when also downloading the save version" do
+          before do
+            allow(command).to receive(:execute_installation)
+            allow(command).to receive(:plan_installation).and_return([])
+          end
+
+          it "asks for confirmation" do
+            run_command(command, %W[--strict-version #{save_file_path}])
+
+            expect(command).to have_received(:confirm?).once
+          end
+
+          it "deletes the newer version zip" do
+            run_command(command, %W[--strict-version #{save_file_path}])
+
+            expect(newer_mod_path).to have_received(:delete)
+          end
+
+          it "records exact save version in mod-list.json" do
+            run_command(command, %W[--strict-version #{save_file_path}])
+
+            expect(mod_list.version(Factorix::MOD[name: "test-mod"])).to eq(save_version)
+          end
+        end
+      end
+
+      context "when an older version is installed" do
+        before do
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: older_version)
+          allow(Factorix::InstalledMOD).to receive(:all).and_return([
+            Factorix::InstalledMOD[
+              mod: Factorix::MOD[name: "base"],
+              version: base_mod_version,
+              form: Factorix::InstalledMOD::DIRECTORY_FORM,
+              path: Pathname("/path/to/base"),
+              info: base_info
+            ],
+            older_installed_mod
+          ])
+          allow(command).to receive(:execute_installation)
+          allow(command).to receive(:plan_installation).and_return([])
+        end
+
+        it "does not delete the older version zip" do
+          allow(older_installed_mod.path).to receive(:delete)
+
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(older_installed_mod.path).not_to have_received(:delete)
+        end
+
+        it "records exact save version in mod-list.json" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(mod_list.version(Factorix::MOD[name: "test-mod"])).to eq(save_version)
+        end
+      end
+
+      context "when user declines confirmation" do
+        before do
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true, version: newer_version)
+          allow(Factorix::InstalledMOD).to receive(:all).and_return([
+            Factorix::InstalledMOD[
+              mod: Factorix::MOD[name: "base"],
+              version: base_mod_version,
+              form: Factorix::InstalledMOD::DIRECTORY_FORM,
+              path: Pathname("/path/to/base"),
+              info: base_info
+            ],
+            newer_installed_mod
+          ])
+          allow(command).to receive(:execute_deletions)
+          allow(command).to receive(:execute_installation)
+          allow(command).to receive_messages(confirm?: false, plan_installation: [])
+          allow(newer_mod_path).to receive(:delete)
+        end
+
+        it "does not delete the newer version zip" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(command).not_to have_received(:execute_deletions)
+        end
+
+        it "does not save mod-list.json" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(mod_list).not_to have_received(:save)
+        end
+      end
+    end
   end
 end

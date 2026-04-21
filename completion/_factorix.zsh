@@ -299,6 +299,7 @@ _factorix_mod() {
             $confirmable_opts \
             '(-j --jobs)'{-j,--jobs}'[Number of parallel downloads]:jobs:' \
             '--keep-unlisted[Keep MODs not listed in save file enabled]' \
+            '--strict-version[Install exact MOD versions from save file]' \
             '1:save file:_files -g "*.zip"'
           ;;
         changelog)
