@@ -64,7 +64,7 @@ module Factorix
             enrich_install_targets_with_current_version(install_targets, installed_mods)
             mods_to_delete = strict_version ? find_mods_to_delete(save_data.mods, installed_mods) : []
             conflict_mods = find_conflict_mods(mod_list, save_data.mods, graph)
-            changes = plan_mod_list_changes(mod_list, save_data.mods, strict_version:)
+            changes = plan_mod_list_changes(mod_list, save_data.mods, installed_mods, strict_version:)
             unlisted_mods = keep_unlisted ? [] : find_unlisted_mods(mod_list, save_data.mods, conflict_mods)
             mod_list_changed = needs_confirmation?(install_targets, conflict_mods, changes, unlisted_mods)
             has_changes = mod_list_changed || mods_to_delete.any?
@@ -257,9 +257,10 @@ module Factorix
           #
           # @param mod_list [MODList] Current MOD list
           # @param save_mods [Hash<String, MODState>] MODs from save file
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
           # @param strict_version [Boolean] Whether to record exact versions in mod-list.json
           # @return [Array<Hash>] Change entries: {mod:, action:, ...}
-          private def plan_mod_list_changes(mod_list, save_mods, strict_version: false)
+          private def plan_mod_list_changes(mod_list, save_mods, installed_mods, strict_version: false)
             changes = []
 
             save_mods.each do |mod_name, mod_state|
@@ -267,7 +268,7 @@ module Factorix
               next if mod.base?
 
               if mod_list.exist?(mod)
-                changes.concat(plan_existing_mod_changes(mod_list, mod, mod_state, strict_version:))
+                changes.concat(plan_existing_mod_changes(mod_list, mod, mod_state, installed_mods, strict_version:))
               else
                 to_version = strict_version ? mod_state.version : nil
                 changes << {mod:, action: :add, to_enabled: mod_state.enabled?, to_version:}
@@ -282,13 +283,17 @@ module Factorix
           # @param mod_list [MODList] Current MOD list
           # @param mod [MOD] The MOD to plan changes for
           # @param mod_state [MODState] MOD state from save file
+          # @param installed_mods [Array<InstalledMOD>] Currently installed MODs
           # @param strict_version [Boolean] Whether to sync versions in mod-list.json
           # @return [Array<Hash>] Change entries for this MOD
-          private def plan_existing_mod_changes(mod_list, mod, mod_state, strict_version: false)
+          private def plan_existing_mod_changes(mod_list, mod, mod_state, installed_mods, strict_version: false)
             current_enabled = mod_list.enabled?(mod)
             return plan_expansion_mod_changes(mod, mod_state, current_enabled) if mod.expansion?
 
-            current_version = mod_list.version(mod)
+            # When mod-list.json has no version recorded, fall back to the installed version.
+            # This avoids treating already-correct installations as needing an update.
+            recorded_current_version = mod_list.version(mod)
+            current_version = recorded_current_version || installed_mods.find {|i| i.mod == mod }&.version
             to_enabled = mod_state.enabled?
             to_version = mod_state.version
             enabled_changed = current_enabled != to_enabled
@@ -296,9 +301,8 @@ module Factorix
             version_changed = strict_version && current_version != to_version
 
             if enabled_changed
-              action = to_enabled ? :enable : :disable
-              recorded_version = strict_version ? to_version : current_version
-              [{mod:, action:, from_version: current_version, to_version: recorded_version, from_enabled: current_enabled}]
+              apply_version = strict_version ? to_version : recorded_current_version
+              [{mod:, action: to_enabled ? :enable : :disable, from_version: current_version, to_version: apply_version, from_enabled: current_enabled}]
             elsif version_changed
               [{mod:, action: :update, from_version: current_version, to_version:, from_enabled: current_enabled}]
             else
@@ -382,7 +386,10 @@ module Factorix
             update_changes = changes.select {|c| c[:action] == :update }
             if update_changes.any?
               say "  Update:"
-              update_changes.each {|c| say "    - #{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" }
+              update_changes.each do |c|
+                label = c[:from_version] && c[:from_version] != c[:to_version] ? "#{c[:mod]} (#{c[:from_version]} \u2192 #{c[:to_version]})" : "#{c[:mod]}@#{c[:to_version]}"
+                say "    - #{label}"
+              end
             end
 
             say "  Update startup settings" if settings_changed

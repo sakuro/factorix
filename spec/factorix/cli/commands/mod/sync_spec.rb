@@ -275,6 +275,26 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
         end
       end
 
+      context "when mod-list.json has no version recorded but installed version matches save version" do
+        before do
+          # Version not recorded (nil) - happens after a non-strict sync
+          mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
+          mod_list.add(Factorix::MOD[name: "test-mod"], enabled: true)
+        end
+
+        it "does not ask for confirmation" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(command).not_to have_received(:confirm?)
+        end
+
+        it "does not save mod-list.json" do
+          run_command(command, %W[--strict-version #{save_file_path}])
+
+          expect(mod_list).not_to have_received(:save)
+        end
+      end
+
       context "when a newer version is installed" do
         before do
           mod_list.add(Factorix::MOD[name: "base"], enabled: true, version: base_mod_version)
