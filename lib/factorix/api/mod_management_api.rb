@@ -76,8 +76,8 @@ module Factorix
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
 
         parse_upload_url(response)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end
 
       # Complete upload (works for both publish and update scenarios)
@@ -136,8 +136,8 @@ module Factorix
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Edit completed successfully", mod: mod_name)
         publish("mod.changed", mod: mod_name)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end
 
       # Initialize image upload for a MOD
@@ -155,8 +155,8 @@ module Factorix
         response = client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
 
         parse_upload_url(response)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end
 
       # Complete image upload
@@ -200,8 +200,8 @@ module Factorix
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Images updated successfully", mod: mod_name)
         publish("mod.changed", mod: mod_name)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{mod_name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end
 
       private def api_credential

@@ -56,8 +56,8 @@ module Factorix
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}")
         fetch_with_cache(uri)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{name}' not found on portal"
       end
 
       # Retrieve detailed information for a specific MOD
@@ -70,8 +70,8 @@ module Factorix
         encoded_name = ERB::Util.url_encode(name)
         uri = build_uri("/api/mods/#{encoded_name}/full")
         fetch_with_cache(uri)
-      rescue HTTPNotFoundError => e
-        raise MODNotOnPortalError, e.api_message || "MOD '#{name}' not found on portal"
+      rescue HTTPNotFoundError
+        raise MODNotOnPortalError, "MOD '#{name}' not found on portal"
       end
 
       # Event handler for mod.changed event
