@@ -174,6 +174,9 @@ complete -c factorix -n "__factorix_using_command mod" -a changelog -d 'MOD chan
 complete -c factorix -n "__factorix_using_command mod" -a image -d 'MOD image management'
 complete -c factorix -n "__factorix_using_command mod" -a settings -d 'MOD settings management'
 
+# mod show options
+complete -c factorix -n "__factorix_using_subcommand mod show" -l json -d 'Output in JSON format'
+
 # mod list options
 complete -c factorix -n "__factorix_using_subcommand mod list" -l enabled -d 'Show only enabled MODs'
 complete -c factorix -n "__factorix_using_subcommand mod list" -l disabled -d 'Show only disabled MODs'

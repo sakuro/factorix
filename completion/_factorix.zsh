@@ -211,6 +211,7 @@ _factorix_mod() {
         show)
           _arguments \
             $global_opts \
+            '--json[Output in JSON format]' \
             '1:MOD name:'
           ;;
         enable)
