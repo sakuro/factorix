@@ -57,6 +57,11 @@ module Factorix
   # External command not found
   class CommandNotFoundError < InfrastructureError; end
 
+  # RCON errors
+  class RConError < InfrastructureError; end
+  class RConConnectionError < RConError; end
+  class RConAuthenticationError < RConError; end
+
   # File format related errors
   class FileFormatError < InfrastructureError; end
 
