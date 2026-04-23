@@ -76,6 +76,10 @@ RSpec/IndexedLet:
     - '^error\d+$'    # Allow error1, error2, etc.
     - '^suggestion\d+$' # Allow suggestion1, suggestion2, etc.
 
+RSpec/SpecFilePathFormat:
+  CustomTransform:
+    RCon: rcon
+
 Style/HashEachMethods:
   Exclude:
     - lib/factorix/cli/commands/cache/stat.rb # cache.each is not Hash#each, it's Cache::Base#each

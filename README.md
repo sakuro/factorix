@@ -21,6 +21,7 @@ Factorix simplifies Factorio MOD management by providing:
 - **Blueprint Conversion**: Decode/encode Factorio blueprint strings to/from JSON
 - **MOD Portal Integration**: Upload new MODs or update existing ones, edit metadata
 - **Game Control**: Launch Factorio from the command line
+- **RCon**: Execute console commands and Lua scripts on a running Factorio server via RCon
 - **Game Download**: Download Factorio game files (alpha, expansion, demo, headless)
 - **Cross-platform Support**: Works on Windows, Linux, macOS, and WSL
 

@@ -17,7 +17,7 @@ _factorix() {
   local confirmable_opts="-y --yes"
 
   # Top-level commands
-  local commands="version man launch path download blueprint mod cache completion"
+  local commands="version man launch path download blueprint mod cache rcon completion"
 
   # blueprint subcommands
   local blueprint_commands="decode encode"
@@ -27,6 +27,10 @@ _factorix() {
 
   # cache subcommands
   local cache_commands="stat evict"
+
+  # rcon subcommands
+  local rcon_commands="exec eval"
+  local rcon_opts="--host --port --password"
 
   # mod image subcommands
   local image_commands="list add edit"
@@ -102,6 +106,21 @@ _factorix() {
             else
               COMPREPLY=($(compgen -W "download api info_json" -- "$cur"))
             fi
+            ;;
+          *)
+            COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))
+            ;;
+        esac
+      fi
+      return
+      ;;
+    rcon)
+      if [[ $cword -eq 2 ]]; then
+        COMPREPLY=($(compgen -W "$rcon_commands" -- "$cur"))
+      else
+        case "${words[2]}" in
+          exec|eval)
+            COMPREPLY=($(compgen -W "$global_opts $rcon_opts" -- "$cur"))
             ;;
           *)
             COMPREPLY=($(compgen -W "$global_opts" -- "$cur"))

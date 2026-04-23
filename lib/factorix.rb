@@ -27,6 +27,13 @@ module Factorix
     setting :data_dir, constructor: ->(v) { v ? Pathname(v) : nil }
   end
 
+  # RCON connection settings
+  setting :rcon do
+    setting :host, default: "localhost"
+    setting :port, default: 27015
+    setting :password, default: nil
+  end
+
   # HTTP timeout settings
   setting :http do
     setting :connect_timeout, default: 5
@@ -129,6 +136,7 @@ module Factorix
     "installed_mod" => "InstalledMOD",
     "mac_os" => "MacOS",
     "mod" => "MOD",
+    "rcon" => "RCon",
     "game_download_api" => "GameDownloadAPI",
     "mod_download_api" => "MODDownloadAPI",
     "mod_info" => "MODInfo",

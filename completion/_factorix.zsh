@@ -43,6 +43,7 @@ _factorix() {
         'blueprint:Blueprint decode/encode commands'
         'mod:MOD management commands'
         'cache:Cache management commands'
+        'rcon:RCon commands'
         'completion:Generate shell completion script'
       )
       _describe -t commands 'factorix command' commands
@@ -77,6 +78,9 @@ _factorix() {
           ;;
         cache)
           _factorix_cache
+          ;;
+        rcon)
+          _factorix_rcon
           ;;
       esac
       ;;
@@ -455,6 +459,56 @@ _factorix_mod_settings() {
       case $line[1] in
         dump|restore)
           _arguments $global_opts
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_factorix_rcon() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  local -a global_opts
+  global_opts=(
+    '(-c --config-path)'{-c,--config-path}'[Path to configuration file]:config file:_files'
+    '--log-level[Set log level]:level:(debug info warn error fatal)'
+    '(-q --quiet)'{-q,--quiet}'[Suppress non-essential output]'
+  )
+
+  local -a rcon_opts
+  rcon_opts=(
+    '--host[RCon host]:host:'
+    '--port[RCon port]:port:'
+    '--password[RCon password]:password:'
+  )
+
+  _arguments -C \
+    '1:subcommand:->subcommand' \
+    '*::arg:->args'
+
+  case $state in
+    subcommand)
+      local -a subcommands
+      subcommands=(
+        'exec:Execute a Factorio console command'
+        'eval:Evaluate a Lua script'
+      )
+      _describe -t subcommands 'rcon subcommand' subcommands
+      ;;
+    args)
+      case $line[1] in
+        exec)
+          _arguments \
+            $global_opts \
+            $rcon_opts \
+            '1:console command:'
+          ;;
+        eval)
+          _arguments \
+            $global_opts \
+            $rcon_opts \
+            '1:Lua script:'
           ;;
       esac
       ;;

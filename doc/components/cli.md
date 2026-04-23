@@ -571,6 +571,58 @@ Validate the structure of a MOD changelog.txt file.
 
 **Use case**: CI validation of changelog structure before release
 
+### RCon::Exec
+
+Execute a Factorio console command via RCon.
+
+**Requirements**: Factorio server must be running with RCon enabled.
+
+**Arguments**:
+- `command` (required) - Console command to execute (e.g. `/server-save`)
+
+**Options**:
+- `--host` - RCon host (default: from config, fallback `localhost`)
+- `--port` - RCon port (default: from config, fallback `27015`)
+- `--password` - RCon password (default: from config)
+
+**Configuration**: Connection settings can be set in the config file:
+```ruby
+config.rcon.host = "192.168.1.10"
+config.rcon.port = 25575
+config.rcon.password = "secret"
+```
+
+**Output**: Server response, if any. Empty responses are suppressed.
+
+**Errors**:
+- `RConConnectionError` - server unreachable
+- `RConAuthenticationError` - wrong password
+
+**Examples**:
+```bash
+factorix rcon exec /server-save
+factorix rcon exec --host 192.168.1.10 --port 25575 --password secret /server-save
+```
+
+### RCon::Eval
+
+Evaluate a Lua script in a running Factorio server via RCon. Wraps the script in `/c <script>` before sending.
+
+**Requirements**: Factorio server must be running with RCon enabled.
+
+**Arguments**:
+- `script` (optional) - Lua script to evaluate; reads from stdin if omitted
+
+**Options**: Same as `rcon exec` (`--host`, `--port`, `--password`)
+
+**Output**: Server response from `rcon.print(...)` calls, if any.
+
+**Examples**:
+```bash
+factorix rcon eval "rcon.print(game.tick)"
+echo "rcon.print(game.tick)" | factorix rcon eval
+```
+
 ### MOD::Settings::Restore
 
 Restore MOD settings from JSON format.

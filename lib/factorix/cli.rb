@@ -45,5 +45,7 @@ module Factorix
     register "mod settings restore", Commands::MOD::Settings::Restore
     register "cache stat", Commands::Cache::Stat
     register "cache evict", Commands::Cache::Evict
+    register "rcon exec", Commands::RCon::Exec
+    register "rcon eval", Commands::RCon::Eval
   end
 end

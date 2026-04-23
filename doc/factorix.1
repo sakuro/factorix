@@ -77,6 +77,49 @@ Remove expired entries only.
 .TP
 .BR \-\-older\-than =\fIAGE\fR
 Remove entries older than AGE (e.g., 30s, 5m, 2h, 7d).
+.SH RCON COMMANDS
+These commands connect to a running Factorio server via the Source RCON protocol.
+The server must be started with RCON enabled (e.g.
+.BR \-\-rcon\-port " and " \-\-rcon\-password
+flags).
+Connection settings can be configured in the Factorix config file under
+.BR config.rcon .
+.SS factorix rcon exec COMMAND
+Execute a Factorio console command via RCon.
+.TP
+.BR \-\-host =\fIVALUE\fR
+RCon host (default: config value or localhost).
+.TP
+.BR \-\-port =\fIVALUE\fR
+RCon port (default: config value or 27015).
+.TP
+.BR \-\-password =\fIVALUE\fR
+RCon password (default: config value).
+.PP
+.RS
+factorix rcon exec /server-save
+.RE
+.SS factorix rcon eval [SCRIPT]
+Evaluate a Lua script in a running Factorio server via RCon.
+The script is wrapped in
+.B /c
+before sending.
+If SCRIPT is omitted, reads from stdin.
+.TP
+.BR \-\-host =\fIVALUE\fR
+RCon host (default: config value or localhost).
+.TP
+.BR \-\-port =\fIVALUE\fR
+RCon port (default: config value or 27015).
+.TP
+.BR \-\-password =\fIVALUE\fR
+RCon password (default: config value).
+.PP
+.RS
+factorix rcon eval "rcon.print(game.tick)"
+.br
+echo "rcon.print(game.tick)" | factorix rcon eval
+.RE
 .SH MOD COMMANDS
 .SS factorix mod list
 List installed MOD(s).
