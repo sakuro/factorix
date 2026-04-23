@@ -77,6 +77,44 @@ Remove expired entries only.
 .TP
 .BR \-\-older\-than =\fIAGE\fR
 Remove entries older than AGE (e.g., 30s, 5m, 2h, 7d).
+.SS factorix download [VERSION]
+Download Factorio game files from the official download API.
+Requires service credentials (username and token). Only Factorio 2.x is supported.
+.TP
+.B VERSION
+Version to download (e.g., 2.0.73, latest). Default: latest.
+.TP
+.BR \-b ", " \-\-build =\fIVALUE\fR
+Build type: alpha, expansion, demo, headless (default: alpha).
+.TP
+.BR \-p ", " \-\-platform =\fIVALUE\fR
+Platform: win64, win64-manual, osx, linux64 (default: auto-detect).
+.TP
+.BR \-c ", " \-\-channel =\fIVALUE\fR
+Release channel: stable, experimental (default: stable).
+.TP
+.BR \-d ", " \-\-directory =\fIVALUE\fR
+Download directory (default: current directory).
+.TP
+.BR \-o ", " \-\-output =\fIVALUE\fR
+Output filename (default: from server response).
+.SH BLUEPRINT COMMANDS
+.SS factorix blueprint decode [FILE]
+Decode a Factorio blueprint string to JSON.
+.TP
+.B FILE
+Path to file containing blueprint string. If omitted, reads from stdin.
+.TP
+.BR \-o ", " \-\-output =\fIVALUE\fR
+Output file path (default: stdout).
+.SS factorix blueprint encode [FILE]
+Encode JSON to a Factorio blueprint string.
+.TP
+.B FILE
+Path to JSON file. If omitted, reads from stdin.
+.TP
+.BR \-o ", " \-\-output =\fIVALUE\fR
+Output file path (default: stdout).
 .SH RCON COMMANDS
 These commands connect to a running Factorio server via the Source RCON protocol.
 The server must be started with RCON enabled (e.g.
