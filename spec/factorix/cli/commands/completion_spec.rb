@@ -10,12 +10,12 @@ RSpec.describe Factorix::CLI::Commands::Completion do
 
       it "includes _factorix function" do
         result = run_command(Factorix::CLI::Commands::Completion, %w[zsh])
-        expect(result.stdout).to match(/_factorix\(\)/)
+        expect(result.stdout).to include("_factorix()")
       end
 
       it "includes compdef directive" do
         result = run_command(Factorix::CLI::Commands::Completion, %w[zsh])
-        expect(result.stdout).to match(/compdef _factorix factorix/)
+        expect(result.stdout).to include("compdef _factorix factorix")
       end
     end
 
@@ -27,12 +27,12 @@ RSpec.describe Factorix::CLI::Commands::Completion do
 
       it "includes _factorix function" do
         result = run_command(Factorix::CLI::Commands::Completion, %w[bash])
-        expect(result.stdout).to match(/_factorix\(\)/)
+        expect(result.stdout).to include("_factorix()")
       end
 
       it "includes complete directive" do
         result = run_command(Factorix::CLI::Commands::Completion, %w[bash])
-        expect(result.stdout).to match(/complete -F _factorix factorix/)
+        expect(result.stdout).to include("complete -F _factorix factorix")
       end
     end
 
@@ -44,7 +44,7 @@ RSpec.describe Factorix::CLI::Commands::Completion do
 
       it "includes __factorix_installed_mods function" do
         result = run_command(Factorix::CLI::Commands::Completion, %w[fish])
-        expect(result.stdout).to match(/__factorix_installed_mods/)
+        expect(result.stdout).to include("__factorix_installed_mods")
       end
     end
 

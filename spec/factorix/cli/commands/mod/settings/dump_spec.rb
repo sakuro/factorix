@@ -34,8 +34,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
       it "dumps to JSON format to stdout" do
         result = run_command(command)
         expect(result.stdout).to match(/"game_version": "1.1.0-42"/)
-        expect(result.stdout).to match(/"startup":/)
-        expect(result.stdout).to match(/"string-value": "test"/)
+        expect(result.stdout).to include('"startup":')
+        expect(result.stdout).to include('"string-value": "test"')
       end
 
       it "loads from default path" do
@@ -51,7 +51,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Settings::Dump do
         allow(Factorix::MODSettings).to receive(:load).with(settings_path).and_return(settings)
 
         result = run_command(command, %W[#{settings_path}])
-        expect(result.stdout).to match(/game_version/)
+        expect(result.stdout).to include("game_version")
 
         expect(Factorix::MODSettings).to have_received(:load).with(settings_path)
       end

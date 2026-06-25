@@ -34,7 +34,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
 
         result = run_command(command, %w[download --all])
 
-        expect(result.stdout).to match(/download/)
+        expect(result.stdout).to include("download")
         expect(result.stdout).not_to match(/\bapi\s*:/)
         # api cache should still have its entry
         expect(api_cache.exist?("http://example.com/api_entry")).to be true
@@ -114,7 +114,7 @@ RSpec.describe Factorix::CLI::Commands::Cache::Evict do
     it "formats sizes using binary prefixes" do
       result = run_command(command, %w[--all])
 
-      expect(result.stdout).to match(/KiB/)
+      expect(result.stdout).to include("KiB")
     end
   end
 end

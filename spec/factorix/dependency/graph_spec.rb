@@ -384,7 +384,7 @@ RSpec.describe Factorix::Dependency::Graph do
     end
 
     it "#to_s shows node and edge counts" do
-      expect(graph.to_s).to match(/#<Factorix::Dependency::Graph nodes=2 edges=1>/)
+      expect(graph.to_s).to include("#<Factorix::Dependency::Graph nodes=2 edges=1>")
     end
 
     it "#inspect shows node details" do

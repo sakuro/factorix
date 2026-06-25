@@ -28,7 +28,7 @@ RSpec.describe Factorix::Transfer::Uploader do
         uploader.upload(url, file_path)
         expect(client).to have_received(:post) do |uri, **options|
           expect(uri).to eq(url)
-          expect(options[:content_type]).to match(%r{multipart/form-data})
+          expect(options[:content_type]).to include("multipart/form-data")
         end
       end
 
