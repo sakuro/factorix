@@ -161,6 +161,11 @@ module Factorix
       # @return [Array<Entry>] Array of load-neutral dependencies
       def load_neutral = @dependencies.select(&:load_neutral?)
 
+      # Get all recommended dependencies
+      #
+      # @return [Array<Entry>] Array of recommended dependencies
+      def recommended = @dependencies.select(&:recommended?)
+
       # Check if this collection depends on a specific MOD
       #
       # @param mod_name_or_mod [String, MOD] MOD name or MOD instance to check

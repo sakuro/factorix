@@ -42,8 +42,10 @@ module Factorix
       public_constant :INCOMPATIBLE
       LOAD_NEUTRAL = :load_neutral
       public_constant :LOAD_NEUTRAL
+      RECOMMENDED = :recommended
+      public_constant :RECOMMENDED
 
-      VALID_TYPES = [REQUIRED, OPTIONAL, HIDDEN_OPTIONAL, INCOMPATIBLE, LOAD_NEUTRAL].freeze
+      VALID_TYPES = [REQUIRED, OPTIONAL, HIDDEN_OPTIONAL, INCOMPATIBLE, LOAD_NEUTRAL, RECOMMENDED].freeze
       private_constant :VALID_TYPES
 
       # Create a new Entry
@@ -81,6 +83,11 @@ module Factorix
       # @return [Boolean] true if dependency is optional or hidden optional
       def optional? = type == OPTIONAL || type == HIDDEN_OPTIONAL
 
+      # Check if this is a recommended dependency
+      #
+      # @return [Boolean] true if dependency is recommended
+      def recommended? = type == RECOMMENDED
+
       # Check if this is an incompatible (conflicting) dependency
       #
       # @return [Boolean] true if dependency is incompatible
@@ -111,6 +118,7 @@ module Factorix
                  when HIDDEN_OPTIONAL then "(?) "
                  when INCOMPATIBLE then "! "
                  when LOAD_NEUTRAL then "~ "
+                 when RECOMMENDED then "+ "
                  else
                    raise ArgumentError, "Unexpected dependency type: #{type}"
                  end

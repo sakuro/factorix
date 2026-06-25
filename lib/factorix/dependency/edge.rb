@@ -30,6 +30,8 @@ module Factorix
       public_constant :INCOMPATIBLE
       LOAD_NEUTRAL = Entry::LOAD_NEUTRAL
       public_constant :LOAD_NEUTRAL
+      RECOMMENDED = Entry::RECOMMENDED
+      public_constant :RECOMMENDED
 
       # @param from_mod [Factorix::MOD] The dependent MOD
       # @param to_mod [Factorix::MOD] The dependency MOD
@@ -61,6 +63,11 @@ module Factorix
       #
       # @return [Boolean]
       def load_neutral? = type == LOAD_NEUTRAL
+
+      # Check if this is a recommended dependency
+      #
+      # @return [Boolean]
+      def recommended? = type == RECOMMENDED
 
       # Check if the given version satisfies this edge's version requirement
       #

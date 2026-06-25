@@ -37,6 +37,11 @@ RSpec.describe Factorix::Dependency::Entry do
         dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "neutral-mod"], type: :load_neutral]
         expect(dep.type).to eq(:load_neutral)
       end
+
+      it "creates a recommended dependency" do
+        dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "rec-mod"], type: :recommended]
+        expect(dep.type).to eq(:recommended)
+      end
     end
 
     context "with invalid type" do
@@ -114,6 +119,23 @@ RSpec.describe Factorix::Dependency::Entry do
     end
   end
 
+  describe "#recommended?" do
+    it "returns true for recommended dependency" do
+      dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "rec-mod"], type: :recommended]
+      expect(dep.recommended?).to be(true)
+    end
+
+    it "returns false for required dependency" do
+      dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "mod"], type: :required]
+      expect(dep.recommended?).to be(false)
+    end
+
+    it "returns false for optional dependency" do
+      dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "mod"], type: :optional]
+      expect(dep.recommended?).to be(false)
+    end
+  end
+
   describe "#satisfied_by?" do
     context "without version requirement" do
       let(:dep) { Factorix::Dependency::Entry[mod: Factorix::MOD[name: "base"], type: :required] }
@@ -170,6 +192,11 @@ RSpec.describe Factorix::Dependency::Entry do
     it "returns '~ mod-name' for load-neutral dependency" do
       dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "neutral-mod"], type: :load_neutral]
       expect(dep.to_s).to eq("~ neutral-mod")
+    end
+
+    it "returns '+ mod-name' for recommended dependency" do
+      dep = Factorix::Dependency::Entry[mod: Factorix::MOD[name: "rec-mod"], type: :recommended]
+      expect(dep.to_s).to eq("+ rec-mod")
     end
 
     it "includes version requirement when present" do

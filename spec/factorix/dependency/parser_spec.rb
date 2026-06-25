@@ -114,6 +114,30 @@ RSpec.describe Factorix::Dependency::Parser do
       end
     end
 
+    context "with recommended dependencies" do
+      it "parses recommended dependency without version" do
+        dep = parser.parse("+ rec-mod")
+        expect(dep.mod.name).to eq("rec-mod")
+        expect(dep.type).to eq(:recommended)
+        expect(dep.version_requirement).to be_nil
+      end
+
+      it "parses recommended dependency with version" do
+        dep = parser.parse("+ quality >= 2.1.0")
+        expect(dep.mod.name).to eq("quality")
+        expect(dep.type).to eq(:recommended)
+        expect(dep.version_requirement).not_to be_nil
+        expect(dep.version_requirement.operator).to eq(">=")
+        expect(dep.version_requirement.version.to_s).to eq("2.1.0")
+      end
+
+      it "handles extra whitespace" do
+        dep = parser.parse("+  rec-mod  >=  1.0.0  ")
+        expect(dep.mod.name).to eq("rec-mod")
+        expect(dep.version_requirement.operator).to eq(">=")
+      end
+    end
+
     context "with edge cases" do
       it "handles MOD names with hyphens" do
         dep = parser.parse("my-cool-mod >= 1.0.0")
@@ -170,6 +194,12 @@ RSpec.describe Factorix::Dependency::Parser do
         dep = parser.parse("! conflicting-mod")
         expect(dep.mod.name).to eq("conflicting-mod")
         expect(dep.incompatible?).to be(true)
+      end
+
+      it "parses recommended dependency with version" do
+        dep = parser.parse("+ quality >= 2.1.0")
+        expect(dep.mod.name).to eq("quality")
+        expect(dep.recommended?).to be(true)
       end
     end
   end

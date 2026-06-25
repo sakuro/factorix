@@ -74,6 +74,15 @@ RSpec.describe Factorix::Dependency::Edge do
       expect(edge.incompatible?).to be false
       expect(edge.load_neutral?).to be true
     end
+
+    it "#recommended? returns true for recommended edges" do
+      edge = Factorix::Dependency::Edge[from_mod: mod_a, to_mod: mod_b, type: :recommended]
+      expect(edge.required?).to be false
+      expect(edge.optional?).to be false
+      expect(edge.incompatible?).to be false
+      expect(edge.load_neutral?).to be false
+      expect(edge.recommended?).to be true
+    end
   end
 
   describe "#satisfied_by?" do
@@ -115,6 +124,7 @@ RSpec.describe Factorix::Dependency::Edge do
       expect(Factorix::Dependency::Edge::HIDDEN_OPTIONAL).to eq(:hidden)
       expect(Factorix::Dependency::Edge::INCOMPATIBLE).to eq(:incompatible)
       expect(Factorix::Dependency::Edge::LOAD_NEUTRAL).to eq(:load_neutral)
+      expect(Factorix::Dependency::Edge::RECOMMENDED).to eq(:recommended)
     end
   end
 

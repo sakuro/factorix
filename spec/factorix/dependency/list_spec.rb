@@ -11,6 +11,7 @@ RSpec.describe Factorix::Dependency::List do
   let(:hidden_mod) { Factorix::MOD[name: "hidden-mod"] }
   let(:incompatible_mod) { Factorix::MOD[name: "incompatible-mod"] }
   let(:neutral_mod) { Factorix::MOD[name: "neutral-mod"] }
+  let(:recommended_mod) { Factorix::MOD[name: "recommended-mod"] }
 
   let(:requirement_ge_1_2_0) do
     Factorix::Dependency::MODVersionRequirement[operator: ">=", version: version_1_2_0]
@@ -29,13 +30,15 @@ RSpec.describe Factorix::Dependency::List do
         "? optional-mod",
         "(?) hidden-mod",
         "! incompatible-mod",
-        "~ neutral-mod"
+        "~ neutral-mod",
+        "+ recommended-mod"
       ])
 
       expect(deps.required.size).to eq(1)
       expect(deps.optional.size).to eq(2)
       expect(deps.incompatible.size).to eq(1)
       expect(deps.load_neutral.size).to eq(1)
+      expect(deps.recommended.size).to eq(1)
     end
 
     it "parses version requirements" do
@@ -128,7 +131,8 @@ RSpec.describe Factorix::Dependency::List do
         Factorix::Dependency::Entry[mod: optional_mod, type: :optional],
         Factorix::Dependency::Entry[mod: hidden_mod, type: :hidden],
         Factorix::Dependency::Entry[mod: incompatible_mod, type: :incompatible],
-        Factorix::Dependency::Entry[mod: neutral_mod, type: :load_neutral]
+        Factorix::Dependency::Entry[mod: neutral_mod, type: :load_neutral],
+        Factorix::Dependency::Entry[mod: recommended_mod, type: :recommended]
       ])
     end
 
@@ -162,6 +166,14 @@ RSpec.describe Factorix::Dependency::List do
         result = deps.load_neutral
         expect(result.size).to eq(1)
         expect(result.first.mod.name).to eq("neutral-mod")
+      end
+    end
+
+    describe "#recommended" do
+      it "returns only recommended dependencies" do
+        result = deps.recommended
+        expect(result.size).to eq(1)
+        expect(result.first.mod.name).to eq("recommended-mod")
       end
     end
   end

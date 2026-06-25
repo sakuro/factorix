@@ -37,7 +37,8 @@ module Factorix
           str("(?)").as(:hidden_optional) |
             str("!").as(:incompatible) |
             str("?").as(:optional) |
-            str("~").as(:load_neutral)
+            str("~").as(:load_neutral) |
+            str("+").as(:recommended)
         end
 
         # MOD name: starts with alphanumeric, can contain spaces
@@ -88,6 +89,7 @@ module Factorix
         rule(hidden_optional: simple(:_)) { {type: Entry::HIDDEN_OPTIONAL} }
         rule(incompatible: simple(:_)) { {type: Entry::INCOMPATIBLE} }
         rule(load_neutral: simple(:_)) { {type: Entry::LOAD_NEUTRAL} }
+        rule(recommended: simple(:_)) { {type: Entry::RECOMMENDED} }
       end
 
       def initialize
