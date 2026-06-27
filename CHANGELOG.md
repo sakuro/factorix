@@ -4,6 +4,12 @@
 
 - Add `rcon exec` command to execute a Factorio console command via RCon (#87)
 - Add `rcon eval` command to evaluate a Lua script in a running Factorio server via RCon (#87)
+- Add shell completion support for `rcon` subcommands (zsh, bash, fish)
+- Add recommended dependency type (`+` prefix) support in MOD dependency parsing
+
+### Changed
+
+- Bump retriable dependency from `~> 3.1` to `~> 4.0` (#96)
 
 ## [0.12.0] - 2026-04-21
 
