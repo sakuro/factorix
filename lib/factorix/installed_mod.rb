@@ -2,7 +2,6 @@
 
 require "concurrent/executor/fixed_thread_pool"
 require "concurrent/future"
-require "dry/events"
 
 module Factorix
   InstalledMOD = Data.define(:mod, :version, :form, :path, :info)
@@ -40,15 +39,9 @@ module Factorix
 
     # Get all installed MODs
     #
-    # @param handler [Progress::ScanHandler, nil] optional event handler for progress tracking
+    # @param listener [Progress::ScanHandler, nil] optional progress listener
     # @return [Array<InstalledMOD>] Array of all installed MODs
-    def self.all(handler: nil)
-      scanner = Scanner.new
-      scanner.subscribe(handler) if handler
-      result = scanner.scan
-      scanner.unsubscribe(handler) if handler
-      result
-    end
+    def self.all(listener: nil) = Scanner.new.scan(listener:)
 
     # Enumerate over all installed MODs
     #
@@ -100,14 +93,9 @@ module Factorix
     #
     # Scans MOD directory and data directory for installed MODs.
     # Gets directory paths from Runtime automatically.
-    # Publishes progress events during scan.
+    # Reports progress to an optional listener.
     class Scanner
       include Import[:runtime, :logger]
-      include Dry::Events::Publisher[:scanner]
-
-      register_event("scan.started")
-      register_event("scan.progress")
-      register_event("scan.completed")
 
       DEFAULT_PARALLEL_JOBS = 4
       private_constant :DEFAULT_PARALLEL_JOBS
@@ -117,10 +105,10 @@ module Factorix
       # Scans the MOD directory for both ZIP and directory form MODs.
       # Also scans the data directory for base/expansion MODs.
       # Invalid packages are skipped with debug logging.
-      # Publishes scan.started, scan.progress, and scan.completed events.
       #
+      # @param listener [Progress::ScanHandler, nil] optional progress listener
       # @return [Array<InstalledMOD>] Array of installed MODs
-      def scan
+      def scan(listener: nil)
         mod_dir = runtime.mod_dir
         data_dir = runtime.data_dir
 
@@ -137,7 +125,7 @@ module Factorix
         current = 0
         mutex = Mutex.new
 
-        publish("scan.started", total:)
+        listener&.on_started(total:)
 
         pool = Concurrent::FixedThreadPool.new(DEFAULT_PARALLEL_JOBS)
 
@@ -147,7 +135,7 @@ module Factorix
               result = scan_mod_path(path)
               mutex.synchronize do
                 current += 1
-                publish("scan.progress", current:, total:)
+                listener&.on_progress(current:)
               end
               result
             end
@@ -163,10 +151,10 @@ module Factorix
           result = scan_mod_path(path)
           installed_mods << result if result
           current += 1
-          publish("scan.progress", current:, total:)
+          listener&.on_progress(current:)
         end
 
-        publish("scan.completed", total: installed_mods.size)
+        listener&.on_completed
 
         resolved = resolve_duplicates(installed_mods)
         resolved.sort_by(&:version).reverse

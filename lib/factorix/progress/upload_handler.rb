@@ -2,32 +2,29 @@
 
 module Factorix
   module Progress
-    # Upload event handler for progress presenters
-    #
-    # This class listens to upload events and updates a progress presenter accordingly.
+    # Upload progress listener driving a progress presenter
     class UploadHandler
       # Create a new upload handler
       #
       # @param presenter [Presenter, PresenterAdapter] progress presenter to update
       def initialize(presenter) = @presenter = presenter
 
-      # Handle upload started event
+      # Called when the upload starts
       #
-      # @param event [Dry::Events::Event] event with total_size payload
+      # @param total [Integer] total size in bytes
       # @return [void]
-      def on_upload_started(event) = @presenter.start(total: event[:total_size], format: "Uploading [:bar] :percent :byte/:total_byte")
+      def on_started(total:) = @presenter.start(total:, format: "Uploading [:bar] :percent :byte/:total_byte")
 
-      # Handle upload progress event
+      # Called on upload progress
       #
-      # @param event [Dry::Events::Event] event with current_size payload
+      # @param current [Integer] bytes uploaded so far
       # @return [void]
-      def on_upload_progress(event) = @presenter.update(event[:current_size])
+      def on_progress(current:) = @presenter.update(current)
 
-      # Handle upload completed event
+      # Called when the upload completes
       #
-      # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_upload_completed(_event) = @presenter.finish
+      def on_completed = @presenter.finish
     end
   end
 end

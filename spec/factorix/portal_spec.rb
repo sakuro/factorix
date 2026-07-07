@@ -129,11 +129,11 @@ RSpec.describe Factorix::Portal do
 
     it "downloads the MOD file to the specified path with SHA1 verification" do
       output_path = Pathname(Dir.tmpdir) / "test-mod.zip"
-      allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123", handler: nil)
+      allow(mod_download_api).to receive(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123", listener: nil)
 
       portal.download_mod(release, output_path)
 
-      expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123", handler: nil)
+      expect(mod_download_api).to have_received(:download).with("/download/test-mod/1.0.0", output_path, expected_sha1: "abc123", listener: nil)
     end
   end
 
@@ -157,6 +157,7 @@ RSpec.describe Factorix::Portal do
           "test-mod",
           upload_url,
           file_path,
+          listener: nil,
           description: "Test",
           category: "content"
         )
@@ -166,7 +167,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path)
 
         expect(mod_management_api).to have_received(:init_publish).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path, listener: nil)
       end
     end
 
@@ -193,7 +194,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path, description: "Updated", license: "MIT")
 
         expect(mod_management_api).to have_received(:init_upload).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path, listener: nil)
         expect(mod_management_api).to have_received(:edit_details).with(
           "test-mod",
           description: "Updated",
@@ -205,7 +206,7 @@ RSpec.describe Factorix::Portal do
         portal.upload_mod("test-mod", file_path)
 
         expect(mod_management_api).to have_received(:init_upload).with("test-mod")
-        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path)
+        expect(mod_management_api).to have_received(:finish_upload).with("test-mod", upload_url, file_path, listener: nil)
         expect(mod_management_api).not_to have_received(:edit_details)
       end
     end

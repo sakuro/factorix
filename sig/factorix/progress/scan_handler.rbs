@@ -8,9 +8,9 @@ module Factorix
       @presenter: Presenter | PresenterAdapter
 
       def initialize: (Presenter | PresenterAdapter presenter) -> void
-      def on_scan_started: (Hash[Symbol, untyped] event) -> void
-      def on_scan_progress: (Hash[Symbol, untyped] event) -> void
-      def on_scan_completed: (Hash[Symbol, untyped] event) -> void
+      def on_started: (total: Integer) -> void
+      def on_progress: (current: Integer) -> void
+      def on_completed: () -> void
     end
   end
 end

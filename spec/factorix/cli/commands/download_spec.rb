@@ -28,7 +28,7 @@ RSpec.describe Factorix::CLI::Commands::Download do
           build: "alpha",
           platform: "osx",
           output: download_dir / "Factorio_2.0.28.dmg",
-          handler: anything
+          listener: anything
         )
       end
 

@@ -140,9 +140,9 @@ module Factorix
         # @return [void]
         private def download_game(version, build, platform, output_path)
           presenter = Progress::Presenter.new(title: output_path.basename.to_s, output: err)
-          handler = Progress::DownloadHandler.new(presenter)
+          listener = Progress::DownloadHandler.new(presenter)
 
-          game_download_api.download(version:, build:, platform:, output: output_path, handler:)
+          game_download_api.download(version:, build:, platform:, output: output_path, listener:)
         end
       end
     end

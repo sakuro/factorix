@@ -11,8 +11,6 @@ RSpec.describe Factorix::API::GameDownloadAPI do
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
     allow(Factorix::Container).to receive(:[]).with(:downloader).and_return(downloader)
-    allow(downloader).to receive(:subscribe)
-    allow(downloader).to receive(:unsubscribe)
   end
 
   describe "#latest_releases" do
@@ -133,7 +131,7 @@ RSpec.describe Factorix::API::GameDownloadAPI do
     it "downloads via downloader" do
       api.download(version: "2.0.28", build: "alpha", platform: "osx", output:)
 
-      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output)
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, listener: nil)
     end
 
     it "builds correct download URI" do
@@ -147,20 +145,12 @@ RSpec.describe Factorix::API::GameDownloadAPI do
       end
     end
 
-    it "subscribes handler when provided" do
-      handler = instance_double(Object)
+    it "passes the listener to the downloader" do
+      listener = instance_double(Factorix::Progress::DownloadHandler)
 
-      api.download(version: "2.0.28", build: "alpha", platform: "osx", output:, handler:)
+      api.download(version: "2.0.28", build: "alpha", platform: "osx", output:, listener:)
 
-      expect(downloader).to have_received(:subscribe).with(handler)
-      expect(downloader).to have_received(:unsubscribe).with(handler)
-    end
-
-    it "does not subscribe when handler is nil" do
-      api.download(version: "2.0.28", build: "alpha", platform: "osx", output:)
-
-      expect(downloader).not_to have_received(:subscribe)
-      expect(downloader).not_to have_received(:unsubscribe)
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, listener:)
     end
 
     context "with invalid build type" do

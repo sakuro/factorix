@@ -89,16 +89,6 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
 
         expect(logger).to have_received(:debug).with("Cache hit", uri: uri.to_s)
       end
-
-      it "publishes cache.hit event" do
-        events = []
-        decorator.subscribe("cache.hit") {|event| events << event }
-
-        decorator.get(uri)
-
-        expect(events).to have_attributes(size: 1)
-        expect(events.first[:url]).to eq(uri.to_s)
-      end
     end
 
     context "when cache miss" do
@@ -120,16 +110,6 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
         decorator.get(uri)
 
         expect(logger).to have_received(:debug).with("Cache miss", uri: uri.to_s)
-      end
-
-      it "publishes cache.miss event" do
-        events = []
-        decorator.subscribe("cache.miss") {|event| events << event }
-
-        decorator.get(uri)
-
-        expect(events).to have_attributes(size: 1)
-        expect(events.first[:url]).to eq(uri.to_s)
       end
 
       it "stores successful response in cache" do
@@ -180,15 +160,6 @@ RSpec.describe Factorix::HTTP::CacheDecorator do
           expect(result).to be_a(Factorix::HTTP::CachedResponse)
           expect(result.body).to eq("cached by other thread")
           expect(client).not_to have_received(:get)
-        end
-
-        it "publishes cache.hit event for double-check hit" do
-          events = []
-          decorator.subscribe("cache.hit") {|event| events << event }
-
-          decorator.get(uri)
-
-          expect(events).to have_attributes(size: 1)
         end
       end
     end

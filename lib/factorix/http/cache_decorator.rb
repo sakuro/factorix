@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
 require "pathname"
 require "tempfile"
 
@@ -19,10 +18,6 @@ module Factorix
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
       include Import[:client, :cache, :logger]
-      include Dry::Events::Publisher[:http]
-
-      register_event("cache.hit")
-      register_event("cache.miss")
 
       # Execute an HTTP request (only caches GET without block)
       #
@@ -55,21 +50,16 @@ module Factorix
         cached_body = cache.read(cache_key)
         if cached_body
           logger.debug("Cache hit", uri: uri.to_s)
-          publish("cache.hit", url: uri.to_s)
           return CachedResponse.new(cached_body, uri:)
         end
 
         logger.debug("Cache miss", uri: uri.to_s)
-        publish("cache.miss", url: uri.to_s)
 
         # Locking prevents concurrent downloads of the same resource
         cache.with_lock(cache_key) do
           # Double-check: another thread might have filled the cache
           cached_body = cache.read(cache_key)
-          if cached_body
-            publish("cache.hit", url: uri.to_s)
-            return CachedResponse.new(cached_body, uri:)
-          end
+          return CachedResponse.new(cached_body, uri:) if cached_body
 
           response = client.get(uri, headers:)
 

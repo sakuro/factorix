@@ -25,8 +25,8 @@ module Factorix
           def call(**)
             mod_list = MODList.load
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: err)
-            handler = Progress::ScanHandler.new(presenter)
-            installed_mods = InstalledMOD.all(handler:)
+            listener = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(listener:)
             graph = Dependency::Graph::Builder.build(installed_mods:, mod_list:)
 
             validator = Dependency::Validator.new(graph:, mod_list:, installed_mods:)

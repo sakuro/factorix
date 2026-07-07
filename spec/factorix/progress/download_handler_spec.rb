@@ -1,42 +1,34 @@
 # frozen_string_literal: true
 
-require "dry/events"
-
 RSpec.describe Factorix::Progress::DownloadHandler do
   let(:presenter) { instance_double(Factorix::Progress::Presenter) }
-  let(:handler) { Factorix::Progress::DownloadHandler.new(presenter) }
+  let(:listener) { Factorix::Progress::DownloadHandler.new(presenter) }
 
-  describe "#on_download_started" do
-    it "starts the progress presenter with download-specific format" do
-      event = Dry::Events::Event.new("download.started", total_size: 1000)
-
+  describe "#on_started" do
+    it "starts the progress presenter with the total size" do
       allow(presenter).to receive(:start)
 
-      handler.on_download_started(event)
+      listener.on_started(total: 1000)
 
       expect(presenter).to have_received(:start).with(total: 1000)
     end
   end
 
-  describe "#on_download_progress" do
+  describe "#on_progress" do
     it "updates the progress presenter with current size" do
-      event = Dry::Events::Event.new("download.progress", current_size: 500, total_size: 1000)
-
       allow(presenter).to receive(:update)
 
-      handler.on_download_progress(event)
+      listener.on_progress(current: 500)
 
       expect(presenter).to have_received(:update).with(500)
     end
   end
 
-  describe "#on_download_completed" do
+  describe "#on_completed" do
     it "finishes the progress presenter" do
-      event = Dry::Events::Event.new("download.completed", total_size: 1000)
-
       allow(presenter).to receive(:finish)
 
-      handler.on_download_completed(event)
+      listener.on_completed
 
       expect(presenter).to have_received(:finish)
     end
@@ -48,12 +40,12 @@ RSpec.describe Factorix::Progress::DownloadHandler do
       allow(presenter).to receive(:update)
       allow(presenter).to receive(:finish)
 
-      handler.on_download_started(Dry::Events::Event.new("download.started", total_size: 1000))
-      handler.on_download_progress(Dry::Events::Event.new("download.progress", current_size: 250, total_size: 1000))
-      handler.on_download_progress(Dry::Events::Event.new("download.progress", current_size: 500, total_size: 1000))
-      handler.on_download_progress(Dry::Events::Event.new("download.progress", current_size: 750, total_size: 1000))
-      handler.on_download_progress(Dry::Events::Event.new("download.progress", current_size: 1000, total_size: 1000))
-      handler.on_download_completed(Dry::Events::Event.new("download.completed", total_size: 1000))
+      listener.on_started(total: 1000)
+      listener.on_progress(current: 250)
+      listener.on_progress(current: 500)
+      listener.on_progress(current: 750)
+      listener.on_progress(current: 1000)
+      listener.on_completed
 
       expect(presenter).to have_received(:start).once
       expect(presenter).to have_received(:update).exactly(4).times
@@ -63,36 +55,23 @@ RSpec.describe Factorix::Progress::DownloadHandler do
 
   describe "#on_cache_hit" do
     it "shows cached status with file size" do
-      event = Dry::Events::Event.new(
-        "cache.hit",
-        url: "https://example.com/file.zip",
-        output: "/tmp/file.zip",
-        total_size: 1024
-      )
-
       allow(presenter).to receive(:start)
       allow(presenter).to receive(:update)
       allow(presenter).to receive(:finish)
 
-      handler.on_cache_hit(event)
+      listener.on_cache_hit(total: 1024)
 
       expect(presenter).to have_received(:start).with(total: 1024)
       expect(presenter).to have_received(:update).with(1024)
       expect(presenter).to have_received(:finish)
     end
 
-    it "uses fallback size when total_size is nil" do
-      event = Dry::Events::Event.new(
-        "cache.hit",
-        url: "https://example.com/file.zip",
-        output: "/tmp/file.zip"
-      )
-
+    it "uses fallback size when total is nil" do
       allow(presenter).to receive(:start)
       allow(presenter).to receive(:update)
       allow(presenter).to receive(:finish)
 
-      handler.on_cache_hit(event)
+      listener.on_cache_hit(total: nil)
 
       expect(presenter).to have_received(:start).with(total: 1)
       expect(presenter).to have_received(:update).with(1)

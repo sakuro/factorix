@@ -15,7 +15,7 @@ module Factorix
     def self.from_directory: (Pathname path) -> InstalledMOD
 
     # Enumerable class methods
-    def self.all: () -> Array[InstalledMOD]
+    def self.all: (?listener: Progress::ScanHandler?) -> Array[InstalledMOD]
     def self.each: () { (InstalledMOD) -> void } -> Array[InstalledMOD]
                  | () -> Enumerator[InstalledMOD, Array[InstalledMOD]]
 

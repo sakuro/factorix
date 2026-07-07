@@ -12,8 +12,6 @@ RSpec.describe Factorix::API::MODDownloadAPI do
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
     allow(Factorix::Container).to receive(:[]).with(:downloader).and_return(downloader)
-    allow(downloader).to receive(:subscribe)
-    allow(downloader).to receive(:unsubscribe)
   end
 
   describe "#download" do
@@ -23,12 +21,12 @@ RSpec.describe Factorix::API::MODDownloadAPI do
 
     it "downloads the MOD file via downloader" do
       api.download(download_url, output)
-      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: nil)
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: nil, listener: nil)
     end
 
     it "passes expected_sha1 to downloader" do
       api.download(download_url, output, expected_sha1: "abc123sha1")
-      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: "abc123sha1")
+      expect(downloader).to have_received(:download).with(kind_of(URI::HTTPS), output, expected_sha1: "abc123sha1", listener: nil)
     end
 
     it "builds correct URI with authentication parameters" do

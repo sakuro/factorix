@@ -74,13 +74,13 @@ module Factorix
         raise MODNotOnPortalError, "MOD '#{name}' not found on portal"
       end
 
-      # Event handler for mod.changed event
-      # Invalidates cached MOD information when a MOD is modified on the portal
+      # Invalidate cached MOD information when a MOD is modified on the portal
       #
-      # @param event [Dry::Events::Event] event with mod payload
+      # Wired as MODManagementAPI's on_mod_changed callback.
+      #
+      # @param mod_name [String] the MOD name
       # @return [void]
-      def on_mod_changed(event)
-        mod_name = event[:mod]
+      def invalidate_mod_cache(mod_name)
         encoded_name = ERB::Util.url_encode(mod_name)
 
         # Invalidate get_mod cache

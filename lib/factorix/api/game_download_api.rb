@@ -91,21 +91,15 @@ module Factorix
       # @param build [String] Build type (alpha, expansion, demo, headless)
       # @param platform [String] Platform (win64, win64-manual, osx, linux64)
       # @param output [Pathname] Output file path
-      # @param handler [Object, nil] Event handler for download progress (optional)
+      # @param listener [Progress::DownloadHandler, nil] optional progress listener
       # @return [void]
       # @raise [ArgumentError] if build or platform is invalid
-      def download(version:, build:, platform:, output:, handler: nil)
+      def download(version:, build:, platform:, output:, listener: nil)
         validate_build!(build)
         validate_platform!(platform)
 
         uri = build_download_uri(version, build, platform)
-        downloader = Container[:downloader]
-        downloader.subscribe(handler) if handler
-        begin
-          downloader.download(uri, output)
-        ensure
-          downloader.unsubscribe(handler) if handler
-        end
+        Container[:downloader].download(uri, output, listener:)
       end
 
       # Build the download URI with authentication
