@@ -13,15 +13,17 @@ command-level feature parity (except the items listed in Out of Scope).
 the port reaches command parity (Phase 10), then is replaced by the branch.
 Sequencing:
 
-1. After the dry-* simplification completes, cut the final gem release and
-   freeze Ruby development. A `ruby` branch is kept for emergency gem fixes
+1. Ruby development is frozen on `main` at the e2e-suite merge. The dry-*
+   simplification (Stages 1–4) lives only on `go-rewrite`, so the gem line
+   never ships the TOML config break. Emergency gem fixes branch from `main`
    (tagged `ruby-vX.Y.Z` to avoid colliding with Go release tags).
 2. Go development proceeds on `go-rewrite`. The Ruby sources stay on the branch
    during development — the trees do not overlap (`lib/` vs `cmd/`, `internal/`)
    and keeping them enables Ruby-vs-Go parity testing against the same fixtures.
-3. At parity, `main` is replaced, Ruby sources are removed (history and the
-   `ruby` branch retain them), and goreleaser tags continue the gem's `vX.Y.Z`
-   sequence — reaching parity is the `v1.0.0` milestone.
+   Pull requests during this period target `go-rewrite`, not `main`.
+3. At parity, `main` is replaced, Ruby sources are removed (history retains
+   them), and goreleaser tags continue the gem's `vX.Y.Z` sequence — reaching
+   parity is the `v1.0.0` milestone.
 
 **Prerequisite work in the Ruby repository:** the
 [dry-* simplification plan](dry-simplification-plan.md) — DI container →
