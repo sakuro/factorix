@@ -31,6 +31,33 @@ Each stage is one PR. `bundle exec rake` (spec + rubocop + steep) must pass,
 including `sig/*.rbs` updates. No user-visible behavior changes except the
 config file format (Stage 2).
 
+Stage 0 adds a language-neutral e2e test suite before any refactoring: the
+existing specs are coupled to Ruby internals (container stubs, mixins) and get
+rewritten along with Stages 1–4, so they cannot serve as the safety net for
+those refactors. The same suite later becomes the Ruby-vs-Go parity check in
+the [Go migration roadmap](go-migration-roadmap.md) (Phase 11).
+
+---
+
+## Stage 0 — Language-Neutral CLI e2e Tests
+
+Test cases are language-neutral *data*; only a thin driver is per-language
+(RSpec now, `go test` after the port reads the same cases).
+
+- [ ] `e2e/cases/` at the repository root: one directory per case holding the
+      command line, environment, fixture setup, and expected stdout / exit status
+- [ ] Thin RSpec driver that discovers and runs the cases against `exe/factorix`
+- [ ] Isolation via config runtime overrides (`user_dir` / `data_dir`) pointing
+      into a per-case temporary directory
+- [ ] Output determinism: suppress the progress bar when stdout is not a TTY,
+      honor `NO_COLOR`
+- [ ] Initial coverage — deterministic local commands only:
+      `version`, `path`, `mod list`, `mod check`, `mod settings dump`,
+      `blueprint encode` / `decode`, `mod changelog check` / `extract`
+- [ ] Portal-dependent commands (`mod search`, `mod install`, …) are deferred:
+      they need a mock portal server serving recorded API responses; add once
+      the local-command suite is in place
+
 ---
 
 ## Stage 1 — dry-events → Listener Callbacks
@@ -110,14 +137,16 @@ confined to the CLI boundary; in Go, cobra wiring in `main.go` takes its place.
 
 ## Ordering Rationale
 
-1. Stage 1 is independent and smallest, and validates the Go listener design early.
-2. Stage 2 precedes Stage 4 because the container reads `Factorix.config`.
-3. Stage 3 precedes Stage 4 so the logger moves into the composition root already
+1. Stage 0 comes first because every later stage relies on it as the
+   refactoring safety net.
+2. Stage 1 is independent and smallest, and validates the Go listener design early.
+3. Stage 2 precedes Stage 4 because the container reads `Factorix.config`.
+4. Stage 3 precedes Stage 4 so the logger moves into the composition root already
    in its final stdlib form.
 
 ## Verification
 
-- Full test suite and steep green at every stage
+- Full test suite (unit + e2e) and steep green at every stage
 - Manual smoke test per stage: `mod list`, `mod download` (progress bar),
   `mod settings dump`
 - CHANGELOG entry per stage; the config file migration (Stage 2) is called out
