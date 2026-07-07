@@ -1,4 +1,5 @@
 [tools]
+go = "1.26"
 ruby = "3.3"
 
 [env]

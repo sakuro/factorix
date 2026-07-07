@@ -4,7 +4,7 @@
 /.env.*.local
 
 # bundles
-/vendor/bundle/
+/.bundle/
 
 # Ignore generated binstubs except console and setup
 /bin/*

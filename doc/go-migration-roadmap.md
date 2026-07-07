@@ -191,11 +191,11 @@ RCON needs no internal package — `gorcon/rcon` is used directly from the CLI l
 
 **Goal:** Runnable skeleton that outputs version and help text.
 
-- [ ] Create the `go-rewrite` branch; `go mod init github.com/sakuro/factorix` (go 1.23)
-- [ ] `cmd/factorix/main.go` with cobra root command and `signal.NotifyContext`
-- [ ] cobra subcommand skeleton: `mod`, `cache`, `blueprint`, `rcon`, `completion`, `version`, `path`, `download`, `launch`, `man`
-- [ ] `.goreleaser.yaml` for multi-platform releases
-- [ ] GitHub Actions CI for the `go-rewrite` branch (build + test + `go vet`)
+- [x] Create the `go-rewrite` branch; `go mod init github.com/sakuro/factorix` (go 1.23)
+- [x] `cmd/factorix/main.go` with cobra root command and `signal.NotifyContext`
+- [x] cobra subcommand skeleton: `mod`, `cache`, `blueprint`, `rcon`, `completion`, `version`, `path`, `download`, `launch`, `man`
+- [x] `.goreleaser.yaml` for multi-platform releases
+- [x] GitHub Actions CI for the `go-rewrite` branch (build + test + `go vet`)
 
 ---
 
