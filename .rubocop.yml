@@ -106,6 +106,10 @@ Style/StaticClass:
     - lib/factorix/info_json.rb
     - lib/factorix.rb # Deprecated Application class for backward compatibility
 
+ThreadSafety/ClassInstanceVariable:
+  Exclude:
+    - lib/factorix.rb # Config is loaded once on the main thread at startup and only read afterwards
+
 ThreadSafety/NewThread:
   Exclude:
     - spec/factorix/runtime/wsl/wsl_path_spec.rb

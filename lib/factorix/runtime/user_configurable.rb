@@ -8,13 +8,12 @@ module Factorix
     # auto-detected paths via configuration. When a configured path is available,
     # it is used instead of platform-specific auto-detection.
     #
-    # Configuration is done via Factorix.config:
+    # Configuration is done via the config file:
     #
-    # @example Configure paths in config file
-    #   Factorix.configure do |config|
-    #     config.runtime.executable_path = "/opt/factorio/bin/x64/factorio"
-    #     config.runtime.user_dir = "/home/user/.factorio"
-    #   end
+    # @example Configure paths in config.toml
+    #   [runtime]
+    #   executable_path = "/opt/factorio/bin/x64/factorio"
+    #   user_dir = "/home/user/.factorio"
     #
     # All path resolution decisions are logged at DEBUG level.
     module UserConfigurable
@@ -59,9 +58,8 @@ module Factorix
           #{name} not configured and auto-detection is not supported for this platform.
           Please configure it in #{Container[:runtime].factorix_config_path}:
 
-            Factorix.configure do |config|
-              config.runtime.#{name} = "#{example_path}"
-            end
+            [runtime]
+            #{name} = "#{example_path}"
         MESSAGE
       end
     end

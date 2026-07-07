@@ -4,7 +4,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
-      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      factorix_config_path: Pathname("/tmp/factorix/config.toml"),
       mod_list_path: Pathname("/fake/path/mod-list.json"),
       mod_dir: Pathname("/fake/path/mods"),
       data_dir: Pathname("/fake/path/data"),

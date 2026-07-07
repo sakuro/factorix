@@ -23,7 +23,6 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
   let(:runtime) { test_runtime_class.new }
   let(:logger) { instance_double(Dry::Logger::Dispatcher) }
-  let(:config) { Factorix.config }
 
   before do
     # Inject logger into runtime
@@ -31,10 +30,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
     allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
 
-    # Reset config to defaults
-    config.runtime.executable_path = nil
-    config.runtime.user_dir = nil
-    config.runtime.data_dir = nil
+    Factorix.reset_config
   end
 
   describe "#executable_path" do
@@ -42,7 +38,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       let(:configured_path) { Pathname("/configured/factorio") }
 
       before do
-        config.runtime.executable_path = configured_path
+        Factorix.config = Factorix::Config.from_h(runtime: {executable_path: configured_path.to_s})
       end
 
       it "returns the configured path" do
@@ -91,7 +87,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
         allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
-            factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
+            factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
           )
         )
         allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
@@ -120,7 +116,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.executable_path }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix\.configure/
+          /\[runtime\]/
         )
       end
     end
@@ -131,7 +127,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       let(:configured_path) { Pathname("/configured/user") }
 
       before do
-        config.runtime.user_dir = configured_path
+        Factorix.config = Factorix::Config.from_h(runtime: {user_dir: configured_path.to_s})
       end
 
       it "returns the configured path" do
@@ -179,7 +175,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
         allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
-            factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
+            factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
           )
         )
         allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
@@ -208,7 +204,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.user_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix\.configure/
+          /\[runtime\]/
         )
       end
     end
@@ -219,7 +215,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       let(:configured_path) { Pathname("/configured/data") }
 
       before do
-        config.runtime.data_dir = configured_path
+        Factorix.config = Factorix::Config.from_h(runtime: {data_dir: configured_path.to_s})
       end
 
       it "returns the configured path" do
@@ -267,7 +263,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
         allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
           instance_double(
             Factorix::Runtime::Base,
-            factorix_config_path: Pathname("/home/user/.config/factorix/config.rb")
+            factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
           )
         )
         allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
@@ -296,7 +292,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
       it "includes configuration instructions in error message" do
         expect { runtime.data_dir }.to raise_error(
           Factorix::ConfigurationError,
-          /Factorix\.configure/
+          /\[runtime\]/
         )
       end
     end

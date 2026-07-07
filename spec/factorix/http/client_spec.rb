@@ -7,12 +7,11 @@ RSpec.describe Factorix::HTTP::Client do
   let(:uri) { URI("https://example.com/api/endpoint") }
 
   before do
-    # Configure stub application config
-    allow(Factorix.config.http).to receive_messages(
-      connect_timeout: 10,
-      read_timeout: 30,
-      write_timeout: 30
-    )
+    Factorix.config = Factorix::Config.from_h(http: {connect_timeout: 10, read_timeout: 30, write_timeout: 30})
+  end
+
+  after do
+    Factorix.reset_config
   end
 
   describe "#get" do

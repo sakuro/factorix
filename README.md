@@ -57,10 +57,10 @@ factorix path --json | jq -r .factorix_config_path
 **Create configuration file:**
 ```bash
 # Copy example configuration
-cp example/config.rb ~/.config/factorix/config.rb
+cp example/config.toml ~/.config/factorix/config.toml
 
 # Edit the configuration
-$EDITOR ~/.config/factorix/config.rb
+$EDITOR ~/.config/factorix/config.toml
 ```
 
 **Configurable paths:**
@@ -69,27 +69,30 @@ $EDITOR ~/.config/factorix/config.rb
 - `data_dir` - Path to Factorio data directory
 
 **Example configuration:**
-```ruby
-Factorix.configure do |config|
-  config.runtime.executable_path = "/Applications/Factorio.app/Contents/MacOS/factorio"
-  config.runtime.user_dir = "#{Dir.home}/Library/Application Support/factorio"
-  config.runtime.data_dir = "/Applications/Factorio.app/Contents/data"
-end
+```toml
+[runtime]
+executable_path = "/Applications/Factorio.app/Contents/MacOS/factorio"
+user_dir = "/Users/me/Library/Application Support/factorio"
+data_dir = "/Applications/Factorio.app/Contents/data"
 ```
 
-See [`example/config.rb`](example/config.rb) for platform-specific examples and additional configuration options.
+See [`example/config.toml`](example/config.toml) for platform-specific examples and additional configuration options.
 
 **Alternative configuration path:**
 
 You can specify a custom configuration file path using the `--config-path` option or `FACTORIX_CONFIG` environment variable:
 ```bash
 # Using CLI option
-factorix mod list --config-path=/path/to/config.rb
+factorix mod list --config-path=/path/to/config.toml
 
 # Using environment variable
-export FACTORIX_CONFIG=/path/to/config.rb
+export FACTORIX_CONFIG=/path/to/config.toml
 factorix mod list
 ```
+
+**Migrating from the Ruby configuration file:** earlier versions used a Ruby
+DSL at `~/.config/factorix/config.rb`. When Factorix finds one, it prints the
+equivalent TOML — review it, save it as `config.toml`, and remove the old file.
 
 ## Usage
 

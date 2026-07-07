@@ -4,7 +4,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
-      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      factorix_config_path: Pathname("/tmp/factorix/config.toml"),
       mod_list_path:,
       mod_dir:,
       data_dir:,

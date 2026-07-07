@@ -65,14 +65,13 @@ Each platform (Linux, macOS, Windows, WSL) provides appropriate default values w
 
 The `UserConfigurable` module is prepended to `Runtime::Base` and all its subclasses to allow users to override auto-detected paths via configuration file.
 
-Users can explicitly configure paths in `~/.config/factorix/config.rb` (or `$XDG_CONFIG_HOME/factorix/config.rb`):
+Users can explicitly configure paths in `~/.config/factorix/config.toml` (or `$XDG_CONFIG_HOME/factorix/config.toml`):
 
-```ruby
-Factorix.configure do |config|
-  config.runtime.executable_path = "/path/to/factorio"
-  config.runtime.user_dir = "/path/to/factorio/user/dir"
-  config.runtime.data_dir = "/path/to/factorio/data"
-end
+```toml
+[runtime]
+executable_path = "/path/to/factorio"
+user_dir = "/path/to/factorio/user/dir"
+data_dir = "/path/to/factorio/data"
 ```
 
 **Resolution order**:

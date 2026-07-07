@@ -82,17 +82,17 @@ three `progress/*_handler` classes.
 
 ## Stage 2 — dry-configurable → Plain Config + TOML
 
-- [ ] Plain nested value objects (`Data`) with current defaults; keep the
+- [x] Plain nested value objects (`Data`) with current defaults; keep the
       `Factorix.config` accessor to limit churn (injection happens in Stage 4)
-- [ ] Config file becomes `config.toml` (same XDG directory; currently
+- [x] Config file becomes `config.toml` (same XDG directory; currently
       `config.rb` evaluated with `instance_eval`), parsed with perfect_toml
-- [ ] Key structure unchanged: `log_level`, `runtime.*`, `rcon.*`, `http.*`,
+- [x] Key structure unchanged: `log_level`, `runtime.*`, `rcon.*`, `http.*`,
       `cache.{download,api,info_json}.*`
-- [ ] Migration path: if `config.toml` is absent but `config.rb` exists,
+- [x] Migration path: if `config.toml` is absent but `config.rb` exists,
       evaluate the legacy DSL once and emit the equivalent TOML with
       `PerfectTOML.generate`, then abort asking the user to review and save it
-- [ ] Update `components/configuration.md` and README config examples
-- [ ] Remove dry-configurable from the gemspec
+- [x] Update `components/configuration.md` and README config examples
+- [x] Remove dry-configurable from the gemspec
 
 Moving to TOML now (rather than at the Go port) means users migrate their config
 file once; the Go version then reads the same file.

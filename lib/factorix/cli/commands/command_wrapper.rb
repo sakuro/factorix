@@ -37,21 +37,13 @@ module Factorix
         end
 
         private def load_config!(explicit_path)
-          path = resolve_config_path(explicit_path)
-          return unless path
-
-          Factorix.load_config(path)
-        end
-
-        # Resolves which config path to use
-        # @param explicit_path [String, nil] path specified via --config-path
-        # @return [Pathname, nil] path to load, or nil if none should be loaded
-        private def resolve_config_path(explicit_path)
-          return Pathname(explicit_path) if explicit_path
-          return Pathname(ENV.fetch("FACTORIX_CONFIG")) if ENV["FACTORIX_CONFIG"]
-
-          default_path = Container[:runtime].factorix_config_path
-          default_path.exist? ? default_path : nil
+          if explicit_path
+            Factorix.load_config(Pathname(explicit_path))
+          elsif ENV["FACTORIX_CONFIG"]
+            Factorix.load_config(Pathname(ENV.fetch("FACTORIX_CONFIG")))
+          else
+            Factorix.load_config
+          end
         end
 
         # Sets the application logger's level

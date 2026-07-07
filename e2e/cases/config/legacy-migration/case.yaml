@@ -1,0 +1,7 @@
+command: [version]
+files:
+  - {from: files/config.rb, to: xdg-config/factorix/config.rb}
+expect:
+  status: 1
+  stdout:
+    file: expected_stdout.txt

@@ -3,6 +3,7 @@
 require "fileutils"
 require "open3"
 require "pathname"
+require "perfect_toml"
 require "rbconfig"
 require "tmpdir"
 require "yaml"
@@ -61,31 +62,27 @@ module E2E
     end
 
     # Renders the abstract config mapping into the configuration format of the
-    # implementation under test — the Ruby DSL for now. The Go driver will
-    # render the same mapping as TOML.
+    # implementation under test — TOML, shared with the future Go driver.
     private def render_config(sandbox)
       config = @definition["config"]
       return unless config
 
-      lines = ["configure do |config|"]
-      flatten_config(config).each do |path, value|
-        value = substitute(value, sandbox) if value.is_a?(String)
-        lines << "  config.#{path.join(".")} = #{value.inspect}"
-      end
-      lines << "end"
-
-      (sandbox / "config.rb").write(lines.join("\n") + "\n")
+      (sandbox / "config.toml").write(PerfectTOML.generate(substitute_values(config, sandbox)))
     end
 
-    private def flatten_config(hash, prefix=[])
-      hash.flat_map {|key, value|
-        path = prefix + [key]
-        value.is_a?(Hash) ? flatten_config(value, path) : [[path, value]]
-      }
+    private def substitute_values(value, sandbox)
+      case value
+      when Hash
+        value.transform_values {|val| substitute_values(val, sandbox) }
+      when String
+        substitute(value, sandbox)
+      else
+        value
+      end
     end
 
     private def execute(sandbox)
-      config_path = sandbox / "config.rb"
+      config_path = sandbox / "config.toml"
       env = {
         "NO_COLOR" => "1",
         "XDG_CACHE_HOME" => (sandbox / "xdg-cache").to_s,

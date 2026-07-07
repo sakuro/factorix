@@ -15,14 +15,19 @@ Zip.warn_invalid_date = false
 #
 # Note: --config-path option is handled separately in CommandWrapper and
 # will override settings if specified.
-config_path_index = ARGV.index("--config-path") || ARGV.index("-c")
-if config_path_index && ARGV[config_path_index + 1]
-  Factorix.load_config(Pathname(ARGV[config_path_index + 1]))
-elsif ENV["FACTORIX_CONFIG"]
-  Factorix.load_config(Pathname(ENV.fetch("FACTORIX_CONFIG")))
-else
-  default_config = Factorix::Container[:runtime].factorix_config_path
-  Factorix.load_config(default_config) if default_config.exist?
+begin
+  config_path_index = ARGV.index("--config-path") || ARGV.index("-c")
+  if config_path_index && ARGV[config_path_index + 1]
+    Factorix.load_config(Pathname(ARGV[config_path_index + 1]))
+  elsif ENV["FACTORIX_CONFIG"]
+    Factorix.load_config(Pathname(ENV.fetch("FACTORIX_CONFIG")))
+  else
+    Factorix.load_config
+  end
+rescue Factorix::ConfigurationError => e
+  # This runs before CommandWrapper's error reporting is available
+  warn "Error: #{e.message}"
+  exit 1
 end
 
 begin

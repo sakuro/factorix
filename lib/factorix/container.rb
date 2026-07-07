@@ -22,7 +22,7 @@ module Factorix
     # Build a cache instance from configuration.
     #
     # @param cache_type [Symbol] cache type (:download, :api, :info_json)
-    # @param config [Dry::Configurable::Config] cache configuration
+    # @param config [Config::CacheType] cache configuration
     # @return [Cache::Base] cache instance
     def self.build_cache(cache_type, config)
       backend = config.backend

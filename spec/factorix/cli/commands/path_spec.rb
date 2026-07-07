@@ -22,7 +22,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
       current_log_path: Pathname("/path/to/user/factorio-current.log"),
       previous_log_path: Pathname("/path/to/user/factorio-previous.log"),
       factorix_cache_dir: Pathname("/path/to/cache/factorix"),
-      factorix_config_path: Pathname("/path/to/config/factorix/config.rb"),
+      factorix_config_path: Pathname("/path/to/config/factorix/config.toml"),
       factorix_log_path: Pathname("/path/to/state/factorix/factorix.log")
     )
   end
@@ -56,7 +56,7 @@ RSpec.describe Factorix::CLI::Commands::Path do
           "current_log_path" => "/path/to/user/factorio-current.log",
           "previous_log_path" => "/path/to/user/factorio-previous.log",
           "factorix_cache_dir" => "/path/to/cache/factorix",
-          "factorix_config_path" => "/path/to/config/factorix/config.rb",
+          "factorix_config_path" => "/path/to/config/factorix/config.toml",
           "factorix_log_path" => "/path/to/state/factorix/factorix.log"
         )
       end
