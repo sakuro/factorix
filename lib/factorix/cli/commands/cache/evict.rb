@@ -14,11 +14,15 @@ module Factorix
         #   $ factorix cache evict api --all
         #   $ factorix cache evict download --older-than 7d
         class Evict < Base
-          # @!parse
-          #   # @return [Factorix::Logger]
-          #   attr_reader :logger
-          include Import[:logger]
+          attr_reader :logger
+
           include Formatting
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(logger: Factorix.app.logger)
+            super()
+            @logger = logger
+          end
 
           # Valid cache names for the caches argument
           VALID_CACHES = %w[download api info_json].freeze
@@ -113,7 +117,7 @@ module Factorix
           # @param expired [Boolean] remove expired entries only
           # @return [Hash] eviction result with :count and :size
           private def evict_cache(name, all:, expired:)
-            cache = Container.resolve(:"#{name}_cache")
+            cache = Factorix.app.public_send(:"#{name}_cache")
 
             count = 0
             size = 0

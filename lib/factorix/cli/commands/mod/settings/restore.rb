@@ -12,10 +12,13 @@ module Factorix
             require_game_stopped!
             backup_support!
 
-            # @!parse
-            #   # @return [Runtime::Base]
-            #   attr_reader :runtime
-            include Import[:runtime]
+            attr_reader :runtime
+
+            # Dependencies default to the Factorix.app composition root
+            def initialize(runtime: Factorix.app.runtime)
+              super()
+              @runtime = runtime
+            end
 
             desc "Restore MOD settings from JSON format"
 

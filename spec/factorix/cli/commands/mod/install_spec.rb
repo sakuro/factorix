@@ -51,12 +51,10 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
   end
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix.app).to receive_messages(runtime:, logger:)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
 
-    allow(Factorix::Container).to receive(:load_config)
+    allow(Factorix).to receive(:load_config)
 
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
@@ -71,7 +69,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
     allow(command).to receive(:load_current_state).and_return([graph, mod_list, []])
     allow(mod_dir).to receive_messages(exist?: true, "/": Pathname("/fake/path/mods/mod-a_1.0.0.zip"))
     allow(portal).to receive_messages(download_mod: nil, get_mod_full: mod_info_a)
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
   end
 
   describe "#call" do

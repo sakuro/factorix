@@ -5,7 +5,12 @@
 module Factorix
   VERSION: String
 
-  Import: Dry::AutoInject::_Builder
+  def self.app: () -> Application
+
+  def self.app=: (Application app) -> Application
+
+  def self.reset_app: () -> void
+
 
   def self.config: () -> Config
 

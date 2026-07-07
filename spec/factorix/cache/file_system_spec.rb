@@ -19,8 +19,7 @@ RSpec.describe Factorix::Cache::FileSystem do
   let(:lock_path) { cache_path.sub_ext(".lock") }
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix.app).to receive(:runtime).and_return(runtime)
   end
 
   after do

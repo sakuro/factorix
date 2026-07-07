@@ -1,0 +1,47 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class Application
+    attr_writer runtime: Runtime::Base
+    attr_writer logger: Logger
+    attr_writer retry_strategy: HTTP::RetryStrategy
+    attr_writer download_cache: Cache::Base
+    attr_writer api_cache: Cache::Base
+    attr_writer info_json_cache: Cache::Base
+    attr_writer http_client: HTTP::Client
+    attr_writer download_http_client: HTTP::RetryDecorator
+    attr_writer api_http_client: HTTP::RetryDecorator
+    attr_writer upload_http_client: HTTP::RetryDecorator
+    attr_writer downloader: Transfer::Downloader
+    attr_writer uploader: Transfer::Uploader
+    attr_writer service_credential: ServiceCredential
+    attr_writer api_credential: APICredential
+    attr_writer mod_portal_api: API::MODPortalAPI
+    attr_writer mod_download_api: API::MODDownloadAPI
+    attr_writer game_download_api: API::GameDownloadAPI
+    attr_writer mod_management_api: API::MODManagementAPI
+    attr_writer portal: Portal
+
+    def runtime: () -> Runtime::Base
+    def logger: () -> Logger
+    def retry_strategy: () -> HTTP::RetryStrategy
+    def download_cache: () -> Cache::Base
+    def api_cache: () -> Cache::Base
+    def info_json_cache: () -> Cache::Base
+    def http_client: () -> HTTP::Client
+    def download_http_client: () -> HTTP::RetryDecorator
+    def api_http_client: () -> HTTP::RetryDecorator
+    def upload_http_client: () -> HTTP::RetryDecorator
+    def downloader: () -> Transfer::Downloader
+    def uploader: () -> Transfer::Uploader
+    def service_credential: () -> ServiceCredential
+    def api_credential: () -> APICredential
+    def mod_portal_api: () -> API::MODPortalAPI
+    def mod_download_api: () -> API::MODDownloadAPI
+    def game_download_api: () -> API::GameDownloadAPI
+    def mod_management_api: () -> API::MODManagementAPI
+    def portal: () -> Portal
+  end
+end

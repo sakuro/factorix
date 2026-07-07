@@ -130,7 +130,7 @@ module Factorix
         MODVersionRequirement[operator:, version:]
       rescue VersionParseError => e
         # Skip version requirements with out-of-range version components
-        Container[:logger].warn("Skipping version requirement '#{version_string}': #{e.message}")
+        Factorix.app.logger.warn("Skipping version requirement '#{version_string}': #{e.message}")
         nil
       end
 

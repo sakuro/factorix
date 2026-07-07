@@ -17,10 +17,10 @@ module Factorix
       #     end
       #   end
       module PortalSupport
-        # Lazily resolve Portal from Container
+        # Lazily resolve Portal from the composition root
         #
         # @return [Portal] the portal instance
-        private def portal = @portal ||= Container[:portal]
+        private def portal = @portal ||= Factorix.app.portal
       end
     end
   end

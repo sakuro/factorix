@@ -3,8 +3,6 @@
 require "simplecov"
 SimpleCov.start
 
-require "dry/core"
-require "dry/core/container/stub"
 require "factorix"
 require "fileutils"
 require "tmpdir"
@@ -15,10 +13,6 @@ require "zip"
 Zip.warn_invalid_date = false
 
 WebMock.disable_net_connect!
-
-# Enable test interface for dry-core container
-# before loading support files that may use stub
-Factorix::Container.enable_stubs!
 
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }
@@ -46,9 +40,9 @@ RSpec.configure do |config|
     ENV["XDG_DATA_HOME"] = File.join(@test_tmpdir, "data")
     ENV["XDG_STATE_HOME"] = File.join(@test_tmpdir, "state")
 
-    # Stub runtime with new XDG directories
+    # Inject runtime with new XDG directories
     new_runtime = Factorix::Runtime.detect
-    Factorix::Container.stub(:runtime, new_runtime)
+    Factorix.app.runtime = new_runtime
 
     # Reset configuration to defaults
     Factorix.reset_config

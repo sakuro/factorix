@@ -10,17 +10,9 @@ module Factorix
     # Requires API key authentication via APICredential.
     # Uses api_credential lazy loading to avoid early environment variable evaluation.
     class MODManagementAPI
-      # NOTE: api_credential is NOT imported to avoid early evaluation errors
-      # when FACTORIO_API_KEY environment variable is not set.
-      # It's resolved lazily via reader method instead.
-      # @!parse
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      #   # @return [Transfer::Uploader]
-      #   attr_reader :uploader
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:uploader, :logger, client: :http_client]
+      # NOTE: api_credential is resolved lazily via reader method to avoid
+      # early evaluation errors when FACTORIO_API_KEY is not set.
+      attr_reader :uploader, :logger, :client
 
       # Callback invoked with the MOD name after any operation that changes
       # the MOD on the portal (upload, edit, image changes). Used to
@@ -39,11 +31,11 @@ module Factorix
       ALLOWED_EDIT_METADATA = %w[description summary title category tags license homepage source_url faq deprecated].freeze
       private_constant :ALLOWED_EDIT_METADATA
 
-      # Initialize with thread-safe credential loading
-      #
-      # @param args [Hash] dependency injection arguments
-      def initialize(...)
-        super
+      # Dependencies default to the Factorix.app composition root
+      def initialize(uploader: Factorix.app.uploader, logger: Factorix.app.logger, client: Factorix.app.http_client)
+        @uploader = uploader
+        @logger = logger
+        @client = client
         @api_credential_mutex = Mutex.new
         @on_mod_changed = nil
       end
@@ -212,7 +204,7 @@ module Factorix
         return @api_credential if defined?(@api_credential)
 
         @api_credential_mutex.synchronize do
-          @api_credential ||= Container[:api_credential]
+          @api_credential ||= Factorix.app.api_credential
         end
       end
 

@@ -11,19 +11,14 @@ module Factorix
       # NOTE: service_credential is NOT imported to avoid early evaluation errors
       # when FACTORIO_USERNAME/FACTORIO_TOKEN environment variables are not set.
       # It's resolved lazily via reader method instead.
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
 
-      # Initialize with thread-safe credential loading
-      #
-      # @param args [Hash] dependency injection arguments
-      def initialize(...)
-        super
+      # Dependencies default to the Factorix.app composition root
+      def initialize(logger: Factorix.app.logger)
+        @logger = logger
         @service_credential_mutex = Mutex.new
       end
 
@@ -43,14 +38,14 @@ module Factorix
         end
 
         uri = build_download_uri(download_url)
-        Container[:downloader].download(uri, output, expected_sha1:, listener:)
+        Factorix.app.downloader.download(uri, output, expected_sha1:, listener:)
       end
 
       private def service_credential
         return @service_credential if defined?(@service_credential)
 
         @service_credential_mutex.synchronize do
-          @service_credential ||= Container[:service_credential]
+          @service_credential ||= Factorix.app.service_credential
         end
       end
 

@@ -168,4 +168,4 @@ end
 - [API and Portal Layers](api-portal.md)
 - [Cache System](cache.md)
 - [Configuration](configuration.md)
-- [Container (DI)](container.md)
+- [Application (Composition Root)](application.md)

@@ -114,19 +114,20 @@ file once; the Go version then reads the same file.
 
 The largest stage: `include Import[...]` appears in 35 files.
 
-- [ ] `Factorix::Application` composition root — a plain class with memoized
+- [x] `Factorix::Application` composition root — a plain class with memoized
       readers mirroring the container registrations (`runtime`, `logger`, caches,
-      decorated HTTP clients, API clients, `portal`, …); `downloader` stays
-      non-memoized (per-download event listeners)
-- [ ] Decorator chains assembled in the composition root, unchanged:
+      decorated HTTP clients, API clients, `portal`, …); `downloader` became
+      memoizable in Stage 1 (listeners are per call), so everything is memoized
+- [x] Decorator chains assembled in the composition root, unchanged:
       API `Client → Cache → Retry`; download/upload `Client → Retry`
-- [ ] Replace `include Import[...]` with keyword-argument constructors;
+- [x] Replace `include Import[...]` with keyword-argument constructors;
       specs inject doubles directly instead of stubbing the container
-- [ ] Replace the dry-inflector `classify` call in cache construction with an
+- [x] Replace the dry-inflector `classify` call in cache construction with an
       explicit backend map (`file_system:`, `redis:`, `s3:`)
-- [ ] Remove `container.rb` and the `Import` constant; rewrite
+- [x] Remove `container.rb` and the `Import` constant; rewrite
       `components/container.md` as composition-root documentation
-- [ ] Remove dry-auto_inject, dry-core, and dry-inflector from the gemspec
+      (`components/application.md`)
+- [x] Remove dry-auto_inject, dry-core, and dry-inflector from the gemspec
 
 dry-cli instantiates command classes with no arguments, so command constructors
 use keyword defaults resolving from the application instance

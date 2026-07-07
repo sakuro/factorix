@@ -2,13 +2,11 @@
 
 ## Dependency Injection
 
-Uses dry-auto_inject for dependency injection:
-- Logger
-- Cache backends
-- HTTP clients
-- API clients
+Plain constructor injection: classes take dependencies as keyword arguments
+whose defaults resolve from the `Factorix::Application` composition root
+(`Factorix.app`).
 
-See [container.md](components/container.md) for registered services.
+See [application.md](components/application.md) for the composition root and its components.
 
 ## Module Structure
 
@@ -24,7 +22,7 @@ Factorix/
 ├── Dependency/        # Dependency resolution (DAG with TSort)
 ├── SerDes/            # Binary serialization for Factorio formats
 ├── Progress/          # Progress bar presenters and handlers
-├── Container          # DI container (dry-container)
+├── Application        # Composition root
 └── Domain objects     # MOD, MODList, MODSettings, InstalledMOD, etc.
 ```
 
@@ -36,8 +34,6 @@ See [components/](components/) for detailed documentation of each module.
 
 - **Zeitwerk** - Auto-loading
 - **dry-cli** - CLI framework
-- **dry-core** - Dependency container
-- **dry-auto_inject** - Dependency injection
 - **perfect_toml** - Configuration file parsing
 - **retriable** - Retry logic for network operations
 - **tty-progressbar** - Progress display with multi-bar support

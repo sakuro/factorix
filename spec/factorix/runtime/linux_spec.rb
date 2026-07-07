@@ -5,8 +5,7 @@ RSpec.describe Factorix::Runtime::Linux do
   let(:logger) { instance_double(Factorix::Logger) }
 
   before do
-    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
-    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix.app).to receive_messages(logger:, runtime:)
     allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
   end

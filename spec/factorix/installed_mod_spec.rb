@@ -16,8 +16,7 @@ RSpec.describe Factorix::InstalledMOD do
   let(:data_dir) { Pathname(Dir.mktmpdir) }
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
+    allow(Factorix.app).to receive(:runtime).and_return(runtime)
     allow(runtime).to receive_messages(mod_dir: temp_dir, data_dir:)
   end
 

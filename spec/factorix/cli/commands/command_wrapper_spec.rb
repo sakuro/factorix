@@ -23,9 +23,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     end
     stub_const("TestCommand", test_class)
 
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
-    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix.app).to receive_messages(runtime:, logger:)
     allow(Factorix).to receive(:load_config)
     allow(runtime).to receive(:factorix_config_path).and_return(default_config_path)
     allow(default_config_path).to receive(:exist?).and_return(false)

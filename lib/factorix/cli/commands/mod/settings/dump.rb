@@ -9,10 +9,13 @@ module Factorix
         module Settings
           # Dump MOD settings to JSON format
           class Dump < Base
-            # @!parse
-            #   # @return [Runtime::Base]
-            #   attr_reader :runtime
-            include Import[:runtime]
+            attr_reader :runtime
+
+            # Dependencies default to the Factorix.app composition root
+            def initialize(runtime: Factorix.app.runtime)
+              super()
+              @runtime = runtime
+            end
 
             desc "Dump MOD settings to JSON format"
 

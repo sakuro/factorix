@@ -46,17 +46,17 @@ module Factorix
 
       private def configurable_path(name, example_path:)
         if (configured = Factorix.config.runtime.public_send(name))
-          Container[:logger].debug("Using configured #{name}", path: configured.to_s)
+          Factorix.app.logger.debug("Using configured #{name}", path: configured.to_s)
           configured
         else
-          Container[:logger].debug("No configuration for #{name}, using auto-detection")
-          yield.tap {|path| Container[:logger].debug("Auto-detected #{name}", path: path.to_s) }
+          Factorix.app.logger.debug("No configuration for #{name}, using auto-detection")
+          yield.tap {|path| Factorix.app.logger.debug("Auto-detected #{name}", path: path.to_s) }
         end
       rescue NotImplementedError => e
-        Container[:logger].error("Auto-detection failed and no configuration provided", error: e.message)
+        Factorix.app.logger.error("Auto-detection failed and no configuration provided", error: e.message)
         raise ConfigurationError, <<~MESSAGE
           #{name} not configured and auto-detection is not supported for this platform.
-          Please configure it in #{Container[:runtime].factorix_config_path}:
+          Please configure it in #{Factorix.app.runtime.factorix_config_path}:
 
             [runtime]
             #{name} = "#{example_path}"

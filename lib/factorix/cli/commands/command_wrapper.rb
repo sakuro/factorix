@@ -21,14 +21,14 @@ module Factorix
           super
         rescue Error => e
           # Expected errors (validation failures, missing dependencies, etc.)
-          log = Container[:logger]
+          log = Factorix.app.logger
           log.warn(e.message)
           log.debug(e)
           say "Error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
         rescue => e
           # Unexpected errors (bugs, system failures, etc.)
-          log = Container[:logger]
+          log = Factorix.app.logger
           log.error(e)
           say "Unexpected error: #{e.message}", prefix: :error unless @quiet
           raise # Re-raise for exe/factorix to handle exit code
@@ -47,7 +47,7 @@ module Factorix
         # Sets the application logger's level
         # @param level [String] log level (debug, info, warn, error, fatal)
         private def log_level!(level)
-          Container[:logger].level = level.to_sym
+          Factorix.app.logger.level = level.to_sym
         end
       end
     end

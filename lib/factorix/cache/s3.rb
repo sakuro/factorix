@@ -25,10 +25,7 @@ module Factorix
     #   region = "ap-northeast-1"
     #   lock_timeout = 30
     class S3 < Base
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       # Default timeout for distributed lock acquisition in seconds.
       DEFAULT_LOCK_TIMEOUT = 30
@@ -53,8 +50,9 @@ module Factorix
       # @param cache_type [String, Symbol] Cache type for prefix (e.g., :api, :download)
       # @param lock_timeout [Integer] Timeout for lock acquisition in seconds
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      def initialize(bucket:, cache_type:, region: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, **)
+      def initialize(bucket:, cache_type:, region: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, logger: Factorix.app.logger, **)
         super(**)
+        @logger = logger
         @client = Aws::S3::Client.new(**{region:}.compact)
         @bucket = bucket
         @prefix = "cache/#{cache_type}/"

@@ -5,14 +5,17 @@ module Factorix
     module Commands
       # Download Factorio game files from the official download API
       class Download < Base
-        # @!parse
-        #   # @return [Factorix::Logger]
-        #   attr_reader :logger
-        #   # @return [Runtime]
-        #   attr_reader :runtime
-        #   # @return [API::GameDownloadAPI]
-        #   attr_reader :game_download_api
-        include Import[:logger, :runtime, :game_download_api]
+        attr_reader :logger
+        attr_reader :runtime
+        attr_reader :game_download_api
+
+        # Dependencies default to the Factorix.app composition root
+        def initialize(logger: Factorix.app.logger, runtime: Factorix.app.runtime, game_download_api: Factorix.app.game_download_api)
+          super()
+          @logger = logger
+          @runtime = runtime
+          @game_download_api = game_download_api
+        end
 
         # Platform mapping from Runtime to API platform identifier
         PLATFORM_MAP = {

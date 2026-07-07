@@ -15,12 +15,16 @@ module Factorix
 
           include PortalSupport
           include DownloadSupport
-          # @!parse
-          #   # @return [Factorix::Logger]
-          #   attr_reader :logger
-          #   # @return [Factorix::Runtime]
-          #   attr_reader :runtime
-          include Import[:logger, :runtime]
+
+          attr_reader :logger
+          attr_reader :runtime
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(logger: Factorix.app.logger, runtime: Factorix.app.runtime)
+            super()
+            @logger = logger
+            @runtime = runtime
+          end
 
           desc "Update MOD(s) to their latest versions"
 

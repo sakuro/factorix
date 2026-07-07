@@ -24,10 +24,7 @@ module Factorix
     #   url = "redis://localhost:6379/0"
     #   lock_timeout = 30
     class Redis < Base
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       # Default timeout for distributed lock acquisition in seconds.
       DEFAULT_LOCK_TIMEOUT = 30
@@ -53,8 +50,9 @@ module Factorix
       # @param cache_type [String, Symbol] Cache type for namespace (e.g., :api, :download)
       # @param lock_timeout [Integer] Timeout for lock acquisition in seconds
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      def initialize(cache_type:, url: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, **)
+      def initialize(cache_type:, url: nil, lock_timeout: DEFAULT_LOCK_TIMEOUT, logger: Factorix.app.logger, **)
         super(**)
+        @logger = logger
         @url = url || ENV.fetch("REDIS_URL", nil)
         @redis = ::Redis.new(url: @url)
         @namespace = "factorix-cache:#{cache_type}"

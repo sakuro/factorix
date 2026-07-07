@@ -24,7 +24,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     config.log_stream = StringIO.new
-    Factorix::Container.stub(:logger, Factorix::Logger.new(config.log_stream, level: :debug))
+    Factorix.app.logger = Factorix::Logger.new(config.log_stream, level: :debug)
   end
 
   config.include_context "with testing log stream"

@@ -23,12 +23,15 @@ module Factorix
         ].freeze
         private_constant :SYNCHRONOUS_OPTIONS
 
-        # @!parse
-        #   # @return [Runtime::Base]
-        #   attr_reader :runtime
-        #   # @return [Factorix::Logger]
-        #   attr_reader :logger
-        include Import[:runtime, :logger]
+        attr_reader :runtime
+        attr_reader :logger
+
+        # Dependencies default to the Factorix.app composition root
+        def initialize(runtime: Factorix.app.runtime, logger: Factorix.app.logger)
+          super()
+          @runtime = runtime
+          @logger = logger
+        end
 
         desc "Launch Factorio game"
 

@@ -9,10 +9,14 @@ module Factorix
         # Search MODs on Factorio MOD Portal
         class Search < Base
           include PortalSupport
-          # @!parse
-          #   # @return [Runtime]
-          #   attr_reader :runtime
-          include Import[:runtime]
+
+          attr_reader :runtime
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(runtime: Factorix.app.runtime)
+            super()
+            @runtime = runtime
+          end
 
           desc "Search MOD(s) on Factorio MOD Portal"
 

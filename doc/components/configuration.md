@@ -96,5 +96,5 @@ lock_timeout = 30
 
 ## Related Documentation
 
-- [Container (DI)](container.md)
+- [Application (Composition Root)](application.md)
 - [Cache System](cache.md)

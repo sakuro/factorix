@@ -8,8 +8,7 @@ RSpec.describe Factorix::ServiceCredential do
     let(:player_data_path) { instance_double(Pathname) }
 
     before do
-      allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
-      allow(Factorix::Container).to receive(:[]).with("logger").and_call_original
+      allow(Factorix.app).to receive(:runtime).and_return(runtime)
     end
 
     context "when both environment variables are set" do

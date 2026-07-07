@@ -23,8 +23,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       zipfile.get_output_stream("test-mod/info.json") {|f| f.write(info_json_content) }
     end
 
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
     allow(portal).to receive(:upload_mod)
   end
 

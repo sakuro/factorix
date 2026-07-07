@@ -19,10 +19,7 @@ module Factorix
     # - Metadata file (.metadata): JSON containing the logical key
     # - Lock file (.lock): used for concurrent access control
     class FileSystem < Base
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       # Maximum lifetime of lock files in seconds.
       # Lock files older than this will be considered stale and removed
@@ -43,9 +40,10 @@ module Factorix
       # @param compression_threshold [Integer, nil] compress data larger than this size in bytes
       #   (nil: no compression, 0: always compress, N: compress if >= N bytes)
       # @param ttl [Integer, nil] time-to-live in seconds (nil for unlimited)
-      def initialize(cache_type:, max_file_size: nil, compression_threshold: nil, **)
+      def initialize(cache_type:, max_file_size: nil, compression_threshold: nil, logger: Factorix.app.logger, **)
         super(**)
-        @cache_dir = Container[:runtime].factorix_cache_dir / cache_type.to_s
+        @logger = logger
+        @cache_dir = Factorix.app.runtime.factorix_cache_dir / cache_type.to_s
         @max_file_size = max_file_size
         @compression_threshold = compression_threshold
         @cache_dir.mkpath
