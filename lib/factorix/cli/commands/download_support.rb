@@ -101,9 +101,9 @@ module Factorix
                 target[:mod].name,
                 title: target[:release].file_name
               )
-              handler = Progress::DownloadHandler.new(presenter)
+              listener = Progress::DownloadHandler.new(presenter)
 
-              portal.download_mod(target[:release], target[:output_path], handler:)
+              portal.download_mod(target[:release], target[:output_path], listener:)
             end
           }
 

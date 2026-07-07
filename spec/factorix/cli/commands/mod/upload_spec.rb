@@ -5,8 +5,6 @@ require "zip"
 
 RSpec.describe Factorix::CLI::Commands::MOD::Upload do
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
-  let(:uploader) { instance_double(Factorix::Transfer::Uploader) }
   let(:command) { Factorix::CLI::Commands::MOD::Upload.new }
 
   let(:temp_dir) { Dir.mktmpdir }
@@ -27,10 +25,6 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
 
     allow(Factorix::Container).to receive(:[]).and_call_original
     allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
-    allow(portal).to receive(:mod_management_api).and_return(mod_management_api)
-    allow(mod_management_api).to receive(:uploader).and_return(uploader)
-    allow(uploader).to receive(:subscribe)
-    allow(uploader).to receive(:unsubscribe)
     allow(portal).to receive(:upload_mod)
   end
 
@@ -42,7 +36,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
     it "uploads a MOD without metadata" do
       run_command(command, %W[#{zip_path}])
 
-      expect(portal).to have_received(:upload_mod).with("test-mod", zip_path)
+      expect(portal).to have_received(:upload_mod).with("test-mod", zip_path, listener: kind_of(Factorix::Progress::UploadHandler))
     end
 
     it "uploads a MOD with description" do
@@ -51,6 +45,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
         zip_path,
+        listener: kind_of(Factorix::Progress::UploadHandler),
         description: "Test description"
       )
     end
@@ -61,6 +56,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
         zip_path,
+        listener: kind_of(Factorix::Progress::UploadHandler),
         category: "content"
       )
     end
@@ -71,6 +67,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
         zip_path,
+        listener: kind_of(Factorix::Progress::UploadHandler),
         license: "MIT"
       )
     end
@@ -81,6 +78,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
         zip_path,
+        listener: kind_of(Factorix::Progress::UploadHandler),
         source_url: "https://github.com/user/repo"
       )
     end
@@ -97,28 +95,12 @@ RSpec.describe Factorix::CLI::Commands::MOD::Upload do
       expect(portal).to have_received(:upload_mod).with(
         "test-mod",
         zip_path,
+        listener: kind_of(Factorix::Progress::UploadHandler),
         description: "Full description",
         category: "utilities",
         license: "Apache-2.0",
         source_url: "https://example.com/repo"
       )
-    end
-
-    it "subscribes and unsubscribes upload handler" do
-      run_command(command, %W[#{zip_path}])
-
-      expect(uploader).to have_received(:subscribe).with(kind_of(Factorix::Progress::UploadHandler))
-      expect(uploader).to have_received(:unsubscribe).with(kind_of(Factorix::Progress::UploadHandler))
-    end
-
-    it "unsubscribes handler even when upload fails" do
-      allow(portal).to receive(:upload_mod).and_raise(Factorix::HTTPClientError.new("Upload failed"))
-
-      expect {
-        run_command(command, %W[#{zip_path}])
-      }.to raise_error(Factorix::HTTPClientError)
-
-      expect(uploader).to have_received(:unsubscribe).with(kind_of(Factorix::Progress::UploadHandler))
     end
 
     context "with invalid file path" do

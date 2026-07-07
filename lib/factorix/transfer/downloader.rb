@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
 require "pathname"
 require "tmpdir"
 require "uri"
@@ -12,7 +11,7 @@ module Factorix
     # Downloads files from HTTPS URLs with automatic caching.
     # Uses file locking to prevent concurrent downloads of the same file.
     # HTTP redirects are handled automatically by the HTTP layer.
-    # Publishes progress events during download.
+    # Reports progress to an optional listener.
     class Downloader
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]
@@ -22,13 +21,6 @@ module Factorix
       #   # @return [HTTP::Client]
       #   attr_reader :client
       include Import[:logger, cache: :download_cache, client: :download_http_client]
-      include Dry::Events::Publisher[:downloader]
-
-      register_event("download.started")
-      register_event("download.progress")
-      register_event("download.completed")
-      register_event("cache.hit")
-      register_event("cache.miss")
 
       # Download a file from the given URL with caching support.
       #
@@ -41,12 +33,13 @@ module Factorix
       # @param url [URI::HTTPS] URL to download from
       # @param output [Pathname] path to save the downloaded file
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
+      # @param listener [Progress::DownloadHandler, nil] optional progress listener
       # @return [void]
       # @raise [URLError] if the URL is not HTTPS
       # @raise [HTTPClientError] for 4xx HTTP errors
       # @raise [HTTPServerError] for 5xx HTTP errors
       # @raise [DigestMismatchError] if SHA1 verification fails
-      def download(url, output, expected_sha1: nil)
+      def download(url, output, expected_sha1: nil, listener: nil)
         unless url.is_a?(URI::HTTPS)
           logger.error "Invalid URL: must be HTTPS"
           raise URLError, "URL must be HTTPS"
@@ -55,24 +48,22 @@ module Factorix
         logger.info("Starting download", output: output.to_s)
         cache_key = strip_query(url)
 
-        case try_cache_hit(cache_key, output, expected_sha1:)
+        case try_cache_hit(cache_key, output, expected_sha1:, listener:)
         when :hit
           return
         when :miss
           logger.debug("Cache miss, downloading", output: output.to_s)
-          publish("cache.miss", output: output.to_s)
         when :corrupted
           logger.debug("Re-downloading after cache invalidation", output: output.to_s)
-          publish("cache.miss", output: output.to_s)
         else
           raise RuntimeError, "Unexpected cache state"
         end
 
         cache.with_lock(cache_key) do
-          return if try_cache_hit(cache_key, output, expected_sha1:) == :hit
+          return if try_cache_hit(cache_key, output, expected_sha1:, listener:) == :hit
 
           with_temporary_file do |temp_file|
-            download_file_with_progress(url, temp_file)
+            download_file_with_progress(url, temp_file, listener)
             verify_sha1(temp_file, expected_sha1) if expected_sha1
             cache.store(cache_key, temp_file)
             cache.write_to(cache_key, output)
@@ -84,27 +75,27 @@ module Factorix
       #
       # @param url [URI::HTTPS] URL to download from
       # @param output [Pathname] path to save the downloaded file
+      # @param listener [Progress::DownloadHandler, nil] optional progress listener
       # @return [void]
-      private def download_file_with_progress(url, output)
-        total_size = nil
+      private def download_file_with_progress(url, output, listener)
         current_size = 0
 
         client.get(url) do |response|
           content_length = response["Content-Length"]
           total_size = content_length ? Integer(content_length, 10) : nil
 
-          publish("download.started", total_size:)
+          listener&.on_started(total: total_size)
 
           output.open("wb") do |file|
             response.read_body do |chunk|
               file.write(chunk)
               current_size += chunk.bytesize
-              publish("download.progress", current_size:, total_size:)
+              listener&.on_progress(current: current_size)
             end
           end
         end
 
-        publish("download.completed", total_size: current_size)
+        listener&.on_completed
       end
 
       # Attempt to retrieve file from cache with SHA1 verification.
@@ -115,14 +106,14 @@ module Factorix
       # @param cache_key [String] logical cache key (URL string)
       # @param output [Pathname] path to save the cached file
       # @param expected_sha1 [String, nil] expected SHA1 digest for verification (optional)
+      # @param listener [Progress::DownloadHandler, nil] optional progress listener
       # @return [Symbol] :hit if cache hit with valid SHA1, :miss if not cached, :corrupted if SHA1 mismatch
-      private def try_cache_hit(cache_key, output, expected_sha1:)
+      private def try_cache_hit(cache_key, output, expected_sha1:, listener: nil)
         return :miss unless cache.write_to(cache_key, output)
 
         logger.info("Cache hit", output: output.to_s)
         verify_sha1(output, expected_sha1) if expected_sha1
-        total_size = cache.size(cache_key)
-        publish("cache.hit", output: output.to_s, total_size:)
+        listener&.on_cache_hit(total: cache.size(cache_key))
         :hit
       rescue DigestMismatchError => e
         logger.warn("Cache corrupted, invalidating", output: output.to_s, error: e.message)

@@ -42,17 +42,10 @@ module Factorix
             metadata = build_metadata(description:, category:, license:, source_url:)
 
             presenter = Progress::Presenter.new(title: "\u{1F4E4} Uploading #{file_path.basename}", output: err)
+            listener = Progress::UploadHandler.new(presenter)
 
-            uploader = portal.mod_management_api.uploader
-            handler = Progress::UploadHandler.new(presenter)
-            uploader.subscribe(handler)
-
-            begin
-              portal.upload_mod(mod_name, file_path, **metadata)
-              say "Upload completed successfully!", prefix: :success
-            ensure
-              uploader.unsubscribe(handler)
-            end
+            portal.upload_mod(mod_name, file_path, listener:, **metadata)
+            say "Upload completed successfully!", prefix: :success
           end
 
           # Extract MOD name from info.json inside zip file

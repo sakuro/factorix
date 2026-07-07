@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
 require "json"
 require "uri"
 
@@ -22,9 +21,12 @@ module Factorix
       #   # @return [Dry::Logger::Dispatcher]
       #   attr_reader :logger
       include Import[:uploader, :logger, client: :http_client]
-      include Dry::Events::Publisher[:mod_management]
 
-      register_event("mod.changed")
+      # Callback invoked with the MOD name after any operation that changes
+      # the MOD on the portal (upload, edit, image changes). Used to
+      # invalidate stale portal caches.
+      # @return [Proc, nil]
+      attr_writer :on_mod_changed
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL
@@ -43,6 +45,7 @@ module Factorix
       def initialize(...)
         super
         @api_credential_mutex = Mutex.new
+        @on_mod_changed = nil
       end
 
       # Initialize new MOD publication
@@ -86,6 +89,7 @@ module Factorix
       # @param upload_url [URI::HTTPS] the upload URL from init_publish or init_upload
       # @param file_path [Pathname] path to MOD zip file
       # @param metadata [Hash] optional metadata (only used for init_publish)
+      # @param listener [Progress::UploadHandler, nil] optional progress listener
       # @option metadata [String] :description Markdown description
       # @option metadata [String] :category MOD category
       # @option metadata [String] :license License identifier
@@ -93,16 +97,16 @@ module Factorix
       # @return [void]
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
-      def finish_upload(mod_name, upload_url, file_path, **metadata)
+      def finish_upload(mod_name, upload_url, file_path, listener: nil, **metadata)
         validate_metadata!(metadata, ALLOWED_UPLOAD_METADATA, "finish_upload")
 
         logger.info("Uploading MOD file", mod: mod_name, file: file_path.to_s, metadata_count: metadata.size)
 
         fields = metadata.transform_keys(&:to_s)
 
-        uploader.upload(upload_url, file_path, fields:)
+        uploader.upload(upload_url, file_path, fields:, listener:)
         logger.info("Upload completed successfully", mod: mod_name)
-        publish("mod.changed", mod: mod_name)
+        @on_mod_changed&.call(mod_name)
       end
 
       # Edit MOD details (for post-upload metadata changes)
@@ -135,7 +139,7 @@ module Factorix
         logger.info("Editing MOD details", mod: mod_name, fields: metadata.keys)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Edit completed successfully", mod: mod_name)
-        publish("mod.changed", mod: mod_name)
+        @on_mod_changed&.call(mod_name)
       rescue HTTPNotFoundError
         raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end
@@ -174,7 +178,7 @@ module Factorix
         data = JSON.parse(response.body)
 
         logger.info("Image upload completed successfully", mod: mod_name, image_id: data["id"])
-        publish("mod.changed", mod: mod_name)
+        @on_mod_changed&.call(mod_name)
         data
       rescue JSON::ParserError => e
         raise HTTPError, "Invalid JSON response: #{e.message}"
@@ -199,7 +203,7 @@ module Factorix
         logger.info("Editing MOD images", mod: mod_name, image_count: image_ids.size)
         client.post(uri, body:, headers: build_auth_header, content_type: "application/x-www-form-urlencoded")
         logger.info("Images updated successfully", mod: mod_name)
-        publish("mod.changed", mod: mod_name)
+        @on_mod_changed&.call(mod_name)
       rescue HTTPNotFoundError
         raise MODNotOnPortalError, "MOD '#{mod_name}' not found on portal"
       end

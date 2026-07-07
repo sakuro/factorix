@@ -42,8 +42,8 @@ module Factorix
           def call(mod_names: [], jobs: "4", **)
             jobs = Integer(jobs)
             presenter = Progress::Presenter.new(title: "\u{1F50D}\u{FE0E} Scanning MOD(s)", output: err)
-            handler = Progress::ScanHandler.new(presenter)
-            installed_mods = InstalledMOD.all(handler:)
+            listener = Progress::ScanHandler.new(presenter)
+            installed_mods = InstalledMOD.all(listener:)
             mod_list = MODList.load
 
             target_mods = if mod_names.empty?

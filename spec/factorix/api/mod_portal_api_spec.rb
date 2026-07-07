@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
-
 RSpec.describe Factorix::API::MODPortalAPI do
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:cache) { instance_double(Factorix::Cache::FileSystem) }
@@ -186,16 +184,14 @@ RSpec.describe Factorix::API::MODPortalAPI do
     end
   end
 
-  describe "#on_mod_changed" do
+  describe "#invalidate_mod_cache" do
     before do
       allow(cache).to receive(:with_lock).and_yield
       allow(cache).to receive(:delete)
     end
 
     it "deletes cache entries for get_mod and get_mod_full with locks" do
-      event = Dry::Events::Event.new("mod.changed", mod: "example-mod")
-
-      api.on_mod_changed(event)
+      api.invalidate_mod_cache("example-mod")
 
       expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/example-mod")
       expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/example-mod/full")
@@ -204,9 +200,7 @@ RSpec.describe Factorix::API::MODPortalAPI do
     end
 
     it "URL-encodes MOD names with special characters" do
-      event = Dry::Events::Event.new("mod.changed", mod: "Explosive Excavation")
-
-      api.on_mod_changed(event)
+      api.invalidate_mod_cache("Explosive Excavation")
 
       expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/Explosive%20Excavation")
       expect(cache).to have_received(:with_lock).with("https://mods.factorio.com/api/mods/Explosive%20Excavation/full")

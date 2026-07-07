@@ -7,13 +7,13 @@ module Factorix
     class DownloadHandler
       def initialize: (Presenter | PresenterAdapter presenter) -> void
 
-      def on_download_started: (Hash[Symbol, untyped] event) -> void
+      def on_started: (total: Integer?) -> void
 
-      def on_download_progress: (Hash[Symbol, untyped] event) -> void
+      def on_progress: (current: Integer) -> void
 
-      def on_download_completed: (Hash[Symbol, untyped] event) -> void
+      def on_completed: () -> void
 
-      def on_cache_hit: (Hash[Symbol, untyped] event) -> void
+      def on_cache_hit: (total: Integer?) -> void
     end
   end
 end

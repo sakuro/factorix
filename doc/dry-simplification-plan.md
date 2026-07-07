@@ -66,17 +66,17 @@ Affected: `installed_mod`, `transfer/downloader`, `transfer/uploader`,
 `http/cache_decorator`, `api/mod_portal_api`, `api/mod_management_api`, and the
 three `progress/*_handler` classes.
 
-- [ ] Define listener interfaces mirroring the Go design (`ProgressListener` with
-      `on_started(total:)` / `on_progress(current:)` / `on_completed(total:)`),
+- [x] Define listener interfaces mirroring the Go design (`ProgressListener` with
+      `on_started(total:)` / `on_progress(current:)` / `on_completed`),
       one per domain (download, upload, scan)
-- [ ] Remove `Dry::Events::Publisher[...]` mixins and `register_event`/`publish`;
+- [x] Remove `Dry::Events::Publisher[...]` mixins and `register_event`/`publish`;
       publishers accept an optional listener (`nil` means no reporting — same
       convention as the Go plan)
-- [ ] Convert `progress/*_handler` classes from event-payload receivers to direct
+- [x] Convert `progress/*_handler` classes from event-payload receivers to direct
       listener implementations
-- [ ] Replace the `MODManagementAPI` → `MODPortalAPI` cache-invalidation
+- [x] Replace the `MODManagementAPI` → `MODPortalAPI` cache-invalidation
       subscription with an explicit callback on the management client
-- [ ] Remove dry-events from the gemspec
+- [x] Remove dry-events from the gemspec
 
 ---
 

@@ -32,11 +32,6 @@ module Factorix
     end
     private_class_method :build_cache
 
-    # :downloader is registered with memoize: false to support independent event handlers
-    # for each parallel download task (e.g., progress tracking).
-    # MODDownloadAPI resolves :downloader lazily per download call, allowing
-    # :mod_download_api and :portal to be safely memoized.
-
     # Register runtime detector
     register(:runtime, memoize: true) do
       Runtime.detect
@@ -114,7 +109,9 @@ module Factorix
     end
 
     # Register downloader
-    register(:downloader, memoize: false) do
+    # Progress listeners are passed per download call, so a single instance
+    # is safe to share across parallel downloads.
+    register(:downloader, memoize: true) do
       Transfer::Downloader.new
     end
 
@@ -147,8 +144,8 @@ module Factorix
     # Register MOD Management API client
     register(:mod_management_api, memoize: true) do
       api = API::MODManagementAPI.new
-      # Subscribe mod_portal_api to invalidate cache when MOD is changed on portal
-      api.subscribe(resolve(:mod_portal_api))
+      # Invalidate portal caches when a MOD is changed on the portal
+      api.on_mod_changed = resolve(:mod_portal_api).method(:invalidate_mod_cache)
       api
     end
 

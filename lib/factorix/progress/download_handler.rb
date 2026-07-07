@@ -2,43 +2,40 @@
 
 module Factorix
   module Progress
-    # Download event handler for progress presenters
-    #
-    # This class listens to download events and updates a progress presenter accordingly.
+    # Download progress listener driving a progress presenter
     class DownloadHandler
       # Create a new download handler
       #
       # @param presenter [Presenter, PresenterAdapter] progress presenter to update
       def initialize(presenter) = @presenter = presenter
 
-      # Handle download started event
+      # Called when the download starts
       #
-      # @param event [Dry::Events::Event] event with total_size payload
+      # @param total [Integer, nil] total size in bytes (nil if unknown)
       # @return [void]
-      def on_download_started(event) = @presenter.start(total: event[:total_size])
+      def on_started(total:) = @presenter.start(total:)
 
-      # Handle download progress event
+      # Called on download progress
       #
-      # @param event [Dry::Events::Event] event with current_size payload
+      # @param current [Integer] bytes downloaded so far
       # @return [void]
-      def on_download_progress(event) = @presenter.update(event[:current_size])
+      def on_progress(current:) = @presenter.update(current)
 
-      # Handle download completed event
+      # Called when the download completes
       #
-      # @param event [Dry::Events::Event] event with total_size payload
       # @return [void]
-      def on_download_completed(_event) = @presenter.finish
+      def on_completed = @presenter.finish
 
-      # Handle cache hit event
+      # Called when the file is served from cache instead of downloaded
       #
-      # @param event [Dry::Events::Event] event with url, output, and total_size payload
+      # @param total [Integer, nil] cached file size in bytes
       # @return [void]
-      def on_cache_hit(event)
-        total_size = event.payload.fetch(:total_size, 1)
+      def on_cache_hit(total:)
+        size = total || 1
 
         # Start and complete immediately for cache hits
-        @presenter.start(total: total_size)
-        @presenter.update(total_size)
+        @presenter.start(total: size)
+        @presenter.update(size)
         @presenter.finish
       end
     end

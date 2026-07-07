@@ -84,7 +84,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(uploader).to have_received(:upload).with(
         upload_url,
         file_path,
-        fields: {}
+        fields: {},
+        listener: nil
       )
     end
 
@@ -94,7 +95,8 @@ RSpec.describe Factorix::API::MODManagementAPI do
       expect(uploader).to have_received(:upload).with(
         upload_url,
         file_path,
-        fields: {"description" => "Test MOD", "category" => "content"}
+        fields: {"description" => "Test MOD", "category" => "content"},
+        listener: nil
       )
     end
 
@@ -116,14 +118,14 @@ RSpec.describe Factorix::API::MODManagementAPI do
       }.not_to raise_error
     end
 
-    it "publishes mod.changed event" do
-      events = []
-      api.subscribe("mod.changed") {|event| events << event }
+    it "invokes the on_mod_changed callback" do
+      changed = []
+      api.on_mod_changed = ->(mod_name) { changed << mod_name }
 
       api.finish_upload("my-mod", upload_url, file_path)
 
-      expect(events.size).to eq(1)
-      expect(events.first[:mod]).to eq("my-mod")
+      expect(changed.size).to eq(1)
+      expect(changed.first).to eq("my-mod")
     end
   end
 
@@ -186,17 +188,17 @@ RSpec.describe Factorix::API::MODManagementAPI do
       }.not_to raise_error
     end
 
-    it "publishes mod.changed event" do
+    it "invokes the on_mod_changed callback" do
       response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
       allow(client).to receive(:post).and_return(response)
 
-      events = []
-      api.subscribe("mod.changed") {|event| events << event }
+      changed = []
+      api.on_mod_changed = ->(mod_name) { changed << mod_name }
 
       api.edit_details("my-mod", description: "Updated description")
 
-      expect(events.size).to eq(1)
-      expect(events.first[:mod]).to eq("my-mod")
+      expect(changed.size).to eq(1)
+      expect(changed.first).to eq("my-mod")
     end
   end
 
@@ -261,17 +263,17 @@ RSpec.describe Factorix::API::MODManagementAPI do
       }.to raise_error(Factorix::HTTPError, /Invalid JSON response/)
     end
 
-    it "publishes mod.changed event" do
+    it "invokes the on_mod_changed callback" do
       response = instance_double(Factorix::HTTP::Response, body: JSON.generate(response_data))
       allow(uploader).to receive(:upload).and_return(response)
 
-      events = []
-      api.subscribe("mod.changed") {|event| events << event }
+      changed = []
+      api.on_mod_changed = ->(mod_name) { changed << mod_name }
 
       api.finish_image_upload("my-mod", upload_url, image_file)
 
-      expect(events.size).to eq(1)
-      expect(events.first[:mod]).to eq("my-mod")
+      expect(changed.size).to eq(1)
+      expect(changed.first).to eq("my-mod")
     end
   end
 
@@ -318,17 +320,17 @@ RSpec.describe Factorix::API::MODManagementAPI do
       }.to raise_error(Factorix::HTTPClientError, /Bad Request/)
     end
 
-    it "publishes mod.changed event" do
+    it "invokes the on_mod_changed callback" do
       response = instance_double(Factorix::HTTP::Response, body: '{"success":true}')
       allow(client).to receive(:post).and_return(response)
 
-      events = []
-      api.subscribe("mod.changed") {|event| events << event }
+      changed = []
+      api.on_mod_changed = ->(mod_name) { changed << mod_name }
 
       api.edit_images("my-mod", %w[abc123 def456])
 
-      expect(events.size).to eq(1)
-      expect(events.first[:mod]).to eq("my-mod")
+      expect(changed.size).to eq(1)
+      expect(changed.first).to eq("my-mod")
     end
   end
 end

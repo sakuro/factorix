@@ -72,13 +72,13 @@ module Factorix
     #
     # @param release [API::Release] release object containing download_url and sha1
     # @param output [Pathname] output file path
-    # @param handler [Object, nil] event handler for download progress (optional)
+    # @param listener [Progress::DownloadHandler, nil] optional progress listener
     # @return [void]
     # @raise [DigestMismatchError] if SHA1 verification fails
-    def download_mod(release, output, handler: nil)
+    def download_mod(release, output, listener: nil)
       # Extract path from URI::HTTPS
       download_path = release.download_url.path
-      mod_download_api.download(download_path, output, expected_sha1: release.sha1, handler:)
+      mod_download_api.download(download_path, output, expected_sha1: release.sha1, listener:)
     end
 
     # Upload a MOD file to the portal
@@ -89,6 +89,7 @@ module Factorix
     #
     # @param mod_name [String] the MOD name
     # @param file_path [Pathname] path to MOD zip file
+    # @param listener [Progress::UploadHandler, nil] optional progress listener
     # @param metadata [Hash] optional metadata
     # @option metadata [String] :description Markdown description
     # @option metadata [String] :category MOD category
@@ -97,7 +98,7 @@ module Factorix
     # @return [void]
     # @raise [HTTPClientError] for 4xx errors
     # @raise [HTTPServerError] for 5xx errors
-    def upload_mod(mod_name, file_path, **metadata)
+    def upload_mod(mod_name, file_path, listener: nil, **metadata)
       mod_exists = begin
         get_mod(mod_name)
         logger.info("Uploading new release to existing MOD", mod: mod_name)
@@ -111,11 +112,11 @@ module Factorix
 
       if mod_exists
         # For existing MODs: upload file, then edit metadata separately
-        mod_management_api.finish_upload(mod_name, upload_url, file_path)
+        mod_management_api.finish_upload(mod_name, upload_url, file_path, listener:)
         mod_management_api.edit_details(mod_name, **metadata) unless metadata.empty?
       else
         # For new MODs: upload file with metadata
-        mod_management_api.finish_upload(mod_name, upload_url, file_path, **metadata)
+        mod_management_api.finish_upload(mod_name, upload_url, file_path, listener:, **metadata)
       end
 
       logger.info("Upload completed successfully", mod: mod_name)

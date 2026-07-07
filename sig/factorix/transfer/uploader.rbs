@@ -14,7 +14,8 @@ module Factorix
         URI::HTTPS | String url,
         Pathname | String file_path,
         ?field_name: String,
-        ?fields: Hash[String | Symbol, String]
+        ?fields: Hash[String | Symbol, String],
+        ?listener: Progress::UploadHandler?
       ) -> void
     end
   end

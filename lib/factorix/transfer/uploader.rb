@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/events"
 require "securerandom"
 require "uri"
 
@@ -9,7 +8,7 @@ module Factorix
     # File uploader with automatic retry
     #
     # Uploads files to given URLs using HTTP multipart/form-data.
-    # Uses Transfer::HTTP for the actual upload with event-driven progress notification.
+    # Reports progress to an optional listener.
     class Uploader
       # MIME type mapping with default fallback
       MIME_TYPES = Hash.new("application/octet-stream").merge!(
@@ -27,11 +26,6 @@ module Factorix
       #   # @return [HTTP::Client]
       #   attr_reader :client
       include Import[:logger, client: :upload_http_client]
-      include Dry::Events::Publisher[:uploader]
-
-      register_event("upload.started")
-      register_event("upload.progress")
-      register_event("upload.completed")
 
       # Upload a file to the given URL with optional form fields
       #
@@ -40,13 +34,14 @@ module Factorix
       # @param field_name [String] form field name for the file (default: "file")
       # @param fields [Hash<String, String>] additional form fields (e.g., metadata)
       # @param content_type [:auto, String] MIME type (:auto detects from extension)
+      # @param listener [Progress::UploadHandler, nil] optional progress listener
       # @return [void]
       # @raise [URLError] if the URL is not HTTPS
       # @raise [ConfigurationError] if file doesn't exist
       # @raise [HTTPClientError] for 4xx errors
       # @raise [HTTPServerError] for 5xx errors
       # @raise [HTTPError] for other HTTP errors
-      def upload(url, file_path, field_name: "file", fields: {}, content_type: :auto)
+      def upload(url, file_path, field_name: "file", fields: {}, content_type: :auto, listener: nil)
         url = URI(url) if url.is_a?(String)
         unless url.is_a?(URI::HTTPS)
           logger.error("Invalid URL: must be HTTPS", url: url.to_s)
@@ -59,7 +54,7 @@ module Factorix
         end
 
         resolved_content_type = content_type == :auto ? detect_content_type(file_path) : content_type
-        upload_file_with_progress(url, file_path, field_name, fields, resolved_content_type)
+        upload_file_with_progress(url, file_path, field_name, fields, resolved_content_type, listener)
       end
 
       # Detect MIME type from file extension
@@ -68,11 +63,11 @@ module Factorix
       # @return [String] MIME type
       private def detect_content_type(file_path) = MIME_TYPES[file_path.extname.downcase]
 
-      private def upload_file_with_progress(url, file_path, field_name, fields, content_type)
+      private def upload_file_with_progress(url, file_path, field_name, fields, content_type, listener)
         boundary = generate_boundary
         file_size = file_path.size
 
-        publish("upload.started", total_size: file_size)
+        listener&.on_started(total: file_size)
 
         # Build multipart body parts
         body_parts = []
@@ -101,13 +96,13 @@ module Factorix
 
         # Wrap in progress tracking IO
         progress_stream = ProgressIO.new(body_stream, total_size) do |uploaded|
-          publish("upload.progress", current_size: uploaded, total_size:)
+          listener&.on_progress(current: uploaded)
         end
 
         # POST with the multipart stream
         response = client.post(url, body: progress_stream, headers: {"Content-Length" => total_size.to_s}, content_type: "multipart/form-data; boundary=#{boundary}")
 
-        publish("upload.completed", total_size:)
+        listener&.on_completed
         response
       end
 
