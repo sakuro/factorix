@@ -1,0 +1,11 @@
+# RBS type signature file
+# Minimal type definitions for the perfect_toml gem (only what Factorix uses)
+
+module PerfectTOML
+  def self.load_file: (String path) -> Hash[String, untyped]
+
+  def self.generate: (Hash[String, untyped] hash) -> String
+
+  class ParseError < StandardError
+  end
+end

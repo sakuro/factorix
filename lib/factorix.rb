@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "dry/auto_inject"
-require "dry/configurable"
 require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"
@@ -9,119 +8,70 @@ require_relative "factorix/version"
 # Factorix provides a CLI for Factorio MOD management, settings synchronization,
 # and MOD Portal integration.
 #
-# @example Configure Factorix
-#   Factorix.configure do |config|
-#     config.log_level = :debug
-#     config.http.connect_timeout = 10
-#   end
+# Configuration is read from a TOML file (see Factorix.load_config):
+#
+#   log_level = "debug"
+#
+#   [http]
+#   connect_timeout = 10
 module Factorix
-  extend Dry::Configurable
+  # Get the current configuration
+  #
+  # @return [Config] the current configuration (defaults until load_config is called)
+  def self.config = @config ||= Config.default
 
-  # Log level (:debug, :info, :warn, :error, :fatal)
-  setting :log_level, default: :info
-
-  # Runtime settings (optional overrides for auto-detection)
-  setting :runtime do
-    setting :executable_path, constructor: ->(v) { v ? Pathname(v) : nil }
-    setting :user_dir, constructor: ->(v) { v ? Pathname(v) : nil }
-    setting :data_dir, constructor: ->(v) { v ? Pathname(v) : nil }
+  # Replace the current configuration
+  #
+  # @param config [Config] the configuration to use
+  # @return [void]
+  def self.config=(config)
+    @config = config
   end
 
-  # RCON connection settings
-  setting :rcon do
-    setting :host, default: "localhost"
-    setting :port, default: 27015
-    setting :password, default: nil
+  # Reset the configuration to defaults
+  #
+  # @return [void]
+  def self.reset_config
+    @config = nil
   end
 
-  # HTTP timeout settings
-  setting :http do
-    setting :connect_timeout, default: 5
-    setting :read_timeout, default: 30
-    setting :write_timeout, default: 30
-  end
-
-  # Cache settings
-  # Each cache type can have its own backend with hierarchical configuration.
-  # Common settings (backend, ttl) apply to all backends.
-  # Backend-specific settings are nested under the backend name.
-  setting :cache do
-    # Download cache settings (for MOD files)
-    setting :download do
-      setting :backend, default: :file_system
-      setting :ttl, default: nil # nil for unlimited (MOD files are immutable)
-      setting :file_system do
-        setting :max_file_size, default: nil # nil for unlimited
-        setting :compression_threshold, default: nil # nil for no compression (binary files)
-      end
-      setting :redis do
-        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
-        setting :lock_timeout, default: 30
-      end
-      setting :s3 do
-        setting :bucket, default: nil # required when using S3 backend
-        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
-        setting :lock_timeout, default: 30
-      end
-    end
-
-    # API cache settings (for API responses)
-    setting :api do
-      setting :backend, default: :file_system
-      setting :ttl, default: 3600 # 1 hour (API responses may change)
-      setting :file_system do
-        setting :max_file_size, default: 10 * 1024 * 1024 # 10MiB (JSON responses)
-        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
-      end
-      setting :redis do
-        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
-        setting :lock_timeout, default: 30
-      end
-      setting :s3 do
-        setting :bucket, default: nil # required when using S3 backend
-        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
-        setting :lock_timeout, default: 30
-      end
-    end
-
-    # info.json cache settings (for MOD metadata from ZIP files)
-    setting :info_json do
-      setting :backend, default: :file_system
-      setting :ttl, default: nil # nil for unlimited (info.json is immutable within a MOD ZIP)
-      setting :file_system do
-        setting :max_file_size, default: nil # nil for unlimited (info.json is small)
-        setting :compression_threshold, default: 0 # always compress (JSON is highly compressible)
-      end
-      setting :redis do
-        setting :url, default: nil # nil falls back to REDIS_URL env, then localhost:6379
-        setting :lock_timeout, default: 30
-      end
-      setting :s3 do
-        setting :bucket, default: nil # required when using S3 backend
-        setting :region, default: nil # nil falls back to AWS_REGION env or SDK default
-        setting :lock_timeout, default: 30
-      end
-    end
-  end
-
-  # Load configuration from file
+  # Load configuration from a TOML file
+  #
+  # With an explicit path the file must exist. Without a path the default
+  # location (runtime.factorix_config_path) is used if present; a legacy
+  # Ruby-DSL config found there is converted to TOML and reported instead.
   #
   # @param path [Pathname, nil] configuration file path
   # @return [void]
-  # @raise [ConfigurationError] if explicitly specified path does not exist
+  # @raise [ConfigurationError] if an explicitly specified path does not exist,
+  #   or a legacy Ruby-DSL configuration requires migration
   def self.load_config(path=nil)
     if path
-      # Explicitly specified path must exist
       raise ConfigurationError, "Configuration file not found: #{path}" unless path.exist?
 
-      config_path = path
-    else
-      # Default path is optional
-      config_path = Container.resolve(:runtime).factorix_config_path
-      return unless config_path.exist?
-    end
+      raise_legacy_config(path, target: path.sub_ext(".toml")) if path.extname == ".rb"
 
-    instance_eval(config_path.read, config_path.to_s)
+      @config = Config.load_file(path)
+    else
+      default_path = Container.resolve(:runtime).factorix_config_path
+      legacy_path = default_path.sub_ext(".rb")
+
+      if default_path.exist?
+        @config = Config.load_file(default_path)
+      elsif legacy_path.exist?
+        raise_legacy_config(legacy_path, target: default_path)
+      end
+    end
+  end
+
+  private_class_method def self.raise_legacy_config(legacy_path, target:)
+    toml = Config::LegacyConverter.convert(legacy_path)
+    raise ConfigurationError, <<~MESSAGE
+      Factorix now uses TOML for configuration and no longer reads #{legacy_path}.
+      Review the equivalent TOML below, save it to #{target}, then remove the legacy file:
+
+      #{toml}
+    MESSAGE
   end
 
   loader = Zeitwerk::Loader.for_gem

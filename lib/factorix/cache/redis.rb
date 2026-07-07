@@ -16,12 +16,13 @@ module Factorix
     # Metadata (size, created_at) stored in separate hash keys.
     # Supports distributed locking with Lua script for atomic release.
     #
-    # @example Configuration
-    #   Factorix.configure do |config|
-    #     config.cache.api.backend = :redis
-    #     config.cache.api.redis.url = "redis://localhost:6379/0"
-    #     config.cache.api.redis.lock_timeout = 30
-    #   end
+    # @example Configuration (config.toml)
+    #   [cache.api]
+    #   backend = "redis"
+    #
+    #   [cache.api.redis]
+    #   url = "redis://localhost:6379/0"
+    #   lock_timeout = 30
     class Redis < Base
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]

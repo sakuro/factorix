@@ -41,7 +41,7 @@ module Factorix
           def call(json:, **)
             logger.debug("Collecting cache statistics")
 
-            cache_names = Factorix.config.cache.values.keys
+            cache_names = Factorix.config.cache.to_h.keys
             stats = cache_names.to_h {|name| [name, collect_stats(name)] }
 
             if json

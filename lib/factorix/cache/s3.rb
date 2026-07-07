@@ -16,13 +16,14 @@ module Factorix
     # TTL is managed via custom metadata on objects.
     # Supports distributed locking using conditional PUT operations.
     #
-    # @example Configuration
-    #   Factorix.configure do |config|
-    #     config.cache.download.backend = :s3
-    #     config.cache.download.s3.bucket = "factorix-develop"
-    #     config.cache.download.s3.region = "ap-northeast-1"
-    #     config.cache.download.s3.lock_timeout = 30
-    #   end
+    # @example Configuration (config.toml)
+    #   [cache.download]
+    #   backend = "s3"
+    #
+    #   [cache.download.s3]
+    #   bucket = "factorix-develop"
+    #   region = "ap-northeast-1"
+    #   lock_timeout = 30
     class S3 < Base
       # @!parse
       #   # @return [Dry::Logger::Dispatcher]

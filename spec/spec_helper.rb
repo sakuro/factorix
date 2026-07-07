@@ -3,7 +3,6 @@
 require "simplecov"
 SimpleCov.start
 
-require "dry/configurable/test_interface"
 require "dry/core"
 require "dry/core/container/stub"
 require "factorix"
@@ -17,10 +16,9 @@ Zip.warn_invalid_date = false
 
 WebMock.disable_net_connect!
 
-# Enable test interfaces for dry-core container and dry-configurable
+# Enable test interface for dry-core container
 # before loading support files that may use stub
 Factorix::Container.enable_stubs!
-Factorix.enable_test_interface
 
 # Load support files
 Dir[File.join(__dir__, "support", "**", "*.rb")].each {|f| require f }

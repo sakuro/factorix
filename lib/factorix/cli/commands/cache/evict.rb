@@ -94,7 +94,7 @@ module Factorix
           # @return [Array<Symbol>] resolved cache names
           # @raise [InvalidArgumentError] if unknown cache name specified
           private def resolve_cache_names(caches)
-            all_caches = Factorix.config.cache.values.keys
+            all_caches = Factorix.config.cache.to_h.keys
 
             return all_caches if caches.nil? || caches.empty?
 

@@ -189,7 +189,7 @@ RSpec.describe Factorix::Runtime::Base do
     end
 
     it "returns xdg_config_home_dir / factorix / config.rb" do
-      expect(runtime.factorix_config_path).to eq(Pathname("/home/wube/.config/factorix/config.rb"))
+      expect(runtime.factorix_config_path).to eq(Pathname("/home/wube/.config/factorix/config.toml"))
     end
   end
 

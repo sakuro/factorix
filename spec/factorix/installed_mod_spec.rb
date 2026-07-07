@@ -7,7 +7,7 @@ RSpec.describe Factorix::InstalledMOD do
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
-      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      factorix_config_path: Pathname("/tmp/factorix/config.toml"),
       running?: false
     )
   end

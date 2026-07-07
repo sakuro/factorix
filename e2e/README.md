@@ -40,8 +40,7 @@ expect:
 ```
 
 - `command`: argv after the `factorix` executable name.
-- `config`: nested key-value settings. The driver renders them into the config
-  format of the implementation under test (Ruby DSL today, TOML later) and
+- `config`: nested key-value settings. The driver renders them as TOML and
   points `FACTORIX_CONFIG` at the rendered file. Keys mirror the configuration
   structure (`runtime.user_dir`, `log_level`, …).
 - `files[].from`: source path — relative to the case directory, or repository

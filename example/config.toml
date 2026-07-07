@@ -1,0 +1,102 @@
+# Factorix Configuration Example
+#
+# This file shows how to configure Factorix for different platforms
+# and installation methods. All settings are optional; omitted keys use
+# their defaults.
+#
+# Copy this file to: ~/.config/factorix/config.toml
+# Or specify with: factorix --config-path /path/to/config.toml
+
+# ==============================================================================
+# Runtime Configuration
+# ==============================================================================
+# Configure Factorio installation paths when auto-detection is not available
+# or when you want to override the detected paths.
+
+# [runtime]
+
+# ------------------------------------------------------------------------------
+# Linux Examples
+# ------------------------------------------------------------------------------
+
+# Standalone installation (manual download)
+# executable_path = "/opt/factorio/bin/x64/factorio"
+# user_dir = "/home/USER/.factorio"
+# data_dir = "/opt/factorio/data"
+
+# Steam installation (default, usually no configuration needed)
+# executable_path = "/home/USER/.steam/steam/steamapps/common/Factorio/bin/x64/factorio"
+# user_dir = "/home/USER/.factorio"
+# data_dir = "/home/USER/.steam/steam/steamapps/common/Factorio/data"
+
+# Flatpak installation
+# executable_path = "/var/lib/flatpak/app/com.valvesoftware.Steam/current/active/files/extra/steam/steamapps/common/Factorio/bin/x64/factorio"
+# user_dir = "/home/USER/.var/app/com.valvesoftware.Steam/.factorio"
+# data_dir = "/var/lib/flatpak/app/com.valvesoftware.Steam/current/active/files/extra/steam/steamapps/common/Factorio/data"
+
+# ------------------------------------------------------------------------------
+# macOS Examples (non-Steam)
+# ------------------------------------------------------------------------------
+
+# Manual installation in Applications
+# executable_path = "/Applications/Factorio.app/Contents/MacOS/factorio"
+# user_dir = "/Users/USER/Library/Application Support/factorio"
+# data_dir = "/Applications/Factorio.app/Contents/data"
+
+# ------------------------------------------------------------------------------
+# Windows Examples (non-Steam)
+# ------------------------------------------------------------------------------
+
+# Portable installation
+# executable_path = "C:/Games/Factorio/bin/x64/factorio.exe"
+# user_dir = "C:/Games/Factorio"
+# data_dir = "C:/Games/Factorio/data"
+
+# ==============================================================================
+# Logging Configuration
+# ==============================================================================
+
+# Log level: debug, info, warn, error, fatal
+# log_level = "info"
+
+# ==============================================================================
+# RCON Configuration (for `factorix rcon` commands)
+# ==============================================================================
+
+# [rcon]
+# host = "localhost"
+# port = 27015
+# password = "secret"
+
+# ==============================================================================
+# HTTP Configuration
+# ==============================================================================
+
+# Timeouts in seconds
+# [http]
+# connect_timeout = 5
+# read_timeout = 30
+# write_timeout = 30
+
+# ==============================================================================
+# Cache Configuration
+# ==============================================================================
+# Each cache type (download, api, info_json) has a backend selector, a ttl,
+# and backend-specific nested tables.
+
+# Download cache (MOD files; ttl omitted = unlimited, files are immutable)
+# [cache.download]
+# backend = "file_system"
+
+# [cache.download.file_system]
+# max_file_size = 0        # 0 or omit for unlimited
+# compression_threshold = 0
+
+# API cache (API responses)
+# [cache.api]
+# backend = "file_system"
+# ttl = 3600
+
+# [cache.api.file_system]
+# max_file_size = 10485760 # 10MiB
+# compression_threshold = 0

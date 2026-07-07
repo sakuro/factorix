@@ -157,7 +157,7 @@ module Factorix
       # Returns the path to the Factorix configuration file.
       #
       # @return [Pathname] the Factorix configuration file path
-      def factorix_config_path = xdg_config_home_dir / "factorix" / "config.rb"
+      def factorix_config_path = xdg_config_home_dir / "factorix" / "config.toml"
 
       # Get the Factorix log file path
       #

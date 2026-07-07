@@ -6,14 +6,14 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
   let(:runtime) do
     instance_double(
       Factorix::Runtime::Base,
-      factorix_config_path: Pathname("/tmp/factorix/config.rb"),
+      factorix_config_path: Pathname("/tmp/factorix/config.toml"),
       running?: false
     )
   end
 
   let(:logger) { instance_double(Dry::Logger::Dispatcher) }
   let(:file_backend) { instance_double(Dry::Logger::Backends::Stream, level: Logger::INFO) }
-  let(:default_config_path) { Pathname("/tmp/factorix/config.rb") }
+  let(:default_config_path) { Pathname("/tmp/factorix/config.toml") }
 
   before do
     # Define test command class with stub_const for automatic cleanup
@@ -77,22 +77,9 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
       end
 
       context "when FACTORIX_CONFIG is not set" do
-        context "when default config file exists" do
-          before do
-            allow(default_config_path).to receive(:exist?).and_return(true)
-          end
-
-          it "loads configuration from default path" do
-            run_command(TestCommand)
-            expect(Factorix).to have_received(:load_config).with(default_config_path)
-          end
-        end
-
-        context "when default config file does not exist" do
-          it "does not load configuration" do
-            run_command(TestCommand)
-            expect(Factorix).not_to have_received(:load_config)
-          end
+        it "delegates default-path resolution to Factorix.load_config" do
+          run_command(TestCommand)
+          expect(Factorix).to have_received(:load_config).with(no_args)
         end
       end
     end

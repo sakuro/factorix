@@ -11,5 +11,5 @@ lock_path             {{SANDBOX}}/factorio/.lock
 current_log_path      {{SANDBOX}}/factorio/factorio-current.log
 previous_log_path     {{SANDBOX}}/factorio/factorio-previous.log
 factorix_cache_dir    {{SANDBOX}}/xdg-cache/factorix
-factorix_config_path  {{SANDBOX}}/xdg-config/factorix/config.rb
+factorix_config_path  {{SANDBOX}}/xdg-config/factorix/config.toml
 factorix_log_path     {{SANDBOX}}/xdg-state/factorix/factorix.log
