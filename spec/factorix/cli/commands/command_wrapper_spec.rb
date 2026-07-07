@@ -63,6 +63,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
         end
 
         it "loads configuration from environment variable path" do
+          allow(ENV).to receive(:fetch).and_call_original
           allow(ENV).to receive(:[]).with("FACTORIX_CONFIG").and_return(config_file.path)
           allow(ENV).to receive(:fetch).with("FACTORIX_CONFIG").and_return(config_file.path)
 
