@@ -7,10 +7,21 @@ The goal is a self-contained single binary that supports Linux, macOS, and Windo
 not a line-by-line translation, but a Go-idiomatic reimplementation with
 command-level feature parity (except the items listed in Out of Scope).
 
-**Repository:** a new repository, `github.com/sakuro/factorix-go`.
-This keeps release tags (`vX.Y.Z` via goreleaser) separate from the Ruby gem's tags
-and lets CI, issues, and history stay independent. Renaming or replacing the Ruby
-repository can be considered after the migration completes.
+**Repository strategy:** the Go implementation lives in this repository
+(module path `github.com/sakuro/factorix`), developed on a long-lived
+`go-rewrite` branch that serves as the temporary trunk. `main` stays Ruby until
+the port reaches command parity (Phase 10), then is replaced by the branch.
+Sequencing:
+
+1. After the dry-* simplification completes, cut the final gem release and
+   freeze Ruby development. A `ruby` branch is kept for emergency gem fixes
+   (tagged `ruby-vX.Y.Z` to avoid colliding with Go release tags).
+2. Go development proceeds on `go-rewrite`. The Ruby sources stay on the branch
+   during development — the trees do not overlap (`lib/` vs `cmd/`, `internal/`)
+   and keeping them enables Ruby-vs-Go parity testing against the same fixtures.
+3. At parity, `main` is replaced, Ruby sources are removed (history and the
+   `ruby` branch retain them), and goreleaser tags continue the gem's `vX.Y.Z`
+   sequence — reaching parity is the `v1.0.0` milestone.
 
 **Prerequisite work in the Ruby repository:** the
 [dry-* simplification plan](dry-simplification-plan.md) — DI container →
@@ -144,7 +155,7 @@ The Ruby `UserConfigurable` path overrides map to the config settings above.
 ## Directory Structure
 
 ```
-factorix-go/
+factorix/                  # repository root (Ruby lib/ and spec/ coexist until the main swap)
 ├── cmd/factorix/          # main package — CLI entry point
 │   └── main.go
 ├── internal/
@@ -163,7 +174,7 @@ factorix-go/
 │   ├── serdes/            # Binary serializer/deserializer (Factorio format)
 │   ├── settings/          # MOD settings (mod-settings.dat)
 │   └── transfer/          # Downloader / Uploader
-├── go.mod                 # module github.com/sakuro/factorix-go, go 1.23
+├── go.mod                 # module github.com/sakuro/factorix, go 1.23
 ├── go.sum
 └── .goreleaser.yaml
 ```
@@ -178,11 +189,11 @@ RCON needs no internal package — `gorcon/rcon` is used directly from the CLI l
 
 **Goal:** Runnable skeleton that outputs version and help text.
 
-- [ ] Create `github.com/sakuro/factorix-go`; `go mod init github.com/sakuro/factorix-go` (go 1.23)
+- [ ] Create the `go-rewrite` branch; `go mod init github.com/sakuro/factorix` (go 1.23)
 - [ ] `cmd/factorix/main.go` with cobra root command and `signal.NotifyContext`
 - [ ] cobra subcommand skeleton: `mod`, `cache`, `blueprint`, `rcon`, `completion`, `version`, `path`, `download`, `launch`, `man`
 - [ ] `.goreleaser.yaml` for multi-platform releases
-- [ ] GitHub Actions CI (build + test + `go vet`)
+- [ ] GitHub Actions CI for the `go-rewrite` branch (build + test + `go vet`)
 
 ---
 
@@ -217,7 +228,7 @@ The Ruby implementation uses `pack`/`unpack`. In Go, use `encoding/binary` with 
   - Symmetric write methods
 - [ ] `internal/serdes/property_tree.go`
   - `PropertyTree` type with `Kind` (None/Bool/Number/String/List/Dict/SignedInt/UnsignedInt)
-- [ ] Round-trip tests against binary fixtures copied from the Ruby repo's `spec/fixtures`
+- [ ] Round-trip tests against the binary fixtures in `spec/fixtures`
 
 ---
 
@@ -393,14 +404,17 @@ mod-list backup (`BackupSupport`).
 **Goal:** Reliable, distributable binary.
 
 - [ ] Unit tests for serdes, dependency parser, mod_list, settings, blueprint, changelog
-- [ ] Reuse Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
+- [ ] Reuse the Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
       as golden files; where practical, assert Ruby-vs-Go output parity
-      (e.g. `mod list`, `mod settings dump`) — the cheapest correctness check for a port
+      (e.g. `mod list`, `mod settings dump`) — both implementations are on the
+      branch, so parity tests can run in one CI job
 - [ ] Integration tests for CLI commands using `httptest` for portal API
 - [ ] `staticcheck` / `golangci-lint` in CI
 - [ ] `.goreleaser.yaml`
   - Targets: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`
   - GitHub Releases with checksums
+- [ ] Swap `main` to `go-rewrite`; remove Ruby sources and Ruby CI
+  (history and the `ruby` branch retain them); update README and docs; tag `v1.0.0`
 
 ---
 
