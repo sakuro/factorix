@@ -11,8 +11,7 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     )
   end
 
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
-  let(:file_backend) { instance_double(Dry::Logger::Backends::Stream, level: Logger::INFO) }
+  let(:logger) { instance_double(Factorix::Logger) }
   let(:default_config_path) { Pathname("/tmp/factorix/config.toml") }
 
   before do
@@ -28,7 +27,6 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
     allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(runtime)
     allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
     allow(Factorix).to receive(:load_config)
-    allow(logger).to receive(:backends).and_return([file_backend])
     allow(runtime).to receive(:factorix_config_path).and_return(default_config_path)
     allow(default_config_path).to receive(:exist?).and_return(false)
     allow(ENV).to receive(:[]).and_call_original
@@ -86,52 +84,22 @@ RSpec.describe Factorix::CLI::Commands::CommandWrapper do
 
     context "with log_level option" do
       before do
-        allow(file_backend).to receive(:level=)
-        allow(file_backend).to receive(:respond_to?).with(:level=).and_return(true)
+        allow(logger).to receive(:level=)
       end
 
-      it "sets file backend log level to DEBUG" do
-        run_command(TestCommand, %w[--log-level=debug])
-        expect(file_backend).to have_received(:level=).with(Logger::DEBUG)
-      end
-
-      it "sets file backend log level to INFO" do
-        run_command(TestCommand, %w[--log-level=info])
-        expect(file_backend).to have_received(:level=).with(Logger::INFO)
-      end
-
-      it "sets file backend log level to WARN" do
-        run_command(TestCommand, %w[--log-level=warn])
-        expect(file_backend).to have_received(:level=).with(Logger::WARN)
-      end
-
-      it "sets file backend log level to ERROR" do
-        run_command(TestCommand, %w[--log-level=error])
-        expect(file_backend).to have_received(:level=).with(Logger::ERROR)
-      end
-
-      it "sets file backend log level to FATAL" do
-        run_command(TestCommand, %w[--log-level=fatal])
-        expect(file_backend).to have_received(:level=).with(Logger::FATAL)
-      end
-
-      context "when file backend does not respond to level=" do
-        before do
-          allow(file_backend).to receive(:respond_to?).with(:level=).and_return(false)
-        end
-
-        it "does not set log level" do
-          run_command(TestCommand, %w[--log-level=debug])
-          expect(file_backend).not_to have_received(:level=)
+      %w[debug info warn error fatal].each do |level|
+        it "sets the logger level to :#{level}" do
+          run_command(TestCommand, %W[--log-level=#{level}])
+          expect(logger).to have_received(:level=).with(level.to_sym)
         end
       end
     end
 
     context "without log_level option" do
       it "does not change log level" do
-        allow(file_backend).to receive(:level=)
+        allow(logger).to receive(:level=)
         run_command(TestCommand)
-        expect(file_backend).not_to have_received(:level=)
+        expect(logger).not_to have_received(:level=)
       end
     end
   end

@@ -14,7 +14,7 @@ module Factorix
     # Reports progress to an optional listener.
     class Downloader
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       #   # @return [Cache::FileSystem]
       #   attr_reader :cache

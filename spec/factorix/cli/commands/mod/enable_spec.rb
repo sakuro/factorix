@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:command) { Factorix::CLI::Commands::MOD::Enable.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_dir) { Pathname("/fake/path/mods") }
@@ -212,7 +212,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Enable do
           running?: true
         )
       end
-      let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, error: nil) }
+      let(:logger) { instance_double(Factorix::Logger, debug: nil, error: nil) }
       let(:node_a) { instance_double(Factorix::Dependency::Node, mod: mod_a, enabled?: false) }
 
       before do

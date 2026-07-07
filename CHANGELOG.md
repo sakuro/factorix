@@ -13,6 +13,7 @@
 - Suppress the progress bar when the output stream is not a TTY, and honor the `NO_COLOR` convention (#97)
 - Replace dry-events pub/sub with per-call progress listeners (#98)
 - Replace dry-configurable with a plain immutable `Factorix::Config` parsed by perfect_toml
+- Replace dry-logger with a thin wrapper around Ruby's standard Logger
 - Bump retriable dependency from `~> 3.1` to `~> 4.0` (#96)
 
 ## [0.12.0] - 2026-04-21

@@ -7,7 +7,7 @@ module Factorix
     module Commands
       module MOD
         class Check < Base
-          attr_reader logger: Dry::Logger::Dispatcher
+          attr_reader logger: Factorix::Logger
           attr_reader runtime: Runtime
 
           def call: (?quiet: bool) -> void

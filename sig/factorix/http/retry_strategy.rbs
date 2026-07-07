@@ -6,7 +6,7 @@ module Factorix
   module HTTP
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
 
       type retry_callback = ^(StandardError exception, Integer try, Float elapsed_time, Float next_interval) -> void
 
@@ -28,7 +28,7 @@ module Factorix
       # @option options [Float] :rand_factor Randomization factor
       # @option options [Array<Class>] :on Exception classes to retry on
       # @option options [Proc] :on_retry Callback called on each retry
-      def initialize: (?logger: Dry::Logger::Dispatcher?, **untyped options) -> void
+      def initialize: (?logger: Factorix::Logger?, **untyped options) -> void
 
       # Execute the block with automatic retry on specified exceptions.
       # Uses exponential backoff with randomization for retry intervals

@@ -3,7 +3,7 @@
 RSpec.describe Factorix::HTTP::CacheDecorator do
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:cache) { instance_double(Factorix::Cache::FileSystem) }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+  let(:logger) { instance_double(Factorix::Logger) }
   let(:decorator) { Factorix::HTTP::CacheDecorator.new(client:, cache:, logger:) }
 
   let(:uri) { URI("https://example.com/api/data.json") }

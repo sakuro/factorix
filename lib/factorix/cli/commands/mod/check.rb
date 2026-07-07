@@ -7,7 +7,7 @@ module Factorix
         # Validate MOD dependencies without making changes
         class Check < Base
           # @!parse
-          #   # @return [Dry::Logger::Dispatcher]
+          #   # @return [Factorix::Logger]
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime

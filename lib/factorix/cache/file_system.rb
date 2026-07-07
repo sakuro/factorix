@@ -20,7 +20,7 @@ module Factorix
     # - Lock file (.lock): used for concurrent access control
     class FileSystem < Base
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:logger]
 

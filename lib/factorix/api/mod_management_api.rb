@@ -18,7 +18,7 @@ module Factorix
       #   attr_reader :client
       #   # @return [Transfer::Uploader]
       #   attr_reader :uploader
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:uploader, :logger, client: :http_client]
 

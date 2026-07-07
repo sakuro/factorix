@@ -26,7 +26,7 @@ module Factorix
         # @!parse
         #   # @return [Runtime::Base]
         #   attr_reader :runtime
-        #   # @return [Dry::Logger::Dispatcher]
+        #   # @return [Factorix::Logger]
         #   attr_reader :logger
         include Import[:runtime, :logger]
 

@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:portal) { instance_spy(Factorix::Portal) }
   let(:command) do
     Factorix::CLI::Commands::MOD::Install.new(
@@ -289,7 +289,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Install do
           running?: true
         )
       end
-      let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, error: nil) }
+      let(:logger) { instance_double(Factorix::Logger, debug: nil, error: nil) }
 
       it "raises GameRunningError" do
         expect { run_command(command, %w[mod-a --yes]) }

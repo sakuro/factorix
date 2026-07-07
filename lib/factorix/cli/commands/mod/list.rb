@@ -7,7 +7,7 @@ module Factorix
         # List installed MODs
         class List < Base
           # @!parse
-          #   # @return [Dry::Logger::Dispatcher]
+          #   # @return [Factorix::Logger]
           #   attr_reader :logger
           #   # @return [Factorix::Runtime]
           #   attr_reader :runtime

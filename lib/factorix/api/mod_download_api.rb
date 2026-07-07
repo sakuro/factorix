@@ -12,7 +12,7 @@ module Factorix
       # when FACTORIO_USERNAME/FACTORIO_TOKEN environment variables are not set.
       # It's resolved lazily via reader method instead.
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:logger]
 

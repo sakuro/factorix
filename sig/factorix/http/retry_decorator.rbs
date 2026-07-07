@@ -11,7 +11,7 @@ module Factorix
     class RetryDecorator
       attr_reader client: Client
       attr_reader retry_strategy: RetryStrategy
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
 
       # Execute an HTTP request with retry logic
       #

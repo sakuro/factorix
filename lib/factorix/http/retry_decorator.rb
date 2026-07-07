@@ -12,7 +12,7 @@ module Factorix
       #   attr_reader :client
       #   # @return [HTTP::RetryStrategy]
       #   attr_reader :retry_strategy
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:client, :retry_strategy, :logger]
 

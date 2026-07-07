@@ -25,7 +25,7 @@ module Factorix
     #   lock_timeout = 30
     class Redis < Base
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:logger]
 

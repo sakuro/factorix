@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Check do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:command) { Factorix::CLI::Commands::MOD::Check.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }
   let(:mod_list) { instance_spy(Factorix::MODList) }

@@ -40,7 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-cli", "~> 1.0"
   spec.add_dependency "dry-core", "~> 1.0"
   spec.add_dependency "dry-inflector", "~> 1.0"
-  spec.add_dependency "dry-logger", "~> 1.2"
   spec.add_dependency "parslet", "~> 2.0"
   spec.add_dependency "perfect_toml", "~> 0.9"
   spec.add_dependency "rcon-client", "~> 0.5"

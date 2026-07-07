@@ -21,7 +21,7 @@ module Factorix
       private_constant :MIME_TYPES
 
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       #   # @return [HTTP::Client]
       #   attr_reader :client

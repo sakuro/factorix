@@ -39,7 +39,6 @@ See [components/](components/) for detailed documentation of each module.
 - **dry-core** - Dependency container
 - **dry-auto_inject** - Dependency injection
 - **perfect_toml** - Configuration file parsing
-- **dry-logger** - Logging
 - **retriable** - Retry logic for network operations
 - **tty-progressbar** - Progress display with multi-bar support
 - **tint_me** - Terminal text coloring

@@ -22,7 +22,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
   let(:failing_runtime_class) { Class.new(Factorix::Runtime::Base) }
 
   let(:runtime) { test_runtime_class.new }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+  let(:logger) { instance_double(Factorix::Logger) }
 
   before do
     # Inject logger into runtime

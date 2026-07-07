@@ -11,7 +11,7 @@ module Factorix
     class CacheDecorator
       attr_reader client: Client
       attr_reader cache: Cache::FileSystem
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
 
       # Execute an HTTP request (only caches GET without block)
       #
