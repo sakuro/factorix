@@ -29,10 +29,12 @@ module Factorix
 
       # Get the Factorix log file path
       #
-      # Returns the path to the Factorix log file using macOS convention.
+      # Logs follow the macOS convention (~/Library/Logs), not the XDG state
+      # directory. An explicitly set XDG_STATE_HOME still takes precedence so
+      # sandboxed environments (tests) can redirect the log file.
       #
       # @return [Pathname] the Factorix log file path
-      def factorix_log_path = Pathname(Dir.home) + "Library/Logs/factorix/factorix.log"
+      def factorix_log_path = ENV.key?("XDG_STATE_HOME") ? super : Pathname(Dir.home) + "Library/Logs/factorix/factorix.log"
 
       # Get the default cache home directory for macOS
       #

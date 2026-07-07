@@ -84,8 +84,25 @@ RSpec.describe Factorix::Runtime::MacOS do
   end
 
   describe "#factorix_log_path" do
-    it "returns ~/Library/Logs/factorix/factorix.log" do
-      expect(runtime.factorix_log_path).to eq(Pathname("/Users/wube/Library/Logs/factorix/factorix.log"))
+    context "when XDG_STATE_HOME is not set" do
+      before do
+        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(false)
+      end
+
+      it "returns ~/Library/Logs/factorix/factorix.log" do
+        expect(runtime.factorix_log_path).to eq(Pathname("/Users/wube/Library/Logs/factorix/factorix.log"))
+      end
+    end
+
+    context "when XDG_STATE_HOME is set" do
+      before do
+        allow(ENV).to receive(:key?).with("XDG_STATE_HOME").and_return(true)
+        allow(ENV).to receive(:fetch).with("XDG_STATE_HOME").and_return("/custom/state")
+      end
+
+      it "returns the XDG-based path" do
+        expect(runtime.factorix_log_path).to eq(Pathname("/custom/state/factorix/factorix.log"))
+      end
     end
   end
 end
