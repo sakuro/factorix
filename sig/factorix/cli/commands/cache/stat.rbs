@@ -7,7 +7,7 @@ module Factorix
     module Commands
       module Cache
         class Stat < Base
-          attr_reader logger: Dry::Logger::Dispatcher
+          attr_reader logger: Factorix::Logger
 
           def call: (?json: bool) -> void
         end

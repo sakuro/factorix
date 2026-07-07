@@ -9,7 +9,7 @@ module Factorix
         PATH_TYPES: Hash[String, Symbol]
 
         attr_reader runtime: Runtime::Base
-        attr_reader logger: Dry::Logger::Dispatcher
+        attr_reader logger: Factorix::Logger
 
         def call: (?json: bool) -> void
       end

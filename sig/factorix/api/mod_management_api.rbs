@@ -9,7 +9,7 @@ module Factorix
 
       attr_reader client: HTTP::Client
       attr_reader uploader: Transfer::Uploader
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
 
       def initialize: (**untyped deps) -> void
 

@@ -6,7 +6,7 @@ module Factorix
       # Download Factorio game files from the official download API
       class Download < Base
         # @!parse
-        #   # @return [Dry::Logger::Dispatcher]
+        #   # @return [Factorix::Logger]
         #   attr_reader :logger
         #   # @return [Runtime]
         #   attr_reader :runtime

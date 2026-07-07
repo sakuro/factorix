@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::CLI::Commands::Launch do
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, info: nil, debug: nil, error: nil) }
+  let(:logger) { instance_double(Factorix::Logger, info: nil, debug: nil, error: nil) }
   let(:command) { Factorix::CLI::Commands::Launch.new(runtime:, logger:) }
 
   before do

@@ -2,7 +2,6 @@
 
 require "dry/core"
 require "dry/inflector"
-require "dry/logger"
 
 module Factorix
   # DI container for dependency injection
@@ -45,12 +44,7 @@ module Factorix
       # Ensure log directory exists
       log_path.dirname.mkpath unless log_path.dirname.exist?
 
-      # Create logger with file backend
-      # Dispatcher level set to DEBUG to allow all messages through
-      # Backend controls filtering based on --log-level option
-      Dry.Logger(:factorix, level: :debug) do |dispatcher|
-        dispatcher.add_backend(level: Factorix.config.log_level, stream: log_path.to_s, template: "[%<time>s] %<severity>s: %<message>s %<payload>s")
-      end
+      Logger.new(log_path, level: Factorix.config.log_level)
     end
 
     # Register retry strategy for network operations

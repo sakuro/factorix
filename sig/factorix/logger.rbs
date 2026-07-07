@@ -1,0 +1,21 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  class Logger
+    def initialize: (Pathname | IO | StringIO stream, ?level: Symbol) -> void
+
+    def level=: (Symbol level) -> void
+
+    def debug: (String | Exception message, **untyped payload) -> void
+
+    def info: (String | Exception message, **untyped payload) -> void
+
+    def warn: (String | Exception message, **untyped payload) -> void
+
+    def error: (String | Exception message, **untyped payload) -> void
+
+    def fatal: (String | Exception message, **untyped payload) -> void
+  end
+end

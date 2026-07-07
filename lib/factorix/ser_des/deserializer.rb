@@ -8,14 +8,14 @@ module Factorix
     # binary file format, following the specifications documented in the Factorio wiki.
     class Deserializer
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:logger]
 
       # Create a new Deserializer instance
       #
       # @param stream [IO] An IO-like object that responds to #read
-      # @param logger [Dry::Logger::Dispatcher] optional logger
+      # @param logger [Factorix::Logger] optional logger
       # @raise [ArgumentError] If the stream doesn't respond to #read
       def initialize(stream, logger: nil)
         super(logger:)

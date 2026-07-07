@@ -8,7 +8,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Uninstall do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, info: nil, warn: nil, error: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil, info: nil, warn: nil, error: nil) }
 
   let(:command) { Factorix::CLI::Commands::MOD::Uninstall.new(runtime:, logger:) }
   let(:mod_list_path) { Pathname("/fake/path/mod-list.json") }

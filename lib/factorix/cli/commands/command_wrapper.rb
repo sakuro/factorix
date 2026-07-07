@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "logger"
-
 module Factorix
   class CLI
     module Commands
@@ -49,13 +47,7 @@ module Factorix
         # Sets the application logger's level
         # @param level [String] log level (debug, info, warn, error, fatal)
         private def log_level!(level)
-          logger = Container[:logger]
-          level_constant = Logger.const_get(level.upcase)
-
-          # Change only the File backend (first backend) level
-          # Dispatcher is always set to DEBUG to allow all messages through
-          file_backend = logger.backends.first
-          file_backend.level = level_constant if file_backend.respond_to?(:level=)
+          Container[:logger].level = level.to_sym
         end
       end
     end

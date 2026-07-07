@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::API::GameDownloadAPI do
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:service_credential) { instance_double(Factorix::ServiceCredential, username: "test_user", token: "test_token") }
   let(:downloader) { instance_double(Factorix::Transfer::Downloader) }

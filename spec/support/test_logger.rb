@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/logger"
 require "stringio"
 
 # Stub logger to prevent writing to system log files during tests
@@ -25,7 +24,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     config.log_stream = StringIO.new
-    Factorix::Container.stub(:logger, Dry.Logger(:test, stream: config.log_stream, template: "[%<time>s] %<severity>s: %<message>s %<payload>s"))
+    Factorix::Container.stub(:logger, Factorix::Logger.new(config.log_stream, level: :debug))
   end
 
   config.include_context "with testing log stream"

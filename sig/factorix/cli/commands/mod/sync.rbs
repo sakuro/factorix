@@ -8,7 +8,7 @@ module Factorix
       module MOD
         class Sync < Base
           attr_reader portal: Portal
-          attr_reader logger: Dry::Logger::Dispatcher
+          attr_reader logger: Factorix::Logger
           attr_reader runtime: Runtime
 
           def call: (save_file: String, ?jobs: Integer, ?yes: bool, ?quiet: bool) -> void

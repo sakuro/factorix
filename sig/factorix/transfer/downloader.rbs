@@ -5,7 +5,7 @@
 module Factorix
   module Transfer
     class Downloader
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
       attr_reader cache: Cache::FileSystem
       attr_reader client: HTTP::Client
 

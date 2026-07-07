@@ -2,7 +2,7 @@
 
 RSpec.describe Factorix::Runtime::Linux do
   let(:runtime) { Factorix::Runtime::Linux.new }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+  let(:logger) { instance_double(Factorix::Logger) }
 
   before do
     allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)

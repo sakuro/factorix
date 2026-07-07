@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::List do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:mod_portal_api) { instance_double(Factorix::API::MODPortalAPI) }
   let(:command) { Factorix::CLI::Commands::MOD::List.new(runtime:, logger:, mod_portal_api:) }
   let(:mod_list) { instance_double(Factorix::MODList) }

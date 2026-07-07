@@ -10,7 +10,7 @@ module Factorix
     # Corresponds to: https://wiki.factorio.com/Download_API
     class GameDownloadAPI
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       #   # @return [HTTP::Client]
       #   attr_reader :client

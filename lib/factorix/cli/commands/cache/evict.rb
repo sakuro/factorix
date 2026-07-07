@@ -15,7 +15,7 @@ module Factorix
         #   $ factorix cache evict download --older-than 7d
         class Evict < Base
           # @!parse
-          #   # @return [Dry::Logger::Dispatcher]
+          #   # @return [Factorix::Logger]
           #   attr_reader :logger
           include Import[:logger]
           include Formatting

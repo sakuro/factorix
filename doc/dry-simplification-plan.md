@@ -101,12 +101,12 @@ file once; the Go version then reads the same file.
 
 ## Stage 3 — dry-logger → stdlib Logger
 
-- [ ] Thin wrapper around stdlib `Logger` preserving the structured-payload call
+- [x] Thin wrapper around stdlib `Logger` preserving the structured-payload call
       style (`logger.debug("message", key: value)`) so the ~35 files of call
       sites stay unchanged; payload rendered as `key=value` pairs
-- [ ] Same log file path and template (`[time] SEVERITY: message payload`);
+- [x] Same log file path and template (`[time] SEVERITY: message payload`);
       level from `config.log_level`
-- [ ] Remove dry-logger from the gemspec
+- [x] Remove dry-logger from the gemspec
 
 ---
 

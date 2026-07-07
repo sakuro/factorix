@@ -9,7 +9,7 @@ module Factorix
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
       # @!parse
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:logger]
 

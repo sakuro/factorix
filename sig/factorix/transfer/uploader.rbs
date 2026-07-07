@@ -5,7 +5,7 @@
 module Factorix
   module Transfer
     class Uploader
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
       attr_reader client: HTTP::Client
 
       def initialize: (**untyped deps) -> void

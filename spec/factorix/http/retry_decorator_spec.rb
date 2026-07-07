@@ -3,7 +3,7 @@
 RSpec.describe Factorix::HTTP::RetryDecorator do
   let(:client) { instance_double(Factorix::HTTP::Client) }
   let(:retry_strategy) { instance_double(Factorix::HTTP::RetryStrategy) }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+  let(:logger) { instance_double(Factorix::Logger) }
   let(:decorator) { Factorix::HTTP::RetryDecorator.new(client:, retry_strategy:, logger:) }
 
   let(:uri) { URI("https://example.com/api/endpoint") }

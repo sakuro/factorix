@@ -15,7 +15,7 @@ module Factorix
       #   attr_reader :client
       #   # @return [Cache::FileSystem]
       #   attr_reader :cache
-      #   # @return [Dry::Logger::Dispatcher]
+      #   # @return [Factorix::Logger]
       #   attr_reader :logger
       include Import[:client, :cache, :logger]
 

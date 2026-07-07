@@ -12,7 +12,7 @@ module Factorix
           include DownloadSupport
           include PortalSupport
           # @!parse
-          #   # @return [Dry::Logger::Dispatcher]
+          #   # @return [Factorix::Logger]
           #   attr_reader :logger
           #   # @return [Runtime]
           #   attr_reader :runtime

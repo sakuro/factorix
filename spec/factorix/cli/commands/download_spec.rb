@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Factorix::CLI::Commands::Download do
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil) }
   let(:runtime) { instance_double(Factorix::Runtime::MacOS) }
   let(:game_download_api) { instance_double(Factorix::API::GameDownloadAPI) }
   let(:command) { Factorix::CLI::Commands::Download.new(logger:, runtime:, game_download_api:) }

@@ -11,7 +11,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Update do
       running?: false
     )
   end
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, debug: nil, warn: nil) }
+  let(:logger) { instance_double(Factorix::Logger, debug: nil, warn: nil) }
   let(:portal) { instance_spy(Factorix::Portal) }
   let(:command) do
     Factorix::CLI::Commands::MOD::Update.new(

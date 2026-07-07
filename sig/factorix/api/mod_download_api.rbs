@@ -7,7 +7,7 @@ module Factorix
     class MODDownloadAPI
       BASE_URL: String
 
-      attr_reader logger: Dry::Logger::Dispatcher
+      attr_reader logger: Factorix::Logger
 
       def initialize: (**untyped deps) -> void
 

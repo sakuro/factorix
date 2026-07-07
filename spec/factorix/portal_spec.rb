@@ -4,7 +4,7 @@ RSpec.describe Factorix::Portal do
   let(:mod_portal_api) { instance_double(Factorix::API::MODPortalAPI) }
   let(:mod_download_api) { instance_double(Factorix::API::MODDownloadAPI) }
   let(:mod_management_api) { instance_double(Factorix::API::MODManagementAPI) }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher, info: nil) }
+  let(:logger) { instance_double(Factorix::Logger, info: nil) }
   let(:portal) { Factorix::Portal.new(mod_portal_api:, mod_download_api:, mod_management_api:, logger:) }
 
   describe "#list_mods" do

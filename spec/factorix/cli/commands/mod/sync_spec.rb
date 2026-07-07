@@ -12,7 +12,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Sync do
 
   let(:runtime) { instance_double(Factorix::Runtime::Base) }
   let(:portal) { instance_double(Factorix::Portal) }
-  let(:logger) { instance_double(Dry::Logger::Dispatcher) }
+  let(:logger) { instance_double(Factorix::Logger) }
   let(:save_file_path) { Pathname("spec/fixtures/test-save.zip") }
   let(:mod_dir) { Pathname("/tmp/mods") }
   let(:mod_list_path) { Pathname("/tmp/mod-list.json") }
