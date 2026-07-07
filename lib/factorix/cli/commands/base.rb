@@ -77,13 +77,16 @@ module Factorix
 
           resolved_prefix = EMOJI_PREFIXES.fetch(prefix) { prefix.to_s }
           output = resolved_prefix.empty? ? message : "#{resolved_prefix} #{message}"
-          style = STYLES.fetch(prefix, PLAIN)
+          style = color? ? STYLES.fetch(prefix, PLAIN) : PLAIN
           out.puts style[output]
         end
 
         private def quiet?
           @quiet == true
         end
+
+        # NO_COLOR convention: any non-empty value disables color
+        private def color? = ENV.fetch("NO_COLOR", "").empty?
       end
     end
   end

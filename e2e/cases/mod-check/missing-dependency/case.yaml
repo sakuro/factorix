@@ -1,0 +1,13 @@
+command: [mod, check]
+config:
+  runtime:
+    user_dir: "{{SANDBOX}}/factorio"
+    data_dir: "{{SANDBOX}}/factorio/data"
+files:
+  - {from: files/mod-list.json, to: factorio/mods/mod-list.json}
+  - {from: files/base-info.json, to: factorio/data/base/info.json}
+  - {from: files/needs-lib-info.json, to: factorio/mods/needs-lib/info.json}
+expect:
+  status: 1
+  stdout:
+    file: expected_stdout.txt

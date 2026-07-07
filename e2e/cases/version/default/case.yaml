@@ -1,0 +1,5 @@
+command: [version]
+expect:
+  status: 0
+  stdout:
+    match: "\\A\\d+\\.\\d+\\.\\d+\\n\\z"

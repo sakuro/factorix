@@ -78,6 +78,7 @@ RSpec/IndexedLet:
 
 RSpec/SpecFilePathFormat:
   CustomTransform:
+    E2E: e2e
     RCon: rcon
 
 Style/HashEachMethods:

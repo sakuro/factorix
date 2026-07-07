@@ -1,0 +1,7 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "label": "e2e",
+    "version": 281479275675648
+  }
+}

@@ -1,0 +1,7 @@
+command: [blueprint, encode]
+stdin: |
+  {"blueprint": {"item": "blueprint", "label": "e2e", "version": 281479275675648}}
+expect:
+  status: 0
+  stdout:
+    match: "\\A0[A-Za-z0-9+/=]+\\z"

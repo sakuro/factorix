@@ -12,9 +12,12 @@ module Factorix
       #
       # @param title [String] title of the progress presenter
       # @param output [IO] output stream for the progress presenter
-      def initialize(title: "Progress", output: $stderr)
+      # @param force [Boolean, nil] render even when output is not a TTY
+      #   (nil defers to output.tty?, so piped/redirected output stays clean)
+      def initialize(title: "Progress", output: $stderr, force: nil)
         @title = title
         @output = output
+        @force = force.nil? ? output.tty? : force
         @tty_bar = nil
       end
 
@@ -30,7 +33,7 @@ module Factorix
           total:,
           output: @output,
           frequency: 1, # Always update (important for testing with StringIO)
-          force: true   # Force output even when not a TTY
+          force: @force
         )
       end
 

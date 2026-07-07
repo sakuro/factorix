@@ -1,0 +1,9 @@
+{
+  "name": "needs-lib",
+  "version": "1.0.0",
+  "title": "Needs Lib",
+  "author": "e2e",
+  "description": "A MOD depending on a library MOD that is not installed.",
+  "factorio_version": "1.1",
+  "dependencies": ["some-lib >= 1.0"]
+}

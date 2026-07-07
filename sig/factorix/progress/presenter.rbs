@@ -5,7 +5,7 @@
 module Factorix
   module Progress
     class Presenter
-      def initialize: (?title: String, ?output: IO) -> void
+      def initialize: (?title: String, ?output: IO, ?force: bool?) -> void
 
       def start: (total: Integer, ?format: String?) -> void
 

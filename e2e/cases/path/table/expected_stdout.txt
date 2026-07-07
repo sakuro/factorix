@@ -1,0 +1,15 @@
+executable_path       {{SANDBOX}}/factorio/bin/x64/factorio
+data_dir              {{SANDBOX}}/factorio/data
+user_dir              {{SANDBOX}}/factorio
+mod_dir               {{SANDBOX}}/factorio/mods
+save_dir              {{SANDBOX}}/factorio/saves
+script_output_dir     {{SANDBOX}}/factorio/script-output
+mod_list_path         {{SANDBOX}}/factorio/mods/mod-list.json
+mod_settings_path     {{SANDBOX}}/factorio/mods/mod-settings.dat
+player_data_path      {{SANDBOX}}/factorio/player-data.json
+lock_path             {{SANDBOX}}/factorio/.lock
+current_log_path      {{SANDBOX}}/factorio/factorio-current.log
+previous_log_path     {{SANDBOX}}/factorio/factorio-previous.log
+factorix_cache_dir    {{SANDBOX}}/xdg-cache/factorix
+factorix_config_path  {{SANDBOX}}/xdg-config/factorix/config.rb
+factorix_log_path     {{SANDBOX}}/xdg-state/factorix/factorix.log

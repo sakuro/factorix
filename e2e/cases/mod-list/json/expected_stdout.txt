@@ -1,0 +1,14 @@
+[
+  {
+    "name": "base",
+    "version": "1.1.110",
+    "enabled": true,
+    "error": null
+  },
+  {
+    "name": "upload-test",
+    "version": "0.1.1",
+    "enabled": true,
+    "error": null
+  }
+]

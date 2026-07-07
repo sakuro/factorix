@@ -1,0 +1,7 @@
+command: [mod, changelog, check]
+files:
+  - {from: //spec/fixtures/changelog/basic.txt, to: cwd/changelog.txt}
+expect:
+  status: 0
+  stdout:
+    file: expected_stdout.txt

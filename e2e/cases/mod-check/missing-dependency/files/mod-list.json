@@ -1,0 +1,13 @@
+{
+  "mods":
+  [
+    {
+      "name": "base",
+      "enabled": true
+    },
+    {
+      "name": "needs-lib",
+      "enabled": true
+    }
+  ]
+}

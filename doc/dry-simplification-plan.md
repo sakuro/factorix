@@ -44,14 +44,14 @@ the [Go migration roadmap](go-migration-roadmap.md) (Phase 11).
 Test cases are language-neutral *data*; only a thin driver is per-language
 (RSpec now, `go test` after the port reads the same cases).
 
-- [ ] `e2e/cases/` at the repository root: one directory per case holding the
+- [x] `e2e/cases/` at the repository root: one directory per case holding the
       command line, environment, fixture setup, and expected stdout / exit status
-- [ ] Thin RSpec driver that discovers and runs the cases against `exe/factorix`
-- [ ] Isolation via config runtime overrides (`user_dir` / `data_dir`) pointing
+- [x] Thin RSpec driver that discovers and runs the cases against `exe/factorix`
+- [x] Isolation via config runtime overrides (`user_dir` / `data_dir`) pointing
       into a per-case temporary directory
-- [ ] Output determinism: suppress the progress bar when stdout is not a TTY,
+- [x] Output determinism: suppress the progress bar when stdout is not a TTY,
       honor `NO_COLOR`
-- [ ] Initial coverage — deterministic local commands only:
+- [x] Initial coverage — deterministic local commands only:
       `version`, `path`, `mod list`, `mod check`, `mod settings dump`,
       `blueprint encode` / `decode`, `mod changelog check` / `extract`
 - [ ] Portal-dependent commands (`mod search`, `mod install`, …) are deferred:
