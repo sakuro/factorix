@@ -12,6 +12,11 @@ This directory contains technical documentation for the Factorix project.
 - [`overview.md`](overview.md) - Project overview and goals
 - [`architecture.md`](architecture.md) - System architecture and technology stack
 
+## Plans
+
+- [`dry-simplification-plan.md`](dry-simplification-plan.md) - Replacing dry-* infrastructure with plain Ruby (precursor to the Go migration)
+- [`go-migration-roadmap.md`](go-migration-roadmap.md) - Phased plan for porting Factorix to Go
+
 ## Component Documentation
 
 See [`components/`](components/) directory for detailed documentation on each component:
