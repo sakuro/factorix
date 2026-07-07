@@ -114,7 +114,7 @@ module Factorix
 
           URI(value)
         rescue URI::InvalidURIError => e
-          Container[:logger].warn("Skipping invalid URI '#{value}': #{e.message}")
+          Factorix.app.logger.warn("Skipping invalid URI '#{value}': #{e.message}")
           nil
         end
       end
@@ -145,7 +145,7 @@ module Factorix
             Release[**r]
           rescue RangeError => e
             # Skip releases with invalid version numbers
-            Container[:logger].warn("Skipping release #{name}@#{r[:version]}: #{e.message}")
+            Factorix.app.logger.warn("Skipping release #{name}@#{r[:version]}: #{e.message}")
             nil
           end
         }

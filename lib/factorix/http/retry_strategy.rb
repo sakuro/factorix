@@ -8,10 +8,7 @@ module Factorix
   module HTTP
     # Class that manages retry strategy with exponential backoff and randomization
     class RetryStrategy
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       DEFAULT_OPTIONS = {
         tries: 3,                 # Number of attempts (including the initial try)
@@ -40,8 +37,8 @@ module Factorix
       # @option options [Float] :rand_factor Randomization factor
       # @option options [Array<Class>] :on Exception classes to retry on
       # @option options [Proc] :on_retry Callback called on each retry
-      def initialize(logger: nil, **options)
-        super(logger:)
+      def initialize(logger: Factorix.app.logger, **options)
+        @logger = logger
         @options = configure_options(options)
       end
 

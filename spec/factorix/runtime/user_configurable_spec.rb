@@ -26,7 +26,7 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
   before do
     # Inject logger into runtime
-    allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
+    allow(Factorix.app).to receive(:logger).and_return(logger)
     allow(logger).to receive(:debug)
     allow(logger).to receive(:error)
 
@@ -84,13 +84,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
-          instance_double(
+        allow(Factorix.app).to receive_messages(
+          runtime: instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
-          )
+          ),
+          logger:
         )
-        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do
@@ -172,13 +172,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
-          instance_double(
+        allow(Factorix.app).to receive_messages(
+          runtime: instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
-          )
+          ),
+          logger:
         )
-        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do
@@ -260,13 +260,13 @@ RSpec.describe Factorix::Runtime::UserConfigurable do
 
       before do
         # Mock runtime to avoid chicken-and-egg problem with factorix_config_path
-        allow(Factorix::Container).to receive(:[]).with(:runtime).and_return(
-          instance_double(
+        allow(Factorix.app).to receive_messages(
+          runtime: instance_double(
             Factorix::Runtime::Base,
             factorix_config_path: Pathname("/home/user/.config/factorix/config.toml")
-          )
+          ),
+          logger:
         )
-        allow(Factorix::Container).to receive(:[]).with(:logger).and_return(logger)
       end
 
       it "raises ConfigurationError with helpful message" do

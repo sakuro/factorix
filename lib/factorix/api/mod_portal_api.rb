@@ -10,14 +10,16 @@ module Factorix
     #
     # Corresponds to: https://wiki.factorio.com/Mod_portal_API
     class MODPortalAPI
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      #   # @return [Cache::FileSystem]
-      #   attr_reader :cache
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      include Import[:logger, cache: :api_cache, client: :api_http_client]
+      attr_reader :logger
+      attr_reader :cache
+      attr_reader :client
+
+      # Dependencies default to the Factorix.app composition root
+      def initialize(logger: Factorix.app.logger, cache: Factorix.app.api_cache, client: Factorix.app.api_http_client)
+        @logger = logger
+        @cache = cache
+        @client = client
+      end
 
       BASE_URL = "https://mods.factorio.com"
       private_constant :BASE_URL

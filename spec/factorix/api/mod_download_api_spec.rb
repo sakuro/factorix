@@ -9,9 +9,7 @@ RSpec.describe Factorix::API::MODDownloadAPI do
 
   before do
     # Stub Container to return our mocks
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
-    allow(Factorix::Container).to receive(:[]).with(:downloader).and_return(downloader)
+    allow(Factorix.app).to receive_messages(service_credential:, downloader:)
   end
 
   describe "#download" do

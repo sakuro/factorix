@@ -25,7 +25,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Disable do
   let(:mod_c) { Factorix::MOD[name: "mod-c"] }
 
   before do
-    allow(Factorix::Container).to receive(:load_config)
+    allow(Factorix).to receive(:load_config)
     allow(Factorix::MODList).to receive(:load).and_return(mod_list)
     allow(mod_list).to receive(:save)
     allow(mod_list).to receive(:disable)

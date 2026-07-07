@@ -13,14 +13,16 @@ module Factorix
     # HTTP redirects are handled automatically by the HTTP layer.
     # Reports progress to an optional listener.
     class Downloader
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      #   # @return [Cache::FileSystem]
-      #   attr_reader :cache
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      include Import[:logger, cache: :download_cache, client: :download_http_client]
+      attr_reader :logger
+      attr_reader :cache
+      attr_reader :client
+
+      # Dependencies default to the Factorix.app composition root
+      def initialize(logger: Factorix.app.logger, cache: Factorix.app.download_cache, client: Factorix.app.download_http_client)
+        @logger = logger
+        @cache = cache
+        @client = client
+      end
 
       # Download a file from the given URL with caching support.
       #

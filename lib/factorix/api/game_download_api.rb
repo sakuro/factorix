@@ -9,12 +9,8 @@ module Factorix
     #
     # Corresponds to: https://wiki.factorio.com/Download_API
     class GameDownloadAPI
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      include Import[:logger, client: :api_http_client]
+      attr_reader :logger
+      attr_reader :client
 
       # Base URL for game downloads
       DOWNLOAD_BASE_URL = "https://www.factorio.com"
@@ -36,11 +32,10 @@ module Factorix
       CHANNELS = %w[stable experimental].freeze
       public_constant :CHANNELS
 
-      # Initialize with thread-safe credential loading
-      #
-      # @param args [Hash] dependency injection arguments
-      def initialize(...)
-        super
+      # Dependencies default to the Factorix.app composition root
+      def initialize(logger: Factorix.app.logger, client: Factorix.app.api_http_client)
+        @logger = logger
+        @client = client
         @service_credential_mutex = Mutex.new
       end
 
@@ -99,7 +94,7 @@ module Factorix
         validate_platform!(platform)
 
         uri = build_download_uri(version, build, platform)
-        Container[:downloader].download(uri, output, listener:)
+        Factorix.app.downloader.download(uri, output, listener:)
       end
 
       # Build the download URI with authentication
@@ -120,7 +115,7 @@ module Factorix
         return @service_credential if defined?(@service_credential)
 
         @service_credential_mutex.synchronize do
-          @service_credential ||= Container[:service_credential]
+          @service_credential ||= Factorix.app.service_credential
         end
       end
 

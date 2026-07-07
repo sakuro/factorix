@@ -15,7 +15,7 @@ module Factorix
     # - Parse response codes and raise appropriate errors
     # - Stream reading/writing for large files
     class Client
-      include Import[:logger]
+      attr_reader :logger
 
       MAX_REDIRECTS = 10
       private_constant :MAX_REDIRECTS
@@ -24,8 +24,8 @@ module Factorix
       attr_reader :masked_params
 
       # @param masked_params [Array<String>] URL parameter names to mask in logs
-      def initialize(masked_params: [], **)
-        super(**)
+      def initialize(masked_params: [], logger: Factorix.app.logger)
+        @logger = logger
         @masked_params = masked_params.freeze
       end
 

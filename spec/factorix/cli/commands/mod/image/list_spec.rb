@@ -5,8 +5,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::List do
   let(:command) { Factorix::CLI::Commands::MOD::Image::List.new }
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
   end
 
   describe "#call" do

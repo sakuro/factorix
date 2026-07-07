@@ -19,11 +19,15 @@ module Factorix
         #     Entries:        42 / 42 (100.0% valid)
         #     ...
         class Stat < Base
-          # @!parse
-          #   # @return [Factorix::Logger]
-          #   attr_reader :logger
-          include Import[:logger]
+          attr_reader :logger
+
           include Formatting
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(logger: Factorix.app.logger)
+            super()
+            @logger = logger
+          end
 
           desc "Display cache statistics"
 
@@ -56,7 +60,7 @@ module Factorix
           # @param name [Symbol] cache name
           # @return [Hash] cache statistics
           private def collect_stats(name)
-            cache = Container.resolve(:"#{name}_cache")
+            cache = Factorix.app.public_send(:"#{name}_cache")
             config = Factorix.config.cache.public_send(name)
 
             entries = scan_entries(cache)

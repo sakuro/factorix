@@ -47,9 +47,8 @@ RSpec.describe Factorix::CLI::Commands::MOD::Show do
   end
 
   before do
-    allow(Factorix::Container).to receive(:load_config)
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix).to receive(:load_config)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
     allow(portal).to receive(:get_mod_full).with("test-mod").and_return(mod_info)
     allow(Factorix::InstalledMOD).to receive(:all).and_return([])
 

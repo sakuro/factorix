@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/auto_inject"
 require "zeitwerk"
 require_relative "factorix/errors"
 require_relative "factorix/version"
@@ -15,6 +14,25 @@ require_relative "factorix/version"
 #   [http]
 #   connect_timeout = 10
 module Factorix
+  # Get the application composition root
+  #
+  # @return [Application] the shared application instance
+  def self.app = @app ||= Application.new
+
+  # Replace the application composition root
+  #
+  # @param app [Application] the application instance to use
+  def self.app=(app)
+    @app = app
+  end
+
+  # Reset the application composition root
+  #
+  # @return [void]
+  def self.reset_app
+    @app = nil
+  end
+
   # Get the current configuration
   #
   # @return [Config] the current configuration (defaults until load_config is called)
@@ -53,7 +71,7 @@ module Factorix
 
       @config = Config.load_file(path)
     else
-      default_path = Container.resolve(:runtime).factorix_config_path
+      default_path = Factorix.app.runtime.factorix_config_path
       legacy_path = default_path.sub_ext(".rb")
 
       if default_path.exist?
@@ -100,7 +118,4 @@ module Factorix
     "wsl" => "WSL"
   )
   loader.setup
-
-  Import = Dry::AutoInject(Container)
-  public_constant :Import
 end

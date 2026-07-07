@@ -6,14 +6,19 @@ module Factorix
       module MOD
         # List installed MODs
         class List < Base
-          # @!parse
-          #   # @return [Factorix::Logger]
-          #   attr_reader :logger
-          #   # @return [Factorix::Runtime]
-          #   attr_reader :runtime
-          #   # @return [Factorix::API::MODPortalAPI]
-          #   attr_reader :mod_portal_api
-          include Import[:logger, :runtime, :mod_portal_api]
+          MODInfo = Data.define(:name, :version, :enabled, :error, :latest_version)
+
+          attr_reader :logger
+          attr_reader :runtime
+          attr_reader :mod_portal_api
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(logger: Factorix.app.logger, runtime: Factorix.app.runtime, mod_portal_api: Factorix.app.mod_portal_api)
+            super()
+            @logger = logger
+            @runtime = runtime
+            @mod_portal_api = mod_portal_api
+          end
 
           desc "List installed MOD(s)"
 
@@ -29,8 +34,6 @@ module Factorix
           option :errors, type: :flag, default: false, desc: "Show only MOD(s) with dependency errors"
           option :outdated, type: :flag, default: false, desc: "Show only MOD(s) with available updates"
           option :json, type: :flag, default: false, desc: "Output in JSON format"
-
-          MODInfo = Data.define(:name, :version, :enabled, :error, :latest_version)
 
           # MOD information for display
           #

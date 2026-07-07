@@ -20,7 +20,7 @@ Located in [doc/components/](doc/components/):
 
 - [cli.md](doc/components/cli.md) - CLI commands
 - [api-portal.md](doc/components/api-portal.md) - MOD Portal API integration
-- [container.md](doc/components/container.md) - DI container
+- [application.md](doc/components/application.md) - Composition root
 - [storage.md](doc/components/storage.md) - MOD storage management
 - [runtime.md](doc/components/runtime.md) - Platform abstraction
 - [credentials.md](doc/components/credentials.md) - Authentication

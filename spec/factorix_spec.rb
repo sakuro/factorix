@@ -50,8 +50,7 @@ RSpec.describe Factorix do
       let(:runtime) { instance_double(Factorix::Runtime::Base) }
 
       before do
-        allow(Factorix::Container).to receive(:resolve).and_call_original
-        allow(Factorix::Container).to receive(:resolve).with(:runtime).and_return(runtime)
+        allow(Factorix.app).to receive(:runtime).and_return(runtime)
       end
 
       it "loads the default config.toml when present" do

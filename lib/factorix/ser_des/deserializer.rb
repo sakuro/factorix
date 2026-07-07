@@ -7,18 +7,15 @@ module Factorix
     # This class provides methods to deserialize various data types from Factorio's
     # binary file format, following the specifications documented in the Factorio wiki.
     class Deserializer
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       # Create a new Deserializer instance
       #
       # @param stream [IO] An IO-like object that responds to #read
       # @param logger [Factorix::Logger] optional logger
       # @raise [ArgumentError] If the stream doesn't respond to #read
-      def initialize(stream, logger: nil)
-        super(logger:)
+      def initialize(stream, logger: Factorix.app.logger)
+        @logger = logger
         raise ArgumentError, "can't read from the given argument" unless stream.respond_to?(:read)
 
         @stream = stream

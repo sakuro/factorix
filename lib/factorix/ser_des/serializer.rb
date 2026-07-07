@@ -7,18 +7,15 @@ module Factorix
     # This class provides methods to serialize various data types to Factorio's
     # binary file format, following the specifications documented in the Factorio wiki.
     class Serializer
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:logger]
+      attr_reader :logger
 
       # Create a new Serializer instance
       #
       # @param stream [IO] An IO-like object that responds to #write
       # @param logger [Factorix::Logger] optional logger
       # @raise [ArgumentError] If the stream doesn't respond to #write
-      def initialize(stream, logger: nil)
-        super(logger:)
+      def initialize(stream, logger: Factorix.app.logger)
+        @logger = logger
         raise ArgumentError, "can't write to the given argument" unless stream.respond_to?(:write)
 
         @stream = stream

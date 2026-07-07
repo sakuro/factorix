@@ -14,9 +14,9 @@ RSpec.shared_context "with test caches" do
   let(:info_json_cache) { Factorix::Cache::TestBackend.new(ttl: nil) }
 
   before do
-    Factorix::Container.stub(:download_cache, download_cache)
-    Factorix::Container.stub(:api_cache, api_cache)
-    Factorix::Container.stub(:info_json_cache, info_json_cache)
+    Factorix.app.download_cache = download_cache
+    Factorix.app.api_cache = api_cache
+    Factorix.app.info_json_cache = info_json_cache
   end
 end
 

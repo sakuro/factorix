@@ -8,9 +8,7 @@ RSpec.describe Factorix::API::GameDownloadAPI do
   let(:api) { Factorix::API::GameDownloadAPI.new(logger:, client:) }
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:service_credential).and_return(service_credential)
-    allow(Factorix::Container).to receive(:[]).with(:downloader).and_return(downloader)
+    allow(Factorix.app).to receive_messages(service_credential:, downloader:)
   end
 
   describe "#latest_releases" do

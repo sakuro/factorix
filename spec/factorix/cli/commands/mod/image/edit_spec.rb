@@ -5,8 +5,7 @@ RSpec.describe Factorix::CLI::Commands::MOD::Image::Edit do
   let(:command) { Factorix::CLI::Commands::MOD::Image::Edit.new }
 
   before do
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:portal).and_return(portal)
+    allow(Factorix.app).to receive(:portal).and_return(portal)
     allow(portal).to receive(:edit_mod_images)
   end
 

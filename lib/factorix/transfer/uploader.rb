@@ -20,12 +20,14 @@ module Factorix
       ).freeze
       private_constant :MIME_TYPES
 
-      # @!parse
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      include Import[:logger, client: :upload_http_client]
+      attr_reader :logger
+      attr_reader :client
+
+      # Dependencies default to the Factorix.app composition root
+      def initialize(logger: Factorix.app.logger, client: Factorix.app.upload_http_client)
+        @logger = logger
+        @client = client
+      end
 
       # Upload a file to the given URL with optional form fields
       #

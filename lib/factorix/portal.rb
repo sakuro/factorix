@@ -24,16 +24,18 @@ module Factorix
   #   release = mod.releases.max_by(&:released_at)  # Get latest by release date
   #   portal.download_mod(release, Pathname("downloads/mod.zip")) if release
   class Portal
-    # @!parse
-    #   # @return [API::MODPortalAPI]
-    #   attr_reader :mod_portal_api
-    #   # @return [API::MODDownloadAPI]
-    #   attr_reader :mod_download_api
-    #   # @return [API::MODManagementAPI]
-    #   attr_reader :mod_management_api
-    #   # @return [Factorix::Logger]
-    #   attr_reader :logger
-    include Import[:mod_portal_api, :mod_download_api, :mod_management_api, :logger]
+    attr_reader :mod_portal_api
+    attr_reader :mod_download_api
+    attr_reader :mod_management_api
+    attr_reader :logger
+
+    # Dependencies default to the Factorix.app composition root
+    def initialize(mod_portal_api: Factorix.app.mod_portal_api, mod_download_api: Factorix.app.mod_download_api, mod_management_api: Factorix.app.mod_management_api, logger: Factorix.app.logger)
+      @mod_portal_api = mod_portal_api
+      @mod_download_api = mod_download_api
+      @mod_management_api = mod_management_api
+      @logger = logger
+    end
 
     # List MODs from the MOD Portal
     #

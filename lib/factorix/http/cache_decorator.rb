@@ -10,14 +10,16 @@ module Factorix
     # Stores successful GET responses in FileSystem cache.
     # Only caches non-streaming requests (no block given).
     class CacheDecorator
-      # @!parse
-      #   # @return [HTTP::Client]
-      #   attr_reader :client
-      #   # @return [Cache::FileSystem]
-      #   attr_reader :cache
-      #   # @return [Factorix::Logger]
-      #   attr_reader :logger
-      include Import[:client, :cache, :logger]
+      attr_reader :client
+      attr_reader :cache
+      attr_reader :logger
+
+      # Dependencies default to the Factorix.app composition root
+      def initialize(client:, cache:, logger: Factorix.app.logger)
+        @client = client
+        @cache = cache
+        @logger = logger
+      end
 
       # Execute an HTTP request (only caches GET without block)
       #

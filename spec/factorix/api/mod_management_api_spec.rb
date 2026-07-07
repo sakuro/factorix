@@ -8,8 +8,7 @@ RSpec.describe Factorix::API::MODManagementAPI do
 
   before do
     # Stub api_credential in Application container for lazy loading
-    allow(Factorix::Container).to receive(:[]).and_call_original
-    allow(Factorix::Container).to receive(:[]).with(:api_credential).and_return(api_credential)
+    allow(Factorix.app).to receive(:api_credential).and_return(api_credential)
   end
 
   describe "#init_publish" do

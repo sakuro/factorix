@@ -95,7 +95,14 @@ module Factorix
     # Gets directory paths from Runtime automatically.
     # Reports progress to an optional listener.
     class Scanner
-      include Import[:runtime, :logger]
+      attr_reader :runtime
+      attr_reader :logger
+
+      # Dependencies default to the Factorix.app composition root
+      def initialize(runtime: Factorix.app.runtime, logger: Factorix.app.logger)
+        @runtime = runtime
+        @logger = logger
+      end
 
       DEFAULT_PARALLEL_JOBS = 4
       private_constant :DEFAULT_PARALLEL_JOBS

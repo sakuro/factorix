@@ -20,11 +20,15 @@ module Factorix
           # Style for incompatible MODs (red)
           INCOMPATIBLE_MOD_STYLE = TIntMe[:red]
           private_constant :INCOMPATIBLE_MOD_STYLE
-          # @!parse
-          #   # @return [Runtime]
-          #   attr_reader :runtime
-          include Import[:runtime]
+          attr_reader :runtime
+
           include PortalSupport
+
+          # Dependencies default to the Factorix.app composition root
+          def initialize(runtime: Factorix.app.runtime)
+            super()
+            @runtime = runtime
+          end
 
           desc "Show MOD details from Factorio MOD Portal"
 

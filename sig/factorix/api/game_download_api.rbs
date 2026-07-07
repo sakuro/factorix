@@ -1,0 +1,26 @@
+# RBS type signature file
+# NOTE: Do not include private method definitions in RBS files.
+#       Only public interfaces should be documented here.
+
+module Factorix
+  module API
+    class GameDownloadAPI
+      BUILDS: Array[String]
+      PLATFORMS: Array[String]
+      CHANNELS: Array[String]
+
+      attr_reader logger: Logger
+      attr_reader client: HTTP::Client | HTTP::RetryDecorator
+
+      def initialize: (?logger: Logger, ?client: HTTP::Client | HTTP::RetryDecorator) -> void
+
+      def latest_releases: () -> Hash[Symbol, untyped]
+
+      def latest_version: (channel: String, build: String) -> String?
+
+      def resolve_filename: (version: String, build: String, platform: String) -> String
+
+      def download: (version: String, build: String, platform: String, output: Pathname, ?listener: Progress::DownloadHandler?) -> void
+    end
+  end
+end
