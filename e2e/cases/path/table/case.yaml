@@ -1,0 +1,10 @@
+command: [path]
+config:
+  runtime:
+    executable_path: "{{SANDBOX}}/factorio/bin/x64/factorio"
+    user_dir: "{{SANDBOX}}/factorio"
+    data_dir: "{{SANDBOX}}/factorio/data"
+expect:
+  status: 0
+  stdout:
+    file: expected_stdout.txt

@@ -1,0 +1,5 @@
+ℹ Validating MOD dependencies...
+✓ All enabled MOD(s) have their required dependencies satisfied
+✓ No circular dependencies detected
+✓ No conflicting MOD(s) are enabled simultaneously
+ℹ Summary: 2 enabled MODs

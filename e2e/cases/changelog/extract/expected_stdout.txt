@@ -1,0 +1,6 @@
+Version: 1.1.0
+  Features:
+    - Added new feature A
+    - Added new feature B
+  Bugfixes:
+    - Fixed crash on startup

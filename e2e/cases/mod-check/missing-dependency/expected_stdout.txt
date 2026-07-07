@@ -1,0 +1,5 @@
+ℹ Validating MOD dependencies...
+✗ Errors:
+  - MOD 'needs-lib@1.0.0' requires 'some-lib' which is not installed
+ℹ Summary: 2 enabled MODs, 1 error
+✗ Error: MOD dependency validation failed

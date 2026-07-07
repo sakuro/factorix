@@ -1,0 +1,7 @@
+command: [mod, settings, dump, mod-settings.dat]
+files:
+  - {from: files/mod-settings.dat, to: cwd/mod-settings.dat}
+expect:
+  status: 0
+  stdout:
+    file: expected_stdout.txt

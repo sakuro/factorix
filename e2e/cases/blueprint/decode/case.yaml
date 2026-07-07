@@ -1,0 +1,6 @@
+command: [blueprint, decode]
+stdin: "0eNqrVkrKKU0tKMrMK1GyqlbKLEnNVbJCEtNRyklMSs0BiqUapQJ5ZalFxZn5eUpWRhaGJuaWRuamZkBkYlFbCwCnbBdF"
+expect:
+  status: 0
+  stdout:
+    file: expected_stdout.txt
