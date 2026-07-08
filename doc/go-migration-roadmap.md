@@ -367,14 +367,19 @@ All API response types are plain structs with JSON tags.
 
 **Goal:** Download and upload MOD files with progress reporting.
 
-- [ ] `internal/transfer/downloader.go`
-  - Check cache → stream to cache on miss
-  - SHA1 verification
-  - Fire `ProgressListener` events
+- [x] `internal/transfer/downloader.go`
+  - Check cache → stream to cache on miss (cache lock serializes concurrent
+    downloads of the same URL)
+  - SHA1 verification, including invalidation of corrupted cache entries
+  - Fire `progress.Listener` events (cache hits synthesize start/update/finish;
+    the Ruby `on_cache_hit` method is not needed)
   - Strip auth params from cache key
-  - Parallel downloads via `errgroup` + mpb multi-bar
-- [ ] `internal/transfer/uploader.go`
-  - Multipart form upload with progress
+  - Parallel downloads (errgroup) and mpb presentation live with the
+    `mod install`/`update` commands in Phase 10
+- [x] `internal/transfer/uploader.go`
+  - Multipart form upload with progress, staged in a temporary file so large
+    ZIPs never sit in memory; the body is not replayable, so uploads run
+    exactly once (no transport retry — upload URLs are one-shot anyway)
 
 ---
 
