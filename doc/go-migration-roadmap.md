@@ -432,10 +432,10 @@ than one pass over the full list below.
 - [ ] `blueprint encode` / `decode`
 
 #### Portal-dependent
-- [x] `mod search` / `mod show` — `api.Category`/`api.License` display catalogs added
-      here (deferred from Phase 7); Category falls back to the raw value for
-      codes the Portal may add later instead of erroring the way Ruby's
-      `Category.for` does
+- [x] `mod search` / `mod show` — `api.Category` display catalog added here
+      (deferred from Phase 7); an unrecognized category value errors, matching
+      Ruby's `Category.for` (`KeyError`) — categories change rarely, so an
+      unknown one means the catalog is stale and needs a code change
 - [ ] `mod install` / `mod uninstall` / `mod update`
 - [x] `mod download` — download without installing; shared download-planning
       logic lives in `internal/cli/download_support.go` (parse spec, resolve
