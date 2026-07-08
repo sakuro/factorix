@@ -47,7 +47,8 @@ retriable, tty-progressbar, concurrent-ruby) need no pre-work.
 | `Comparable` mixin | Custom `Less`/`Equal` methods |
 | `Enumerable` mixin | Iterator pattern with `func(yield func(T) bool)` (Go 1.23 range-over-func) |
 
-The minimum Go version is **1.23** (range-over-func); declare it in `go.mod`.
+The minimum Go version is **1.24** (required by gofrs/flock; range-over-func
+needs 1.23); declare it in `go.mod`.
 
 ### Error Handling
 
@@ -145,6 +146,7 @@ The Ruby `UserConfigurable` path overrides map to the config settings above.
 | Terminal colors | [fatih/color](https://github.com/fatih/color) |
 | Config file | [BurntSushi/toml](https://github.com/BurntSushi/toml) |
 | Retry logic | [avast/retry-go](https://github.com/avast/retry-go) |
+| Cross-process file locking | [gofrs/flock](https://github.com/gofrs/flock) |
 | RCON | [gorcon/rcon](https://github.com/gorcon/rcon) (supports Factorio) |
 | Release tooling | [goreleaser](https://goreleaser.com/) |
 | Testing | `testing` + [testify](https://github.com/stretchr/testify) |
@@ -312,19 +314,24 @@ parity, once the actual game behavior can be observed.
 
 **Goal:** Authenticated HTTP with caching and retry, backed by the filesystem.
 
-- [ ] `internal/httpx/client.go` — thin wrapper around `net/http.Client`
-  - HTTPS enforcement
-  - Configurable connect/read/write timeouts
+- [x] `internal/httpx/client.go` — thin wrapper around `net/http.Client`
+  - HTTPS enforcement (initial URL and redirects)
+  - Configurable connect/read timeouts; Go has no discrete write timeout —
+    in-flight requests are bounded by the request context
   - Sensitive query param masking in logs (`username`, `token`, `secure`)
-- [ ] `internal/httpx/retry.go` — decorator with exponential backoff (avast/retry-go)
-- [ ] `internal/cache/cache.go` — `Cache` interface (all methods take `ctx`)
-- [ ] `internal/cache/filesystem.go`
-  - 2-level SHA256-based directory layout
+- [x] `internal/httpx/retry.go` — `http.RoundTripper` decorator with exponential
+      backoff (avast/retry-go); retries transport errors only, replaying bodies
+      via `Request.GetBody`
+- [x] `internal/cache/cache.go` — `Cache` interface (all methods take `ctx`)
+- [x] `internal/cache/filesystem.go`
+  - 2-level SHA-256-based directory layout (the Ruby version used SHA-1;
+    Ruby-era cache entries are orphaned, which only costs a re-download)
   - Optional zlib compression (per-cache-type threshold)
-  - File-based locking (stale lock cleanup)
-  - Metadata sidecar files (TTL, size)
-- [ ] Three cache instances: download / api / info_json with differing defaults
-- [ ] `internal/httpx/cache_transport.go` — `http.RoundTripper` implementing cache-aside for API calls
+  - flock-based locking (gofrs/flock; stale lock cleanup after 1h)
+  - Metadata sidecar files recording the logical key
+- [x] Three cache instances: download / api / info_json with differing defaults
+      (already encoded in `internal/config` defaults; wired in Phase 10)
+- [x] `internal/httpx/cache_transport.go` — `http.RoundTripper` implementing cache-aside for API calls
 
 ---
 
