@@ -2,10 +2,13 @@ package dependency
 
 import (
 	"strings"
-	"unicode"
 
 	"github.com/sakuro/factorix/internal/mod"
 )
+
+// MOD names and the grammar are ASCII; matching Unicode whitespace would be
+// broader than the Ruby grammar's \s.
+const asciiSpaces = " \t\r\n\f\v"
 
 // Prefixes are matched longest first so "(?)" is not read as "(" + "?".
 var prefixes = []struct {
@@ -40,7 +43,7 @@ var operators = []struct {
 // MOD names may contain spaces, so the scanner treats a space run as part of
 // the name only when another name character follows it.
 func Parse(s string) (Entry, error) {
-	rest := strings.TrimSpace(s)
+	rest := trimSpaces(s)
 	if rest == "" {
 		return Entry{}, &ParseError{Input: s, Reason: "empty dependency string"}
 	}
@@ -49,7 +52,7 @@ func Parse(s string) (Entry, error) {
 	for _, p := range prefixes {
 		if strings.HasPrefix(rest, p.token) {
 			typ = p.typ
-			rest = strings.TrimSpace(rest[len(p.token):])
+			rest = trimSpaces(rest[len(p.token):])
 			break
 		}
 	}
@@ -91,7 +94,11 @@ func isNameChar(c byte) bool {
 }
 
 func isSpaceChar(c byte) bool {
-	return unicode.IsSpace(rune(c))
+	return strings.IndexByte(asciiSpaces, c) >= 0
+}
+
+func trimSpaces(s string) string {
+	return strings.Trim(s, asciiSpaces)
 }
 
 // scanName returns the MOD name and the remaining input after it.
@@ -115,9 +122,9 @@ func scanName(s, input string) (name, rest string, err error) {
 				i = j
 				continue
 			}
-			return s[:end], strings.TrimSpace(s[end:]), nil
+			return s[:end], trimSpaces(s[end:]), nil
 		default:
-			return s[:end], strings.TrimSpace(s[end:]), nil
+			return s[:end], trimSpaces(s[end:]), nil
 		}
 	}
 	return s[:end], "", nil
@@ -126,7 +133,7 @@ func scanName(s, input string) (name, rest string, err error) {
 func scanOperator(s string) (Operator, string, bool) {
 	for _, o := range operators {
 		if strings.HasPrefix(s, o.token) {
-			return o.op, strings.TrimSpace(s[len(o.token):]), true
+			return o.op, trimSpaces(s[len(o.token):]), true
 		}
 	}
 	return 0, s, false
