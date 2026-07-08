@@ -169,6 +169,7 @@ factorix/                  # repository root (Ruby lib/ and spec/ coexist until 
 │   ├── config/            # Config struct + TOML loading
 │   ├── dependency/        # Dependency parsing, graph, validation
 │   ├── httpx/             # HTTP client with retry/cache decorators
+│   ├── logging/           # slog setup (file handler, level parsing)
 │   ├── mod/               # Core domain: MOD, MODList, MODState, etc.
 │   ├── platform/          # OS detection and path resolution
 │   ├── portal/            # High-level API facade
@@ -290,21 +291,20 @@ parity, once the actual game behavior can be observed.
 
 **Goal:** Resolve Factorio and Factorix paths correctly on each supported OS; load configuration.
 
-- [ ] `internal/platform/platform.go` — `Platform` interface
-  ```go
-  type Platform interface {
-      GameDataDir() (string, error)
-      GameUserDataDir() (string, error)
-      ModDir() (string, error)
-      // ...
-  }
-  ```
-- [ ] `internal/platform/linux.go`, `macos.go`, `windows.go`, `wsl.go`
-  - WSL detection via `/proc/version`
-- [ ] `internal/platform/detect.go` — `Detect() (Platform, error)` using `runtime.GOOS`
-- [ ] Config-based path overrides (Ruby `Runtime::UserConfigurable` equivalent)
-- [ ] `internal/config/config.go` — config struct, TOML loading, env var overrides
-- [ ] `slog` setup writing to the platform log path, honoring `log_level`
+- [x] `internal/platform/platform.go` — `Platform` interface (game paths + platform
+      base-directory defaults) and a `Runtime` wrapper deriving every path the
+      application needs (mod dir, mod-list.json, lock file, Factorix cache/config/log)
+- [x] `internal/platform/linux.go`, `macos.go`, `windows.go`, `wsl.go`
+  - WSL detection via `/proc/version`; WSL fetches Windows env vars via one
+    PowerShell batch and converts paths to `/mnt/<drive>`
+- [x] `internal/platform/detect.go` — `Detect() (Platform, error)` using `runtime.GOOS`
+- [x] Config-based path overrides (Ruby `Runtime::UserConfigurable` equivalent) —
+      `platform.Overrides`, wired from `[runtime]` in config.toml
+- [x] `internal/config/config.go` — config struct, TOML loading (BurntSushi/toml),
+      unknown-key rejection; legacy `redis`/`s3` keys are accepted and ignored so
+      Ruby-era files still load, but only `backend = "file_system"` is allowed
+- [x] `slog` setup (`internal/logging`) writing to the platform log path,
+      honoring `log_level` (including `fatal` as LevelError+4)
 
 ---
 
