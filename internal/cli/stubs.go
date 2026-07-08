@@ -49,8 +49,11 @@ func newMODCommand(c *cli) *cobra.Command {
 		newMODSettingsCommand(c),
 		newMODEnableCommand(c),
 		newMODDisableCommand(c),
+		newMODSearchCommand(c),
+		newMODShowCommand(c),
+		newMODDownloadCommand(c),
 	)
-	for _, use := range []string{"show", "search", "install", "uninstall", "update", "download", "upload", "edit", "sync"} {
+	for _, use := range []string{"install", "uninstall", "update", "upload", "edit", "sync"} {
 		mod.AddCommand(&cobra.Command{Use: use, Short: "MOD " + use, RunE: notImplemented})
 	}
 

@@ -6,6 +6,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/sakuro/factorix/internal/mod"
@@ -105,6 +106,34 @@ type MODInfo struct {
 	License           *License  `json:"license"`
 	Images            []Image   `json:"images"`
 	Deprecated        bool      `json:"deprecated"`
+}
+
+// UnmarshalJSON decodes MOD info. LastHighlightedAt gets its own pass: the
+// Portal represents it as either a full RFC3339 timestamp or a bare
+// "2006-01-02" date — both valid ISO 8601, but only the former is valid
+// RFC3339, which is all time.Time's own UnmarshalJSON accepts.
+// CreatedAt/UpdatedAt are always full timestamps in observed Portal
+// responses and keep the standard time.Time decoding.
+func (m *MODInfo) UnmarshalJSON(data []byte) error {
+	type alias MODInfo
+	raw := struct {
+		*alias
+		LastHighlightedAt string `json:"last_highlighted_at"`
+	}{alias: (*alias)(m)}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	if raw.LastHighlightedAt == "" {
+		return nil
+	}
+	t, err := time.Parse(time.RFC3339, raw.LastHighlightedAt)
+	if err != nil {
+		if t, err = time.Parse("2006-01-02", raw.LastHighlightedAt); err != nil {
+			return fmt.Errorf("%w: cannot parse last_highlighted_at %q", ErrInvalidResponse, raw.LastHighlightedAt)
+		}
+	}
+	m.LastHighlightedAt = t
+	return nil
 }
 
 // ThumbnailURL returns the absolute thumbnail URL, or "" when absent.
