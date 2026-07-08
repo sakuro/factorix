@@ -173,33 +173,10 @@ func (d *Deserializer) ReadMODVersion() (mod.MODVersion, error) {
 	return mod.NewMODVersion(parts[0], parts[1], parts[2])
 }
 
-// ReadList reads a property tree list. The binary structure is identical to
-// a dictionary; the per-item keys are empty and discarded.
-//
-// See https://wiki.factorio.com/Property_tree#List
-func (d *Deserializer) ReadList() ([]PropertyTree, error) {
-	count, err := d.ReadU32()
-	if err != nil {
-		return nil, err
-	}
-	var items []PropertyTree
-	for range count {
-		if _, err := d.ReadStrProperty(); err != nil {
-			return nil, err
-		}
-		item, err := d.ReadPropertyTree()
-		if err != nil {
-			return nil, err
-		}
-		items = append(items, item)
-	}
-	return items, nil
-}
-
-// ReadDictionary reads a property tree dictionary, preserving entry order.
-//
-// See https://wiki.factorio.com/Property_tree#Dictionary
-func (d *Deserializer) ReadDictionary() ([]DictEntry, error) {
+// List and Dictionary share one binary layout — both serialize a Lua table:
+// u32 count, then a string key and a nested tree per entry. Lists carry
+// empty keys.
+func (d *Deserializer) readEntries() ([]DictEntry, error) {
 	count, err := d.ReadU32()
 	if err != nil {
 		return nil, err
@@ -217,6 +194,28 @@ func (d *Deserializer) ReadDictionary() ([]DictEntry, error) {
 		entries = append(entries, DictEntry{Key: key, Value: value})
 	}
 	return entries, nil
+}
+
+// ReadList reads a property tree list, discarding the empty per-item keys.
+//
+// See https://wiki.factorio.com/Property_tree#List
+func (d *Deserializer) ReadList() ([]PropertyTree, error) {
+	entries, err := d.readEntries()
+	if err != nil {
+		return nil, err
+	}
+	var items []PropertyTree
+	for _, entry := range entries {
+		items = append(items, entry.Value)
+	}
+	return items, nil
+}
+
+// ReadDictionary reads a property tree dictionary, preserving entry order.
+//
+// See https://wiki.factorio.com/Property_tree#Dictionary
+func (d *Deserializer) ReadDictionary() ([]DictEntry, error) {
+	return d.readEntries()
 }
 
 // ReadPropertyTree reads one property tree element.

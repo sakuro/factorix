@@ -134,29 +134,10 @@ func (s *Serializer) WriteMODVersion(v mod.MODVersion) error {
 	return nil
 }
 
-// WriteList writes a property tree list. The binary structure is identical
-// to a dictionary; each item carries an empty key.
-//
-// See https://wiki.factorio.com/Property_tree#List
-func (s *Serializer) WriteList(items []PropertyTree) error {
-	if err := s.WriteU32(uint32(len(items))); err != nil {
-		return err
-	}
-	for _, item := range items {
-		if err := s.WriteStrProperty(""); err != nil {
-			return err
-		}
-		if err := s.WritePropertyTree(item); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// WriteDictionary writes a property tree dictionary in entry order.
-//
-// See https://wiki.factorio.com/Property_tree#Dictionary
-func (s *Serializer) WriteDictionary(entries []DictEntry) error {
+// List and Dictionary share one binary layout — both serialize a Lua table:
+// u32 count, then a string key and a nested tree per entry. Lists carry
+// empty keys.
+func (s *Serializer) writeEntries(entries []DictEntry) error {
 	if err := s.WriteU32(uint32(len(entries))); err != nil {
 		return err
 	}
@@ -169,6 +150,24 @@ func (s *Serializer) WriteDictionary(entries []DictEntry) error {
 		}
 	}
 	return nil
+}
+
+// WriteList writes a property tree list, giving each item an empty key.
+//
+// See https://wiki.factorio.com/Property_tree#List
+func (s *Serializer) WriteList(items []PropertyTree) error {
+	entries := make([]DictEntry, len(items))
+	for i, item := range items {
+		entries[i] = DictEntry{Value: item}
+	}
+	return s.writeEntries(entries)
+}
+
+// WriteDictionary writes a property tree dictionary in entry order.
+//
+// See https://wiki.factorio.com/Property_tree#Dictionary
+func (s *Serializer) WriteDictionary(entries []DictEntry) error {
+	return s.writeEntries(entries)
 }
 
 // WritePropertyTree writes one property tree element.
