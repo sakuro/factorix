@@ -14,14 +14,6 @@ func notImplemented(cmd *cobra.Command, _ []string) error {
 	return errNotImplemented
 }
 
-func newPathCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "path",
-		Short: "Display Factorio and Factorix paths",
-		RunE:  notImplemented,
-	}
-}
-
 func newDownloadCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "download",
@@ -46,21 +38,19 @@ func newManCommand() *cobra.Command {
 	}
 }
 
-func newMODCommand() *cobra.Command {
+func newMODCommand(c *cli) *cobra.Command {
 	mod := &cobra.Command{
 		Use:   "mod",
 		Short: "Manage MODs",
 	}
-	for _, use := range []string{"list", "show", "search", "enable", "disable", "install", "uninstall", "update", "download", "upload", "edit", "check", "sync"} {
+	mod.AddCommand(
+		newMODListCommand(c),
+		newMODCheckCommand(c),
+		newMODSettingsCommand(c),
+	)
+	for _, use := range []string{"show", "search", "enable", "disable", "install", "uninstall", "update", "download", "upload", "edit", "sync"} {
 		mod.AddCommand(&cobra.Command{Use: use, Short: "MOD " + use, RunE: notImplemented})
 	}
-
-	settings := &cobra.Command{Use: "settings", Short: "Manage MOD settings"}
-	settings.AddCommand(
-		&cobra.Command{Use: "dump", Short: "Dump MOD settings to JSON format", RunE: notImplemented},
-		&cobra.Command{Use: "restore", Short: "Restore MOD settings from JSON", RunE: notImplemented},
-	)
-	mod.AddCommand(settings)
 
 	changelog := &cobra.Command{Use: "changelog", Short: "Manage MOD changelogs"}
 	for _, use := range []string{"add", "check", "extract", "release"} {
