@@ -169,10 +169,11 @@ factorix/                  # repository root (Ruby lib/ and spec/ coexist until 
 │   ├── config/            # Config struct + TOML loading
 │   ├── dependency/        # Dependency parsing, graph, validation
 │   ├── httpx/             # HTTP client with retry/cache decorators
-│   ├── mod/               # Core domain: MOD, MODList, MODState, save file, etc.
+│   ├── mod/               # Core domain: MOD, MODList, MODState, etc.
 │   ├── platform/          # OS detection and path resolution
 │   ├── portal/            # High-level API facade
 │   ├── progress/          # Progress listener interfaces and implementations
+│   ├── save/              # Save file parsing (MOD list, startup settings)
 │   ├── serdes/            # Binary serializer/deserializer (Factorio format)
 │   ├── settings/          # MOD settings (mod-settings.dat)
 │   └── transfer/          # Downloader / Uploader
@@ -240,12 +241,13 @@ The Ruby implementation uses `pack`/`unpack`. In Go, use `encoding/binary` with 
 
 **Goal:** Parse `.zip` save files and `mod-settings.dat`.
 
-- [ ] `internal/mod/save_file.go`
+- [x] `internal/save/save_file.go` — not `internal/mod`: the parser needs
+      `internal/serdes`, which imports `internal/mod` for the version types
   - Open ZIP, locate `level.dat0` or `level-init.dat`
-  - Detect and strip zlib header (CMF byte 0x78)
-  - Parse save header → `GameVersion`, `[]MODState`
-  - Parse startup settings → `Settings`
-- [ ] `internal/settings/mod_settings.go`
+  - Detect zlib compression (CMF byte 0x78)
+  - Parse save header → `GameVersion`, `[]MODEntry`
+  - Parse startup settings → `settings.Section`
+- [x] `internal/settings/mod_settings.go`
   - Load / save `mod-settings.dat` (binary PropertyTree)
   - Sections: `startup`, `runtime-global`, `runtime-per-user`
   - JSON export/import (parity with Ruby `mod settings dump` / `restore`)
