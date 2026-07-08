@@ -33,3 +33,6 @@
 
 # RBS collection
 /.gem_rbs_collection/
+
+# Go vendored dependencies (managed via go.mod/go.sum)
+/vendor/

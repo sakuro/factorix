@@ -203,16 +203,17 @@ RCON needs no internal package — `gorcon/rcon` is used directly from the CLI l
 
 **Goal:** Stable value types used by all subsequent phases.
 
-- [ ] `internal/mod/game_version.go` — `GameVersion` (major/minor/patch/build uint16)
-- [ ] `internal/mod/mod_version.go` — `MODVersion` (major/minor/patch uint16)
-  - `Less`, `Equal`, string parsing, `Stringer`
-- [ ] `internal/mod/mod.go` — `MOD` struct (name, version)
-- [ ] `internal/mod/mod_state.go` — `MODState` (enabled bool, version)
-- [ ] `internal/mod/mod_list.go` — `MODList` (load/save `mod-list.json`, enable/disable);
+- [x] `internal/mod/game_version.go` — `GameVersion` (major/minor/patch/build uint16)
+- [x] `internal/mod/mod_version.go` — `MODVersion` (major/minor/patch uint16 for the
+      optim_u16 binary encoding; values limited to 0-255)
+  - `Less`, `Compare`, string parsing, `Stringer`
+- [x] `internal/mod/mod.go` — `MOD` struct (name)
+- [x] `internal/mod/mod_state.go` — `MODState` (enabled bool, version)
+- [x] `internal/mod/mod_list.go` — `MODList` (load/save `mod-list.json`, enable/disable);
       takes explicit paths — platform path resolution arrives in Phase 5
-- [ ] `internal/mod/installed_mod.go` — `InstalledMOD` (path, info.json metadata)
-- [ ] `internal/mod/info_json.go` — parse `info.json` inside MOD ZIP
-- [ ] Error types in `internal/errors/errors.go`
+- [x] `internal/mod/installed_mod.go` — `InstalledMOD` (path, info.json metadata)
+- [x] `internal/mod/info_json.go` — parse `info.json` inside MOD ZIP
+- [x] Error types in `internal/mod/errors.go` (per-package errors, see Design Decisions)
 
 ---
 
