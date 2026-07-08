@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,8 +15,9 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	if err := cli.NewRootCommand().ExecuteContext(ctx); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+	root, reportError := cli.NewRootCommand()
+	if err := root.ExecuteContext(ctx); err != nil {
+		reportError(err)
 		os.Exit(1)
 	}
 }

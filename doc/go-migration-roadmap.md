@@ -164,6 +164,7 @@ factorix/                  # repository root (Ruby lib/ and spec/ coexist until 
 │   └── main.go
 ├── internal/
 │   ├── api/               # MOD Portal / game download API clients and data types
+│   ├── app/               # Composition root (config, runtime, logger, caches, API clients)
 │   ├── blueprint/         # Blueprint string encode/decode (base64 + zlib + JSON)
 │   ├── cache/             # Cache interface + filesystem backend
 │   ├── changelog/         # Factorio changelog.txt parsing and manipulation
@@ -174,7 +175,6 @@ factorix/                  # repository root (Ruby lib/ and spec/ coexist until 
 │   ├── logging/           # slog setup (file handler, level parsing)
 │   ├── mod/               # Core domain: MOD, MODList, MODState, etc.
 │   ├── platform/          # OS detection and path resolution
-│   ├── portal/            # High-level API facade
 │   ├── progress/          # Progress listener interfaces and implementations
 │   ├── save/              # Save file parsing (MOD list, startup settings)
 │   ├── serdes/            # Binary serializer/deserializer (Factorio format)
@@ -405,18 +405,21 @@ Shared behaviors from Ruby mixins carry over as helpers: confirmation prompts
 (`Confirmable`), "game must not be running" guard (`RequiresGameStopped`),
 mod-list backup (`BackupSupport`).
 
+Landing in slices (this repo's branch names: `go-phase10a-cli-core`, …) rather
+than one pass over the full list below.
+
 #### Informational
-- [ ] `version` — print version
-- [ ] `path` — print Factorio/Factorix paths
+- [x] `version` — print version
+- [x] `path` — print Factorio/Factorix paths
 - [ ] `completion` — generate shell completion (cobra built-in)
 - [ ] `man` — man page (cobra `doc` package)
 
 #### Local MOD Management
-- [ ] `mod list` — list installed MODs
+- [x] `mod list` — list installed MODs
 - [ ] `mod enable` / `mod disable` — recursively handle dependencies/dependents
-- [ ] `mod check` — validate dependency graph
+- [x] `mod check` — validate dependency graph
 - [ ] `mod sync` — sync MOD states from a save file
-- [ ] `mod settings dump` / `restore` — export/import `mod-settings.dat` (JSON)
+- [x] `mod settings dump` / `restore` — export/import `mod-settings.dat` (JSON)
 
 #### MOD Author Tools
 - [ ] `mod changelog add` / `check` / `extract` / `release`
