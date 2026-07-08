@@ -263,17 +263,26 @@ The Ruby implementation uses Parslet (PEG). In Go, hand-roll a recursive descent
 Dependency string grammar (Factorio format; note MOD names may contain spaces):
 ```
 dep    = [prefix " "] name [" " op " " version]
-prefix = "!" | "?" | "(?)" | "~"
+prefix = "!" | "?" | "(?)" | "~" | "+"
 op     = "=" | ">" | ">=" | "<" | "<="
 ```
 
-- [ ] `internal/dependency/parser.go` — parse dependency strings into `Entry` structs
-- [ ] `internal/dependency/entry.go` — `Entry` (kind, name, operator, version)
-- [ ] `internal/dependency/graph.go` — adjacency-list DAG
+The `+` prefix (optional but recommended; enabled by default) becomes
+meaningful in Factorio 2.1. Parsing is already supported; the command-level
+behavior is tracked in issues #90–#95 and starts after the port reaches
+parity, once the actual game behavior can be observed.
+
+- [x] `internal/dependency/parser.go` — parse dependency strings into `Entry` structs
+      (a well-formed but out-of-range version requirement is dropped, not an error —
+      MODs with such versions exist on the Portal)
+- [x] `internal/dependency/entry.go` — `Entry` (type, MOD, version requirement)
+- [x] `internal/dependency/graph.go` — adjacency-list DAG
   - `AddNode`, `AddEdge`, `TopologicalSort` (Kahn's algorithm)
   - `StronglyConnectedComponents` for cycle detection
-- [ ] `internal/dependency/validator.go` — validate installed MODs against requirements
-- [ ] `internal/dependency/resolver.go` — determine install/uninstall order
+  - `builder.go` builds the graph from installed MODs + mod-list.json
+- [x] `internal/dependency/validator.go` — validate installed MODs against requirements
+- Install/uninstall ordering has no Ruby `Resolver` counterpart; it is implemented
+  with the `mod install` / `mod uninstall` commands in Phase 10
 
 ---
 
