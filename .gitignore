@@ -36,3 +36,6 @@
 
 # Go vendored dependencies (managed via go.mod/go.sum)
 /vendor/
+
+# Go build output (mise run build)
+/factorix

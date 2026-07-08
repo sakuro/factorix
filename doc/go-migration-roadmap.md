@@ -421,7 +421,10 @@ than one pass over the full list below.
       `ValidateNoConflicts`, `PlanDisable`/`PlanDisableAll` — so the CLI layer
       stays thin)
 - [x] `mod check` — validate dependency graph
-- [ ] `mod sync` — sync MOD states from a save file
+- [ ] `mod sync` — sync MOD states from a save file. Despite living under Local
+      MOD Management, this needs the Portal-dependent machinery below (it
+      installs MODs present in the save but missing locally), so it was
+      sequenced after `mod search`/`show`/`download` rather than before them
 - [x] `mod settings dump` / `restore` — export/import `mod-settings.dat` (JSON)
 
 #### MOD Author Tools
@@ -429,9 +432,17 @@ than one pass over the full list below.
 - [ ] `blueprint encode` / `decode`
 
 #### Portal-dependent
-- [ ] `mod search` / `mod show`
+- [x] `mod search` / `mod show` — `api.Category`/`api.License` display catalogs added
+      here (deferred from Phase 7); Category falls back to the raw value for
+      codes the Portal may add later instead of erroring the way Ruby's
+      `Category.for` does
 - [ ] `mod install` / `mod uninstall` / `mod update`
-- [ ] `mod download` — download without installing
+- [x] `mod download` — download without installing; shared download-planning
+      logic lives in `internal/cli/download_support.go` (parse spec, resolve
+      release, build targets, parallel fetch) for reuse by install/update/sync.
+      `internal/app` gained `Downloader()`/`MODDownloadAPI()` (Client → Retry,
+      no cache decorator, matching Ruby) and `FACTORIX_MODS_PORTAL_URL` as an
+      optional endpoint override (mirrors/tests)
 - [ ] `mod upload` / `mod edit` / `mod image list/add/edit`
 - [ ] `download` — download the game itself
 

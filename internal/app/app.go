@@ -17,7 +17,12 @@ import (
 	"github.com/sakuro/factorix/internal/httpx"
 	"github.com/sakuro/factorix/internal/logging"
 	"github.com/sakuro/factorix/internal/platform"
+	"github.com/sakuro/factorix/internal/transfer"
 )
+
+// maskedQueryParams are query parameter names masked in HTTP logs across
+// every client the app builds (credentials passed via URL query).
+var maskedQueryParams = []string{"username", "token", "secure"}
 
 // App holds the application-wide object graph. Expensive components are
 // built lazily on first use.
@@ -31,6 +36,14 @@ type App struct {
 	portalOnce sync.Once
 	portal     *api.MODPortalAPI
 	portalErr  error
+
+	downloaderOnce sync.Once
+	downloader     *transfer.Downloader
+	downloaderErr  error
+
+	modDownloadOnce sync.Once
+	modDownload     *api.MODDownloadAPI
+	modDownloadErr  error
 }
 
 // Options select the configuration and log level.
@@ -129,12 +142,24 @@ func (a *App) PortalAPI() (*api.MODPortalAPI, error) {
 		)
 		client := httpx.NewClient(httpx.Options{
 			Transport:    transport,
-			MaskedParams: []string{"username", "token", "secure"},
+			MaskedParams: maskedQueryParams,
 			Logger:       a.Logger,
 		})
 		a.portal = api.NewMODPortalAPI(client, apiCache, a.Logger)
+		a.portal.BaseURL = modsPortalBaseURL()
 	})
 	return a.portal, a.portalErr
+}
+
+// modsPortalBaseURL is api.DefaultPortalBaseURL, overridable via
+// FACTORIX_MODS_PORTAL_URL — useful for pointing at a portal mirror, and
+// for tests to run the real command tree against an httptest server rather
+// than stubbing at the api package boundary.
+func modsPortalBaseURL() string {
+	if v := os.Getenv("FACTORIX_MODS_PORTAL_URL"); v != "" {
+		return v
+	}
+	return api.DefaultPortalBaseURL
 }
 
 func (a *App) newCache(name string, cfg config.CacheType) (cache.Cache, error) {
@@ -153,6 +178,52 @@ func (a *App) newCache(name string, cfg config.CacheType) (cache.Cache, error) {
 		CompressionThreshold: cfg.FileSystem.CompressionThreshold,
 		Logger:               a.Logger,
 	})
+}
+
+// Downloader returns the MOD file downloader, wired as Client → Retry (no
+// cache decorator: the downloader manages its own download-type cache
+// directly, matching Ruby's download_http_client).
+func (a *App) Downloader() (*transfer.Downloader, error) {
+	a.downloaderOnce.Do(func() {
+		downloadCache, err := a.newCache("download", a.Config.Cache.Download)
+		if err != nil {
+			a.downloaderErr = err
+			return
+		}
+		transport := httpx.NewRetryTransport(
+			httpx.NewBaseTransport(
+				time.Duration(a.Config.HTTP.ConnectTimeout)*time.Second,
+				time.Duration(a.Config.HTTP.ReadTimeout)*time.Second,
+			),
+			httpx.RetryOptions{Logger: a.Logger},
+		)
+		client := httpx.NewClient(httpx.Options{
+			Transport:    transport,
+			MaskedParams: maskedQueryParams,
+			Logger:       a.Logger,
+		})
+		a.downloader = transfer.NewDownloader(downloadCache, client, a.Logger)
+	})
+	return a.downloader, a.downloaderErr
+}
+
+// MODDownloadAPI returns the client for building authenticated MOD download
+// URLs. Credentials resolve lazily on first use, not here, so commands that
+// never actually download never require FACTORIO_USERNAME/FACTORIO_TOKEN or
+// player-data.json.
+func (a *App) MODDownloadAPI() (*api.MODDownloadAPI, error) {
+	a.modDownloadOnce.Do(func() {
+		playerDataPath, err := a.Runtime.PlayerDataPath()
+		if err != nil {
+			a.modDownloadErr = err
+			return
+		}
+		a.modDownload = api.NewMODDownloadAPI(func() (api.ServiceCredential, error) {
+			return api.LoadServiceCredential(playerDataPath)
+		})
+		a.modDownload.BaseURL = modsPortalBaseURL()
+	})
+	return a.modDownload, a.modDownloadErr
 }
 
 // RequireGameStopped fails when Factorio is running; commands that modify
