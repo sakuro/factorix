@@ -31,13 +31,14 @@ type Cache interface {
 	Exists(ctx context.Context, key string) (bool, error)
 	// Read returns the entry content; ok is false on a miss or expiry.
 	Read(ctx context.Context, key string) (data []byte, ok bool, err error)
-	// WriteTo writes the entry content to outputPath; ok is false on a miss.
-	WriteTo(ctx context.Context, key, outputPath string) (ok bool, err error)
-	// Store caches the file at srcPath; ok is false when the entry was
+	// WriteTo writes the entry content to outputPath; found is false on a miss.
+	WriteTo(ctx context.Context, key, outputPath string) (found bool, err error)
+	// Store caches the file at srcPath; stored is false when the entry was
 	// skipped (e.g. size limit).
-	Store(ctx context.Context, key, srcPath string) (ok bool, err error)
-	// Delete removes an entry; ok is false when it did not exist.
-	Delete(ctx context.Context, key string) (ok bool, err error)
+	Store(ctx context.Context, key, srcPath string) (stored bool, err error)
+	// Delete removes an entry. The end state is the same either way;
+	// deleted reports whether this call actually removed it.
+	Delete(ctx context.Context, key string) (deleted bool, err error)
 	// Clear removes all entries.
 	Clear(ctx context.Context) error
 	// WithLock runs fn while holding an exclusive cross-process lock on key.
