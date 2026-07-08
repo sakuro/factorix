@@ -223,15 +223,16 @@ RCON needs no internal package — `gorcon/rcon` is used directly from the CLI l
 
 The Ruby implementation uses `pack`/`unpack`. In Go, use `encoding/binary` with `io.Reader`/`io.Writer`.
 
-- [ ] `internal/serdes/deserializer.go`
+- [x] `internal/serdes/deserializer.go`
   - `ReadU8`, `ReadU16`, `ReadU32`, `ReadBool`, `ReadStr`, `ReadOptimU16`, `ReadOptimU32`
   - `ReadGameVersion`, `ReadMODVersion`
   - `ReadPropertyTree` — returns `PropertyTree`
-- [ ] `internal/serdes/serializer.go`
+- [x] `internal/serdes/serializer.go`
   - Symmetric write methods
-- [ ] `internal/serdes/property_tree.go`
+- [x] `internal/serdes/property_tree.go`
   - `PropertyTree` type with `Kind` (None/Bool/Number/String/List/Dict/SignedInt/UnsignedInt)
-- [ ] Round-trip tests against the binary fixtures in `spec/fixtures`
+- [x] Round-trip tests (byte fixtures ported from the Ruby specs; `spec/fixtures`
+      has no standalone binary files until the save-file tests in Phase 3)
 
 ---
 
@@ -443,10 +444,14 @@ const (
 )
 
 type PropertyTree struct {
-    Kind  PropertyTreeKind
-    Value any // bool | float64 | string | []PropertyTree | map[string]PropertyTree | int64 | uint64
+    Kind  Kind
+    Value any // bool | float64 | string | []PropertyTree | []DictEntry | int64 | uint64
 }
 ```
+
+Dictionaries are `[]DictEntry` (ordered key-value pairs) rather than a Go map:
+map iteration order is random, and a load-and-save round trip must preserve
+file order byte for byte.
 
 This is still runtime-checked — type assertions move inside kind-checked accessor
 methods rather than disappearing. The gain over bare `any` is a single, tested
