@@ -387,10 +387,12 @@ All API response types are plain structs with JSON tags.
 
 **Goal:** Features independent of the MOD Portal pipeline.
 
-- [ ] `internal/blueprint/blueprint.go` — blueprint string encode/decode
-  (version byte + base64 + zlib + JSON)
-- [ ] `internal/changelog/changelog.go` — parse/manipulate Factorio `changelog.txt`
-  (sections, categories, entry add/check/extract/release)
+- [x] `internal/blueprint/blueprint.go` — blueprint string encode/decode
+  (version byte + base64 + zlib + JSON); the JSON text is kept verbatim so
+  key order survives decode/encode round trips
+- [x] `internal/changelog/changelog.go` — parse/manipulate Factorio `changelog.txt`
+  (hand-rolled line parser replacing Parslet; sections, ordered categories,
+  entry add / release; check/extract are command-level concerns in Phase 10)
 
 ---
 
