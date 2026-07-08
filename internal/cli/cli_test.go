@@ -2,6 +2,8 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,6 +66,65 @@ func (s *sandbox) copyDir(t *testing.T, from, to string) {
 	require.NoError(t, os.CopyFS(dest, os.DirFS(from)))
 }
 
+// writeInstalledMOD creates a directory-form installed MOD under
+// factorio/mods/<name> with the given version and dependency strings.
+func (s *sandbox) writeInstalledMOD(t *testing.T, name, version string, dependencies []string) {
+	t.Helper()
+	depsJSON, err := json.Marshal(dependencies)
+	require.NoError(t, err)
+	info := fmt.Sprintf(`{"name": %q, "version": %q, "title": %q, "author": "test", "dependencies": %s}`,
+		name, version, name, depsJSON)
+	dir := filepath.Join(s.root, "factorio", "mods", name)
+	require.NoError(t, os.MkdirAll(dir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "info.json"), []byte(info), 0o644))
+}
+
+// modListEntry is one entry to write into mod-list.json via writeMODList.
+type modListEntry struct {
+	name    string
+	enabled bool
+	version string // "" omits the field, matching a MOD never explicitly versioned
+}
+
+func (s *sandbox) writeMODList(t *testing.T, entries ...modListEntry) {
+	t.Helper()
+	type entry struct {
+		Name    string `json:"name"`
+		Enabled bool   `json:"enabled"`
+		Version string `json:"version,omitempty"`
+	}
+	doc := struct {
+		Mods []entry `json:"mods"`
+	}{}
+	for _, e := range entries {
+		doc.Mods = append(doc.Mods, entry{Name: e.name, Enabled: e.enabled, Version: e.version})
+	}
+	data, err := json.MarshalIndent(doc, "", "  ")
+	require.NoError(t, err)
+	path := filepath.Join(s.root, "factorio", "mods", "mod-list.json")
+	require.NoError(t, os.WriteFile(path, data, 0o644))
+}
+
+// readMODList reads back mod-list.json as a name -> enabled map for
+// assertions.
+func (s *sandbox) readMODList(t *testing.T) map[string]bool {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(s.root, "factorio", "mods", "mod-list.json"))
+	require.NoError(t, err)
+	var doc struct {
+		Mods []struct {
+			Name    string `json:"name"`
+			Enabled bool   `json:"enabled"`
+		} `json:"mods"`
+	}
+	require.NoError(t, json.Unmarshal(data, &doc))
+	result := map[string]bool{}
+	for _, m := range doc.Mods {
+		result[m.Name] = m.Enabled
+	}
+	return result
+}
+
 func e2eFile(elems ...string) string {
 	return filepath.Join(append([]string{"..", "..", "e2e", "cases"}, elems...)...)
 }
@@ -89,10 +150,18 @@ func setupMODListSandbox(t *testing.T) *sandbox {
 // invocation would print (and thus the e2e expected_stdout.txt fixtures).
 func runCLI(t *testing.T, args ...string) (string, error) {
 	t.Helper()
+	return runCLIWithStdin(t, "", args...)
+}
+
+// runCLIWithStdin is runCLI with an explicit stdin, for commands that
+// prompt for confirmation.
+func runCLIWithStdin(t *testing.T, stdin string, args ...string) (string, error) {
+	t.Helper()
 	root, reportError := NewRootCommand()
 	var out bytes.Buffer
 	root.SetOut(&out)
 	root.SetErr(&out)
+	root.SetIn(strings.NewReader(stdin))
 	root.SetArgs(args)
 	err := root.Execute()
 	if err != nil {

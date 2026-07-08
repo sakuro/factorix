@@ -1,0 +1,134 @@
+package dependency
+
+import (
+	"errors"
+	"fmt"
+
+	"github.com/sakuro/factorix/internal/mod"
+)
+
+var (
+	ErrDependencyMissing = errors.New("dependency missing")
+	ErrDependencyVersion = errors.New("dependency version requirement not satisfied")
+	ErrMODConflict       = errors.New("MOD conflict")
+)
+
+// PlanEnable computes the MODs to enable when enabling targets, pulling in
+// required dependencies (BFS discovery order). The base MOD is always
+// available and is never pulled in as a dependency. Targets already
+// installed are assumed to exist in the graph; the caller validates that
+// before calling PlanEnable.
+func PlanEnable(g *Graph, targets []mod.MOD) ([]mod.MOD, error) {
+	planned := map[mod.MOD]bool{}
+	var order []mod.MOD
+	queue := append([]mod.MOD(nil), targets...)
+
+	for len(queue) > 0 {
+		m := queue[0]
+		queue = queue[1:]
+
+		node, ok := g.Node(m)
+		if !ok || node.Enabled || planned[m] {
+			continue
+		}
+		planned[m] = true
+		order = append(order, m)
+
+		for _, edge := range g.EdgesFrom(m) {
+			if edge.Type != TypeRequired || edge.To.IsBase() {
+				continue
+			}
+			depNode, ok := g.Node(edge.To)
+			if !ok {
+				return nil, fmt.Errorf("%w: MOD '%s' requires '%s' which is not installed", ErrDependencyMissing, m, edge.To)
+			}
+			if !edge.SatisfiedBy(depNode.Version) {
+				return nil, fmt.Errorf("%w: cannot enable %s: dependency %s version requirement not satisfied (required: %s, installed: %s)",
+					ErrDependencyVersion, m, edge.To, edge.Requirement, depNode.Version)
+			}
+			if !depNode.Enabled && !planned[edge.To] {
+				queue = append(queue, edge.To)
+			}
+		}
+	}
+	return order, nil
+}
+
+// ValidateNoConflicts checks that none of the planned MODs conflict (via an
+// incompatible edge, in either direction) with a currently-enabled MOD or
+// another MOD in the same plan.
+func ValidateNoConflicts(g *Graph, planned []mod.MOD) error {
+	plannedSet := map[mod.MOD]bool{}
+	for _, m := range planned {
+		plannedSet[m] = true
+	}
+
+	for _, m := range planned {
+		for _, edge := range g.EdgesFrom(m) {
+			if edge.Type != TypeIncompatible {
+				continue
+			}
+			if err := checkConflict(g, m, edge.To, plannedSet); err != nil {
+				return err
+			}
+		}
+		for _, edge := range g.EdgesTo(m) {
+			if edge.Type != TypeIncompatible {
+				continue
+			}
+			if err := checkConflict(g, m, edge.From, plannedSet); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) error {
+	if node, ok := g.Node(other); ok && node.Enabled {
+		return fmt.Errorf("%w: cannot enable %s: conflicts with %s which is currently enabled", ErrMODConflict, m, other)
+	}
+	if plannedSet[other] {
+		return fmt.Errorf("%w: cannot enable %s: conflicts with %s which is also being enabled", ErrMODConflict, m, other)
+	}
+	return nil
+}
+
+// PlanDisableAll returns every enabled MOD except base.
+func PlanDisableAll(g *Graph) []mod.MOD {
+	var mods []mod.MOD
+	for _, node := range g.Nodes() {
+		if node.Enabled && !node.MOD.IsBase() {
+			mods = append(mods, node.MOD)
+		}
+	}
+	return mods
+}
+
+// PlanDisable computes the MODs to disable when disabling targets, pulling
+// in enabled dependents recursively (BFS). Targets not present in the
+// graph, or already disabled, are silently skipped — the caller is
+// responsible for warning about targets that are not installed.
+func PlanDisable(g *Graph, targets []mod.MOD) []mod.MOD {
+	planned := map[mod.MOD]bool{}
+	var order []mod.MOD
+	queue := append([]mod.MOD(nil), targets...)
+
+	for len(queue) > 0 {
+		m := queue[0]
+		queue = queue[1:]
+
+		node, ok := g.Node(m)
+		if !ok || !node.Enabled || planned[m] {
+			continue
+		}
+		for _, dependent := range g.FindEnabledDependents(m) {
+			if !planned[dependent] {
+				queue = append(queue, dependent)
+			}
+		}
+		planned[m] = true
+		order = append(order, m)
+	}
+	return order
+}

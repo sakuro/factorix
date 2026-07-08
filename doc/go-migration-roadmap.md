@@ -416,7 +416,10 @@ than one pass over the full list below.
 
 #### Local MOD Management
 - [x] `mod list` — list installed MODs
-- [ ] `mod enable` / `mod disable` — recursively handle dependencies/dependents
+- [x] `mod enable` / `mod disable` — recursively handle dependencies/dependents
+      (planning logic lives in `internal/dependency` — `PlanEnable`,
+      `ValidateNoConflicts`, `PlanDisable`/`PlanDisableAll` — so the CLI layer
+      stays thin)
 - [x] `mod check` — validate dependency graph
 - [ ] `mod sync` — sync MOD states from a save file
 - [x] `mod settings dump` / `restore` — export/import `mod-settings.dat` (JSON)
