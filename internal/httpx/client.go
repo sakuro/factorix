@@ -17,11 +17,13 @@ import (
 
 const maxRedirects = 10
 
-// Response is a fully-read HTTP response.
+// Response is a fully-read HTTP response. URL is the final URL after
+// redirects.
 type Response struct {
 	StatusCode int
 	Header     http.Header
 	Body       []byte
+	URL        *url.URL
 }
 
 // Options configures a Client.
@@ -110,6 +112,12 @@ func (c *Client) Do(ctx context.Context, method, rawURL string, header http.Head
 	return c.hc.Do(req)
 }
 
+// Request executes a request and returns the buffered response, mapping
+// non-2xx statuses to StatusError.
+func (c *Client) Request(ctx context.Context, method, rawURL string, header http.Header, body io.Reader) (*Response, error) {
+	return c.buffered(ctx, method, rawURL, header, body)
+}
+
 // Get executes a GET request and returns the buffered response.
 func (c *Client) Get(ctx context.Context, rawURL string) (*Response, error) {
 	return c.buffered(ctx, http.MethodGet, rawURL, nil, nil)
@@ -160,7 +168,7 @@ func (c *Client) buffered(ctx context.Context, method, rawURL string, header htt
 		c.logger.Error("HTTP error response", "status", resp.Status, "error", err)
 		return nil, err
 	}
-	return &Response{StatusCode: resp.StatusCode, Header: resp.Header, Body: data}, nil
+	return &Response{StatusCode: resp.StatusCode, Header: resp.Header, Body: data, URL: resp.Request.URL}, nil
 }
 
 func (c *Client) statusError(resp *http.Response, body []byte) *StatusError {

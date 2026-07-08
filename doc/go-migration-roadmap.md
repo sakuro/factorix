@@ -341,14 +341,24 @@ parity, once the actual game behavior can be observed.
 
 All API response types are plain structs with JSON tags.
 
-- [ ] `internal/api/types.go` — `MODInfo`, `Release`, `Image`, `Category`, `Tag`, `License`
-- [ ] `internal/api/portal.go` — `MODPortalAPI`: list, search, show
-- [ ] `internal/api/download.go` — `MODDownloadAPI`: build authenticated download URL, stream to cache
-- [ ] `internal/api/game_download.go` — `GameDownloadAPI`: game binary download (`download` command)
-- [ ] `internal/api/management.go` — `MODManagementAPI`: upload, edit, image management
+- [x] `internal/api/types.go` — `MODInfo`, `Release`, `Image`, `License`; a release
+      with an out-of-range version is dropped after decoding instead of failing the
+      MOD. Category/Tag are plain strings — the Ruby display catalogs (names,
+      descriptions) move to the `mod show`/upload commands in Phase 10
+- [x] `internal/api/portal.go` — `MODPortalAPI`: list, show (short/full), cache
+      invalidation; JSON decodes directly into the typed structs, so the Ruby
+      `Portal` facade's Hash-to-object conversion role disappears (its upload
+      orchestration moves to Phase 10)
+- [x] `internal/api/download.go` — `MODDownloadAPI`: build authenticated download
+      URL (streaming to cache is the Phase 8 downloader's job)
+- [x] `internal/api/game_download.go` — `GameDownloadAPI`: latest releases, filename
+      resolution via redirect, authenticated download URL
+- [x] `internal/api/management.go` — `MODManagementAPI`: upload, edit, image management
   - cache-invalidation callback to `MODPortalAPI` (replaces dry-events subscription)
-- [ ] `internal/api/credential.go`
-  - `ServiceCredential` — username/token from env vars or `player-data.json`
+  - uploads go through an `Uploader` interface implemented by `internal/transfer` in Phase 8
+- [x] `internal/api/credential.go`
+  - `ServiceCredential` — username/token from env vars or `player-data.json`;
+    lazily resolved so the environment is only consulted when actually needed
   - `APICredential` — `FACTORIO_API_KEY` (required by the management API)
 
 ---
