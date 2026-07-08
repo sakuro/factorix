@@ -51,7 +51,7 @@ module Factorix
         def call(wait: false, args: [], **)
           logger.info("Launching Factorio", args:)
 
-          async = args.none? {|arg| SYNCHRONOUS_OPTIONS.include?(arg) }
+          async = !args.intersect?(SYNCHRONOUS_OPTIONS)
 
           runtime.launch(*args, async:)
           logger.info("Factorio launched successfully", async:)
