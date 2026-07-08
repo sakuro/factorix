@@ -1,5 +1,7 @@
 package api
 
+import "fmt"
+
 // Category is a MOD Portal category's display information.
 //
 // See https://wiki.factorio.com/Mod_details_API#Category
@@ -23,12 +25,13 @@ var categories = map[string]Category{
 }
 
 // CategoryFor returns the display Category for a raw API category value.
-// An unrecognized value (the Portal may add categories after this catalog
-// was last updated) falls back to a Category using the raw value as its
-// name, rather than failing outright the way Ruby's Category.for does.
-func CategoryFor(value string) Category {
+// Categories change rarely; an unrecognized value means this catalog is
+// out of date and needs a code change, not a value to paper over, so this
+// errors rather than degrading to a raw-string display (matching Ruby's
+// Category.for, which raises KeyError for the same case).
+func CategoryFor(value string) (Category, error) {
 	if c, ok := categories[value]; ok {
-		return c
+		return c, nil
 	}
-	return Category{Value: value, Name: value}
+	return Category{}, fmt.Errorf("%w: unknown category %q", ErrInvalidResponse, value)
 }

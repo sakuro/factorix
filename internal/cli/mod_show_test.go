@@ -54,7 +54,7 @@ func TestDisplayShow(t *testing.T) {
 	var buf bytes.Buffer
 	p := &printer{out: &buf}
 
-	displayShow(p, sampleShowMODInfo(), localMODStatus{})
+	require.NoError(t, displayShow(p, sampleShowMODInfo(), localMODStatus{}))
 
 	out := buf.String()
 	assert.Contains(t, out, "Some MOD")
@@ -79,12 +79,35 @@ func TestDisplayShowUpdateAvailable(t *testing.T) {
 	p := &printer{out: &buf}
 
 	local := mod.MODVersion{Major: 1}
-	displayShow(p, sampleShowMODInfo(), localMODStatus{Installed: true, Enabled: true, LocalVersion: &local})
+	require.NoError(t, displayShow(p, sampleShowMODInfo(), localMODStatus{Installed: true, Enabled: true, LocalVersion: &local}))
 
 	out := buf.String()
 	assert.Contains(t, out, "Enabled")
 	assert.Contains(t, out, "Installed Version")
 	assert.Contains(t, out, "1.0.0 (update available)")
+}
+
+func TestDisplayShowUnknownCategory(t *testing.T) {
+	t.Setenv("NO_COLOR", "1")
+	var buf bytes.Buffer
+	p := &printer{out: &buf}
+
+	info := sampleShowMODInfo()
+	info.Category = "not-a-real-category"
+
+	err := displayShow(p, info, localMODStatus{})
+	require.ErrorIs(t, err, api.ErrInvalidResponse)
+}
+
+func TestOutputShowJSONUnknownCategory(t *testing.T) {
+	var buf bytes.Buffer
+	p := &printer{out: &buf}
+
+	info := sampleShowMODInfo()
+	info.Category = "not-a-real-category"
+
+	err := outputShowJSON(p, info, localMODStatus{})
+	require.ErrorIs(t, err, api.ErrInvalidResponse)
 }
 
 func TestOutputShowJSON(t *testing.T) {

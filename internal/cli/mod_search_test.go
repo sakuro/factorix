@@ -27,7 +27,7 @@ func TestOutputSearchTable(t *testing.T) {
 	var buf bytes.Buffer
 	p := &printer{out: &buf}
 
-	outputSearchTable(p, sampleSearchMODs())
+	require.NoError(t, outputSearchTable(p, sampleSearchMODs()))
 
 	out := buf.String()
 	assert.Contains(t, out, "NAME")
@@ -42,8 +42,17 @@ func TestOutputSearchTable(t *testing.T) {
 func TestOutputSearchTableEmpty(t *testing.T) {
 	var buf bytes.Buffer
 	p := &printer{out: &buf}
-	outputSearchTable(p, nil)
+	require.NoError(t, outputSearchTable(p, nil))
 	assert.Contains(t, buf.String(), "No MOD(s) found")
+}
+
+func TestOutputSearchTableUnknownCategory(t *testing.T) {
+	var buf bytes.Buffer
+	p := &printer{out: &buf}
+	mods := []api.MODInfo{{Name: "some-mod", Category: "not-a-real-category"}}
+
+	err := outputSearchTable(p, mods)
+	require.ErrorIs(t, err, api.ErrInvalidResponse)
 }
 
 func TestOutputSearchJSON(t *testing.T) {

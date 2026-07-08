@@ -51,8 +51,7 @@ func newMODShowCommand(c *cli) *cobra.Command {
 			if jsonOutput {
 				return outputShowJSON(p, info, localStatus)
 			}
-			displayShow(p, info, localStatus)
-			return nil
+			return displayShow(p, info, localStatus)
 		},
 	}
 	cmd.Flags().BoolVar(&jsonOutput, "json", false, "Output in JSON format")
@@ -121,7 +120,7 @@ func latestByVersion(releases []api.Release) *api.Release {
 	return latest
 }
 
-func displayShow(p *printer, info *api.MODInfo, status localMODStatus) {
+func displayShow(p *printer, info *api.MODInfo, status localMODStatus) error {
 	title := color.New(color.Bold, color.Underline)
 	header := color.New(color.Bold)
 	incompatible := color.New(color.FgRed)
@@ -138,7 +137,9 @@ func displayShow(p *printer, info *api.MODInfo, status localMODStatus) {
 	}
 	p.Println()
 
-	displayBasicInfo(p, info, status)
+	if err := displayBasicInfo(p, info, status); err != nil {
+		return err
+	}
 
 	p.Println(header.Sprint("Links"))
 	p.Println("  MOD Portal: https://mods.factorio.com/mod/" + info.Name)
@@ -152,7 +153,7 @@ func displayShow(p *printer, info *api.MODInfo, status localMODStatus) {
 
 	latest := latestReleaseOf(info)
 	if latest == nil {
-		return
+		return nil
 	}
 	required, optional, incompatibleDeps := classifyDependencies(latest.InfoJSON.Dependencies)
 
@@ -177,9 +178,10 @@ func displayShow(p *printer, info *api.MODInfo, status localMODStatus) {
 		}
 		p.Println()
 	}
+	return nil
 }
 
-func displayBasicInfo(p *printer, info *api.MODInfo, status localMODStatus) {
+func displayBasicInfo(p *printer, info *api.MODInfo, status localMODStatus) error {
 	latest := latestReleaseOf(info)
 	factorioVersion := "N/A"
 	if latest != nil && latest.InfoJSON.FactorioVersion != "" {
@@ -200,9 +202,13 @@ func displayBasicInfo(p *printer, info *api.MODInfo, status localMODStatus) {
 		}
 		rows = append(rows, row{"Installed Version", status.LocalVersion.String() + note})
 	}
+	category, err := api.CategoryFor(info.Category)
+	if err != nil {
+		return err
+	}
 	rows = append(rows,
 		row{"Author", info.Owner},
-		row{"Category", api.CategoryFor(info.Category).Name},
+		row{"Category", category.Name},
 		row{"License", formatLicense(info)},
 		row{"Factorio Version", factorioVersion},
 		row{"Downloads", fmt.Sprintf("%d", info.DownloadsCount)},
@@ -216,6 +222,7 @@ func displayBasicInfo(p *printer, info *api.MODInfo, status localMODStatus) {
 		p.Printf("%-*s  %s\n", width, r.label, r.value)
 	}
 	p.Println()
+	return nil
 }
 
 func formatLocalStatus(status localMODStatus) string {
@@ -299,6 +306,10 @@ func outputShowJSON(p *printer, info *api.MODInfo, status localMODStatus) error 
 	if info.Homepage != "" {
 		homepage = &info.Homepage
 	}
+	category, err := api.CategoryFor(info.Category)
+	if err != nil {
+		return err
+	}
 
 	doc := struct {
 		Name             string  `json:"name"`
@@ -321,7 +332,7 @@ func outputShowJSON(p *printer, info *api.MODInfo, status localMODStatus) error 
 		Dependencies []string `json:"dependencies"`
 	}{
 		Name: info.Name, Title: info.Title, Summary: info.Summary, Author: info.Owner,
-		Category: api.CategoryFor(info.Category).Name, License: license, FactorioVersion: factorioVersion,
+		Category: category.Name, License: license, FactorioVersion: factorioVersion,
 		DownloadsCount: info.DownloadsCount, Status: jsonLocalStatus(status),
 		LatestVersion: latestVersion, InstalledVersion: installedVersion, UpdateAvailable: updateAvailable,
 		Dependencies: dependencies,

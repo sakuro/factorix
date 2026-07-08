@@ -65,8 +65,7 @@ func newMODSearchCommand(c *cli) *cobra.Command {
 			if jsonOutput {
 				return outputSearchJSON(p, result.Results)
 			}
-			outputSearchTable(p, result.Results)
-			return nil
+			return outputSearchTable(p, result.Results)
 		},
 	}
 	cmd.Flags().BoolVar(&hideDeprecated, "hide-deprecated", true, "Hide deprecated MOD(s)")
@@ -93,10 +92,10 @@ func defaultFactorioVersion(application *app.App) (string, error) {
 	return strconv.Itoa(int(base.Version.Major)) + "." + strconv.Itoa(int(base.Version.Minor)), nil
 }
 
-func outputSearchTable(p *printer, mods []api.MODInfo) {
+func outputSearchTable(p *printer, mods []api.MODInfo) error {
 	if len(mods) == 0 {
 		p.Info("No MOD(s) found")
-		return
+		return nil
 	}
 
 	type row struct{ name, title, category, owner, latest string }
@@ -106,7 +105,11 @@ func outputSearchTable(p *printer, mods []api.MODInfo) {
 		if m.LatestRelease != nil {
 			latest = m.LatestRelease.Version.String()
 		}
-		rows[i] = row{m.Name, m.Title, api.CategoryFor(m.Category).Name, m.Owner, latest}
+		category, err := api.CategoryFor(m.Category)
+		if err != nil {
+			return err
+		}
+		rows[i] = row{m.Name, m.Title, category.Name, m.Owner, latest}
 	}
 
 	headers := []string{"NAME", "TITLE", "CATEGORY", "OWNER", "LATEST"}
@@ -128,6 +131,7 @@ func outputSearchTable(p *printer, mods []api.MODInfo) {
 	}
 
 	p.Info(strconv.Itoa(len(mods)) + " MOD(s) found")
+	return nil
 }
 
 func outputSearchJSON(p *printer, mods []api.MODInfo) error {
