@@ -204,7 +204,8 @@ RCON needs no internal package — `gorcon/rcon` is used directly from the CLI l
 **Goal:** Stable value types used by all subsequent phases.
 
 - [x] `internal/mod/game_version.go` — `GameVersion` (major/minor/patch/build uint16)
-- [x] `internal/mod/mod_version.go` — `MODVersion` (major/minor/patch uint16)
+- [x] `internal/mod/mod_version.go` — `MODVersion` (major/minor/patch uint16 for the
+      optim_u16 binary encoding; values limited to 0-255)
   - `Less`, `Compare`, string parsing, `Stringer`
 - [x] `internal/mod/mod.go` — `MOD` struct (name)
 - [x] `internal/mod/mod_state.go` — `MODState` (enabled bool, version)

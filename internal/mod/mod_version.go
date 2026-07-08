@@ -7,8 +7,10 @@ import (
 	"strconv"
 )
 
-// MODVersion is a 3-component MOD version (major.minor.patch). Each component
-// is serialized as a space-optimized 16-bit unsigned integer in save files.
+// MODVersion is a 3-component MOD version (major.minor.patch). The fields
+// are uint16 because save files serialize each component as a
+// space-optimized 16-bit unsigned integer, but values are limited to 0-255
+// per Factorio's MOD version format.
 //
 // See https://wiki.factorio.com/Version_string_format
 type MODVersion struct {
@@ -17,7 +19,19 @@ type MODVersion struct {
 	Patch uint16
 }
 
+const modVersionComponentMax = 255
+
 var modVersionRE = regexp.MustCompile(`\A(\d+)\.(\d+)(?:\.(\d+))?\z`)
+
+// NewMODVersion builds a MODVersion, rejecting components over 255.
+func NewMODVersion(major, minor, patch uint16) (MODVersion, error) {
+	for _, c := range [...]uint16{major, minor, patch} {
+		if c > modVersionComponentMax {
+			return MODVersion{}, &VersionParseError{Input: fmt.Sprintf("%d.%d.%d", major, minor, patch)}
+		}
+	}
+	return MODVersion{Major: major, Minor: minor, Patch: patch}, nil
+}
 
 // ParseMODVersion parses a version string in "X.Y.Z" or "X.Y" format
 // (patch defaults to 0 when omitted).
@@ -32,7 +46,7 @@ func ParseMODVersion(s string) (MODVersion, error) {
 		if digits == "" {
 			break
 		}
-		n, err := strconv.ParseUint(digits, 10, 16)
+		n, err := strconv.ParseUint(digits, 10, 8)
 		if err != nil {
 			return MODVersion{}, &VersionParseError{Input: s}
 		}

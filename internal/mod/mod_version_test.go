@@ -15,7 +15,7 @@ func TestParseMODVersion(t *testing.T) {
 		{"1.2.3", MODVersion{Major: 1, Minor: 2, Patch: 3}},
 		{"1.2", MODVersion{Major: 1, Minor: 2}},
 		{"0.0.0", MODVersion{}},
-		{"65535.65535.65535", MODVersion{Major: 65535, Minor: 65535, Patch: 65535}},
+		{"255.255.255", MODVersion{Major: 255, Minor: 255, Patch: 255}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
@@ -27,13 +27,25 @@ func TestParseMODVersion(t *testing.T) {
 }
 
 func TestParseMODVersionInvalid(t *testing.T) {
-	inputs := []string{"", "1", "1.2.3.4", "a.b.c", "1.2.3-4", " 1.2.3", "65536.0.0"}
+	inputs := []string{"", "1", "1.2.3.4", "a.b.c", "1.2.3-4", " 1.2.3", "256.0.0", "1.2.256"}
 	for _, input := range inputs {
 		t.Run(input, func(t *testing.T) {
 			_, err := ParseMODVersion(input)
 			var parseErr *VersionParseError
 			require.ErrorAs(t, err, &parseErr)
 		})
+	}
+}
+
+func TestNewMODVersion(t *testing.T) {
+	v, err := NewMODVersion(1, 2, 255)
+	require.NoError(t, err)
+	assert.Equal(t, MODVersion{Major: 1, Minor: 2, Patch: 255}, v)
+
+	for _, args := range [][3]uint16{{256, 0, 0}, {0, 256, 0}, {0, 0, 256}} {
+		_, err := NewMODVersion(args[0], args[1], args[2])
+		var parseErr *VersionParseError
+		require.ErrorAs(t, err, &parseErr)
 	}
 }
 
