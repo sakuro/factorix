@@ -63,7 +63,7 @@ func (f listFilters) validate() error {
 		}
 	}
 	if len(active) > 1 {
-		return fmt.Errorf("cannot combine %s options", strings.Join(active, ", "))
+		return fmt.Errorf("Cannot combine %s options", strings.Join(active, ", "))
 	}
 	return nil
 }
