@@ -267,13 +267,17 @@ prefix = "!" | "?" | "(?)" | "~"
 op     = "=" | ">" | ">=" | "<" | "<="
 ```
 
-- [ ] `internal/dependency/parser.go` — parse dependency strings into `Entry` structs
-- [ ] `internal/dependency/entry.go` — `Entry` (kind, name, operator, version)
-- [ ] `internal/dependency/graph.go` — adjacency-list DAG
+- [x] `internal/dependency/parser.go` — parse dependency strings into `Entry` structs
+      (a well-formed but out-of-range version requirement is dropped, not an error —
+      MODs with such versions exist on the Portal)
+- [x] `internal/dependency/entry.go` — `Entry` (type, MOD, version requirement)
+- [x] `internal/dependency/graph.go` — adjacency-list DAG
   - `AddNode`, `AddEdge`, `TopologicalSort` (Kahn's algorithm)
   - `StronglyConnectedComponents` for cycle detection
-- [ ] `internal/dependency/validator.go` — validate installed MODs against requirements
-- [ ] `internal/dependency/resolver.go` — determine install/uninstall order
+  - `builder.go` builds the graph from installed MODs + mod-list.json
+- [x] `internal/dependency/validator.go` — validate installed MODs against requirements
+- Install/uninstall ordering has no Ruby `Resolver` counterpart; it is implemented
+  with the `mod install` / `mod uninstall` commands in Phase 10
 
 ---
 
