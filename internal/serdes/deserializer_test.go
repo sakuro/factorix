@@ -118,9 +118,11 @@ func TestReadStrProperty(t *testing.T) {
 }
 
 func TestReadDouble(t *testing.T) {
+	// Exact comparison is valid: the test value is exactly representable in
+	// binary64, and Read/WriteDouble transfer bit patterns without arithmetic.
 	v, err := newDeserializer("\x00\x00\x00\x00\x00\x00\xe0\x3f").ReadDouble()
 	require.NoError(t, err)
-	assert.InDelta(t, 0.5, v, 0)
+	assert.Equal(t, 0.5, v)
 }
 
 func TestReadLongs(t *testing.T) {
