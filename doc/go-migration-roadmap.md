@@ -263,9 +263,14 @@ The Ruby implementation uses Parslet (PEG). In Go, hand-roll a recursive descent
 Dependency string grammar (Factorio format; note MOD names may contain spaces):
 ```
 dep    = [prefix " "] name [" " op " " version]
-prefix = "!" | "?" | "(?)" | "~"
+prefix = "!" | "?" | "(?)" | "~" | "+"
 op     = "=" | ">" | ">=" | "<" | "<="
 ```
+
+The `+` prefix (optional but recommended; enabled by default) becomes
+meaningful in Factorio 2.1. Parsing is already supported; the command-level
+behavior is tracked in issues #90–#95 and starts after the port reaches
+parity, once the actual game behavior can be observed.
 
 - [x] `internal/dependency/parser.go` — parse dependency strings into `Entry` structs
       (a well-formed but out-of-range version requirement is dropped, not an error —
