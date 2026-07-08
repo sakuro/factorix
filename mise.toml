@@ -5,3 +5,27 @@ ruby = "3.3"
 [env]
 _.path = ["bin", "exe"]
 _.file = ".env"
+
+[tasks.test]
+description = "Run Go tests"
+run = "go test ./..."
+
+[tasks.vet]
+description = "Run go vet"
+run = "go vet ./..."
+
+[tasks.fmt-check]
+description = "Check gofmt formatting"
+run = "test -z \"$(gofmt -l .)\""
+
+[tasks.fmt]
+description = "Format Go files"
+run = "gofmt -w ."
+
+[tasks.build]
+description = "Build the factorix binary"
+run = "go build -o factorix ./cmd/factorix"
+
+[tasks.default]
+description = "Run all Go checks (test + vet + fmt-check)"
+depends = ["test", "vet", "fmt-check"]
