@@ -176,6 +176,20 @@ func TestVersionCommand(t *testing.T) {
 	assert.Equal(t, "dev\n", out)
 }
 
+// TestVersionCommandNeverBuildsApp guards against PersistentPostRun's
+// Close() forcing application construction (config load, log file
+// creation) for a command that never calls c.App() itself.
+func TestVersionCommandNeverBuildsApp(t *testing.T) {
+	s := newSandbox(t)
+
+	_, err := runCLI(t, "version")
+	require.NoError(t, err)
+
+	logPath := filepath.Join(s.root, "xdg-state", "factorix", "factorix.log")
+	_, statErr := os.Stat(logPath)
+	assert.ErrorIs(t, statErr, os.ErrNotExist, "version must not trigger app construction")
+}
+
 func TestPathCommand(t *testing.T) {
 	s := newSandbox(t)
 	out, err := runCLI(t, "path")

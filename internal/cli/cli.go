@@ -18,23 +18,24 @@ type cli struct {
 	logLevel   string
 	quiet      bool
 
-	appOnce sync.Once
-	app     *app.App
-	appErr  error
-}
+	// App builds the application on first use, memoized via sync.OnceValues;
+	// commands like version never pay for config loading or log-file
+	// creation. Set in NewRootCommand — the wrapped closure reads
+	// configPath/logLevel at call time, by which point cobra has already
+	// parsed the flags that set them.
+	App func() (*app.App, error)
 
-// App builds the application on first use; commands like version never pay
-// for config loading or log-file creation.
-func (c *cli) App() (*app.App, error) {
-	c.appOnce.Do(func() {
-		c.app, c.appErr = app.New(app.Options{ConfigPath: c.configPath, LogLevel: c.logLevel})
-	})
-	return c.app, c.appErr
+	// builtApp is set as a side effect the first time App succeeds, purely
+	// so Close can tell "never built" from "built" without calling App
+	// itself — calling App from Close would force construction (and thus
+	// config loading, log-file creation) even for commands like version
+	// that never touch the application.
+	builtApp *app.App
 }
 
 func (c *cli) Close() {
-	if c.app != nil {
-		_ = c.app.Close()
+	if c.builtApp != nil {
+		_ = c.builtApp.Close()
 	}
 }
 
@@ -49,6 +50,13 @@ func (c *cli) printer(cmd *cobra.Command) *printer {
 // error.
 func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 	c := &cli{}
+	c.App = sync.OnceValues(func() (*app.App, error) {
+		a, err := app.New(app.Options{ConfigPath: c.configPath, LogLevel: c.logLevel})
+		if err == nil {
+			c.builtApp = a
+		}
+		return a, err
+	})
 
 	root = &cobra.Command{
 		Use:           "factorix",
