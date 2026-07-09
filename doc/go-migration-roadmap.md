@@ -436,7 +436,11 @@ than one pass over the full list below.
       (deferred from Phase 7); an unrecognized category value errors, matching
       Ruby's `Category.for` (`KeyError`) — categories change rarely, so an
       unknown one means the catalog is stale and needs a code change
-- [ ] `mod install` / `mod uninstall` / `mod update`
+- [x] `mod install` / `mod uninstall` / `mod update` — graph extension for
+      Portal-fetched MODs (`Graph.AddUninstalledMOD`) and install planning
+      (`MarkDisabledDependenciesForEnable`, `ValidateInstallGraph`) live in
+      `internal/dependency`; uninstall refuses to break enabled dependents
+      unless remaining installed versions still satisfy them
 - [x] `mod download` — download without installing; shared download-planning
       logic lives in `internal/cli/download_support.go` (parse spec, resolve
       release, build targets, parallel fetch) for reuse by install/update/sync.

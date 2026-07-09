@@ -94,6 +94,39 @@ func (g *Graph) SetNodeOperation(m mod.MOD, op Operation) {
 	g.nodes[m] = node
 }
 
+// AddUninstalledMOD extends the graph with a MOD fetched from the Portal
+// (used by mod install to plan alongside the installed MODs). If the MOD is
+// already in the graph, an installed-but-disabled node is marked for
+// enabling and nothing else changes. Otherwise a node with operation
+// install is added, with edges parsed from the release's dependency
+// strings (edges to the always-available base MOD carry no information and
+// are skipped, as in the builder).
+func (g *Graph) AddUninstalledMOD(m mod.MOD, version mod.MODVersion, dependencyStrings []string) error {
+	if existing, ok := g.nodes[m]; ok {
+		if existing.Installed && !existing.Enabled {
+			g.SetNodeOperation(m, OpEnable)
+		}
+		return nil
+	}
+
+	if err := g.AddNode(Node{MOD: m, Version: version, Operation: OpInstall}); err != nil {
+		return err
+	}
+	for _, depString := range dependencyStrings {
+		entry, err := Parse(depString)
+		if err != nil {
+			return err
+		}
+		if entry.MOD.IsBase() {
+			continue
+		}
+		if err := g.AddEdge(Edge{From: m, To: entry.MOD, Type: entry.Type, Requirement: entry.Requirement}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // AddEdge adds an edge; the origin node must exist.
 func (g *Graph) AddEdge(e Edge) error {
 	if _, ok := g.nodes[e.From]; !ok {

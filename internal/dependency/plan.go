@@ -94,6 +94,64 @@ func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) erro
 	return nil
 }
 
+// MarkDisabledDependenciesForEnable walks the required dependencies of
+// every node planned for install or enable and marks installed-but-disabled
+// dependencies for enabling (recursively), so installing a MOD also turns
+// its already-present dependency chain back on.
+func MarkDisabledDependenciesForEnable(g *Graph) {
+	var queue []mod.MOD
+	for _, node := range g.Nodes() {
+		if node.Operation == OpInstall || node.Operation == OpEnable {
+			queue = append(queue, node.MOD)
+		}
+	}
+
+	processed := map[mod.MOD]bool{}
+	for len(queue) > 0 {
+		m := queue[0]
+		queue = queue[1:]
+		if processed[m] {
+			continue
+		}
+		processed[m] = true
+
+		for _, edge := range g.EdgesFrom(m) {
+			if edge.Type != TypeRequired {
+				continue
+			}
+			depNode, ok := g.Node(edge.To)
+			if !ok || depNode.Operation != OpNone || depNode.Enabled || !depNode.Installed {
+				continue
+			}
+			g.SetNodeOperation(edge.To, OpEnable)
+			queue = append(queue, edge.To)
+		}
+	}
+}
+
+// ValidateInstallGraph rejects an install plan whose graph has a
+// required-dependency cycle, or where a MOD marked for install conflicts
+// with a currently-enabled MOD.
+func ValidateInstallGraph(g *Graph) error {
+	if g.IsCyclic() {
+		return fmt.Errorf("%w: circular dependency detected in MOD(s) to install", ErrCircularDependency)
+	}
+	for _, node := range g.Nodes() {
+		if node.Operation != OpInstall {
+			continue
+		}
+		for _, edge := range g.EdgesFrom(node.MOD) {
+			if edge.Type != TypeIncompatible {
+				continue
+			}
+			if target, ok := g.Node(edge.To); ok && target.Enabled {
+				return fmt.Errorf("%w: cannot install %s: it conflicts with enabled MOD %s", ErrMODConflict, node.MOD, edge.To)
+			}
+		}
+	}
+	return nil
+}
+
 // PlanDisableAll returns every enabled MOD except base.
 func PlanDisableAll(g *Graph) []mod.MOD {
 	var mods []mod.MOD
