@@ -2,11 +2,12 @@ package cli
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
 	"sync"
 
@@ -282,12 +283,11 @@ func sortListedMODs(mods []*listedMOD) {
 			return 2
 		}
 	}
-	sort.SliceStable(mods, func(i, j int) bool {
-		ri, rj := rank(mods[i]), rank(mods[j])
-		if ri != rj {
-			return ri < rj
+	slices.SortStableFunc(mods, func(a, b *listedMOD) int {
+		if c := cmp.Compare(rank(a), rank(b)); c != 0 {
+			return c
 		}
-		return mods[i].Name < mods[j].Name
+		return cmp.Compare(a.Name, b.Name)
 	})
 }
 
