@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"maps"
 	"net/http"
 	"net/url"
 	"slices"
@@ -243,9 +244,5 @@ func validateMetadataKeys(keys, allowed []string, context string) error {
 }
 
 func keysOf(m map[string]string) []string {
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	return keys
+	return slices.Collect(maps.Keys(m))
 }

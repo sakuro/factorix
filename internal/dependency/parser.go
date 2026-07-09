@@ -149,7 +149,7 @@ func isVersionFormat(s string) bool {
 		if part == "" {
 			return false
 		}
-		for i := 0; i < len(part); i++ {
+		for i := range len(part) {
 			if part[i] < '0' || part[i] > '9' {
 				return false
 			}

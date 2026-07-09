@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"maps"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
 	"net/url"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/sakuro/factorix/internal/httpx"
@@ -107,12 +108,7 @@ func (u *Uploader) buildMultipartFile(filePath string, fields map[string]string,
 	writer := multipart.NewWriter(tmp)
 
 	// Deterministic field order keeps requests reproducible.
-	names := make([]string, 0, len(fields))
-	for name := range fields {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	for _, name := range names {
+	for _, name := range slices.Sorted(maps.Keys(fields)) {
 		if err := writer.WriteField(name, fields[name]); err != nil {
 			cleanup()
 			return nil, 0, err

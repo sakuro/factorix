@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -201,11 +202,7 @@ func resolveDownloadDependencies(ctx context.Context, application *app.App, init
 		}
 	}
 
-	all := make([]fetchedMODInfo, 0, len(known))
-	for _, info := range known {
-		all = append(all, info)
-	}
-	return all, nil
+	return slices.Collect(maps.Values(known)), nil
 }
 
 // warnAndSkip logs and returns nil so the caller treats the dependency as
