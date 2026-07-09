@@ -97,6 +97,104 @@ func TestValidateNoConflictsPasses(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestAddUninstalledMOD(t *testing.T) {
+	g := NewGraph()
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 2}, []string{"base", "lib >= 1.0", "? optional-lib"}))
+
+	node, ok := g.Node(testMOD("new-mod"))
+	require.True(t, ok)
+	assert.Equal(t, OpInstall, node.Operation)
+	assert.False(t, node.Installed)
+	assert.False(t, node.Enabled)
+
+	edges := g.EdgesFrom(testMOD("new-mod"))
+	require.Len(t, edges, 2) // base edge skipped
+	assert.Equal(t, testMOD("lib"), edges[0].To)
+	assert.Equal(t, TypeRequired, edges[0].Type)
+	assert.Equal(t, testMOD("optional-lib"), edges[1].To)
+	assert.Equal(t, TypeOptional, edges[1].Type)
+}
+
+func TestAddUninstalledMODExistingDisabled(t *testing.T) {
+	g := NewGraph()
+	disabledNode(t, g, "present-mod")
+
+	require.NoError(t, g.AddUninstalledMOD(testMOD("present-mod"), mod.MODVersion{Major: 9}, []string{"lib"}))
+
+	node, ok := g.Node(testMOD("present-mod"))
+	require.True(t, ok)
+	assert.Equal(t, OpEnable, node.Operation)
+	// The existing node is untouched otherwise: no new edges, version kept.
+	assert.Equal(t, mod.MODVersion{Major: 1}, node.Version)
+	assert.Empty(t, g.EdgesFrom(testMOD("present-mod")))
+}
+
+func TestAddUninstalledMODExistingEnabled(t *testing.T) {
+	g := NewGraph()
+	addNodes(t, g, "enabled-mod")
+
+	require.NoError(t, g.AddUninstalledMOD(testMOD("enabled-mod"), mod.MODVersion{Major: 9}, nil))
+
+	node, ok := g.Node(testMOD("enabled-mod"))
+	require.True(t, ok)
+	assert.Equal(t, OpNone, node.Operation)
+}
+
+func TestAddUninstalledMODInvalidDependency(t *testing.T) {
+	g := NewGraph()
+	err := g.AddUninstalledMOD(testMOD("broken"), mod.MODVersion{Major: 1}, []string{">= 1.0"})
+	var parseErr *ParseError
+	require.ErrorAs(t, err, &parseErr)
+}
+
+func TestMarkDisabledDependenciesForEnable(t *testing.T) {
+	g := NewGraph()
+	// new-mod (install) -> lib (installed, disabled) -> sublib (installed, disabled)
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"lib"}))
+	disabledNode(t, g, "lib")
+	disabledNode(t, g, "sublib")
+	requireEdge(t, g, "lib", "sublib", TypeRequired)
+	// An optional dependency stays untouched.
+	disabledNode(t, g, "optional-lib")
+	requireEdge(t, g, "new-mod", "optional-lib", TypeOptional)
+
+	MarkDisabledDependenciesForEnable(g)
+
+	lib, _ := g.Node(testMOD("lib"))
+	assert.Equal(t, OpEnable, lib.Operation)
+	sublib, _ := g.Node(testMOD("sublib"))
+	assert.Equal(t, OpEnable, sublib.Operation)
+	optional, _ := g.Node(testMOD("optional-lib"))
+	assert.Equal(t, OpNone, optional.Operation)
+}
+
+func TestValidateInstallGraphCycle(t *testing.T) {
+	g := NewGraph()
+	require.NoError(t, g.AddUninstalledMOD(testMOD("a"), mod.MODVersion{Major: 1}, []string{"b"}))
+	require.NoError(t, g.AddUninstalledMOD(testMOD("b"), mod.MODVersion{Major: 1}, []string{"a"}))
+
+	err := ValidateInstallGraph(g)
+	require.ErrorIs(t, err, ErrCircularDependency)
+}
+
+func TestValidateInstallGraphConflict(t *testing.T) {
+	g := NewGraph()
+	addNodes(t, g, "rival") // enabled
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"! rival"}))
+
+	err := ValidateInstallGraph(g)
+	require.ErrorIs(t, err, ErrMODConflict)
+	assert.Contains(t, err.Error(), "conflicts with enabled MOD rival")
+}
+
+func TestValidateInstallGraphOK(t *testing.T) {
+	g := NewGraph()
+	addNodes(t, g, "lib")
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"lib"}))
+
+	require.NoError(t, ValidateInstallGraph(g))
+}
+
 func TestPlanDisableAll(t *testing.T) {
 	g := NewGraph()
 	addNodes(t, g, "base", "app") // both enabled
