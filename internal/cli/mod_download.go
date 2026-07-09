@@ -109,8 +109,11 @@ func planDownload(ctx context.Context, application *app.App, specs []modSpec, do
 		return nil, err
 	}
 
+	// The full endpoint is required here: only /full includes each
+	// release's dependencies in info_json, and recursive resolution reads
+	// them (with the short endpoint they silently come back empty).
 	initial, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
-		info, err := portalAPI.GetMOD(ctx, spec.MOD.Name)
+		info, err := portalAPI.GetMODFull(ctx, spec.MOD.Name)
 		if err != nil {
 			return fetchedMODInfo{}, err
 		}
@@ -178,7 +181,7 @@ func resolveDownloadDependencies(ctx context.Context, application *app.App, init
 			specs[i] = modSpec{MOD: mod.MOD{Name: dep.name}}
 		}
 		results, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
-			info, err := portalAPI.GetMOD(ctx, spec.MOD.Name)
+			info, err := portalAPI.GetMODFull(ctx, spec.MOD.Name)
 			if err != nil {
 				return fetchedMODInfo{}, warnAndSkip(application, spec.MOD.Name, err)
 			}
