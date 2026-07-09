@@ -16,9 +16,13 @@ import (
 // converts the paths to their /mnt/<drive> equivalents. Factorix-side
 // directories (cache, config, state) live in the Linux home.
 type WSL struct {
-	once sync.Once
-	envs map[string]string
-	err  error
+	windowsEnvs func() (map[string]string, error)
+}
+
+// NewWSL returns a WSL platform. The PowerShell fetch behind windowsPath
+// runs at most once, memoized via sync.OnceValues.
+func NewWSL() *WSL {
+	return &WSL{windowsEnvs: sync.OnceValues(fetchWindowsEnvs)}
 }
 
 // The Windows environment variables fetched in one PowerShell invocation.
@@ -34,13 +38,11 @@ var wslPowerShellFallbackPaths = []string{
 }
 
 func (w *WSL) windowsPath(name string) (string, error) {
-	w.once.Do(func() {
-		w.envs, w.err = fetchWindowsEnvs()
-	})
-	if w.err != nil {
-		return "", w.err
+	envs, err := w.windowsEnvs()
+	if err != nil {
+		return "", err
 	}
-	value, ok := w.envs[name]
+	value, ok := envs[name]
 	if !ok || value == "" {
 		return "", fmt.Errorf("%w: %s", ErrMissingEnv, name)
 	}

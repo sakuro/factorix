@@ -18,7 +18,7 @@ func Detect() (Platform, error) {
 		return Windows{}, nil
 	case "linux":
 		if isWSL() {
-			return &WSL{}, nil
+			return NewWSL(), nil
 		}
 		return Linux{}, nil
 	default:

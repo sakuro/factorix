@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/mod"
 )
 
@@ -41,7 +42,7 @@ func TestMODDownloadRejectsMODDirAsTarget(t *testing.T) {
 func TestDefaultFactorioVersion(t *testing.T) {
 	baseSandbox(t)
 
-	application, err := (&cli{}).App()
+	application, err := app.New(app.Options{})
 	require.NoError(t, err)
 
 	version, err := defaultFactorioVersion(application)
@@ -53,7 +54,7 @@ func TestFetchLocalStatusNotInstalled(t *testing.T) {
 	s := baseSandbox(t)
 	s.writeMODList(t, modListEntry{name: "base", enabled: true})
 
-	application, err := (&cli{}).App()
+	application, err := app.New(app.Options{})
 	require.NoError(t, err)
 
 	status, err := fetchLocalStatus(application, mod.MOD{Name: "ghost"})
@@ -70,7 +71,7 @@ func TestFetchLocalStatusInstalledAndEnabled(t *testing.T) {
 		modListEntry{name: "some-mod", enabled: true},
 	)
 
-	application, err := (&cli{}).App()
+	application, err := app.New(app.Options{})
 	require.NoError(t, err)
 
 	status, err := fetchLocalStatus(application, mod.MOD{Name: "some-mod"})
