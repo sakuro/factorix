@@ -56,9 +56,8 @@ func newMODCommand(c *cli) *cobra.Command {
 		newMODUninstallCommand(c),
 		newMODUpdateCommand(c),
 	)
-	mod.AddCommand(&cobra.Command{Use: "sync", Short: "MOD sync", RunE: notImplemented})
-
 	mod.AddCommand(
+		newMODSyncCommand(c),
 		newMODUploadCommand(c),
 		newMODEditCommand(c),
 		newMODChangelogCommand(c),
