@@ -12,6 +12,7 @@ import (
 
 func newMODEnableCommand(c *cli) *cobra.Command {
 	var yes bool
+	var backupExtension string
 
 	cmd := &cobra.Command{
 		Use:   "enable <mod-name>...",
@@ -69,17 +70,18 @@ func newMODEnableCommand(c *cli) *cobra.Command {
 				return nil
 			}
 
-			return applyMODListChange(cmd, c, application, state, planned, "Enabled", (*mod.MODList).Enable)
+			return applyMODListChange(cmd, c, application, state, planned, "Enabled", (*mod.MODList).Enable, backupExtension)
 		},
 	}
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
 
 // applyMODListChange applies fn (MODList.Enable or MODList.Disable) to each
 // MOD in planned, reporting success per MOD, then backs up and saves
 // mod-list.json. This is the shared tail of the enable and disable commands.
-func applyMODListChange(cmd *cobra.Command, c *cli, application *app.App, state *modState, planned []mod.MOD, verb string, fn func(*mod.MODList, mod.MOD) error) error {
+func applyMODListChange(cmd *cobra.Command, c *cli, application *app.App, state *modState, planned []mod.MOD, verb string, fn func(*mod.MODList, mod.MOD) error, backupExtension string) error {
 	p := c.printer(cmd)
 	for _, m := range planned {
 		if err := fn(state.modList, m); err != nil {
@@ -92,7 +94,7 @@ func applyMODListChange(cmd *cobra.Command, c *cli, application *app.App, state 
 	if err != nil {
 		return err
 	}
-	if err := backupIfExists(modListPath); err != nil {
+	if err := backupIfExists(modListPath, backupExtension); err != nil {
 		return err
 	}
 	if err := state.modList.Save(modListPath); err != nil {

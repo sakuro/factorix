@@ -291,6 +291,22 @@ func TestMODSettingsRestoreBacksUpExisting(t *testing.T) {
 	assert.FileExists(t, settingsPath+".bak")
 }
 
+func TestMODSettingsRestoreCustomBackupExtension(t *testing.T) {
+	s := newSandbox(t)
+	s.copyFile(t, e2eFile("mod-settings", "dump", "files", "mod-settings.dat"), "cwd/mod-settings.dat")
+	settingsPath := filepath.Join(s.root, "cwd", "mod-settings.dat")
+
+	dump, err := runCLI(t, "mod", "settings", "dump", settingsPath)
+	require.NoError(t, err)
+	inputPath := filepath.Join(s.root, "cwd", "settings.json")
+	require.NoError(t, os.WriteFile(inputPath, []byte(dump), 0o644))
+
+	_, err = runCLI(t, "mod", "settings", "restore", settingsPath, "-i", inputPath, "--backup-extension", ".orig")
+	require.NoError(t, err)
+	assert.FileExists(t, settingsPath+".orig")
+	assert.NoFileExists(t, settingsPath+".bak")
+}
+
 func TestMODSettingsRestoreRequiresGameStopped(t *testing.T) {
 	s := newSandbox(t)
 	require.NoError(t, os.WriteFile(filepath.Join(s.root, "factorio", ".lock"), nil, 0o644))

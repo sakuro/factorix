@@ -27,6 +27,7 @@ func (t uninstallTarget) String() string {
 
 func newMODUninstallCommand(c *cli) *cobra.Command {
 	var all, yes bool
+	var backupExtension string
 
 	cmd := &cobra.Command{
 		Use:   "uninstall [mod-spec]...",
@@ -117,7 +118,7 @@ func newMODUninstallCommand(c *cli) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := backupIfExists(modListPath); err != nil {
+			if err := backupIfExists(modListPath, backupExtension); err != nil {
 				return err
 			}
 			if err := state.modList.Save(modListPath); err != nil {
@@ -130,6 +131,7 @@ func newMODUninstallCommand(c *cli) *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&all, "all", false, "Uninstall all MOD(s) (base remains enabled, expansions disabled, others removed)")
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
 

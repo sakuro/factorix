@@ -24,6 +24,7 @@ type updateTarget struct {
 func newMODUpdateCommand(c *cli) *cobra.Command {
 	var jobs int
 	var yes bool
+	var backupExtension string
 
 	cmd := &cobra.Command{
 		Use:   "update [mod-name]...",
@@ -84,7 +85,7 @@ func newMODUpdateCommand(c *cli) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := backupIfExists(modListPath); err != nil {
+			if err := backupIfExists(modListPath, backupExtension); err != nil {
 				return err
 			}
 			if err := state.modList.Save(modListPath); err != nil {
@@ -97,6 +98,7 @@ func newMODUpdateCommand(c *cli) *cobra.Command {
 	}
 	cmd.Flags().IntVarP(&jobs, "jobs", "j", 4, "Number of parallel downloads")
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
 

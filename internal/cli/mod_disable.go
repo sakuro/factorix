@@ -11,6 +11,7 @@ import (
 
 func newMODDisableCommand(c *cli) *cobra.Command {
 	var yes, all bool
+	var backupExtension string
 
 	cmd := &cobra.Command{
 		Use:   "disable [mod-name]...",
@@ -73,10 +74,11 @@ func newMODDisableCommand(c *cli) *cobra.Command {
 				return nil
 			}
 
-			return applyMODListChange(cmd, c, application, state, planned, "Disabled", (*mod.MODList).Disable)
+			return applyMODListChange(cmd, c, application, state, planned, "Disabled", (*mod.MODList).Disable, backupExtension)
 		},
 	}
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
 	cmd.Flags().BoolVar(&all, "all", false, "Disable all MOD(s) (except base)")
+	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
