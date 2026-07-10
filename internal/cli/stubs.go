@@ -60,11 +60,7 @@ func newMODCommand(c *cli) *cobra.Command {
 		mod.AddCommand(&cobra.Command{Use: use, Short: "MOD " + use, RunE: notImplemented})
 	}
 
-	changelog := &cobra.Command{Use: "changelog", Short: "Manage MOD changelogs"}
-	for _, use := range []string{"add", "check", "extract", "release"} {
-		changelog.AddCommand(&cobra.Command{Use: use, Short: "Changelog " + use, RunE: notImplemented})
-	}
-	mod.AddCommand(changelog)
+	mod.AddCommand(newMODChangelogCommand(c))
 
 	image := &cobra.Command{Use: "image", Short: "Manage MOD images"}
 	for _, use := range []string{"list", "add", "edit"} {

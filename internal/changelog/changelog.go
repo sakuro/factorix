@@ -136,13 +136,15 @@ func (c *Changelog) String() string {
 			b.WriteString("\n")
 		}
 		b.WriteString(Separator + "\n")
-		b.WriteString(formatSection(section))
+		b.WriteString(FormatSection(section))
 	}
 	b.WriteString("\n")
 	return b.String()
 }
 
-func formatSection(section *Section) string {
+// FormatSection renders one section in the changelog.txt format, without
+// the separator line or a trailing newline.
+func FormatSection(section *Section) string {
 	var lines []string
 	lines = append(lines, "Version: "+section.VersionLabel())
 	if section.Date != "" {
