@@ -447,7 +447,7 @@ than one pass over the full list below.
       `internal/app` gained `Downloader()`/`MODDownloadAPI()` (Client → Retry,
       no cache decorator, matching Ruby) and `FACTORIX_MODS_PORTAL_URL` as an
       optional endpoint override (mirrors/tests)
-- [ ] `mod upload` / `mod edit` / `mod image list/add/edit`
+- [x] `mod upload` / `mod edit` / `mod image list/add/edit`
 - [ ] `download` — download the game itself
 
 #### Cache

@@ -3,6 +3,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -47,6 +48,12 @@ type App struct {
 	// commands that never actually download never require
 	// FACTORIO_USERNAME/FACTORIO_TOKEN or player-data.json.
 	MODDownloadAPI func() (*api.MODDownloadAPI, error)
+
+	// ManagementAPI returns the client for API-key operations (upload,
+	// edit, images), wired as Client → Retry with no cache. The API key
+	// resolves lazily on first use, so commands only require
+	// FACTORIO_API_KEY when a management operation actually runs.
+	ManagementAPI func() (*api.MODManagementAPI, error)
 }
 
 // Options select the configuration and log level.
@@ -98,6 +105,7 @@ func New(opts Options) (*App, error) {
 	a.PortalAPI = sync.OnceValues(a.buildPortalAPI)
 	a.Downloader = sync.OnceValues(a.buildDownloader)
 	a.MODDownloadAPI = sync.OnceValues(a.buildMODDownloadAPI)
+	a.ManagementAPI = sync.OnceValues(a.buildManagementAPI)
 	return a, nil
 }
 
@@ -212,6 +220,36 @@ func (a *App) buildMODDownloadAPI() (*api.MODDownloadAPI, error) {
 	})
 	modDownload.BaseURL = modsPortalBaseURL()
 	return modDownload, nil
+}
+
+func (a *App) buildManagementAPI() (*api.MODManagementAPI, error) {
+	transport := httpx.NewRetryTransport(
+		httpx.NewBaseTransport(
+			time.Duration(a.Config.HTTP.ConnectTimeout)*time.Second,
+			time.Duration(a.Config.HTTP.ReadTimeout)*time.Second,
+		),
+		httpx.RetryOptions{Logger: a.Logger},
+	)
+	client := httpx.NewClient(httpx.Options{
+		Transport:    transport,
+		MaskedParams: maskedQueryParams,
+		Logger:       a.Logger,
+	})
+	management := api.NewMODManagementAPI(client, transfer.NewUploader(client, a.Logger), api.LoadAPICredential, a.Logger)
+	management.BaseURL = modsPortalBaseURL()
+	// Invalidate the portal cache after any changing operation, replacing
+	// Ruby's dry-events subscription.
+	management.OnMODChanged = func(ctx context.Context, name string) {
+		portal, err := a.PortalAPI()
+		if err != nil {
+			a.Logger.Warn("Skipping MOD cache invalidation", "mod", name, "error", err)
+			return
+		}
+		if err := portal.InvalidateMODCache(ctx, name); err != nil {
+			a.Logger.Warn("Failed to invalidate MOD cache", "mod", name, "error", err)
+		}
+	}
+	return management, nil
 }
 
 // RequireGameStopped fails when Factorio is running; commands that modify
