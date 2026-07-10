@@ -22,6 +22,20 @@ func sampleSearchMODs() []api.MODInfo {
 	}
 }
 
+func TestHideDeprecatedParam(t *testing.T) {
+	require.NotNil(t, hideDeprecatedParam(true, false))
+	assert.True(t, *hideDeprecatedParam(true, false))
+	assert.Nil(t, hideDeprecatedParam(false, false))
+	assert.Nil(t, hideDeprecatedParam(true, true)) // --no-hide-deprecated wins over the default
+}
+
+func TestMODSearchRejectsConflictingHideDeprecatedFlags(t *testing.T) {
+	_, err := runCLI(t, "mod", "search", "--hide-deprecated", "--no-hide-deprecated", "query")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "hide-deprecated")
+	assert.Contains(t, err.Error(), "no-hide-deprecated")
+}
+
 func TestOutputSearchTable(t *testing.T) {
 	t.Setenv("NO_COLOR", "1")
 	var buf bytes.Buffer

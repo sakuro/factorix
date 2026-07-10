@@ -14,7 +14,7 @@ import (
 )
 
 func newMODSearchCommand(c *cli) *cobra.Command {
-	var hideDeprecated bool
+	var hideDeprecated, noHideDeprecated bool
 	var page, pageSize int
 	var sort, sortOrder, version string
 	var jsonOutput bool
@@ -37,19 +37,13 @@ func newMODSearchCommand(c *cli) *cobra.Command {
 			}
 
 			opts := api.GetMODsOptions{
-				Namelist:  args,
-				Page:      page,
-				PageSize:  strconv.Itoa(pageSize),
-				Sort:      sort,
-				SortOrder: sortOrder,
-				Version:   version,
-			}
-			// Ruby only ever sends hide_deprecated=true or omits the param
-			// (--no-hide-deprecated maps to nil, not false); mirrored here so
-			// the query the portal sees is identical.
-			if hideDeprecated {
-				t := true
-				opts.HideDeprecated = &t
+				Namelist:       args,
+				Page:           page,
+				PageSize:       strconv.Itoa(pageSize),
+				Sort:           sort,
+				SortOrder:      sortOrder,
+				Version:        version,
+				HideDeprecated: hideDeprecatedParam(hideDeprecated, noHideDeprecated),
 			}
 
 			portalAPI, err := application.PortalAPI()
@@ -69,6 +63,10 @@ func newMODSearchCommand(c *cli) *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVar(&hideDeprecated, "hide-deprecated", true, "Hide deprecated MOD(s)")
+	// dry-cli generated a --no-hide-deprecated negation for this boolean;
+	// cobra has no --no- convention, so the negation is a separate flag.
+	cmd.Flags().BoolVar(&noHideDeprecated, "no-hide-deprecated", false, "Include deprecated MOD(s)")
+	cmd.MarkFlagsMutuallyExclusive("hide-deprecated", "no-hide-deprecated")
 	cmd.Flags().IntVar(&page, "page", 1, "Page number")
 	cmd.Flags().IntVar(&pageSize, "page-size", 25, "Results per page (max 500)")
 	cmd.Flags().StringVar(&sort, "sort", "", "Sort field (name, created_at, updated_at)")
@@ -76,6 +74,18 @@ func newMODSearchCommand(c *cli) *cobra.Command {
 	cmd.Flags().StringVar(&version, "version", "", "Filter by Factorio version (default: installed version)")
 	cmd.Flags().BoolVar(&jsonOutput, "json", false, "Output in JSON format")
 	return cmd
+}
+
+// hideDeprecatedParam maps the --hide-deprecated/--no-hide-deprecated pair
+// to the portal query parameter. Ruby only ever sends hide_deprecated=true
+// or omits the param (--no-hide-deprecated maps to nil, not false);
+// mirrored here so the query the portal sees is identical.
+func hideDeprecatedParam(hideDeprecated, noHideDeprecated bool) *bool {
+	if noHideDeprecated || !hideDeprecated {
+		return nil
+	}
+	t := true
+	return &t
 }
 
 // defaultFactorioVersion reads the installed base MOD's major.minor as the
