@@ -56,17 +56,14 @@ func newMODCommand(c *cli) *cobra.Command {
 		newMODUninstallCommand(c),
 		newMODUpdateCommand(c),
 	)
-	for _, use := range []string{"upload", "edit", "sync"} {
-		mod.AddCommand(&cobra.Command{Use: use, Short: "MOD " + use, RunE: notImplemented})
-	}
+	mod.AddCommand(&cobra.Command{Use: "sync", Short: "MOD sync", RunE: notImplemented})
 
-	mod.AddCommand(newMODChangelogCommand(c))
-
-	image := &cobra.Command{Use: "image", Short: "Manage MOD images"}
-	for _, use := range []string{"list", "add", "edit"} {
-		image.AddCommand(&cobra.Command{Use: use, Short: "Image " + use, RunE: notImplemented})
-	}
-	mod.AddCommand(image)
+	mod.AddCommand(
+		newMODUploadCommand(c),
+		newMODEditCommand(c),
+		newMODChangelogCommand(c),
+		newMODImageCommand(c),
+	)
 
 	return mod
 }
