@@ -428,7 +428,7 @@ than one pass over the full list below.
 - [x] `mod settings dump` / `restore` — export/import `mod-settings.dat` (JSON)
 
 #### MOD Author Tools
-- [ ] `mod changelog add` / `check` / `extract` / `release`
+- [x] `mod changelog add` / `check` / `extract` / `release`
 - [x] `blueprint encode` / `decode`
 
 #### Portal-dependent
