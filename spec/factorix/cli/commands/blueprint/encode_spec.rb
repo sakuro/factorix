@@ -69,7 +69,7 @@ RSpec.describe Factorix::CLI::Commands::Blueprint::Encode do
 
       it "produces a blueprint string that decodes back to the original data" do
         result = run_command(command, [input_file.path])
-        blueprint = Factorix::Blueprint.decode(result.stdout)
+        blueprint = Factorix::Blueprint.decode(result.stdout.chomp)
         expect(blueprint.data).to eq(data)
       end
     end
