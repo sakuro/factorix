@@ -87,18 +87,6 @@ func newCacheCommand() *cobra.Command {
 	return cache
 }
 
-func newBlueprintCommand() *cobra.Command {
-	blueprint := &cobra.Command{
-		Use:   "blueprint",
-		Short: "Encode and decode blueprint strings",
-	}
-	blueprint.AddCommand(
-		&cobra.Command{Use: "encode", Short: "Encode JSON to a blueprint string", RunE: notImplemented},
-		&cobra.Command{Use: "decode", Short: "Decode a blueprint string to JSON", RunE: notImplemented},
-	)
-	return blueprint
-}
-
 func newRConCommand() *cobra.Command {
 	rcon := &cobra.Command{
 		Use:   "rcon",
