@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/sakuro/factorix/internal/app"
+	"github.com/sakuro/factorix/internal/logging"
 )
 
 // Version is the factorix version, injected at build time by goreleaser.
@@ -63,6 +64,16 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 		Short:         "Manage Factorio MODs, settings, and game control",
 		SilenceUsage:  true,
 		SilenceErrors: true,
+		// Ruby validates --log-level values at option-parse time for every
+		// command; checking only at app construction would let commands that
+		// never build the app (like version) accept invalid values silently.
+		PersistentPreRunE: func(*cobra.Command, []string) error {
+			if c.logLevel == "" {
+				return nil
+			}
+			_, err := logging.ParseLevel(c.logLevel)
+			return err
+		},
 		PersistentPostRun: func(*cobra.Command, []string) {
 			c.Close()
 		},

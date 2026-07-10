@@ -190,6 +190,18 @@ func TestVersionCommandNeverBuildsApp(t *testing.T) {
 	assert.ErrorIs(t, statErr, os.ErrNotExist, "version must not trigger app construction")
 }
 
+// Invalid --log-level values must fail at parse time on every command,
+// including ones like version that never build the application.
+func TestInvalidLogLevelRejectedAtParseTime(t *testing.T) {
+	_, err := runCLI(t, "version", "--log-level", "bogus")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "invalid log level")
+
+	out, err := runCLI(t, "version", "--log-level", "debug")
+	require.NoError(t, err)
+	assert.Equal(t, "dev\n", out)
+}
+
 func TestPathCommand(t *testing.T) {
 	s := newSandbox(t)
 	out, err := runCLI(t, "path")
