@@ -429,7 +429,7 @@ than one pass over the full list below.
 
 #### MOD Author Tools
 - [ ] `mod changelog add` / `check` / `extract` / `release`
-- [ ] `blueprint encode` / `decode`
+- [x] `blueprint encode` / `decode`
 
 #### Portal-dependent
 - [x] `mod search` / `mod show` — `api.Category` display catalog added here
