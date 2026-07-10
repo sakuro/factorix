@@ -41,10 +41,9 @@ func newBlueprintEncodeCommand(c *cli) *cobra.Command {
 			}
 
 			if output != "" {
-				return os.WriteFile(output, []byte(encoded), 0o644)
+				return os.WriteFile(output, []byte(encoded+"\n"), 0o644)
 			}
-			// No trailing newline, matching Ruby's out.print.
-			c.printer(cmd).Printf("%s", encoded)
+			c.printer(cmd).Println(encoded)
 			return nil
 		},
 	}
@@ -74,7 +73,7 @@ func newBlueprintDecodeCommand(c *cli) *cobra.Command {
 			}
 
 			if output != "" {
-				return os.WriteFile(output, jsonData, 0o644)
+				return os.WriteFile(output, append(jsonData, '\n'), 0o644)
 			}
 			c.printer(cmd).Println(string(jsonData))
 			return nil

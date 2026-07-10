@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,8 @@ const (
 	e2eBlueprintJSON   = `{"blueprint": {"item": "blueprint", "label": "e2e", "version": 281479275675648}}`
 )
 
-var blueprintStringPattern = regexp.MustCompile(`\A0[A-Za-z0-9+/=]+\z`)
+// The e2e contract: a blueprint string followed by a trailing newline.
+var blueprintStringPattern = regexp.MustCompile(`\A0[A-Za-z0-9+/=]+\n\z`)
 
 func TestBlueprintDecodeStdin(t *testing.T) {
 	out, err := runCLIWithStdin(t, e2eBlueprintString, "blueprint", "decode")
@@ -28,7 +28,6 @@ func TestBlueprintDecodeStdin(t *testing.T) {
 func TestBlueprintEncodeStdin(t *testing.T) {
 	out, err := runCLIWithStdin(t, e2eBlueprintJSON+"\n", "blueprint", "encode")
 	require.NoError(t, err)
-	// No trailing newline, matching Ruby's out.print.
 	assert.Regexp(t, blueprintStringPattern, out)
 
 	// The produced string decodes back to the same JSON.
@@ -50,9 +49,8 @@ func TestBlueprintDecodeFileToFile(t *testing.T) {
 
 	data, err := os.ReadFile(outPath)
 	require.NoError(t, err)
-	// The file gets the JSON without the newline that puts adds on stdout.
-	expected := strings.TrimSuffix(expectedStdout(t, "blueprint", "decode", "expected_stdout.txt"), "\n")
-	assert.Equal(t, expected, string(data))
+	// The file gets the same newline-terminated JSON as stdout.
+	assert.Equal(t, expectedStdout(t, "blueprint", "decode", "expected_stdout.txt"), string(data))
 }
 
 func TestBlueprintEncodeFileToFile(t *testing.T) {

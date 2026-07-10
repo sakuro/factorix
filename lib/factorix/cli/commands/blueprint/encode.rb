@@ -30,9 +30,9 @@ module Factorix
             blueprint_string = blueprint.encode
 
             if output
-              Pathname(output).write(blueprint_string)
+              Pathname(output).write("#{blueprint_string}\n")
             else
-              out.print blueprint_string
+              out.puts blueprint_string
             end
           end
         end

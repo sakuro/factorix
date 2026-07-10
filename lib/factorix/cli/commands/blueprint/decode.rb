@@ -28,7 +28,7 @@ module Factorix
             json_string = blueprint.to_json
 
             if output
-              Pathname(output).write(json_string)
+              Pathname(output).write("#{json_string}\n")
             else
               out.puts json_string
             end
