@@ -9,7 +9,7 @@ import (
 	"github.com/sakuro/factorix/internal/settings"
 )
 
-const backupExtension = ".bak"
+const defaultBackupExtension = ".bak"
 
 func newMODSettingsCommand(c *cli) *cobra.Command {
 	cmd := &cobra.Command{
@@ -54,6 +54,7 @@ func newMODSettingsDumpCommand(c *cli) *cobra.Command {
 
 func newMODSettingsRestoreCommand(c *cli) *cobra.Command {
 	var input string
+	var backupExtension string
 
 	cmd := &cobra.Command{
 		Use:   "restore [settings_file]",
@@ -87,13 +88,14 @@ func newMODSettingsRestoreCommand(c *cli) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := backupIfExists(settingsPath); err != nil {
+			if err := backupIfExists(settingsPath, backupExtension); err != nil {
 				return err
 			}
 			return modSettings.SaveFile(settingsPath)
 		},
 	}
 	cmd.Flags().StringVarP(&input, "input", "i", "", "Input file path")
+	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
 
@@ -108,13 +110,14 @@ func settingsPathFromArgs(c *cli, args []string) (string, error) {
 	return application.Runtime.MODSettingsPath()
 }
 
-// backupIfExists renames an existing file to <path>.bak before overwriting.
-func backupIfExists(path string) error {
+// backupIfExists renames an existing file to <path><extension> before
+// overwriting.
+func backupIfExists(path, extension string) error {
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			return nil
 		}
 		return err
 	}
-	return os.Rename(path, path+backupExtension)
+	return os.Rename(path, path+extension)
 }

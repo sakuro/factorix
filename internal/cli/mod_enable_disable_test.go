@@ -43,6 +43,17 @@ func TestMODEnableSimple(t *testing.T) {
 	assert.True(t, states["lib"])
 }
 
+func TestMODEnableCustomBackupExtension(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeInstalledMOD(t, "app", "1.0.0", nil)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true}, modListEntry{name: "app", enabled: false})
+
+	_, err := runCLI(t, "mod", "enable", "app", "-y", "--backup-extension", ".orig")
+	require.NoError(t, err)
+	assert.FileExists(t, filepath.Join(s.root, "factorio", "mods", "mod-list.json.orig"))
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "mod-list.json.bak"))
+}
+
 func TestMODEnableAlreadyEnabled(t *testing.T) {
 	s := baseSandbox(t)
 	s.writeInstalledMOD(t, "app", "1.0.0", nil)
