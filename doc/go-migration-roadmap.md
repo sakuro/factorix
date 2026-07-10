@@ -421,7 +421,7 @@ than one pass over the full list below.
       `ValidateNoConflicts`, `PlanDisable`/`PlanDisableAll` — so the CLI layer
       stays thin)
 - [x] `mod check` — validate dependency graph
-- [ ] `mod sync` — sync MOD states from a save file. Despite living under Local
+- [x] `mod sync` — sync MOD states from a save file. Despite living under Local
       MOD Management, this needs the Portal-dependent machinery below (it
       installs MODs present in the save but missing locally), so it was
       sequenced after `mod search`/`show`/`download` rather than before them

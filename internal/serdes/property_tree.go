@@ -4,7 +4,10 @@
 // See https://wiki.factorio.com/Property_tree
 package serdes
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // Kind identifies the runtime type of a PropertyTree value. The numeric
 // values match the type bytes in the binary format.
@@ -163,4 +166,11 @@ func (pt PropertyTree) UnsignedInt() (uint64, bool) {
 	}
 	v, ok := pt.Value.(uint64)
 	return v, ok
+}
+
+// Equal reports whether two trees hold the same structure and values.
+// Dict entries are compared in order, matching the serialized form: two
+// dicts with the same entries in a different order are not equal.
+func (pt PropertyTree) Equal(other PropertyTree) bool {
+	return reflect.DeepEqual(pt, other)
 }
