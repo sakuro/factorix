@@ -472,7 +472,7 @@ than one pass over the full list below.
 - [x] Reuse the Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
       as golden files for unit tests
 - [ ] Integration tests for CLI commands using `httptest` for portal API
-- [ ] `staticcheck` / `golangci-lint` in CI
+- [x] `staticcheck` / `golangci-lint` in CI
 - [ ] `.goreleaser.yaml`
   - Targets: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`
   - GitHub Releases with checksums
