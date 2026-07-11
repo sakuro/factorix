@@ -42,15 +42,3 @@ func newMODCommand(c *cli) *cobra.Command {
 
 	return mod
 }
-
-func newRConCommand() *cobra.Command {
-	rcon := &cobra.Command{
-		Use:   "rcon",
-		Short: "Interact with a running Factorio server via RCON",
-	}
-	rcon.AddCommand(
-		&cobra.Command{Use: "exec", Short: "Execute a console command", RunE: notImplemented},
-		&cobra.Command{Use: "eval", Short: "Evaluate a Lua script", RunE: notImplemented},
-	)
-	return rcon
-}

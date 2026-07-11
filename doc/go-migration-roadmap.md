@@ -147,7 +147,7 @@ The Ruby `UserConfigurable` path overrides map to the config settings above.
 | Config file | [BurntSushi/toml](https://github.com/BurntSushi/toml) |
 | Retry logic | [avast/retry-go](https://github.com/avast/retry-go) |
 | Cross-process file locking | [gofrs/flock](https://github.com/gofrs/flock) |
-| RCON | [gorcon/rcon](https://github.com/gorcon/rcon) (supports Factorio) |
+| RCON | `internal/rcon` — hand-rolled port of the rcon-client gem (sentinel-based multi-packet reassembly, which gorcon/rcon lacks) |
 | Release tooling | [goreleaser](https://goreleaser.com/) |
 | Testing | `testing` + [testify](https://github.com/stretchr/testify) |
 
@@ -185,7 +185,7 @@ factorix/                  # repository root (Ruby lib/ and spec/ coexist until 
 └── .goreleaser.yaml
 ```
 
-RCON needs no internal package — `gorcon/rcon` is used directly from the CLI layer.
+The RCON protocol lives in `internal/rcon`, ported from the rcon-client gem: Factorio fragments large responses, so a sentinel command marks the end of each reply.
 
 ---
 
@@ -455,7 +455,7 @@ than one pass over the full list below.
 
 #### Game
 - [x] `launch` — launch Factorio (`os/exec`)
-- [ ] `rcon exec` / `rcon eval` — via gorcon/rcon, using `config.rcon` settings
+- [x] `rcon exec` / `rcon eval` — via `internal/rcon`, using `config.rcon` settings
 
 ---
 
