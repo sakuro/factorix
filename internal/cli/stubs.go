@@ -22,14 +22,6 @@ func newDownloadCommand() *cobra.Command {
 	}
 }
 
-func newLaunchCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "launch",
-		Short: "Launch Factorio",
-		RunE:  notImplemented,
-	}
-}
-
 func newManCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "man",

@@ -87,7 +87,7 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 		newVersionCommand(),
 		newPathCommand(c),
 		newDownloadCommand(),
-		newLaunchCommand(),
+		newLaunchCommand(c),
 		newManCommand(),
 		newMODCommand(c),
 		newCacheCommand(c),
