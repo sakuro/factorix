@@ -1,8 +1,0 @@
-# RBS type signature file
-
-module Factorix
-  module Formatting
-    def format_size: (Integer? size) -> String
-    def format_duration: (Integer | Float | nil seconds) -> String
-  end
-end

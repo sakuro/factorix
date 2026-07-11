@@ -10,23 +10,7 @@ This directory contains technical documentation for the Factorix project.
 
 - [`DEVELOPMENT.md`](../DEVELOPMENT.md) - Development setup, coding conventions, and workflow
 - [`overview.md`](overview.md) - Project overview and goals
-- [`architecture.md`](architecture.md) - System architecture and technology stack
+- [`architecture.md`](architecture.md) - System architecture and package structure
 
-## Plans
-
-- [`dry-simplification-plan.md`](dry-simplification-plan.md) - Replacing dry-* infrastructure with plain Ruby (precursor to the Go migration)
-- [`go-migration-roadmap.md`](go-migration-roadmap.md) - Phased plan for porting Factorix to Go
-
-## Component Documentation
-
-See [`components/`](components/) directory for detailed documentation on each component:
-
-- [`api-portal.md`](components/api-portal.md) - API layer and Portal layer
-- [`application.md`](components/application.md) - Composition root
-- [`cache.md`](components/cache.md) - Multi-backend caching system
-- [`cli.md`](components/cli.md) - CLI commands
-- [`configuration.md`](components/configuration.md) - Configuration settings
-- [`credentials.md`](components/credentials.md) - Authentication credential management
-- [`dependency.md`](components/dependency.md) - Dependency resolution and validation
-- [`runtime.md`](components/runtime.md) - Platform abstraction
-- [`storage.md`](components/storage.md) - MODSettings, MODList, and InstalledMOD management
+Package-level design lives in Go doc comments on each `internal/*` package
+rather than in separate component docs.

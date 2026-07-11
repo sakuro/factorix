@@ -11,7 +11,7 @@ import (
 
 func fixturePath(t *testing.T, elems ...string) string {
 	t.Helper()
-	return filepath.Join(append([]string{"..", "..", "spec", "fixtures"}, elems...)...)
+	return filepath.Join(append([]string{"..", "..", "testdata"}, elems...)...)
 }
 
 func TestLoadMODList(t *testing.T) {

@@ -10,7 +10,7 @@ import (
 )
 
 func changelogFixture(name string) string {
-	return filepath.Join("..", "..", "spec", "fixtures", "changelog", name)
+	return filepath.Join("..", "..", "testdata", "changelog", name)
 }
 
 func TestMODChangelogCheckValid(t *testing.T) {

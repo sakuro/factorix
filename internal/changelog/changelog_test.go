@@ -13,7 +13,7 @@ import (
 
 func fixture(t *testing.T, name string) string {
 	t.Helper()
-	data, err := os.ReadFile(filepath.Join("..", "..", "spec", "fixtures", "changelog", name))
+	data, err := os.ReadFile(filepath.Join("..", "..", "testdata", "changelog", name))
 	require.NoError(t, err)
 	return string(data)
 }

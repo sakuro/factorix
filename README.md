@@ -1,6 +1,6 @@
 # :gear: Factorix
 
-A Ruby gem providing a CLI for Factorio MOD management, settings synchronization, and game control.
+A CLI tool for Factorio MOD management, settings synchronization, and game control.
 
 ## Overview
 
@@ -25,9 +25,20 @@ Factorix simplifies Factorio MOD management by providing:
 - **Game Download**: Download Factorio game files (alpha, expansion, demo, headless)
 - **Cross-platform Support**: Works on Windows, Linux, macOS, and WSL
 
+## Installation
+
+Download a prebuilt binary for your platform from the
+[latest release](https://github.com/sakuro/factorix/releases/latest), extract
+it, and put `factorix` (or `factorix.exe` on Windows) on your `PATH`.
+
+Alternatively, with Go installed:
+
+```bash
+go install github.com/sakuro/factorix/cmd/factorix@latest
+```
+
 ## Requirements
 
-- Ruby (non-EOL versions)
 - Factorio API Key (required for uploading MODs and editing MOD metadata)
   - Obtain your API key from [Factorio Profile](https://factorio.com/profile)
 
@@ -90,15 +101,9 @@ export FACTORIX_CONFIG=/path/to/config.toml
 factorix mod list
 ```
 
-**Migrating from the Ruby configuration file:** earlier versions used a Ruby
-DSL at `~/.config/factorix/config.rb`. When Factorix finds one, it prints the
-equivalent TOML — review it, save it as `config.toml`, and remove the old file.
-
 ## Usage
 
-Run `factorix --help` to see available commands, or `factorix <command> --help` for command-specific usage and examples.
-
-For detailed CLI documentation, run `factorix man` or see [`doc/components/cli.md`](doc/components/cli.md).
+Run `factorix --help` to see available commands, or `factorix <command> --help` for command-specific usage and examples. Run `factorix man` for the full manual page.
 
 ## Contributing
 
@@ -108,6 +113,6 @@ For development setup and detailed contribution guidelines, please see [`DEVELOP
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Factorix is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 Copyright (c) 2025 OZAWA Sakuro

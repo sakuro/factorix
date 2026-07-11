@@ -156,7 +156,7 @@ func setupMODListSandbox(t *testing.T) *sandbox {
 	s := newSandbox(t)
 	s.copyFile(t, e2eFile("mod-list", "table", "files", "mod-list.json"), "factorio/mods/mod-list.json")
 	s.copyFile(t, e2eFile("mod-list", "table", "files", "base-info.json"), "factorio/data/base/info.json")
-	s.copyDir(t, filepath.Join("..", "..", "spec", "fixtures", "mods", "upload-test"), "factorio/mods/upload-test")
+	s.copyDir(t, filepath.Join("..", "..", "testdata", "mods", "upload-test"), "factorio/mods/upload-test")
 	return s
 }
 

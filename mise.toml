@@ -1,11 +1,9 @@
 [tools]
 go = "1.26"
-ruby = "3.3"
 golangci-lint = "2"
 goreleaser = "2"
 
 [env]
-_.path = ["bin", "exe"]
 _.file = ".env"
 
 [tasks.test]

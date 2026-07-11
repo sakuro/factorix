@@ -31,7 +31,7 @@ dirs:                       # empty directories to create in the sandbox (option
   - factorio/data
 files:                      # files to place in the sandbox (optional)
   - {from: files/mod-list.json, to: factorio/mods/mod-list.json}
-  - {from: //spec/fixtures/changelog/basic.txt, to: cwd/changelog.txt}
+  - {from: //testdata/changelog/basic.txt, to: cwd/changelog.txt}
 expect:
   status: 0                 # expected exit status (required)
   stdout:                   # one of: (omit to skip stdout assertion)
