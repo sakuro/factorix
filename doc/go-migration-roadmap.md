@@ -451,7 +451,7 @@ than one pass over the full list below.
 - [ ] `download` — download the game itself
 
 #### Cache
-- [ ] `cache stat` / `cache evict`
+- [x] `cache stat` / `cache evict`
 
 #### Game
 - [ ] `launch` — launch Factorio (`os/exec`)

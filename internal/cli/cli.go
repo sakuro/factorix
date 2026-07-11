@@ -90,7 +90,7 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 		newLaunchCommand(),
 		newManCommand(),
 		newMODCommand(c),
-		newCacheCommand(),
+		newCacheCommand(c),
 		newBlueprintCommand(c),
 		newRConCommand(),
 	)
