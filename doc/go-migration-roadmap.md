@@ -412,7 +412,7 @@ than one pass over the full list below.
 - [x] `version` — print version
 - [x] `path` — print Factorio/Factorix paths
 - [ ] `completion` — generate shell completion (cobra built-in)
-- [ ] `man` — man page (cobra `doc` package)
+- [x] `man` — embedded doc/factorix.1 via go:embed, rendered with the system man
 
 #### Local MOD Management
 - [x] `mod list` — list installed MODs
