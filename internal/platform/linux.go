@@ -41,3 +41,6 @@ func (l Linux) DefaultFactorixLogPath() (string, error) {
 	}
 	return filepath.Join(stateHome, "factorix", "factorix.log"), nil
 }
+
+// Name identifies the platform.
+func (Linux) Name() string { return "Linux" }

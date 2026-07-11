@@ -45,3 +45,6 @@ func (MacOS) DefaultFactorixLogPath() (string, error) {
 	}
 	return filepath.Join(dir, "factorix", "factorix.log"), nil
 }
+
+// Name identifies the platform.
+func (MacOS) Name() string { return "MacOS" }

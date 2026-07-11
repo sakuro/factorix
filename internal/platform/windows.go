@@ -83,3 +83,6 @@ func (w Windows) DefaultFactorixLogPath() (string, error) {
 	}
 	return filepath.Join(stateHome, "factorix", "factorix.log"), nil
 }
+
+// Name identifies the platform.
+func (Windows) Name() string { return "Windows" }

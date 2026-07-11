@@ -54,6 +54,11 @@ type App struct {
 	// resolves lazily on first use, so commands only require
 	// FACTORIO_API_KEY when a management operation actually runs.
 	ManagementAPI func() (*api.MODManagementAPI, error)
+
+	// GameDownloadAPI returns the client for the game download endpoints,
+	// wired like PortalAPI (api cache + retry, as in Ruby's
+	// api_http_client); the actual file download goes through Downloader.
+	GameDownloadAPI func() (*api.GameDownloadAPI, error)
 }
 
 // Options select the configuration and log level.
@@ -106,6 +111,7 @@ func New(opts Options) (*App, error) {
 	a.Downloader = sync.OnceValues(a.buildDownloader)
 	a.MODDownloadAPI = sync.OnceValues(a.buildMODDownloadAPI)
 	a.ManagementAPI = sync.OnceValues(a.buildManagementAPI)
+	a.GameDownloadAPI = sync.OnceValues(a.buildGameDownloadAPI)
 	return a, nil
 }
 
@@ -281,6 +287,33 @@ func (a *App) buildManagementAPI() (*api.MODManagementAPI, error) {
 		}
 	}
 	return management, nil
+}
+
+func (a *App) buildGameDownloadAPI() (*api.GameDownloadAPI, error) {
+	apiCache, err := a.newCache("api", a.Config.Cache.API)
+	if err != nil {
+		return nil, err
+	}
+	base := httpx.NewBaseTransport(
+		time.Duration(a.Config.HTTP.ConnectTimeout)*time.Second,
+		time.Duration(a.Config.HTTP.ReadTimeout)*time.Second,
+	)
+	transport := httpx.NewRetryTransport(
+		httpx.NewCacheTransport(base, apiCache, a.Logger),
+		httpx.RetryOptions{Logger: a.Logger},
+	)
+	client := httpx.NewClient(httpx.Options{
+		Transport:    transport,
+		MaskedParams: maskedQueryParams,
+		Logger:       a.Logger,
+	})
+	playerDataPath, err := a.Runtime.PlayerDataPath()
+	if err != nil {
+		return nil, err
+	}
+	return api.NewGameDownloadAPI(client, func() (api.ServiceCredential, error) {
+		return api.LoadServiceCredential(playerDataPath)
+	}, a.Logger), nil
 }
 
 // RequireGameStopped fails when Factorio is running; commands that modify
