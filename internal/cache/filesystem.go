@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"context"
-	"crypto/sha256"
+	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -66,8 +66,11 @@ func NewFileSystem(dir string, opts FileSystemOptions) (*FileSystem, error) {
 	}, nil
 }
 
+// dataPath derives the storage path with SHA-1 (not for security — it only
+// spreads keys over directories) so entries written by the Ruby
+// implementation resolve to the same locations.
 func (c *FileSystem) dataPath(key string) string {
-	sum := sha256.Sum256([]byte(key))
+	sum := sha1.Sum([]byte(key))
 	storageKey := hex.EncodeToString(sum[:])
 	return filepath.Join(c.dir, storageKey[:2], storageKey[2:])
 }
