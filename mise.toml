@@ -2,6 +2,7 @@
 go = "1.26"
 ruby = "3.3"
 golangci-lint = "2"
+goreleaser = "2"
 
 [env]
 _.path = ["bin", "exe"]
@@ -36,6 +37,10 @@ run = "gofmt -w ."
 [tasks.build]
 description = "Build the factorix binary"
 run = "go build -o factorix ./cmd/factorix"
+
+[tasks.release-snapshot]
+description = "Build release archives for all platforms without publishing"
+run = "goreleaser release --snapshot --clean --skip=publish"
 
 [tasks.default]
 description = "Run all Go checks (test + e2e + vet + lint + fmt-check)"

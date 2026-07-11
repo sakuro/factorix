@@ -1,5 +1,15 @@
 version: 2
 
+# The GitHub Release itself is cut by the go-release CI workflow after a v*
+# tag is pushed — expected only after the main-branch swap to Go (see
+# doc/go-migration-roadmap.md), not during go-rewrite development. Until
+# then, validate this config with `mise run release-snapshot`, which never
+# touches GitHub or requires a tag.
+
+before:
+  hooks:
+    - go mod tidy
+
 builds:
   - main: ./cmd/factorix
     binary: factorix
@@ -15,6 +25,7 @@ builds:
       - amd64
       - arm64
     ignore:
+      # Windows on arm64 is not a supported Factorio platform.
       - goos: windows
         goarch: arm64
 
@@ -25,6 +36,18 @@ archives:
       - goos: windows
         formats:
           - zip
+    files:
+      - LICENSE.txt
+      - README.md
+      - doc/factorix.1
 
 checksum:
   name_template: checksums.txt
+
+changelog:
+  disable: true # CHANGELOG.md is maintained by hand; goreleaser should not regenerate it.
+
+release:
+  github:
+    owner: sakuro
+    name: factorix

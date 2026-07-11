@@ -473,9 +473,11 @@ than one pass over the full list below.
       as golden files for unit tests
 - [ ] Integration tests for CLI commands using `httptest` for portal API
 - [x] `staticcheck` / `golangci-lint` in CI
-- [ ] `.goreleaser.yaml`
+- [x] `.goreleaser.yaml`
   - Targets: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`
-  - GitHub Releases with checksums
+  - GitHub Releases with checksums (`.github/workflows/go-release.yml`, fires
+    on a `v*` tag push — inert until the main swap; validated meanwhile by
+    a snapshot build in `go.yml`)
 - [ ] Swap `main` to `go-rewrite`; remove Ruby sources and Ruby CI
   (history and the `ruby` branch retain them); update README and docs; tag `v1.0.0`
 
