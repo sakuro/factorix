@@ -13,6 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestMain isolates every test from the developer's real configuration:
+// commands run a config precheck at boot, so even sandbox-less tests (e.g.
+// version, blueprint) would otherwise see a real ~/.config/factorix.
+func TestMain(m *testing.M) {
+	dir, err := os.MkdirTemp("", "factorix-cli-test")
+	if err != nil {
+		panic(err)
+	}
+	os.Setenv("XDG_CONFIG_HOME", dir)
+	os.Unsetenv("FACTORIX_CONFIG")
+	code := m.Run()
+	os.RemoveAll(dir)
+	os.Exit(code)
+}
+
 // sandbox builds the directory layout the e2e cases use and points
 // FACTORIX_CONFIG at a config selecting it.
 type sandbox struct {
@@ -154,13 +169,15 @@ func runCLI(t *testing.T, args ...string) (string, error) {
 }
 
 // runCLIWithStdin is runCLI with an explicit stdin, for commands that
-// prompt for confirmation.
+// prompt for confirmation. stdout and stderr are captured separately —
+// only stdout is returned, matching what the e2e contract compares (an
+// earlier merged buffer masked cmd.Println writing to stderr).
 func runCLIWithStdin(t *testing.T, stdin string, args ...string) (string, error) {
 	t.Helper()
 	root, reportError := NewRootCommand()
-	var out bytes.Buffer
+	var out, errOut bytes.Buffer
 	root.SetOut(&out)
-	root.SetErr(&out)
+	root.SetErr(&errOut)
 	root.SetIn(strings.NewReader(stdin))
 	root.SetArgs(args)
 	err := root.Execute()

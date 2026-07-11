@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -116,6 +117,10 @@ func New(opts Options) (*App, error) {
 }
 
 func loadConfig(p platform.Platform, explicitPath string) (config.Config, error) {
+	if err := precheckConfig(p, explicitPath); err != nil {
+		return config.Config{}, err
+	}
+
 	path := explicitPath
 	if path == "" {
 		path = os.Getenv("FACTORIX_CONFIG")
@@ -134,6 +139,56 @@ func loadConfig(p platform.Platform, explicitPath string) (config.Config, error)
 		return config.Default(), nil
 	}
 	return config.LoadFile(defaultPath)
+}
+
+// PrecheckConfig validates configuration existence without loading it: an
+// explicitly named file must exist, and a legacy Ruby-DSL configuration is
+// rejected. The CLI runs this on every command at parse time — Ruby loads
+// the configuration eagerly at boot, so even `version` fails on a broken
+// setup — while full parsing stays lazy in App construction.
+func PrecheckConfig(explicitPath string) error {
+	p, err := platform.Detect()
+	if err != nil {
+		return err
+	}
+	return precheckConfig(p, explicitPath)
+}
+
+func precheckConfig(p platform.Platform, explicitPath string) error {
+	path := explicitPath
+	if path == "" {
+		path = os.Getenv("FACTORIX_CONFIG")
+	}
+	if path != "" {
+		if _, err := os.Stat(path); err != nil {
+			return fmt.Errorf("Configuration file not found: %s", path)
+		}
+		if filepath.Ext(path) == ".rb" {
+			return legacyConfigError(path, strings.TrimSuffix(path, ".rb")+".toml")
+		}
+		return nil
+	}
+
+	defaultRuntime := platform.NewRuntime(p, platform.Overrides{})
+	defaultPath, err := defaultRuntime.FactorixConfigPath()
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stat(defaultPath); err == nil {
+		return nil
+	}
+	legacyPath := strings.TrimSuffix(defaultPath, ".toml") + ".rb"
+	if _, err := os.Stat(legacyPath); err == nil {
+		return legacyConfigError(legacyPath, defaultPath)
+	}
+	return nil
+}
+
+// legacyConfigError rejects a pre-TOML Ruby-DSL configuration. Unlike the
+// Ruby CLI, the Go binary cannot evaluate the script to render the
+// equivalent TOML, so it only points at the migration.
+func legacyConfigError(legacyPath, target string) error {
+	return fmt.Errorf("Factorix now uses TOML for configuration and no longer reads %s.\nMigrate the settings to %s (the Ruby factorix gem renders the equivalent TOML), then remove the legacy file", legacyPath, target)
 }
 
 // Close releases resources (the log file).

@@ -2,6 +2,8 @@
 package cli
 
 import (
+	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/spf13/cobra"
@@ -68,11 +70,18 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 		// command; checking only at app construction would let commands that
 		// never build the app (like version) accept invalid values silently.
 		PersistentPreRunE: func(*cobra.Command, []string) error {
-			if c.logLevel == "" {
-				return nil
+			if c.logLevel != "" {
+				if _, err := logging.ParseLevel(c.logLevel); err != nil {
+					return bootError{err}
+				}
 			}
-			_, err := logging.ParseLevel(c.logLevel)
-			return err
+			// Ruby loads the configuration eagerly at boot, so even commands
+			// that never use it (like version) fail on a broken setup; the
+			// precheck reproduces that without forcing app construction.
+			if err := app.PrecheckConfig(c.configPath); err != nil {
+				return bootError{err}
+			}
+			return nil
 		},
 		PersistentPostRun: func(*cobra.Command, []string) {
 			c.Close()
@@ -96,6 +105,13 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 	)
 
 	reportError = func(err error) {
+		// Boot errors happen before command execution; Ruby reports them
+		// with warn — plain text on stderr, regardless of --quiet.
+		var boot bootError
+		if errors.As(err, &boot) {
+			fmt.Fprintln(root.ErrOrStderr(), "Error: "+err.Error())
+			return
+		}
 		if c.quiet {
 			return
 		}
@@ -104,12 +120,21 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 	return root, reportError
 }
 
+// bootError marks a failure during CLI boot (flag validation, configuration
+// precheck) as opposed to command execution; it changes where the error is
+// reported.
+type bootError struct{ err error }
+
+func (b bootError) Error() string { return b.err.Error() }
+func (b bootError) Unwrap() error { return b.err }
+
 func newVersionCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Display Factorix version",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			cmd.Println(Version)
+			// Not cmd.Println, which writes to stderr by cobra default.
+			fmt.Fprintln(cmd.OutOrStdout(), Version)
 			return nil
 		},
 	}
