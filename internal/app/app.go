@@ -222,6 +222,37 @@ func (a *App) buildMODDownloadAPI() (*api.MODDownloadAPI, error) {
 	return modDownload, nil
 }
 
+// NamedCache pairs a configured cache with its name and TTL.
+type NamedCache struct {
+	Name  string
+	Cache cache.Cache
+	TTL   *int64 // seconds; nil = unlimited
+}
+
+// Caches returns the configured caches. The fixed order (download, api,
+// info_json — the Ruby config definition order) keeps output deterministic;
+// a map would randomize it per run. Instances are built fresh — cache state
+// lives on disk, so they can coexist with the ones inside the API clients.
+func (a *App) Caches() ([]NamedCache, error) {
+	named := []struct {
+		name string
+		cfg  config.CacheType
+	}{
+		{"download", a.Config.Cache.Download},
+		{"api", a.Config.Cache.API},
+		{"info_json", a.Config.Cache.InfoJSON},
+	}
+	result := make([]NamedCache, 0, len(named))
+	for _, n := range named {
+		c, err := a.newCache(n.name, n.cfg)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, NamedCache{Name: n.name, Cache: c, TTL: n.cfg.TTL})
+	}
+	return result, nil
+}
+
 func (a *App) buildManagementAPI() (*api.MODManagementAPI, error) {
 	transport := httpx.NewRetryTransport(
 		httpx.NewBaseTransport(

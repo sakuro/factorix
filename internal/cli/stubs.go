@@ -67,18 +67,6 @@ func newMODCommand(c *cli) *cobra.Command {
 	return mod
 }
 
-func newCacheCommand() *cobra.Command {
-	cache := &cobra.Command{
-		Use:   "cache",
-		Short: "Manage caches",
-	}
-	cache.AddCommand(
-		&cobra.Command{Use: "stat", Short: "Show cache statistics", RunE: notImplemented},
-		&cobra.Command{Use: "evict", Short: "Clear cache entries", RunE: notImplemented},
-	)
-	return cache
-}
-
 func newRConCommand() *cobra.Command {
 	rcon := &cobra.Command{
 		Use:   "rcon",
