@@ -465,11 +465,11 @@ than one pass over the full list below.
 
 **Goal:** Reliable, distributable binary.
 
-- [ ] Unit tests for serdes, dependency parser, mod_list, settings, blueprint, changelog
-- [ ] Go driver for the language-neutral e2e suite (`e2e/cases/`, created in
+- [x] Unit tests for serdes, dependency parser, mod_list, settings, blueprint, changelog
+- [x] Go driver for the language-neutral e2e suite (`e2e/cases/`, created in
       the dry-* simplification Stage 0) — running it against both binaries on
       the branch is the Ruby-vs-Go parity check
-- [ ] Reuse the Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
+- [x] Reuse the Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
       as golden files for unit tests
 - [ ] Integration tests for CLI commands using `httptest` for portal API
 - [ ] `staticcheck` / `golangci-lint` in CI

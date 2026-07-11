@@ -2,9 +2,9 @@
 
 Language-neutral CLI test cases. Each case describes a `factorix` invocation and
 its expected observable behavior (stdout and exit status). The cases are plain
-data; a thin per-language driver executes them — currently RSpec
-(`spec/e2e/`), later a Go test driver running the same cases against the Go
-binary (see `doc/go-migration-roadmap.md`).
+data; a thin per-language driver executes them — RSpec (`spec/e2e/`) for the
+Ruby CLI, and a Go test driver (`e2e/driver_test.go`, run with
+`mise run e2e`) that builds the Go binary and runs the same cases against it.
 
 stderr is not compared: it carries progress reporting and is not part of the
 stable CLI contract.
