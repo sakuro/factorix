@@ -160,7 +160,8 @@ func TestExecuteServerClosesConnection(t *testing.T) {
 	require.NoError(t, err)
 	defer client.Close()
 
+	// Depending on timing the failure surfaces as a broken-pipe write or
+	// as EOF on read; both are connection errors.
 	_, err = client.Execute("/players")
 	require.ErrorIs(t, err, ErrConnection)
-	assert.Contains(t, err.Error(), "connection closed by server")
 }
