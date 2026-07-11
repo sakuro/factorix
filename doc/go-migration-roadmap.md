@@ -454,7 +454,7 @@ than one pass over the full list below.
 - [x] `cache stat` / `cache evict`
 
 #### Game
-- [ ] `launch` — launch Factorio (`os/exec`)
+- [x] `launch` — launch Factorio (`os/exec`)
 - [ ] `rcon exec` / `rcon eval` — via gorcon/rcon, using `config.rcon` settings
 
 ---

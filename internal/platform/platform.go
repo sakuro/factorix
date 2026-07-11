@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -148,6 +149,42 @@ func (r *Runtime) IsRunning() (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+// Launch starts Factorio with the given arguments. Factorio daemonizes
+// itself (double fork), so the direct child is not the game: async starts
+// it and returns immediately (stdout discarded, as in Ruby's spawn with
+// out: IO::NULL); synchronous waits for the direct child with inherited
+// stdio — meaningful only for non-daemonizing options like --help — and
+// ignores its exit status, as Ruby's system does.
+func (r *Runtime) Launch(args []string, async bool) error {
+	exe, err := r.ExecutablePath()
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(exe, args...)
+	// Ruby launches with argv[0] set to "factorio"; keep that visible name.
+	cmd.Args = append([]string{"factorio"}, args...)
+
+	if async {
+		cmd.Stderr = os.Stderr
+		if err := cmd.Start(); err != nil {
+			return err
+		}
+		return cmd.Process.Release()
+	}
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 // xdgDir returns the environment variable's value when set (even if empty,
