@@ -5,6 +5,8 @@ package httpx
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -14,6 +16,15 @@ import (
 	"strings"
 	"time"
 )
+
+// TestRootCAs is the trust store used for every transport NewBaseTransport
+// builds, instead of the OS certificate store, whenever it is non-nil. It
+// exists so integration tests can point commands at an httptest TLS server
+// without weakening HTTPS enforcement itself; production code never sets
+// it. RootCAs is an in-memory, cross-platform trust list, unlike the
+// SSL_CERT_FILE environment variable Go's system pool loader only honors on
+// some platforms (not macOS).
+var TestRootCAs *x509.CertPool
 
 const maxRedirects = 10
 
@@ -51,13 +62,17 @@ type Client struct {
 // wait for response headers. Go has no discrete write timeout — in-flight
 // requests are bounded by the request context instead.
 func NewBaseTransport(connectTimeout, readTimeout time.Duration) *http.Transport {
-	return &http.Transport{
+	t := &http.Transport{
 		Proxy:                 http.ProxyFromEnvironment,
 		DialContext:           (&net.Dialer{Timeout: connectTimeout}).DialContext,
 		TLSHandshakeTimeout:   connectTimeout,
 		ResponseHeaderTimeout: readTimeout,
 		ForceAttemptHTTP2:     true,
 	}
+	if TestRootCAs != nil {
+		t.TLSClientConfig = &tls.Config{RootCAs: TestRootCAs}
+	}
+	return t
 }
 
 // NewClient builds a Client.

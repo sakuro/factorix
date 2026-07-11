@@ -272,8 +272,14 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 }
 
 // findSyncRelease picks the exact save version in strict mode; otherwise
-// the portal's latest release, falling back to the highest version (as in
-// Ruby's Portal#upload — not release date, unlike mod download).
+// the portal's latest_release, falling back to the highest version. This
+// mirrors Ruby's mod/sync.rb#fetch_single_mod_info exactly, including its
+// inconsistency with mod install/download (download_support.rb, via
+// findRelease): that path never trusts latest_release — its selection
+// method is undocumented by the Portal API wiki — and instead computes
+// "latest" itself from release dates. Sync keeps the Ruby behavior as-is
+// rather than "fixing" a cross-command inconsistency outside this task's
+// scope.
 func findSyncRelease(info *api.MODInfo, spec modSpec) *api.Release {
 	if !spec.Latest {
 		for i := range info.Releases {

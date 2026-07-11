@@ -1,0 +1,150 @@
+package cli
+
+import (
+	"crypto/x509"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/sakuro/factorix/internal/httpx"
+)
+
+// portalMOD is a fixture MOD served by mockPortal. Handlers respond with
+// the same JSON at both the short (/api/mods/<name>) and full
+// (/api/mods/<name>/full) endpoints — real Factorix commands only need the
+// fields relevant to what they're testing.
+type portalMOD struct {
+	Name          string          `json:"name"`
+	Title         string          `json:"title"`
+	Owner         string          `json:"owner"`
+	Summary       string          `json:"summary,omitempty"`
+	Category      string          `json:"category,omitempty"`
+	LatestRelease *portalRelease  `json:"latest_release,omitempty"`
+	Releases      []portalRelease `json:"releases,omitempty"`
+}
+
+type portalRelease struct {
+	Version     string `json:"version"`
+	DownloadURL string `json:"download_url,omitempty"`
+	FileName    string `json:"file_name,omitempty"`
+	SHA1        string `json:"sha1,omitempty"`
+	// ReleasedAt defaults to a fixed timestamp (not omitted) since
+	// api.Release always decodes it as time.Time — an absent or empty
+	// value fails to parse, unlike the other fields here.
+	ReleasedAt string         `json:"released_at"`
+	InfoJSON   portalInfoJSON `json:"info_json"`
+}
+
+type portalInfoJSON struct {
+	FactorioVersion string   `json:"factorio_version"`
+	Dependencies    []string `json:"dependencies"`
+}
+
+// mockPortal is an httptest server standing in for mods.factorio.com. Its
+// URL must be set as FACTORIX_MODS_PORTAL_URL for a command under test to
+// reach it (see withPortal).
+type mockPortal struct {
+	server *httptest.Server
+	mods   map[string]portalMOD
+	// downloads records requested download paths (the part after
+	// BaseURL), so tests can assert what was fetched.
+	downloads []string
+	// fileContent is served for any /download/... path not in downloads.
+	fileContent []byte
+}
+
+func newMockPortal(t *testing.T, mods ...portalMOD) *mockPortal {
+	t.Helper()
+	p := &mockPortal{mods: map[string]portalMOD{}, fileContent: []byte("fake-mod-zip-content")}
+	for _, m := range mods {
+		fillReleaseDefaults(&m)
+		p.mods[m.Name] = m
+	}
+	p.server = httptest.NewTLSServer(http.HandlerFunc(p.handle))
+	t.Cleanup(p.server.Close)
+	return p
+}
+
+// fillReleaseDefaults sets ReleasedAt on the MOD's releases when the
+// fixture left it blank, since api.Release requires a parseable
+// timestamp regardless of whether the test cares about it.
+func fillReleaseDefaults(m *portalMOD) {
+	const defaultReleasedAt = "2026-01-01T00:00:00Z"
+	if m.LatestRelease != nil && m.LatestRelease.ReleasedAt == "" {
+		m.LatestRelease.ReleasedAt = defaultReleasedAt
+	}
+	for i := range m.Releases {
+		if m.Releases[i].ReleasedAt == "" {
+			m.Releases[i].ReleasedAt = defaultReleasedAt
+		}
+	}
+}
+
+func (p *mockPortal) handle(w http.ResponseWriter, r *http.Request) {
+	switch {
+	case strings.HasPrefix(r.URL.Path, "/api/mods/") && strings.HasSuffix(r.URL.Path, "/full"):
+		name := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/api/mods/"), "/full")
+		p.writeMOD(w, name, true)
+	case strings.HasPrefix(r.URL.Path, "/api/mods/"):
+		name := strings.TrimPrefix(r.URL.Path, "/api/mods/")
+		p.writeMOD(w, name, false)
+	case r.URL.Path == "/api/mods":
+		p.writeList(w)
+	case strings.HasPrefix(r.URL.Path, "/download/"):
+		p.downloads = append(p.downloads, r.URL.Path+"?"+r.URL.RawQuery)
+		w.Header().Set("Content-Type", "application/octet-stream")
+		_, _ = w.Write(p.fileContent)
+	default:
+		http.NotFound(w, r)
+	}
+}
+
+// writeMOD serves a MOD's info. The real Portal's /full endpoint carries
+// the full Releases list but never latest_release (confirmed against the
+// live API) — it would be redundant, since the caller can derive "latest"
+// from Releases itself. Only the short endpoint and the /api/mods list
+// endpoint (without namelist) include latest_release.
+func (p *mockPortal) writeMOD(w http.ResponseWriter, name string, full bool) {
+	m, ok := p.mods[name]
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(map[string]string{"message": "MOD not found"})
+		return
+	}
+	if full {
+		m.LatestRelease = nil
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(m)
+}
+
+func (p *mockPortal) writeList(w http.ResponseWriter) {
+	results := make([]portalMOD, 0, len(p.mods))
+	for _, m := range p.mods {
+		results = append(results, m)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"pagination": map[string]int{"count": len(results), "page": 1, "page_count": 1, "page_size": len(results)},
+		"results":    results,
+	})
+}
+
+// withPortal points FACTORIX_MODS_PORTAL_URL at the mock for the duration
+// of the test, and makes commands trust its self-signed certificate (real
+// download/portal requests are enforced HTTPS-only) and authenticate
+// downloads with fake, valid-looking credentials.
+func (p *mockPortal) withPortal(t *testing.T) {
+	t.Helper()
+	t.Setenv("FACTORIX_MODS_PORTAL_URL", p.server.URL)
+	t.Setenv("FACTORIO_USERNAME", "test-user")
+	t.Setenv("FACTORIO_TOKEN", "test-token")
+
+	pool := x509.NewCertPool()
+	pool.AddCert(p.server.Certificate())
+	original := httpx.TestRootCAs
+	httpx.TestRootCAs = pool
+	t.Cleanup(func() { httpx.TestRootCAs = original })
+}

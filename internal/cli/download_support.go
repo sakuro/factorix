@@ -41,7 +41,11 @@ func parseMODSpec(spec string) (modSpec, error) {
 }
 
 // findRelease returns the release matching spec: the most recently released
-// one for "latest", or the exact version otherwise.
+// one for "latest", or the exact version otherwise. "Latest" is computed
+// from Releases rather than trusting MODInfo.LatestRelease — the Portal API
+// wiki never specifies how that field is chosen (highest version? most
+// recent? filtered by Factorio-version compatibility?), so relying on it
+// would make "latest" mean something undocumented and possibly unstable.
 func findRelease(info *api.MODInfo, spec modSpec) *api.Release {
 	if spec.Latest {
 		return latestByReleaseDate(info.Releases)

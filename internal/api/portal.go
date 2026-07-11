@@ -128,7 +128,10 @@ func (a *MODPortalAPI) GetMOD(ctx context.Context, name string) (*MODInfo, error
 }
 
 // GetMODFull retrieves full information for a MOD, including the detail
-// fields.
+// fields and the full Releases list. Confirmed against the live API:
+// MODInfo.LatestRelease is nil in this response (the Portal API wiki never
+// documents this, or how "latest" would even be chosen) — callers that
+// need a "latest" release must derive it from Releases themselves.
 func (a *MODPortalAPI) GetMODFull(ctx context.Context, name string) (*MODInfo, error) {
 	return a.getMOD(ctx, name, a.modFullURL(name))
 }
