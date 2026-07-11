@@ -7,12 +7,13 @@ single, self-contained binary — no Ruby, Bundler, or gem install required.
 ### Added
 
 - Add `rcon exec` and `rcon eval` commands to execute a console command or evaluate a Lua script on a running Factorio server via RCon
-- Add shell completion for bash, zsh, fish, and PowerShell (`factorix completion`)
+- Add PowerShell completion support
 - Add recommended dependency type (`+` prefix) support in MOD dependency parsing
 
 ### Changed
 
 - **BREAKING**: The configuration file format is now TOML (`~/.config/factorix/config.toml`); the Ruby DSL (`config.rb`) is no longer read
+- **BREAKING**: `factorix completion` now generates each shell's script on demand instead of shipping static files under `completion/`; run `factorix completion <shell>` (or `eval "$(factorix completion zsh)"`) instead of sourcing the old files, which no longer exist
 - Suppress the progress bar when the output stream is not a TTY, and honor the `NO_COLOR` convention
 - Distribute as prebuilt binaries for Linux, macOS, and Windows instead of a RubyGems package
 
