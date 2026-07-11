@@ -22,8 +22,10 @@ Sequencing:
    and keeping them enables Ruby-vs-Go parity testing against the same fixtures.
    Pull requests during this period target `go-rewrite`, not `main`.
 3. At parity, `main` is replaced, Ruby sources are removed (history retains
-   them), and goreleaser tags continue the gem's `vX.Y.Z` sequence — reaching
-   parity is the `v1.0.0` milestone.
+   them; this includes `completion/` — the Go binary generates completion
+   scripts on demand via cobra, so the hand-written ones only serve the
+   Ruby CLI), and goreleaser tags continue the gem's `vX.Y.Z` sequence —
+   reaching parity is the `v1.0.0` milestone.
 
 **Prerequisite work in the Ruby repository:** the
 [dry-* simplification plan](dry-simplification-plan.md) — DI container →
@@ -411,7 +413,7 @@ than one pass over the full list below.
 #### Informational
 - [x] `version` — print version
 - [x] `path` — print Factorio/Factorix paths
-- [ ] `completion` — generate shell completion (cobra built-in)
+- [x] `completion` — generate shell completion (cobra built-in)
 - [x] `man` — embedded doc/factorix.1 via go:embed, rendered with the system man
 
 #### Local MOD Management
