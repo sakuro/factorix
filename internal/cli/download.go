@@ -10,6 +10,7 @@ import (
 
 	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/progress"
 	"github.com/sakuro/factorix/internal/transfer"
 )
 
@@ -89,7 +90,12 @@ func newDownloadCommand(c *cli) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := downloader.Download(cmd.Context(), downloadURL, outputPath, transfer.DownloadOptions{}); err != nil {
+			renderer := progress.NewRenderer()
+			err = downloader.Download(cmd.Context(), downloadURL, outputPath, transfer.DownloadOptions{
+				Listener: renderer.Listener(filename),
+			})
+			renderer.Wait()
+			if err != nil {
 				return err
 			}
 
