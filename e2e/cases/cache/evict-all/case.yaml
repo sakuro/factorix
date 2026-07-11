@@ -1,0 +1,12 @@
+# The entry sits at the SHA-1-derived storage path of "e2e-test-key"
+# (89022852...), the layout the Ruby implementation writes; evicting it
+# proves the implementation under test resolves logical keys to the same
+# paths it enumerates.
+command: [cache, evict, --all]
+files:
+  - {from: files/entry, to: xdg-cache/factorix/download/89/022852f8c325075560d7bc1e7d907ca0de7009}
+  - {from: files/entry.metadata, to: xdg-cache/factorix/download/89/022852f8c325075560d7bc1e7d907ca0de7009.metadata}
+expect:
+  status: 0
+  stdout:
+    file: expected_stdout.txt
