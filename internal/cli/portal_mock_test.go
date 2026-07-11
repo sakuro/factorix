@@ -23,6 +23,7 @@ type portalMOD struct {
 	Category      string          `json:"category,omitempty"`
 	LatestRelease *portalRelease  `json:"latest_release,omitempty"`
 	Releases      []portalRelease `json:"releases,omitempty"`
+	Images        []portalImage   `json:"images,omitempty"`
 }
 
 type portalRelease struct {
@@ -53,6 +54,27 @@ type mockPortal struct {
 	downloads []string
 	// fileContent is served for any /download/... path not in downloads.
 	fileContent []byte
+
+	// managementCalls records every /api/v2/mods/... request received, in
+	// order, for assertions on what a management command actually sent.
+	managementCalls []managementCall
+	// imageUploadResponse is returned by finish-upload for an image
+	// upload; tests set the ID/Thumbnail/URL they expect back.
+	imageUploadResponse portalImage
+}
+
+// managementCall is one recorded request to a management (API-key) endpoint.
+type managementCall struct {
+	Path   string
+	Auth   string
+	Form   map[string][]string // parsed application/x-www-form-urlencoded body
+	MODArg string              // convenience: Form["mod"][0], when present
+}
+
+type portalImage struct {
+	ID        string `json:"id"`
+	Thumbnail string `json:"thumbnail"`
+	URL       string `json:"url"`
 }
 
 func newMockPortal(t *testing.T, mods ...portalMOD) *mockPortal {
@@ -96,9 +118,47 @@ func (p *mockPortal) handle(w http.ResponseWriter, r *http.Request) {
 		p.downloads = append(p.downloads, r.URL.Path+"?"+r.URL.RawQuery)
 		w.Header().Set("Content-Type", "application/octet-stream")
 		_, _ = w.Write(p.fileContent)
+	case strings.HasPrefix(r.URL.Path, "/api/v2/mods/"):
+		p.handleManagement(w, r)
+	case r.URL.Path == "/finish-upload":
+		p.handleFinishUpload(w, r)
 	default:
 		http.NotFound(w, r)
 	}
+}
+
+// handleManagement serves every /api/v2/mods/... endpoint (init_publish,
+// releases/init_upload, edit_details, images/add, images/edit): it records
+// the call and, for the init_* endpoints, hands back an upload_url pointing
+// at this same server's /finish-upload.
+func (p *mockPortal) handleManagement(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	call := managementCall{Path: r.URL.Path, Auth: r.Header.Get("Authorization"), Form: map[string][]string(r.PostForm)}
+	if mod := r.PostForm.Get("mod"); mod != "" {
+		call.MODArg = mod
+	}
+	p.managementCalls = append(p.managementCalls, call)
+
+	w.Header().Set("Content-Type", "application/json")
+	switch r.URL.Path {
+	case "/api/v2/mods/init_publish", "/api/v2/mods/releases/init_upload", "/api/v2/mods/images/add":
+		_ = json.NewEncoder(w).Encode(map[string]string{"upload_url": p.server.URL + "/finish-upload"})
+	case "/api/v2/mods/edit_details", "/api/v2/mods/images/edit":
+		_ = json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	default:
+		http.NotFound(w, r)
+	}
+}
+
+// handleFinishUpload serves the URL init_publish/init_upload/images/add
+// point at. It doesn't need to distinguish a MOD-file upload from an image
+// upload by content — FinishUpload ignores the response body, and
+// FinishImageUpload always decodes an Image, so returning imageUploadResponse
+// unconditionally satisfies both.
+func (p *mockPortal) handleFinishUpload(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseMultipartForm(32 << 20)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(p.imageUploadResponse)
 }
 
 // writeMOD serves a MOD's info. The real Portal's /full endpoint carries
@@ -141,6 +201,7 @@ func (p *mockPortal) withPortal(t *testing.T) {
 	t.Setenv("FACTORIX_MODS_PORTAL_URL", p.server.URL)
 	t.Setenv("FACTORIO_USERNAME", "test-user")
 	t.Setenv("FACTORIO_TOKEN", "test-token")
+	t.Setenv("FACTORIO_API_KEY", "test-api-key")
 
 	pool := x509.NewCertPool()
 	pool.AddCert(p.server.Certificate())

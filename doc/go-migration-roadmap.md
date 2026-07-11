@@ -471,7 +471,9 @@ than one pass over the full list below.
       the branch is the Ruby-vs-Go parity check
 - [x] Reuse the Ruby fixtures (`spec/fixtures`: `test-save.zip`, mod-list, changelog samples)
       as golden files for unit tests
-- [ ] Integration tests for CLI commands using `httptest` for portal API
+- [x] Integration tests for CLI commands using `httptest` for portal API
+  (`internal/cli/portal_mock_test.go` + `portal_integration_*_test.go`;
+  covers show/search/install/download/update/upload/edit/image/sync)
 - [x] `staticcheck` / `golangci-lint` in CI
 - [x] `.goreleaser.yaml`
   - Targets: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`
