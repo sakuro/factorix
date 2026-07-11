@@ -448,7 +448,7 @@ than one pass over the full list below.
       no cache decorator, matching Ruby) and `FACTORIX_MODS_PORTAL_URL` as an
       optional endpoint override (mirrors/tests)
 - [x] `mod upload` / `mod edit` / `mod image list/add/edit`
-- [ ] `download` — download the game itself
+- [x] `download` — download the game itself
 
 #### Cache
 - [x] `cache stat` / `cache evict`

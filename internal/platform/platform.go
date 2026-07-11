@@ -26,6 +26,8 @@ var ErrMissingEnv = errors.New("required environment variable is not set")
 // return the fallbacks used when the corresponding XDG_* environment
 // variable is not set.
 type Platform interface {
+	// Name identifies the platform ("Linux", "MacOS", "Windows", "WSL").
+	Name() string
 	GameExecutablePath() (string, error)
 	GameUserDir() (string, error)
 	GameDataDir() (string, error)
@@ -149,6 +151,12 @@ func (r *Runtime) IsRunning() (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+// PlatformName identifies the underlying platform ("Linux", "MacOS",
+// "Windows", "WSL").
+func (r *Runtime) PlatformName() string {
+	return r.platform.Name()
 }
 
 // Launch starts Factorio with the given arguments. Factorio daemonizes

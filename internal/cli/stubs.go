@@ -14,14 +14,6 @@ func notImplemented(cmd *cobra.Command, _ []string) error {
 	return errNotImplemented
 }
 
-func newDownloadCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "download",
-		Short: "Download the game",
-		RunE:  notImplemented,
-	}
-}
-
 func newManCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "man",

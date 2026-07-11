@@ -142,3 +142,6 @@ func (w *WSL) DefaultFactorixLogPath() (string, error) {
 	}
 	return filepath.Join(stateHome, "factorix", "factorix.log"), nil
 }
+
+// Name identifies the platform.
+func (*WSL) Name() string { return "WSL" }
