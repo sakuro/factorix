@@ -14,14 +14,6 @@ func notImplemented(cmd *cobra.Command, _ []string) error {
 	return errNotImplemented
 }
 
-func newManCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "man",
-		Short: "Display the manual page",
-		RunE:  notImplemented,
-	}
-}
-
 func newMODCommand(c *cli) *cobra.Command {
 	mod := &cobra.Command{
 		Use:   "mod",
