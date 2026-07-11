@@ -2,7 +2,7 @@
 
 ## What is Factorix?
 
-A Ruby gem providing a CLI for Factorio MOD management, settings synchronization, and MOD Portal integration.
+A Go CLI tool for Factorio MOD management, settings synchronization, and MOD Portal integration.
 
 ## Documentation Map
 
@@ -14,16 +14,9 @@ A Ruby gem providing a CLI for Factorio MOD management, settings synchronization
 | Feature overview | [doc/overview.md](doc/overview.md) |
 | All documentation | [doc/README.md](doc/README.md) |
 
-### Component Documentation
-
-Located in [doc/components/](doc/components/):
-
-- [cli.md](doc/components/cli.md) - CLI commands
-- [api-portal.md](doc/components/api-portal.md) - MOD Portal API integration
-- [application.md](doc/components/application.md) - Composition root
-- [storage.md](doc/components/storage.md) - MOD storage management
-- [runtime.md](doc/components/runtime.md) - Platform abstraction
-- [credentials.md](doc/components/credentials.md) - Authentication
+Package-level documentation lives in Go doc comments on each `internal/*`
+package (run `go doc ./internal/...` or browse the source) rather than in
+separate component docs.
 
 ## Core Principles
 
@@ -35,10 +28,10 @@ Located in [doc/components/](doc/components/):
 
 ### Key Naming Convention
 
-- **MOD** is uppercase in class names and user-facing messages (not `Mod` or `mod`)
-  - Class names: `MODList`, `MODVersion`
+- **MOD** is uppercase in exported identifiers and user-facing messages (not `Mod` or `mod`)
+  - Type names: `MODList`, `MODVersion`
   - Messages: `"MOD not found"`
-  - Method/variable names follow Ruby convention: `mod_list`, `mod`
+  - Unexported identifiers follow Go convention: `modList`, `mod`
 
 ### Skills
 
@@ -47,8 +40,9 @@ Located in [doc/components/](doc/components/):
 ## Development Commands
 
 ```bash
-bundle exec rake          # Run all checks (spec + rubocop + steep)
-bundle exec rspec         # Run tests
-bundle exec rubocop -a    # Auto-fix style
-bundle exec steep check   # Type checking
+mise run default   # Run all checks (test + e2e + vet + lint + fmt-check)
+mise run test      # Run Go tests
+mise run e2e       # Run the e2e cases against a freshly built binary
+mise run lint      # Run golangci-lint (includes staticcheck)
+mise run fmt       # Format Go files
 ```

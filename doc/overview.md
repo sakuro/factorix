@@ -40,13 +40,12 @@ Provide a command-line interface for Factorio MOD management, including dependen
 
 ## Key Technical Features
 
-- **Dependency Injection**: Clean architecture using dry-rb
-- **HTTP Caching**: Multi-backend cache with decorator pattern
+- **Dependency Injection**: Plain constructor injection via a composition root
+- **HTTP Caching**: Filesystem-backed cache with decorator pattern
 - **Retry Strategy**: Automatic retry for network operations
-- **Progress Tracking**: Multi-presenter progress bars for downloads
+- **Progress Tracking**: Multi-bar progress display for downloads
 - **Concurrent Downloads**: Parallel processing for bulk operations
 
 ## Related Documentation
 
 - [Architecture](architecture.md) - System design and technology stack
-- [Component Details](components/) - Detailed design of each component

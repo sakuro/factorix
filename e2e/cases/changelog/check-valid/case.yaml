@@ -1,6 +1,6 @@
 command: [mod, changelog, check]
 files:
-  - {from: //spec/fixtures/changelog/basic.txt, to: cwd/changelog.txt}
+  - {from: //testdata/changelog/basic.txt, to: cwd/changelog.txt}
 expect:
   status: 0
   stdout:

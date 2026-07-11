@@ -13,7 +13,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	f, err := Load(filepath.Join("..", "..", "spec", "fixtures", "test-save.zip"))
+	f, err := Load(filepath.Join("..", "..", "testdata", "test-save.zip"))
 	require.NoError(t, err)
 
 	assert.Equal(t, "2.0.72", f.Version.String())

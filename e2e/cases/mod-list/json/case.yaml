@@ -6,7 +6,7 @@ config:
 files:
   - {from: files/mod-list.json, to: factorio/mods/mod-list.json}
   - {from: files/base-info.json, to: factorio/data/base/info.json}
-  - {from: //spec/fixtures/mods/upload-test, to: factorio/mods/upload-test}
+  - {from: //testdata/mods/upload-test, to: factorio/mods/upload-test}
 expect:
   status: 0
   stdout:

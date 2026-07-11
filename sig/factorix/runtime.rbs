@@ -1,9 +1,0 @@
-# RBS type signature file
-# NOTE: Do not include private method definitions in RBS files.
-#       Only public interfaces should be documented here.
-
-module Factorix
-  class Runtime
-    def self.detect: () -> Base
-  end
-end

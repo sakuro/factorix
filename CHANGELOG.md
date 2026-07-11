@@ -1,21 +1,25 @@
 ## [Unreleased]
 
+Factorix is being rewritten from Ruby to Go, reaching full command parity:
+every command works the same way, but the distributed artifact becomes a
+single, self-contained binary — no Ruby, Bundler, or gem install required.
+
 ### Added
 
-- Add `rcon exec` command to execute a Factorio console command via RCon (#87)
-- Add `rcon eval` command to evaluate a Lua script in a running Factorio server via RCon (#87)
-- Add shell completion support for `rcon` subcommands (zsh, bash, fish)
+- Add `rcon exec` and `rcon eval` commands to execute a console command or evaluate a Lua script on a running Factorio server via RCon
+- Add PowerShell completion support
 - Add recommended dependency type (`+` prefix) support in MOD dependency parsing
 
 ### Changed
 
-- **BREAKING**: The configuration file format is now TOML (`~/.config/factorix/config.toml`); the Ruby DSL (`config.rb`) is no longer read. When a legacy `config.rb` is found, Factorix prints the equivalent TOML and exits so it can be reviewed and saved
-- Suppress the progress bar when the output stream is not a TTY, and honor the `NO_COLOR` convention (#97)
-- Replace dry-events pub/sub with per-call progress listeners (#98)
-- Replace dry-configurable with a plain immutable `Factorix::Config` parsed by perfect_toml
-- Replace dry-logger with a thin wrapper around Ruby's standard Logger
-- Replace the DI container (dry-core / dry-auto_inject / dry-inflector) with plain constructor injection and a `Factorix::Application` composition root
-- Bump retriable dependency from `~> 3.1` to `~> 4.0` (#96)
+- **BREAKING**: The configuration file format is now TOML (`~/.config/factorix/config.toml`); the Ruby DSL (`config.rb`) is no longer read
+- **BREAKING**: `factorix completion` now generates each shell's script on demand instead of shipping static files under `completion/`; run `factorix completion <shell>` (or `eval "$(factorix completion zsh)"`) instead of sourcing the old files, which no longer exist
+- Suppress the progress bar when the output stream is not a TTY, and honor the `NO_COLOR` convention
+- Distribute as prebuilt binaries for Linux, macOS, and Windows instead of a RubyGems package
+
+### Removed
+
+- Drop the Redis and S3 cache backends; only the filesystem cache remains
 
 ## [0.12.0] - 2026-04-21
 

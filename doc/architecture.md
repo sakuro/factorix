@@ -2,54 +2,55 @@
 
 ## Dependency Injection
 
-Plain constructor injection: classes take dependencies as keyword arguments
-whose defaults resolve from the `Factorix::Application` composition root
-(`Factorix.app`).
+Plain constructor injection: the composition root (`internal/app.App`) builds
+each dependency once and passes it explicitly; there is no DI container.
+Expensive components (API clients, caches) are built lazily via
+`sync.OnceValues` so commands that don't need them never pay for
+construction.
 
-See [application.md](components/application.md) for the composition root and its components.
-
-## Module Structure
+## Package Structure
 
 ```
-Factorix/
-├── CLI::Commands/     # CLI commands (dry-cli)
-├── API/               # MOD Portal API clients and data objects
-├── Portal             # High-level API wrapper
-├── HTTP/              # HTTP client with decorator pattern
-├── Cache/             # Multi-backend cache (FileSystem, Redis, S3)
-├── Transfer/          # File download/upload with progress
-├── Runtime/           # Platform abstraction (Linux, macOS, Windows, WSL)
-├── Dependency/        # Dependency resolution (DAG with TSort)
-├── SerDes/            # Binary serialization for Factorio formats
-├── Progress/          # Progress bar presenters and handlers
-├── Application        # Composition root
-└── Domain objects     # MOD, MODList, MODSettings, InstalledMOD, etc.
+cmd/factorix/          # main package — CLI entry point
+internal/
+├── api/                # MOD Portal / game download API clients and data types
+├── app/                # Composition root (config, runtime, logger, caches, API clients)
+├── blueprint/          # Blueprint string encode/decode (base64 + zlib + JSON)
+├── cache/              # Cache interface + filesystem backend
+├── changelog/          # Factorio changelog.txt parsing and manipulation
+├── cli/                # cobra command definitions
+├── config/             # Config struct + TOML loading
+├── dependency/         # Dependency parsing, graph, validation
+├── httpx/              # HTTP client with retry/cache decorators
+├── logging/            # slog setup (file handler, level parsing)
+├── mod/                # Core domain: MOD, MODList, MODState, MODVersion, etc.
+├── platform/           # Platform abstraction (Linux, macOS, Windows, WSL)
+├── progress/           # mpb-based progress bar rendering
+├── rcon/               # Source RCON protocol client
+├── save/               # Save file (level.dat) parsing
+├── serdes/             # Binary serialization for Factorio's property tree format
+├── settings/           # mod-settings.dat binary + JSON round trip
+└── transfer/           # File download/upload with progress and digest verification
 ```
 
-See [components/](components/) for detailed documentation of each module.
+`internal/httpx` and `internal/platform` are named to avoid shadowing the
+stdlib `http` and `runtime` packages (`platform` imports stdlib `runtime`).
+
+See each package's Go doc comments for details (`go doc ./internal/<pkg>`).
 
 ## Technology Stack
 
-### Runtime Dependencies
-
-- **Zeitwerk** - Auto-loading
-- **dry-cli** - CLI framework
-- **perfect_toml** - Configuration file parsing
-- **retriable** - Retry logic for network operations
-- **tty-progressbar** - Progress display with multi-bar support
-- **tint_me** - Terminal text coloring
-- **parslet** - PEG parser for dependency string parsing
-- **rubyzip** - ZIP file handling
-- **concurrent-ruby** - Parallel processing
-
-### Development Tools
-
-- **RSpec** / **WebMock** / **SimpleCov** - Testing
-- **RuboCop** - Code style
-- **Steep** / **RBS** - Type checking
-- **YARD** - Documentation
+- **[cobra](https://github.com/spf13/cobra)** - CLI framework
+- **[BurntSushi/toml](https://github.com/BurntSushi/toml)** - Configuration file parsing
+- **[avast/retry-go](https://github.com/avast/retry-go)** - Retry logic for network operations
+- **[vbauerster/mpb](https://github.com/vbauerster/mpb)** - Progress display with multi-bar support
+- **[fatih/color](https://github.com/fatih/color)** - Terminal text coloring
+- **[gofrs/flock](https://github.com/gofrs/flock)** - Cross-process file locking
+- **`log/slog`** (stdlib) - Logging
+- **`archive/zip`**, **`compress/zlib`**, **`encoding/binary`** (stdlib) - Factorio file format handling
+- **golangci-lint** (bundling staticcheck) - Linting
+- **goreleaser** - Multi-platform release builds
 
 ## Related Documentation
 
 - [Project Overview](overview.md)
-- [Component Details](components/)

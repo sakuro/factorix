@@ -1,10 +1,8 @@
 version: 2
 
-# The GitHub Release itself is cut by the go-release CI workflow after a v*
-# tag is pushed — expected only after the main-branch swap to Go (see
-# doc/go-migration-roadmap.md), not during go-rewrite development. Until
-# then, validate this config with `mise run release-snapshot`, which never
-# touches GitHub or requires a tag.
+# The GitHub Release itself is cut by the go-release CI workflow when a v*
+# tag is pushed. Validate this config without publishing via
+# `mise run release-snapshot`.
 
 before:
   hooks:
