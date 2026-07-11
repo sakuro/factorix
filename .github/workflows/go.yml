@@ -26,3 +26,13 @@ jobs:
           version: v2.12.2
       - name: Test
         run: go test ./...
+      - name: Validate goreleaser config
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: v2.17.0
+          args: check
+      - name: goreleaser snapshot build
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: v2.17.0
+          args: release --snapshot --clean --skip=publish
