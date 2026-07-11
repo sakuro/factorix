@@ -13,6 +13,7 @@ import (
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/progress"
 	"github.com/sakuro/factorix/internal/transfer"
 )
 
@@ -153,9 +154,8 @@ func fetchMODInfoConcurrently(ctx context.Context, jobs int, specs []modSpec, re
 }
 
 // downloadTargets downloads each target to its OutputPath, up to jobs
-// concurrently. Progress reporting is deferred to a later pass (see
-// doc/go-migration-roadmap.md Phase 10) — stdout, the only e2e-compared
-// stream, is unaffected either way.
+// concurrently, with a progress bar per file on stderr when it is a
+// terminal (stdout, the only e2e-compared stream, stays untouched).
 func downloadTargets(ctx context.Context, application *app.App, targets []downloadTarget, jobs int) error {
 	downloader, err := application.Downloader()
 	if err != nil {
@@ -166,6 +166,7 @@ func downloadTargets(ctx context.Context, application *app.App, targets []downlo
 		return err
 	}
 
+	renderer := progress.NewRenderer()
 	group, ctx := errgroup.WithContext(ctx)
 	group.SetLimit(jobs)
 	for _, target := range targets {
@@ -176,8 +177,11 @@ func downloadTargets(ctx context.Context, application *app.App, targets []downlo
 			}
 			return downloader.Download(ctx, downloadURL, target.OutputPath, transfer.DownloadOptions{
 				ExpectedSHA1: target.Release.SHA1,
+				Listener:     renderer.Listener(target.Release.FileName),
 			})
 		})
 	}
-	return group.Wait()
+	err = group.Wait()
+	renderer.Wait()
+	return err
 }
