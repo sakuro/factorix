@@ -1,11 +1,8 @@
 ## [Unreleased]
 
-## [1.0.0] - 2026-07-12
-
-Factorix is now a single, self-contained binary — no Ruby, Bundler, or gem
-install required. This release is a full rewrite from Ruby to Go with
-complete command parity; every command from prior releases works the same
-way.
+Factorix is being rewritten from Ruby to Go, reaching full command parity:
+every command works the same way, but the distributed artifact becomes a
+single, self-contained binary — no Ruby, Bundler, or gem install required.
 
 ### Added
 
