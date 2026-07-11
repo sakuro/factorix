@@ -96,6 +96,13 @@ type headerReader struct {
 	err error
 }
 
+// u8, u32, and boolean currently have no call site that keeps their
+// result — the header fields they read are skipped, not interpreted — but
+// they return a value to stay symmetric with u16/gameVersion/modVersion/str,
+// which do. Splitting the API into "value" and "skip" variants would read
+// worse than the occasional discarded return.
+//
+//nolint:unparam
 func (h *headerReader) u8() uint8 {
 	var v uint8
 	if h.err == nil {
@@ -112,6 +119,7 @@ func (h *headerReader) u16() uint16 {
 	return v
 }
 
+//nolint:unparam // see u8
 func (h *headerReader) u32() uint32 {
 	var v uint32
 	if h.err == nil {
@@ -128,6 +136,7 @@ func (h *headerReader) optimU32() uint32 {
 	return v
 }
 
+//nolint:unparam // see u8
 func (h *headerReader) boolean() bool {
 	var v bool
 	if h.err == nil {

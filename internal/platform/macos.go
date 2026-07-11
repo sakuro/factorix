@@ -36,8 +36,8 @@ func (MacOS) DefaultStateHomeDir() (string, error) {
 	return homePath(".local", "state")
 }
 
-// Logs follow the macOS convention (~/Library/Logs), not the XDG state
-// directory.
+// DefaultFactorixLogPath follows the macOS convention (~/Library/Logs), not
+// the XDG state directory.
 func (MacOS) DefaultFactorixLogPath() (string, error) {
 	dir, err := homePath("Library", "Logs")
 	if err != nil {

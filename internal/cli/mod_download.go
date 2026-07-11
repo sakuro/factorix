@@ -183,12 +183,14 @@ func resolveDownloadDependencies(ctx context.Context, application *app.App, init
 		results, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
 			info, err := portalAPI.GetMODFull(ctx, spec.MOD.Name)
 			if err != nil {
-				return fetchedMODInfo{}, warnAndSkip(application, spec.MOD.Name, err)
+				warnAndSkip(application, spec.MOD.Name, err)
+				return fetchedMODInfo{}, nil
 			}
 			i := slices.IndexFunc(newDeps, func(d requiredDependency) bool { return d.name == spec.MOD.Name })
 			release := findCompatibleRelease(info, newDeps[i].requirement)
 			if release == nil {
-				return fetchedMODInfo{}, warnAndSkip(application, spec.MOD.Name, errors.New("no compatible release found"))
+				warnAndSkip(application, spec.MOD.Name, errors.New("no compatible release found"))
+				return fetchedMODInfo{}, nil
 			}
 			return fetchedMODInfo{MOD: spec.MOD, MODInfo: info, Release: *release}, nil
 		})
@@ -208,11 +210,10 @@ func resolveDownloadDependencies(ctx context.Context, application *app.App, init
 	return slices.Collect(maps.Values(known)), nil
 }
 
-// warnAndSkip logs and returns nil so the caller treats the dependency as
-// skippable rather than fatal.
-func warnAndSkip(application *app.App, modName string, cause error) error {
+// warnAndSkip logs a dependency the caller treats as skippable rather than
+// fatal.
+func warnAndSkip(application *app.App, modName string, cause error) {
 	application.Logger.Warn("Skipping dependency", "mod", modName, "reason", cause)
-	return nil
 }
 
 func collectNewDependencies(batch []string, known map[string]fetchedMODInfo, processed map[string]bool) []requiredDependency {

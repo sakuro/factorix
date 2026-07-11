@@ -1,0 +1,49 @@
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - staticcheck
+    - unconvert
+    - unparam
+  settings:
+    errcheck:
+      exclude-functions:
+        # Errors from Close on read-only/already-flushed resources, from
+        # best-effort temp-file cleanup, and from writes to the process's
+        # own stdout/stderr are not actionable.
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (net.Conn).Close
+        - (*archive/zip.ReadCloser).Close
+        - (*github.com/sakuro/factorix/internal/rcon.Client).Close
+        - os.Remove
+        - os.RemoveAll
+        - fmt.Fprintln
+        - fmt.Fprintf
+        - fmt.Fprint
+        - (*github.com/fatih/color.Color).Fprintln
+    staticcheck:
+      checks:
+        - all
+        # Error strings deliberately match Ruby's user-facing messages
+        # verbatim (capitalization, trailing punctuation) for CLI parity.
+        - -ST1005
+
+  exclusions:
+    rules:
+      # Test helpers commonly take unused parameters (t *testing.T kept for
+      # signature consistency, sandbox setup helpers) — not worth annotating.
+      - path: _test\.go
+        linters:
+          - unparam
+      # Test-only bookkeeping (env var setup/teardown, temp dir cleanup,
+      # canned httptest responses) — assertions catch real failures here,
+      # not the return value of these calls.
+      - path: _test\.go
+        linters:
+          - errcheck
+
+formatters:
+  enable:
+    - gofmt

@@ -25,10 +25,9 @@ type Uploader interface {
 }
 
 // Metadata fields accepted by FinishUpload (init_publish scenario only).
+// EditDetails needs no equivalent: its metadata is the typed EditMetadata
+// struct, so the compiler rejects unknown fields instead of a runtime check.
 var allowedUploadMetadata = []string{"description", "category", "license", "source_url"}
-
-// Metadata fields accepted by EditDetails.
-var allowedEditMetadata = []string{"description", "summary", "title", "category", "tags", "license", "homepage", "source_url", "faq", "deprecated"}
 
 // MODManagementAPI performs portal operations that require an API key:
 // publishing, uploading releases, editing details and images.

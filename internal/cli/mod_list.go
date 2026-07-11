@@ -108,7 +108,7 @@ func newMODListCommand(c *cli) *cobra.Command {
 			mods := buildListedMODs(state)
 			totalCount := len(mods)
 
-			mods, err = applyListFilters(cmd.Context(), c, application, mods, filters)
+			mods, err = applyListFilters(cmd.Context(), application, mods, filters)
 			if err != nil {
 				return err
 			}
@@ -198,7 +198,7 @@ func buildListedMODs(state *modState) []*listedMOD {
 	return mods
 }
 
-func applyListFilters(ctx context.Context, c *cli, application *app.App, mods []*listedMOD, filters listFilters) ([]*listedMOD, error) {
+func applyListFilters(ctx context.Context, application *app.App, mods []*listedMOD, filters listFilters) ([]*listedMOD, error) {
 	filter := func(keep func(*listedMOD) bool) []*listedMOD {
 		var result []*listedMOD
 		for _, m := range mods {

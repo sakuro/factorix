@@ -1,6 +1,7 @@
 [tools]
 go = "1.26"
 ruby = "3.3"
+golangci-lint = "2"
 
 [env]
 _.path = ["bin", "exe"]
@@ -20,6 +21,10 @@ run = "go test -count=1 ./e2e/"
 description = "Run go vet"
 run = "go vet ./..."
 
+[tasks.lint]
+description = "Run golangci-lint (includes staticcheck)"
+run = "golangci-lint run ./..."
+
 [tasks.fmt-check]
 description = "Check gofmt formatting"
 run = "test -z \"$(gofmt -l .)\""
@@ -33,5 +38,5 @@ description = "Build the factorix binary"
 run = "go build -o factorix ./cmd/factorix"
 
 [tasks.default]
-description = "Run all Go checks (test + e2e + vet + fmt-check)"
-depends = ["test", "e2e", "vet", "fmt-check"]
+description = "Run all Go checks (test + e2e + vet + lint + fmt-check)"
+depends = ["test", "e2e", "vet", "lint", "fmt-check"]
