@@ -19,6 +19,7 @@ type WarningType uint8
 const (
 	WarningMODInListNotInstalled WarningType = iota
 	WarningMODInstalledNotInList
+	WarningRecommendedDependencyDisabled
 )
 
 // ValidationError is an error found during dependency validation.

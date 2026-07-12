@@ -21,6 +21,7 @@ func (v *Validator) Validate() *ValidationResult {
 	result := &ValidationResult{}
 	v.validateCircularDependencies(result)
 	v.validateDependencies(result)
+	v.validateRecommendedDependencies(result)
 	v.validateConflicts(result)
 	v.validateMODList(result)
 	return result
@@ -90,6 +91,34 @@ func (v *Validator) validateRequiredDependency(node Node, edge Edge, result *Val
 		Dependency: edge.To,
 	})
 	v.suggestAlternativeVersions(edge, result)
+}
+
+// validateRecommendedDependencies warns about recommended dependencies that
+// are installed but disabled. A recommended dependency is on by default, so
+// this is a deviation from the MOD author's default configuration — unlike
+// a required dependency, it does not break the MOD and is a warning, not an
+// error. A recommended dependency that is not installed at all is not
+// reported here (see #91 for resolving recommended dependencies).
+func (v *Validator) validateRecommendedDependencies(result *ValidationResult) {
+	for _, node := range v.Graph.Nodes() {
+		if !node.Enabled {
+			continue
+		}
+		for _, edge := range v.Graph.EdgesFrom(node.MOD) {
+			if edge.Type != TypeRecommended {
+				continue
+			}
+			depNode, ok := v.Graph.Node(edge.To)
+			if !ok || depNode.Enabled {
+				continue
+			}
+			result.Warnings = append(result.Warnings, ValidationWarning{
+				Type:    WarningRecommendedDependencyDisabled,
+				Message: fmt.Sprintf("MOD '%s@%s' recommends '%s' which is not enabled", node.MOD, node.Version, edge.To),
+				MOD:     node.MOD,
+			})
+		}
+	}
 }
 
 func (v *Validator) validateConflicts(result *ValidationResult) {
