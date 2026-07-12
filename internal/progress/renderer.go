@@ -31,8 +31,10 @@ func NewRenderer() *Renderer {
 // loop when it detects the output is itself a terminal, which a
 // bytes.Buffer never is; production callers already gate on a real TTY via
 // NewRenderer, so this is a no-op there.
+// Width is left unset so mpb sizes bars to the terminal's actual width
+// instead of a fixed column count.
 func newRenderer(w io.Writer) *Renderer {
-	return &Renderer{container: mpb.New(mpb.WithOutput(w), mpb.WithWidth(40), mpb.WithAutoRefresh())}
+	return &Renderer{container: mpb.New(mpb.WithOutput(w), mpb.WithAutoRefresh())}
 }
 
 // Listener adds a bar labeled with title and returns a listener driving
