@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -30,7 +31,11 @@ func newManCommand() *cobra.Command {
 			}
 			defer os.RemoveAll(dir)
 			pagePath := filepath.Join(dir, "factorix.1")
-			if err := os.WriteFile(pagePath, factorix.ManPage, 0o644); err != nil {
+			// Version is baked into the binary via ldflags (see cli.go), so
+			// substituting it here keeps the displayed page in sync with the
+			// binary without a release-time file edit.
+			page := bytes.ReplaceAll(factorix.ManPage, []byte("{{VERSION}}"), []byte(Version))
+			if err := os.WriteFile(pagePath, page, 0o644); err != nil {
 				return err
 			}
 
