@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.20.0] - 2026-07-12
+
 Factorix is being rewritten from Ruby to Go, reaching full command parity:
 every command works the same way, but the distributed artifact becomes a
 single, self-contained binary — no Ruby, Bundler, or gem install required.
