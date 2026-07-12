@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/avast/retry-go/v4"
+	"github.com/avast/retry-go/v5"
 )
 
 // RetryTransport retries requests that fail at the transport level
@@ -53,20 +53,7 @@ func (t *RetryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	attempt := 0
-	return retry.DoWithData(
-		func() (*http.Response, error) {
-			r := req
-			if attempt > 0 && req.GetBody != nil {
-				body, err := req.GetBody()
-				if err != nil {
-					return nil, retry.Unrecoverable(err)
-				}
-				r = req.Clone(req.Context())
-				r.Body = body
-			}
-			attempt++
-			return t.next.RoundTrip(r)
-		},
+	retrier := retry.NewWithData[*http.Response](
 		retry.Context(req.Context()),
 		retry.Attempts(t.attempts),
 		retry.Delay(t.delay),
@@ -80,4 +67,17 @@ func (t *RetryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}),
 		retry.LastErrorOnly(true),
 	)
+	return retrier.Do(func() (*http.Response, error) {
+		r := req
+		if attempt > 0 && req.GetBody != nil {
+			body, err := req.GetBody()
+			if err != nil {
+				return nil, retry.Unrecoverable(err)
+			}
+			r = req.Clone(req.Context())
+			r.Body = body
+		}
+		attempt++
+		return t.next.RoundTrip(r)
+	})
 }
