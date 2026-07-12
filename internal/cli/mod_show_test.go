@@ -22,7 +22,7 @@ func sampleShowMODInfo() *api.MODInfo {
 			Version: v,
 			InfoJSON: api.ReleaseInfoJSON{
 				FactorioVersion: "2.0",
-				Dependencies:    []string{"base", "lib >= 1.0", "? optional-lib", "! bad-mod", "~ neutral-mod"},
+				Dependencies:    []string{"base", "lib >= 1.0", "? optional-lib", "! bad-mod", "~ neutral-mod", "+ recommended-mod"},
 			},
 		},
 	}
@@ -30,11 +30,18 @@ func sampleShowMODInfo() *api.MODInfo {
 
 func TestClassifyDependencies(t *testing.T) {
 	required, optional, incompatible := classifyDependencies([]string{
-		"base", "lib >= 1.0", "? optional-lib", "(?) hidden-lib", "! bad-mod", "~ neutral-mod",
+		"base", "lib >= 1.0", "? optional-lib", "(?) hidden-lib", "! bad-mod", "~ neutral-mod", "+ recommended-mod",
 	})
-	assert.Equal(t, []string{"base", "lib >= 1.0"}, required)
+	assert.Equal(t, []string{"base", "lib >= 1.0.0"}, required)
 	assert.Equal(t, []string{"optional-lib", "hidden-lib"}, optional)
 	assert.Equal(t, []string{"bad-mod"}, incompatible)
+}
+
+func TestClassifyDependenciesMalformed(t *testing.T) {
+	required, optional, incompatible := classifyDependencies([]string{"base", ">= 1.0"})
+	assert.Equal(t, []string{"base"}, required)
+	assert.Empty(t, optional)
+	assert.Empty(t, incompatible)
 }
 
 func TestFormatLocalStatus(t *testing.T) {
@@ -70,7 +77,8 @@ func TestDisplayShow(t *testing.T) {
 	assert.Contains(t, out, "optional-lib")
 	assert.Contains(t, out, "Incompatibilities")
 	assert.Contains(t, out, "bad-mod")
-	assert.NotContains(t, out, "neutral-mod") // load-neutral is parsed and discarded
+	assert.NotContains(t, out, "neutral-mod")     // load-neutral is parsed and discarded
+	assert.NotContains(t, out, "recommended-mod") // no display section yet (see #90)
 }
 
 func TestDisplayShowUpdateAvailable(t *testing.T) {

@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
 	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/app"
+	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
 )
 
@@ -242,26 +242,33 @@ func formatLicense(info *api.MODInfo) string {
 	return info.License.Title
 }
 
-// classifyDependencies splits raw dependency strings by prefix, matching
-// Ruby's own regex-based classification in mod/show.rb (not
-// internal/dependency.Parse's Type, so a malformed entry here is simply
-// treated as required rather than rejected — this command only displays
-// dependencies, it never resolves them).
+// classifyDependencies splits raw dependency strings into required, optional,
+// and incompatible dependencies using dependency.Parse, so classification
+// agrees with the rest of the codebase (recommended-dependency handling is
+// tracked separately in #90). Malformed entries from the Portal API are
+// skipped rather than failing the whole display — this command only
+// displays dependencies, it never resolves them.
 func classifyDependencies(raw []string) (required, optional, incompatible []string) {
 	for _, dep := range raw {
-		trimmed := strings.TrimSpace(dep)
-		switch {
-		case strings.HasPrefix(trimmed, "!"):
-			incompatible = append(incompatible, strings.TrimSpace(strings.TrimPrefix(trimmed, "!")))
-		case strings.HasPrefix(trimmed, "(?)"):
-			optional = append(optional, strings.TrimSpace(strings.TrimPrefix(trimmed, "(?)")))
-		case strings.HasPrefix(trimmed, "?"):
-			optional = append(optional, strings.TrimSpace(strings.TrimPrefix(trimmed, "?")))
-		case strings.HasPrefix(trimmed, "~"):
-			// load-neutral: Ruby's parse_dependency tags it but show.rb never
-			// displays this bucket, so it's parsed and discarded here too.
-		default:
-			required = append(required, trimmed)
+		entry, err := dependency.Parse(dep)
+		if err != nil {
+			continue
+		}
+
+		s := entry.MOD.Name
+		if entry.Requirement != nil {
+			s += " " + entry.Requirement.String()
+		}
+
+		switch entry.Type {
+		case dependency.TypeRequired:
+			required = append(required, s)
+		case dependency.TypeOptional, dependency.TypeHiddenOptional:
+			optional = append(optional, s)
+		case dependency.TypeIncompatible:
+			incompatible = append(incompatible, s)
+		case dependency.TypeLoadNeutral, dependency.TypeRecommended:
+			// No display section yet for these buckets (see #90).
 		}
 	}
 	return required, optional, incompatible
