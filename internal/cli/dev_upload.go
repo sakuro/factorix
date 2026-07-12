@@ -15,7 +15,7 @@ import (
 	"github.com/sakuro/factorix/internal/mod"
 )
 
-func newMODUploadCommand(c *cli) *cobra.Command {
+func newDevUploadCommand(c *cli) *cobra.Command {
 	var description, category, license, sourceURL string
 
 	cmd := &cobra.Command{

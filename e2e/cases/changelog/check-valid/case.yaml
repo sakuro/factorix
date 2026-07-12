@@ -1,4 +1,4 @@
-command: [mod, changelog, check]
+command: [dev, changelog, check]
 files:
   - {from: //testdata/changelog/basic.txt, to: cwd/changelog.txt}
 expect:

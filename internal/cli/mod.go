@@ -22,10 +22,6 @@ func newMODCommand(c *cli) *cobra.Command {
 		newMODUninstallCommand(c),
 		newMODUpdateCommand(c),
 		newMODSyncCommand(c),
-		newMODUploadCommand(c),
-		newMODEditCommand(c),
-		newMODChangelogCommand(c),
-		newMODImageCommand(c),
 	)
 
 	return mod

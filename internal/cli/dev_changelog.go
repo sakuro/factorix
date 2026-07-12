@@ -15,21 +15,21 @@ import (
 	"github.com/sakuro/factorix/internal/mod"
 )
 
-func newMODChangelogCommand(c *cli) *cobra.Command {
+func newDevChangelogCommand(c *cli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "changelog",
 		Short: "Manage MOD changelogs",
 	}
 	cmd.AddCommand(
-		newMODChangelogAddCommand(c),
-		newMODChangelogCheckCommand(c),
-		newMODChangelogExtractCommand(c),
-		newMODChangelogReleaseCommand(c),
+		newDevChangelogAddCommand(c),
+		newDevChangelogCheckCommand(c),
+		newDevChangelogExtractCommand(c),
+		newDevChangelogReleaseCommand(c),
 	)
 	return cmd
 }
 
-func newMODChangelogAddCommand(c *cli) *cobra.Command {
+func newDevChangelogAddCommand(c *cli) *cobra.Command {
 	var version, category, changelogPath string
 
 	cmd := &cobra.Command{
@@ -62,7 +62,7 @@ func newMODChangelogAddCommand(c *cli) *cobra.Command {
 	return cmd
 }
 
-func newMODChangelogCheckCommand(c *cli) *cobra.Command {
+func newDevChangelogCheckCommand(c *cli) *cobra.Command {
 	var release bool
 	var changelogPath, infoJSONPath string
 
@@ -166,7 +166,7 @@ func validateReleaseMode(log *changelog.Changelog, infoJSONPath string) ([]strin
 	return errs, nil
 }
 
-func newMODChangelogExtractCommand(c *cli) *cobra.Command {
+func newDevChangelogExtractCommand(c *cli) *cobra.Command {
 	var version, changelogPath string
 	var jsonOutput bool
 
@@ -254,7 +254,7 @@ func appendJSON(b *bytes.Buffer, v any) error {
 	return nil
 }
 
-func newMODChangelogReleaseCommand(c *cli) *cobra.Command {
+func newDevChangelogReleaseCommand(c *cli) *cobra.Command {
 	var version, date, changelogPath, infoJSONPath string
 
 	cmd := &cobra.Command{

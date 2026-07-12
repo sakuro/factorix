@@ -312,7 +312,10 @@ Do not resolve recommended dependencies.
 .TP
 .BR \-\-backup\-extension =\fIVALUE\fR
 Backup file extension for mod\-list.json (default: .bak).
-.SS factorix mod changelog add ENTRY...
+.SH DEV COMMANDS
+These commands support MOD development: changelog maintenance and MOD Portal
+publishing. The MOD Portal commands require authentication.
+.SS factorix dev changelog add ENTRY...
 Add an entry to MOD changelog. Multiple arguments are joined with spaces.
 .TP
 .BR \-\-version =\fIVALUE\fR
@@ -323,7 +326,7 @@ Category (e.g., Features, Bugfixes). Required.
 .TP
 .BR \-\-changelog =\fIVALUE\fR
 Path to changelog file (default: changelog.txt).
-.SS factorix mod changelog extract
+.SS factorix dev changelog extract
 Extract a changelog section for a specific version.
 .TP
 .BR \-\-version =\fIVALUE\fR
@@ -334,7 +337,7 @@ Output in JSON format.
 .TP
 .BR \-\-changelog =\fIVALUE\fR
 Path to changelog file (default: changelog.txt).
-.SS factorix mod changelog check
+.SS factorix dev changelog check
 Validate MOD changelog structure.
 .TP
 .B \-\-release
@@ -345,7 +348,7 @@ Path to changelog file (default: changelog.txt).
 .TP
 .BR \-\-info\-json =\fIVALUE\fR
 Path to info.json file (default: info.json).
-.SS factorix mod changelog release
+.SS factorix dev changelog release
 Convert Unreleased changelog section to a versioned section.
 .TP
 .BR \-\-version =\fIVALUE\fR
@@ -359,9 +362,7 @@ Path to changelog file (default: changelog.txt).
 .TP
 .BR \-\-info\-json =\fIVALUE\fR
 Path to info.json file (default: info.json).
-.SH MOD PORTAL COMMANDS
-These commands interact with the Factorio MOD Portal and require authentication.
-.SS factorix mod upload FILE
+.SS factorix dev upload FILE
 Upload MOD to Factorio MOD Portal. Handles both new MODs and updates.
 .TP
 .BR \-\-description =\fIVALUE\fR
@@ -375,7 +376,7 @@ License identifier.
 .TP
 .BR \-\-source\-url =\fIVALUE\fR
 Repository URL.
-.SS factorix mod edit MOD_NAME
+.SS factorix dev edit MOD_NAME
 Edit MOD metadata on Factorio MOD Portal.
 .TP
 .BR \-\-title =\fIVALUE\fR
@@ -407,14 +408,14 @@ FAQ text.
 .TP
 .BR \-\-deprecated
 Deprecation flag. Use \-\-deprecated=false to clear it.
-.SS factorix mod image list MOD_NAME
+.SS factorix dev image list MOD_NAME
 List images for a MOD.
 .TP
 .B \-\-json
 Output in JSON format.
-.SS factorix mod image add MOD_NAME IMAGE_FILE
+.SS factorix dev image add MOD_NAME IMAGE_FILE
 Add an image to a MOD.
-.SS factorix mod image edit MOD_NAME IMAGE_IDS
+.SS factorix dev image edit MOD_NAME IMAGE_IDS
 Edit MOD's image list. Reorder or remove images by specifying IDs in desired order.
 .SH SETTINGS COMMANDS
 .SS factorix mod settings dump [SETTINGS_FILE]

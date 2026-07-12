@@ -12,29 +12,29 @@ import (
 	"github.com/sakuro/factorix/internal/api"
 )
 
-func TestMODUploadFileValidation(t *testing.T) {
+func TestDevUploadFileValidation(t *testing.T) {
 	s := newSandbox(t)
 
-	_, err := runCLI(t, "mod", "upload", filepath.Join(s.root, "missing.zip"))
+	_, err := runCLI(t, "dev", "upload", filepath.Join(s.root, "missing.zip"))
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "File not found: ")
 
 	dir := filepath.Join(s.root, "a-directory.zip")
 	require.NoError(t, os.Mkdir(dir, 0o755))
-	_, err = runCLI(t, "mod", "upload", dir)
+	_, err = runCLI(t, "dev", "upload", dir)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "Not a file: ")
 
 	notZip := filepath.Join(s.root, "mod.tar")
 	require.NoError(t, os.WriteFile(notZip, []byte("x"), 0o644))
-	_, err = runCLI(t, "mod", "upload", notZip)
+	_, err = runCLI(t, "dev", "upload", notZip)
 	require.Error(t, err)
 	assert.Equal(t, "File must be a .zip file", err.Error())
 }
 
-func TestMODEditRejectsInvalidLicense(t *testing.T) {
+func TestDevEditRejectsInvalidLicense(t *testing.T) {
 	newSandbox(t)
-	out, err := runCLI(t, "mod", "edit", "some-mod", "--license", "MIT")
+	out, err := runCLI(t, "dev", "edit", "some-mod", "--license", "MIT")
 	require.Error(t, err)
 	assert.Equal(t, "Invalid license identifier", err.Error())
 	assert.Contains(t, out, "✗ Invalid license identifier: MIT\n")
@@ -42,18 +42,18 @@ func TestMODEditRejectsInvalidLicense(t *testing.T) {
 	assert.Contains(t, out, "Custom licenses: custom_<24 hex chars>")
 }
 
-func TestMODEditRequiresMetadata(t *testing.T) {
+func TestDevEditRequiresMetadata(t *testing.T) {
 	newSandbox(t)
-	out, err := runCLI(t, "mod", "edit", "some-mod")
+	out, err := runCLI(t, "dev", "edit", "some-mod")
 	require.Error(t, err)
 	assert.Equal(t, "No metadata options provided", err.Error())
 	assert.Contains(t, out, "✗ At least one metadata option must be provided\n")
 	assert.Contains(t, out, "Available options: --description, --summary, --title, --category, --tags, --license, --homepage, --source-url, --faq, --deprecated\n")
 }
 
-func TestMODImageAddMissingFile(t *testing.T) {
+func TestDevImageAddMissingFile(t *testing.T) {
 	s := newSandbox(t)
-	_, err := runCLI(t, "mod", "image", "add", "some-mod", filepath.Join(s.root, "missing.png"))
+	_, err := runCLI(t, "dev", "image", "add", "some-mod", filepath.Join(s.root, "missing.png"))
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "Image file not found: ")
 }

@@ -11,20 +11,20 @@ import (
 	"github.com/sakuro/factorix/internal/api"
 )
 
-func newMODImageCommand(c *cli) *cobra.Command {
+func newDevImageCommand(c *cli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "image",
 		Short: "Manage MOD images",
 	}
 	cmd.AddCommand(
-		newMODImageListCommand(c),
-		newMODImageAddCommand(c),
-		newMODImageEditCommand(c),
+		newDevImageListCommand(c),
+		newDevImageAddCommand(c),
+		newDevImageEditCommand(c),
 	)
 	return cmd
 }
 
-func newMODImageListCommand(c *cli) *cobra.Command {
+func newDevImageListCommand(c *cli) *cobra.Command {
 	var jsonOutput bool
 
 	cmd := &cobra.Command{
@@ -92,7 +92,7 @@ func outputImageJSON(p *printer, images []api.Image) error {
 	return nil
 }
 
-func newMODImageAddCommand(c *cli) *cobra.Command {
+func newDevImageAddCommand(c *cli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add <mod-name> <image-file>",
 		Short: "Add an image to a MOD",
@@ -133,7 +133,7 @@ func newMODImageAddCommand(c *cli) *cobra.Command {
 	return cmd
 }
 
-func newMODImageEditCommand(c *cli) *cobra.Command {
+func newDevImageEditCommand(c *cli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "edit <mod-name> <image-id>...",
 		Short: "Edit MOD's image list (reorder/remove images)",

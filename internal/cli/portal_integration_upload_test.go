@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMODUploadNewMODAgainstMockPortal(t *testing.T) {
+func TestDevUploadNewMODAgainstMockPortal(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t) // new-mod does not exist on the portal
 	portal.withPortal(t)
@@ -17,7 +17,7 @@ func TestMODUploadNewMODAgainstMockPortal(t *testing.T) {
 	zipPath := filepath.Join(t.TempDir(), "new-mod_1.0.0.zip")
 	writeMODZip(t, zipPath, "new-mod", "1.0.0")
 
-	out, err := runCLI(t, "mod", "upload", zipPath, "--category", "content")
+	out, err := runCLI(t, "dev", "upload", zipPath, "--category", "content")
 	require.NoError(t, err)
 	assert.Contains(t, out, "Upload completed successfully!")
 
@@ -29,7 +29,7 @@ func TestMODUploadNewMODAgainstMockPortal(t *testing.T) {
 	assert.Equal(t, "Bearer test-api-key", portal.managementCalls[0].Auth)
 }
 
-func TestMODUploadExistingMODAgainstMockPortal(t *testing.T) {
+func TestDevUploadExistingMODAgainstMockPortal(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t, portalMOD{Name: "existing-mod", Title: "Existing MOD", Owner: "alice"})
 	portal.withPortal(t)
@@ -37,7 +37,7 @@ func TestMODUploadExistingMODAgainstMockPortal(t *testing.T) {
 	zipPath := filepath.Join(t.TempDir(), "existing-mod_2.0.0.zip")
 	writeMODZip(t, zipPath, "existing-mod", "2.0.0")
 
-	out, err := runCLI(t, "mod", "upload", zipPath, "--category", "content")
+	out, err := runCLI(t, "dev", "upload", zipPath, "--category", "content")
 	require.NoError(t, err)
 	assert.Contains(t, out, "Upload completed successfully!")
 
@@ -49,7 +49,7 @@ func TestMODUploadExistingMODAgainstMockPortal(t *testing.T) {
 	assert.Equal(t, []string{"content"}, portal.managementCalls[1].Form["category"])
 }
 
-func TestMODUploadRequiresAPIKey(t *testing.T) {
+func TestDevUploadRequiresAPIKey(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t)
 	portal.withPortal(t)
@@ -58,17 +58,17 @@ func TestMODUploadRequiresAPIKey(t *testing.T) {
 	zipPath := filepath.Join(t.TempDir(), "new-mod_1.0.0.zip")
 	writeMODZip(t, zipPath, "new-mod", "1.0.0")
 
-	_, err := runCLI(t, "mod", "upload", zipPath)
+	_, err := runCLI(t, "dev", "upload", zipPath)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "FACTORIO_API_KEY")
 }
 
-func TestMODEditAgainstMockPortal(t *testing.T) {
+func TestDevEditAgainstMockPortal(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t, portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice"})
 	portal.withPortal(t)
 
-	out, err := runCLI(t, "mod", "edit", "some-mod", "--title", "New Title", "--summary", "New summary")
+	out, err := runCLI(t, "dev", "edit", "some-mod", "--title", "New Title", "--summary", "New summary")
 	require.NoError(t, err)
 	assert.Contains(t, out, "Metadata updated successfully!")
 
@@ -80,7 +80,7 @@ func TestMODEditAgainstMockPortal(t *testing.T) {
 	assert.Equal(t, []string{"New summary"}, call.Form["summary"])
 }
 
-func TestMODImageListAgainstMockPortal(t *testing.T) {
+func TestDevImageListAgainstMockPortal(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t, portalMOD{
 		Name: "some-mod", Title: "Some MOD", Owner: "alice",
@@ -88,13 +88,13 @@ func TestMODImageListAgainstMockPortal(t *testing.T) {
 	})
 	portal.withPortal(t)
 
-	out, err := runCLI(t, "mod", "image", "list", "some-mod")
+	out, err := runCLI(t, "dev", "image", "list", "some-mod")
 	require.NoError(t, err)
 	assert.Contains(t, out, "abc123")
 	assert.Contains(t, out, "https://example.com/thumb.png")
 }
 
-func TestMODImageAddAgainstMockPortal(t *testing.T) {
+func TestDevImageAddAgainstMockPortal(t *testing.T) {
 	s := newSandbox(t)
 	portal := newMockPortal(t)
 	portal.imageUploadResponse = portalImage{ID: "new-img-id", Thumbnail: "https://example.com/t.png", URL: "https://example.com/f.png"}
@@ -103,7 +103,7 @@ func TestMODImageAddAgainstMockPortal(t *testing.T) {
 	imagePath := filepath.Join(s.root, "screenshot.png")
 	require.NoError(t, os.WriteFile(imagePath, []byte("fake-png-content"), 0o644))
 
-	out, err := runCLI(t, "mod", "image", "add", "some-mod", imagePath)
+	out, err := runCLI(t, "dev", "image", "add", "some-mod", imagePath)
 	require.NoError(t, err)
 	assert.Contains(t, out, "Image added successfully!")
 	assert.Contains(t, out, "new-img-id")
@@ -112,12 +112,12 @@ func TestMODImageAddAgainstMockPortal(t *testing.T) {
 	assert.Equal(t, "/api/v2/mods/images/add", portal.managementCalls[0].Path)
 }
 
-func TestMODImageEditAgainstMockPortal(t *testing.T) {
+func TestDevImageEditAgainstMockPortal(t *testing.T) {
 	newSandbox(t)
 	portal := newMockPortal(t)
 	portal.withPortal(t)
 
-	out, err := runCLI(t, "mod", "image", "edit", "some-mod", "img1", "img2")
+	out, err := runCLI(t, "dev", "image", "edit", "some-mod", "img1", "img2")
 	require.NoError(t, err)
 	assert.Contains(t, out, "Image list updated successfully!")
 

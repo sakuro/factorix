@@ -9,7 +9,7 @@ import (
 	"github.com/sakuro/factorix/internal/api"
 )
 
-func newMODEditCommand(c *cli) *cobra.Command {
+func newDevEditCommand(c *cli) *cobra.Command {
 	var metadata api.EditMetadata
 	var deprecated bool
 
