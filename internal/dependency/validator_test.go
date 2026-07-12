@@ -17,6 +17,14 @@ func errorTypes(result *ValidationResult) []ErrorType {
 	return types
 }
 
+func warningTypes(result *ValidationResult) []WarningType {
+	types := make([]WarningType, len(result.Warnings))
+	for i, w := range result.Warnings {
+		types[i] = w.Type
+	}
+	return types
+}
+
 func TestValidatorValid(t *testing.T) {
 	g := NewGraph()
 	addNodes(t, g, "app", "lib")
@@ -48,6 +56,27 @@ func TestValidatorDisabledDependency(t *testing.T) {
 
 	result := (&Validator{Graph: g, MODList: mod.NewMODList()}).Validate()
 	assert.Contains(t, errorTypes(result), ErrorDisabledDependency)
+}
+
+func TestValidatorRecommendedDependencyDisabled(t *testing.T) {
+	g := NewGraph()
+	addNodes(t, g, "app")
+	require.NoError(t, g.AddNode(Node{MOD: testMOD("lib"), Version: mod.MODVersion{Major: 1}, Enabled: false, Installed: true}))
+	requireEdge(t, g, "app", "lib", TypeRecommended)
+
+	result := (&Validator{Graph: g, MODList: mod.NewMODList()}).Validate()
+	assert.True(t, result.Valid()) // a disabled recommended dependency is a warning, not an error
+	assert.Contains(t, warningTypes(result), WarningRecommendedDependencyDisabled)
+}
+
+func TestValidatorRecommendedDependencyNotInstalled(t *testing.T) {
+	g := NewGraph()
+	addNodes(t, g, "app")
+	requireEdge(t, g, "app", "ghost", TypeRecommended)
+
+	result := (&Validator{Graph: g, MODList: mod.NewMODList()}).Validate()
+	assert.True(t, result.Valid())
+	assert.NotContains(t, warningTypes(result), WarningRecommendedDependencyDisabled)
 }
 
 func TestValidatorVersionMismatchWithSuggestion(t *testing.T) {
