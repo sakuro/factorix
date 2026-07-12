@@ -16,7 +16,7 @@ import (
 	"github.com/sakuro/factorix/internal/mod"
 )
 
-var builtinMODs = []string{"base", "elevated-rails", "quality", "space-age"}
+var builtinMODs = []string{"base", "elevated-rails", "quality", "recycler", "space-age"}
 
 func newMODDownloadCommand(c *cli) *cobra.Command {
 	var directory string
