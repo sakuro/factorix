@@ -1,0 +1,56 @@
+name: Release Publish
+
+# This workflow builds and publishes factorix binaries with goreleaser
+# after a release PR is merged. Most validations are already performed by
+# the Release Validation workflow.
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  publish-release:
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # Required for GitHub Release creation
+
+    environment: release   # Manual approval gate before a real release fires
+
+    steps:
+    - name: Extract version from branch name
+      id: version
+      env:
+        BRANCH_NAME: ${{ github.head_ref }}
+      run: |
+        VERSION=${BRANCH_NAME#release-v}
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Checkout release tag
+      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      with:
+        ref: ${{ steps.version.outputs.tag }}
+        fetch-depth: 0
+
+    - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      with:
+        go-version-file: go.mod
+
+    - name: Extract changelog for this version
+      run: |
+        sed -e "1,/^## \[${{ steps.version.outputs.version }}\] /d" CHANGELOG.md | sed -e '/^## \[/,$d' > release_notes.md
+
+    - uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
+      with:
+        version: v2.17.0
+        args: release --clean --release-notes=release_notes.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Post-release summary
+      run: |
+        echo "🎉 Release ${{ steps.version.outputs.tag }} published successfully!"
+        echo "- Binaries built for all supported platforms and uploaded via goreleaser"
+        echo "- GitHub release created with changelog and assets"
