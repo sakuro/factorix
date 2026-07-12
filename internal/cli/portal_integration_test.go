@@ -130,6 +130,56 @@ func TestMODInstallAgainstMockPortal(t *testing.T) {
 	assert.True(t, states["some-mod"])
 }
 
+func TestMODInstallPullsInRecommendedDependency(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true})
+	mainRelease := portalRelease{
+		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
+		DownloadURL: "/download/some-mod_1.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+	}
+	libRelease := portalRelease{
+		Version: "2.0.0", FileName: "lib-mod_2.0.0.zip",
+		DownloadURL: "/download/lib-mod_2.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+	}
+	portal := newMockPortal(t,
+		portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice", Releases: []portalRelease{mainRelease}},
+		portalMOD{Name: "lib-mod", Title: "Lib MOD", Owner: "alice", Releases: []portalRelease{libRelease}},
+	)
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "install", "some-mod", "-y")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Installed 2 MOD(s)")
+
+	states := s.readMODList(t)
+	assert.True(t, states["some-mod"])
+	assert.True(t, states["lib-mod"])
+}
+
+func TestMODInstallEnablesDisabledRecommendedDependency(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeInstalledMOD(t, "lib-mod", "1.0.0", nil)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true}, modListEntry{name: "lib-mod", enabled: false})
+	release := portalRelease{
+		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
+		DownloadURL: "/download/some-mod_1.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+	}
+	portal := newMockPortal(t, portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice", Releases: []portalRelease{release}})
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "install", "some-mod", "-y")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Installed 1 MOD(s)")
+	assert.Contains(t, out, "Enabled 1 disabled dependency MOD(s)")
+
+	states := s.readMODList(t)
+	assert.True(t, states["some-mod"])
+	assert.True(t, states["lib-mod"])
+}
+
 func TestMODInstallNotOnPortal(t *testing.T) {
 	s := baseSandbox(t)
 	s.writeMODList(t, modListEntry{name: "base", enabled: true})
