@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Added
+
+- Accept Factorio 2.1 as a `mod search --version` filter value
+
 ## [0.20.0] - 2026-07-12
 
 Factorix is being rewritten from Ruby to Go, reaching full command parity:

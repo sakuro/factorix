@@ -138,4 +138,5 @@ func TestGetMODsValidation(t *testing.T) {
 
 	// "max" is a valid page size but requires a server; validation alone passes.
 	require.NoError(t, GetMODsOptions{PageSize: "max"}.validate())
+	require.NoError(t, GetMODsOptions{Version: "2.1"}.validate())
 }
