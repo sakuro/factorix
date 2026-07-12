@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/BurntSushi/toml v1.6.0
-	github.com/avast/retry-go/v4 v4.7.0
+	github.com/avast/retry-go/v5 v5.0.0
 	github.com/fatih/color v1.19.0
 	github.com/gofrs/flock v0.13.0
 	github.com/spf13/cobra v1.10.2
