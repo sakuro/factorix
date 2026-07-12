@@ -56,22 +56,31 @@ func newMODSyncCommand(c *cli) *cobra.Command {
 			// Plan phase (no side effects).
 			modsToInstall := findMODsToInstall(saveData.MODs, state.installedMODs, strictVersion)
 			var installTargets []syncInstallTarget
+			var dependencyEntries []save.MODEntry
 			if len(modsToInstall) > 0 {
-				installTargets, err = planSyncInstallation(cmd.Context(), application, state.graph, modsToInstall, modDir, jobs, strictVersion)
+				installTargets, dependencyEntries, err = planSyncInstallation(cmd.Context(), application, state.graph, modsToInstall, modDir, jobs, strictVersion)
 				if err != nil {
 					return err
 				}
 				enrichSyncInstallTargets(installTargets, state.installedMODs)
 			}
+			// Recommended (and, defensively, required) dependencies resolved
+			// above aren't in the save file itself, so downstream planning
+			// treats them as if they were: this is what gets them added to
+			// mod-list.json and excluded from unlisted-MOD detection.
+			effectiveSaveMODs := saveData.MODs
+			if len(dependencyEntries) > 0 {
+				effectiveSaveMODs = append(append([]save.MODEntry(nil), saveData.MODs...), dependencyEntries...)
+			}
 			var modsToDelete []mod.InstalledMOD
 			if strictVersion {
-				modsToDelete = findMODsToDelete(saveData.MODs, state.installedMODs)
+				modsToDelete = findMODsToDelete(effectiveSaveMODs, state.installedMODs)
 			}
-			conflictMODs := findConflictMODs(state.modList, saveData.MODs, state.graph)
-			changes := planMODListChanges(state.modList, saveData.MODs, state.installedMODs, strictVersion)
+			conflictMODs := findConflictMODs(state.modList, effectiveSaveMODs, state.graph)
+			changes := planMODListChanges(state.modList, effectiveSaveMODs, state.installedMODs, strictVersion)
 			var unlistedMODs []mod.MOD
 			if !keepUnlisted {
-				unlistedMODs = findUnlistedMODs(state.modList, saveData.MODs, conflictMODs)
+				unlistedMODs = findUnlistedMODs(state.modList, effectiveSaveMODs, conflictMODs)
 			}
 			modListChanged := len(installTargets) > 0 || len(conflictMODs) > 0 || len(changes) > 0 || len(unlistedMODs) > 0
 			hasChanges := modListChanged || len(modsToDelete) > 0
@@ -224,12 +233,18 @@ func findMODsToDelete(saveMODs []save.MODEntry, installed []mod.InstalledMOD) []
 }
 
 // planSyncInstallation fetches full portal info for each MOD to install,
-// extends the dependency graph with them (for conflict detection), and
-// builds the download targets.
-func planSyncInstallation(ctx context.Context, application *app.App, graph *dependency.Graph, entries []save.MODEntry, modDir string, jobs int, strict bool) ([]syncInstallTarget, error) {
+// extends the dependency graph with them (for conflict detection), resolves
+// their recommended (and, defensively, required) dependencies not yet
+// installed anywhere — the same way mod install does (#91) — and builds the
+// download targets. A save file always includes active required
+// dependencies transitively, so this mainly matters for a recommended
+// dependency the save's original author had disabled; an installed-but-
+// disabled recommended dependency is left untouched, since sync has no
+// mechanism to re-enable something the save file doesn't list.
+func planSyncInstallation(ctx context.Context, application *app.App, graph *dependency.Graph, entries []save.MODEntry, modDir string, jobs int, strict bool) ([]syncInstallTarget, []save.MODEntry, error) {
 	portal, err := application.PortalAPI()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	specs := make([]modSpec, len(entries))
@@ -251,24 +266,53 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 		return fetchedMODInfo{MOD: spec.MOD, MODInfo: info, Release: *release}, nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
+	releases := make(map[mod.MOD]api.Release, len(infos))
+	frontier := make([]mod.MOD, 0, len(infos))
+	known := make(map[mod.MOD]bool, len(infos))
 	for _, info := range infos {
 		if err := graph.AddUninstalledMOD(info.MOD, info.Release.Version, info.Release.InfoJSON.Dependencies); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+		releases[info.MOD] = info.Release
+		frontier = append(frontier, info.MOD)
+		known[info.MOD] = true
+	}
+
+	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs); err != nil {
+		return nil, nil, err
 	}
 
 	targets, err := buildDownloadTargets(infos, modDir)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	// Dependency-resolved MODs aren't in entries/saveMODs, so the caller
+	// needs their names and versions to fold them into the save-driven
+	// mod-list.json planning (see the RunE closure above).
+	var dependencyEntries []save.MODEntry
+	for m, release := range releases {
+		if known[m] {
+			continue
+		}
+		if err := validateFilename(release.FileName); err != nil {
+			return nil, nil, err
+		}
+		targets = append(targets, downloadTarget{
+			MOD:        m,
+			Release:    release,
+			OutputPath: filepath.Join(modDir, release.FileName),
+		})
+		dependencyEntries = append(dependencyEntries, save.MODEntry{Name: m.Name, Version: release.Version})
+	}
+
 	result := make([]syncInstallTarget, len(targets))
 	for i, target := range targets {
 		result[i] = syncInstallTarget{downloadTarget: target}
 	}
-	return result, nil
+	return result, dependencyEntries, nil
 }
 
 // findSyncRelease picks the exact save version in strict mode; otherwise
