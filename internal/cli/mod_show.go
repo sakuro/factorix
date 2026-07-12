@@ -155,11 +155,18 @@ func displayShow(p *printer, info *api.MODInfo, status localMODStatus) error {
 	if latest == nil {
 		return nil
 	}
-	required, optional, incompatibleDeps := classifyDependencies(latest.InfoJSON.Dependencies)
+	required, optional, recommended, incompatibleDeps := classifyDependencies(latest.InfoJSON.Dependencies)
 
 	if len(required) > 0 {
 		p.Println(header.Sprint("Dependencies"))
 		for _, d := range required {
+			p.Println("  " + d)
+		}
+		p.Println()
+	}
+	if len(recommended) > 0 {
+		p.Println(header.Sprint("Recommended Dependencies"))
+		for _, d := range recommended {
 			p.Println("  " + d)
 		}
 		p.Println()
@@ -242,13 +249,13 @@ func formatLicense(info *api.MODInfo) string {
 	return info.License.Title
 }
 
-// classifyDependencies splits raw dependency strings into required, optional,
-// and incompatible dependencies using dependency.Parse, so classification
-// agrees with the rest of the codebase (recommended-dependency handling is
-// tracked separately in #90). Malformed entries from the Portal API are
-// skipped rather than failing the whole display — this command only
-// displays dependencies, it never resolves them.
-func classifyDependencies(raw []string) (required, optional, incompatible []string) {
+// classifyDependencies splits raw dependency strings into required,
+// optional, recommended, and incompatible dependencies using
+// dependency.Parse, so classification agrees with the rest of the
+// codebase. Malformed entries from the Portal API are skipped rather than
+// failing the whole display — this command only displays dependencies, it
+// never resolves them.
+func classifyDependencies(raw []string) (required, optional, recommended, incompatible []string) {
 	for _, dep := range raw {
 		entry, err := dependency.Parse(dep)
 		if err != nil {
@@ -265,13 +272,15 @@ func classifyDependencies(raw []string) (required, optional, incompatible []stri
 			required = append(required, s)
 		case dependency.TypeOptional, dependency.TypeHiddenOptional:
 			optional = append(optional, s)
+		case dependency.TypeRecommended:
+			recommended = append(recommended, s)
 		case dependency.TypeIncompatible:
 			incompatible = append(incompatible, s)
-		case dependency.TypeLoadNeutral, dependency.TypeRecommended:
-			// No display section yet for these buckets (see #90).
+		case dependency.TypeLoadNeutral:
+			// show.rb never displayed this bucket; kept parsed and discarded.
 		}
 	}
-	return required, optional, incompatible
+	return required, optional, recommended, incompatible
 }
 
 func outputShowJSON(p *printer, info *api.MODInfo, status localMODStatus) error {
