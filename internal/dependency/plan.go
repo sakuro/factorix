@@ -14,7 +14,12 @@ var (
 )
 
 // PlanEnable computes the MODs to enable when enabling targets, pulling in
-// required dependencies (BFS discovery order). The base MOD is always
+// required dependencies (BFS discovery order). Recommended dependencies are
+// pulled in the same way when already installed with a satisfied version;
+// unlike required dependencies, a missing or version-mismatched recommended
+// dependency is silently skipped rather than rejected, since it's off by
+// default only by the user's own choice not to install it (fetching it from
+// the Portal is out of scope here, see #91). The base MOD is always
 // available and is never pulled in as a dependency. Targets already
 // installed are assumed to exist in the graph; the caller validates that
 // before calling PlanEnable.
@@ -35,19 +40,30 @@ func PlanEnable(g *Graph, targets []mod.MOD) ([]mod.MOD, error) {
 		order = append(order, m)
 
 		for _, edge := range g.EdgesFrom(m) {
-			if edge.Type != TypeRequired || edge.To.IsBase() {
+			if edge.To.IsBase() {
 				continue
 			}
-			depNode, ok := g.Node(edge.To)
-			if !ok {
-				return nil, fmt.Errorf("%w: MOD '%s' requires '%s' which is not installed", ErrDependencyMissing, m, edge.To)
-			}
-			if !edge.SatisfiedBy(depNode.Version) {
-				return nil, fmt.Errorf("%w: cannot enable %s: dependency %s version requirement not satisfied (required: %s, installed: %s)",
-					ErrDependencyVersion, m, edge.To, edge.Requirement, depNode.Version)
-			}
-			if !depNode.Enabled && !planned[edge.To] {
-				queue = append(queue, edge.To)
+			switch edge.Type {
+			case TypeRequired:
+				depNode, ok := g.Node(edge.To)
+				if !ok {
+					return nil, fmt.Errorf("%w: MOD '%s' requires '%s' which is not installed", ErrDependencyMissing, m, edge.To)
+				}
+				if !edge.SatisfiedBy(depNode.Version) {
+					return nil, fmt.Errorf("%w: cannot enable %s: dependency %s version requirement not satisfied (required: %s, installed: %s)",
+						ErrDependencyVersion, m, edge.To, edge.Requirement, depNode.Version)
+				}
+				if !depNode.Enabled && !planned[edge.To] {
+					queue = append(queue, edge.To)
+				}
+			case TypeRecommended:
+				depNode, ok := g.Node(edge.To)
+				if !ok || !edge.SatisfiedBy(depNode.Version) {
+					continue
+				}
+				if !depNode.Enabled && !planned[edge.To] {
+					queue = append(queue, edge.To)
+				}
 			}
 		}
 	}

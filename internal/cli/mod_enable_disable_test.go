@@ -43,6 +43,45 @@ func TestMODEnableSimple(t *testing.T) {
 	assert.True(t, states["lib"])
 }
 
+func TestMODEnablePullsInInstalledRecommendedDep(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeInstalledMOD(t, "app", "1.0.0", []string{"+ lib"})
+	s.writeInstalledMOD(t, "lib", "1.0.0", nil)
+	s.writeMODList(t,
+		modListEntry{name: "base", enabled: true},
+		modListEntry{name: "app", enabled: false},
+		modListEntry{name: "lib", enabled: false},
+	)
+
+	out, err := runCLI(t, "mod", "enable", "app", "-y")
+	require.NoError(t, err)
+	assert.Equal(t, "ℹ Planning to enable 2 MOD(s):\n"+
+		"  - app\n"+
+		"  - lib\n"+
+		"✓ Enabled app\n"+
+		"✓ Enabled lib\n"+
+		"✓ Enabled 2 MOD(s)\n"+
+		"✓ Saved mod-list.json\n", out)
+
+	states := s.readMODList(t)
+	assert.True(t, states["app"])
+	assert.True(t, states["lib"])
+}
+
+func TestMODEnableSkipsUninstalledRecommendedDep(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeInstalledMOD(t, "app", "1.0.0", []string{"+ ghost"})
+	s.writeMODList(t, modListEntry{name: "base", enabled: true}, modListEntry{name: "app", enabled: false})
+
+	out, err := runCLI(t, "mod", "enable", "app", "-y")
+	require.NoError(t, err)
+	assert.Equal(t, "ℹ Planning to enable 1 MOD(s):\n"+
+		"  - app\n"+
+		"✓ Enabled app\n"+
+		"✓ Enabled 1 MOD(s)\n"+
+		"✓ Saved mod-list.json\n", out)
+}
+
 func TestMODEnableCustomBackupExtension(t *testing.T) {
 	s := baseSandbox(t)
 	s.writeInstalledMOD(t, "app", "1.0.0", nil)
