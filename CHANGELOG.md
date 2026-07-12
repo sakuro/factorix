@@ -3,6 +3,7 @@
 ### Added
 
 - Accept Factorio 2.1 as a `mod search --version` filter value
+- Recognize `recycler` as an official expansion MOD alongside `space-age`, `quality`, and `elevated-rails` (#169)
 
 ## [0.20.0] - 2026-07-12
 
