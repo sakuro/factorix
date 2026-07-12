@@ -20,7 +20,7 @@ import (
 
 func newMODSyncCommand(c *cli) *cobra.Command {
 	var jobs int
-	var keepUnlisted, strictVersion, yes bool
+	var keepUnlisted, strictVersion, yes, ignoreRecommended bool
 	var backupExtension string
 
 	cmd := &cobra.Command{
@@ -58,7 +58,7 @@ func newMODSyncCommand(c *cli) *cobra.Command {
 			var installTargets []syncInstallTarget
 			var dependencyEntries []save.MODEntry
 			if len(modsToInstall) > 0 {
-				installTargets, dependencyEntries, err = planSyncInstallation(cmd.Context(), application, state.graph, modsToInstall, modDir, jobs, strictVersion)
+				installTargets, dependencyEntries, err = planSyncInstallation(cmd.Context(), application, state.graph, modsToInstall, modDir, jobs, strictVersion, !ignoreRecommended)
 				if err != nil {
 					return err
 				}
@@ -159,6 +159,7 @@ func newMODSyncCommand(c *cli) *cobra.Command {
 	cmd.Flags().BoolVar(&keepUnlisted, "keep-unlisted", false, "Keep MOD(s) not listed in save file enabled")
 	cmd.Flags().BoolVar(&strictVersion, "strict-version", false, "Install exact MOD versions from save file")
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not resolve recommended dependencies")
 	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
@@ -234,14 +235,15 @@ func findMODsToDelete(saveMODs []save.MODEntry, installed []mod.InstalledMOD) []
 
 // planSyncInstallation fetches full portal info for each MOD to install,
 // extends the dependency graph with them (for conflict detection), resolves
-// their recommended (and, defensively, required) dependencies not yet
-// installed anywhere — the same way mod install does (#91) — and builds the
-// download targets. A save file always includes active required
-// dependencies transitively, so this mainly matters for a recommended
-// dependency the save's original author had disabled; an installed-but-
-// disabled recommended dependency is left untouched, since sync has no
-// mechanism to re-enable something the save file doesn't list.
-func planSyncInstallation(ctx context.Context, application *app.App, graph *dependency.Graph, entries []save.MODEntry, modDir string, jobs int, strict bool) ([]syncInstallTarget, []save.MODEntry, error) {
+// their required (and, when includeRecommended is true, recommended)
+// dependencies not yet installed anywhere — the same way mod install does
+// (#91) — and builds the download targets. A save file always includes
+// active required dependencies transitively, so includeRecommended mainly
+// matters for a recommended dependency the save's original author had
+// disabled; an installed-but-disabled recommended dependency is left
+// untouched, since sync has no mechanism to re-enable something the save
+// file doesn't list.
+func planSyncInstallation(ctx context.Context, application *app.App, graph *dependency.Graph, entries []save.MODEntry, modDir string, jobs int, strict bool, includeRecommended bool) ([]syncInstallTarget, []save.MODEntry, error) {
 	portal, err := application.PortalAPI()
 	if err != nil {
 		return nil, nil, err
@@ -281,7 +283,7 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 		known[info.MOD] = true
 	}
 
-	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs); err != nil {
+	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs, includeRecommended); err != nil {
 		return nil, nil, err
 	}
 

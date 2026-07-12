@@ -21,7 +21,7 @@ func TestPlanEnablePullsInRequiredDeps(t *testing.T) {
 	requireEdge(t, g, "app", "lib", TypeRequired)
 	requireEdge(t, g, "app", "base", TypeRequired) // base is skipped
 
-	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.NoError(t, err)
 	assert.Equal(t, []mod.MOD{testMOD("app"), testMOD("lib")}, planned)
 }
@@ -32,7 +32,7 @@ func TestPlanEnableSkipsAlreadyEnabled(t *testing.T) {
 	addNodes(t, g, "lib") // enabled
 	requireEdge(t, g, "app", "lib", TypeRequired)
 
-	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.NoError(t, err)
 	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
 }
@@ -42,7 +42,7 @@ func TestPlanEnableMissingDependency(t *testing.T) {
 	disabledNode(t, g, "app")
 	requireEdge(t, g, "app", "ghost", TypeRequired)
 
-	_, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	_, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.ErrorIs(t, err, ErrDependencyMissing)
 }
 
@@ -55,7 +55,7 @@ func TestPlanEnableVersionMismatch(t *testing.T) {
 		Requirement: &VersionRequirement{Operator: OpGreaterEqual, Version: mod.MODVersion{Major: 2}},
 	}))
 
-	_, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	_, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.ErrorIs(t, err, ErrDependencyVersion)
 }
 
@@ -65,7 +65,7 @@ func TestPlanEnablePullsInInstalledRecommendedDeps(t *testing.T) {
 	disabledNode(t, g, "lib")
 	requireEdge(t, g, "app", "lib", TypeRecommended)
 
-	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.NoError(t, err)
 	assert.Equal(t, []mod.MOD{testMOD("app"), testMOD("lib")}, planned)
 }
@@ -75,7 +75,7 @@ func TestPlanEnableSkipsUninstalledRecommendedDep(t *testing.T) {
 	disabledNode(t, g, "app")
 	requireEdge(t, g, "app", "ghost", TypeRecommended)
 
-	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
 	require.NoError(t, err)
 	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
 }
@@ -89,7 +89,18 @@ func TestPlanEnableSkipsVersionMismatchedRecommendedDep(t *testing.T) {
 		Requirement: &VersionRequirement{Operator: OpGreaterEqual, Version: mod.MODVersion{Major: 2}},
 	}))
 
-	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, true)
+	require.NoError(t, err)
+	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
+}
+
+func TestPlanEnableIgnoresRecommendedDepsWhenExcluded(t *testing.T) {
+	g := NewGraph()
+	disabledNode(t, g, "app")
+	disabledNode(t, g, "lib")
+	requireEdge(t, g, "app", "lib", TypeRecommended)
+
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")}, false)
 	require.NoError(t, err)
 	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
 }
@@ -193,7 +204,7 @@ func TestMarkDisabledDependenciesForEnable(t *testing.T) {
 	disabledNode(t, g, "optional-lib")
 	requireEdge(t, g, "new-mod", "optional-lib", TypeOptional)
 
-	MarkDisabledDependenciesForEnable(g)
+	MarkDisabledDependenciesForEnable(g, true)
 
 	lib, _ := g.Node(testMOD("lib"))
 	assert.Equal(t, OpEnable, lib.Operation)
@@ -208,10 +219,21 @@ func TestMarkDisabledDependenciesForEnableRecommended(t *testing.T) {
 	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"+ lib"}))
 	disabledNode(t, g, "lib")
 
-	MarkDisabledDependenciesForEnable(g)
+	MarkDisabledDependenciesForEnable(g, true)
 
 	lib, _ := g.Node(testMOD("lib"))
 	assert.Equal(t, OpEnable, lib.Operation)
+}
+
+func TestMarkDisabledDependenciesForEnableIgnoresRecommendedWhenExcluded(t *testing.T) {
+	g := NewGraph()
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"+ lib"}))
+	disabledNode(t, g, "lib")
+
+	MarkDisabledDependenciesForEnable(g, false)
+
+	lib, _ := g.Node(testMOD("lib"))
+	assert.Equal(t, OpNone, lib.Operation)
 }
 
 func TestValidateInstallGraphCycle(t *testing.T) {

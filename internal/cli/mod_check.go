@@ -5,12 +5,16 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/sakuro/factorix/internal/dependency"
 )
 
 var errValidationFailed = errors.New("MOD dependency validation failed")
 
 func newMODCheckCommand(c *cli) *cobra.Command {
-	return &cobra.Command{
+	var ignoreRecommended bool
+
+	cmd := &cobra.Command{
 		Use:   "check",
 		Short: "Validate MOD dependencies",
 		Args:  cobra.NoArgs,
@@ -26,6 +30,9 @@ func newMODCheckCommand(c *cli) *cobra.Command {
 
 			p := c.printer(cmd)
 			result := state.validation
+			if ignoreRecommended {
+				result = withoutRecommendedWarnings(result)
+			}
 			p.Info("Validating MOD dependencies...")
 
 			if result.Valid() && len(result.Warnings) == 0 {
@@ -73,6 +80,21 @@ func newMODCheckCommand(c *cli) *cobra.Command {
 			return nil
 		},
 	}
+	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not warn about disabled recommended dependencies")
+	return cmd
+}
+
+// withoutRecommendedWarnings returns a copy of result with
+// WarningRecommendedDependencyDisabled entries removed, leaving the
+// original untouched.
+func withoutRecommendedWarnings(result *dependency.ValidationResult) *dependency.ValidationResult {
+	filtered := make([]dependency.ValidationWarning, 0, len(result.Warnings))
+	for _, w := range result.Warnings {
+		if w.Type != dependency.WarningRecommendedDependencyDisabled {
+			filtered = append(filtered, w)
+		}
+	}
+	return &dependency.ValidationResult{Errors: result.Errors, Warnings: filtered, Suggestions: result.Suggestions}
 }
 
 func pluralSuffix(n int) string {

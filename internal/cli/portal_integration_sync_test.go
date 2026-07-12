@@ -64,6 +64,40 @@ func TestMODSyncPullsInRecommendedDependencyAgainstMockPortal(t *testing.T) {
 	assert.True(t, states["lib-mod"])
 }
 
+func TestMODSyncIgnoresRecommendedDependencyWithFlag(t *testing.T) {
+	s, savePath := syncSandbox(t, []save.MODEntry{{Name: "some-mod", Version: mustVersion(t, "1.0.0")}}, nil)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true})
+	// lib-mod is registered and fetchable so this test proves the flag
+	// itself excludes it, not that the fetch would have failed anyway.
+	portal := newMockPortal(t,
+		portalMOD{
+			Name: "some-mod", Title: "Some MOD", Owner: "alice",
+			Releases: []portalRelease{{
+				Version: "1.0.0", FileName: "some-mod_1.0.0.zip", DownloadURL: "/download/some-mod_1.0.0.zip",
+				InfoJSON: portalInfoJSON{Dependencies: []string{"+ lib-mod"}},
+			}},
+		},
+		portalMOD{
+			Name: "lib-mod", Title: "Lib MOD", Owner: "alice",
+			Releases: []portalRelease{{
+				Version: "2.0.0", FileName: "lib-mod_2.0.0.zip", DownloadURL: "/download/lib-mod_2.0.0.zip",
+			}},
+		},
+	)
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "sync", savePath, "-y", "--ignore-recommended")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Installed 1 MOD(s)")
+	assert.FileExists(t, filepath.Join(s.root, "factorio", "mods", "some-mod_1.0.0.zip"))
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "lib-mod_2.0.0.zip"))
+
+	states := s.readMODList(t)
+	assert.True(t, states["some-mod"])
+	_, listed := states["lib-mod"]
+	assert.False(t, listed)
+}
+
 func TestMODSyncStrictVersionAgainstMockPortal(t *testing.T) {
 	s, savePath := syncSandbox(t, []save.MODEntry{{Name: "some-mod", Version: mustVersion(t, "1.0.0")}}, nil)
 	s.writeMODList(t, modListEntry{name: "base", enabled: true})
