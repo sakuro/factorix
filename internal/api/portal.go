@@ -50,7 +50,7 @@ type GetMODsOptions struct {
 var (
 	validSorts    = []string{"name", "created_at", "updated_at"}
 	validOrders   = []string{"asc", "desc"}
-	validVersions = []string{"0.13", "0.14", "0.15", "0.16", "0.17", "0.18", "1.0", "1.1", "2.0"}
+	validVersions = []string{"0.13", "0.14", "0.15", "0.16", "0.17", "0.18", "1.0", "1.1", "2.0", "2.1"}
 )
 
 func (o GetMODsOptions) validate() error {
