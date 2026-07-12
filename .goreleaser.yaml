@@ -43,8 +43,12 @@ archives:
 checksum:
   name_template: checksums.txt
 
-changelog:
-  disable: true # CHANGELOG.md is maintained by hand; goreleaser should not regenerate it.
+# CHANGELOG.md is maintained by hand, so goreleaser should never generate
+# its own changelog from git log — but changelog.disable: true also makes
+# goreleaser ignore --release-notes=FILE and post an empty release body,
+# which is how release-publish.yml supplies the CHANGELOG.md excerpt. Leave
+# changelog unset (default) so --release-notes continues to work; it's
+# release-publish.yml's job to always pass that flag for a real release.
 
 release:
   github:
