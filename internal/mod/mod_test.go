@@ -14,7 +14,7 @@ func TestMODIsBase(t *testing.T) {
 }
 
 func TestMODIsExpansion(t *testing.T) {
-	for _, name := range []string{"space-age", "quality", "elevated-rails"} {
+	for _, name := range []string{"space-age", "quality", "elevated-rails", "recycler"} {
 		assert.True(t, MOD{Name: name}.IsExpansion(), name)
 	}
 	assert.False(t, MOD{Name: "base"}.IsExpansion())

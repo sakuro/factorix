@@ -13,6 +13,7 @@ var expansionMODs = map[string]bool{
 	"space-age":      true,
 	"quality":        true,
 	"elevated-rails": true,
+	"recycler":       true,
 }
 
 // IsBase reports whether this is the base MOD.
@@ -22,7 +23,7 @@ func (m MOD) IsBase() bool {
 }
 
 // IsExpansion reports whether this is an official expansion MOD
-// (space-age, quality, or elevated-rails). The check is case-sensitive.
+// (space-age, quality, elevated-rails, or recycler). The check is case-sensitive.
 func (m MOD) IsExpansion() bool {
 	return expansionMODs[m.Name]
 }
