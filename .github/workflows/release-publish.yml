@@ -40,12 +40,12 @@ jobs:
 
     - name: Extract changelog for this version
       run: |
-        sed -e "1,/^## \[${{ steps.version.outputs.version }}\] /d" CHANGELOG.md | sed -e '/^## \[/,$d' > release_notes.md
+        sed -e "1,/^## \[${{ steps.version.outputs.version }}\] /d" CHANGELOG.md | sed -e '/^## \[/,$d' > "$RUNNER_TEMP/release_notes.md"
 
     - uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7
       with:
         version: v2.17.0
-        args: release --clean --release-notes=release_notes.md
+        args: release --clean --release-notes=${{ runner.temp }}/release_notes.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
