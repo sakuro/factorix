@@ -110,10 +110,12 @@ func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) erro
 	return nil
 }
 
-// MarkDisabledDependenciesForEnable walks the required dependencies of
-// every node planned for install or enable and marks installed-but-disabled
-// dependencies for enabling (recursively), so installing a MOD also turns
-// its already-present dependency chain back on.
+// MarkDisabledDependenciesForEnable walks the required and recommended
+// dependencies of every node planned for install or enable and marks
+// installed-but-disabled dependencies for enabling (recursively), so
+// installing a MOD also turns its already-present dependency chain back
+// on. Recommended dependencies are on by default, so they're treated the
+// same as required ones here.
 func MarkDisabledDependenciesForEnable(g *Graph) {
 	var queue []mod.MOD
 	for _, node := range g.Nodes() {
@@ -132,7 +134,7 @@ func MarkDisabledDependenciesForEnable(g *Graph) {
 		processed[m] = true
 
 		for _, edge := range g.EdgesFrom(m) {
-			if edge.Type != TypeRequired {
+			if edge.Type != TypeRequired && edge.Type != TypeRecommended {
 				continue
 			}
 			depNode, ok := g.Node(edge.To)

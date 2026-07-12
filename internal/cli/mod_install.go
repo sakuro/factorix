@@ -200,10 +200,12 @@ func planInstall(ctx context.Context, application *app.App, graph *dependency.Gr
 	return targets, nil
 }
 
-// resolveInstallDependencies walks the required edges of newly-added graph
-// nodes and fetches MODs not yet in the graph, extending it recursively.
-// A dependency that cannot be fetched or has no compatible release is
-// skipped with a warning rather than failing the install.
+// resolveInstallDependencies walks the required and recommended edges of
+// newly-added graph nodes and fetches MODs not yet in the graph, extending
+// it recursively. Recommended dependencies are on by default, so they're
+// fetched the same as required ones. A dependency that cannot be fetched or
+// has no compatible release is skipped with a warning rather than failing
+// the install.
 func resolveInstallDependencies(ctx context.Context, application *app.App, graph *dependency.Graph, releases map[mod.MOD]api.Release, frontier []mod.MOD, jobs int) error {
 	portalAPI, err := application.PortalAPI()
 	if err != nil {
@@ -224,7 +226,10 @@ func resolveInstallDependencies(ctx context.Context, application *app.App, graph
 			}
 			processed[m] = true
 			for _, edge := range graph.EdgesFrom(m) {
-				if edge.Type != dependency.TypeRequired || graph.Contains(edge.To) {
+				if edge.Type != dependency.TypeRequired && edge.Type != dependency.TypeRecommended {
+					continue
+				}
+				if graph.Contains(edge.To) {
 					continue
 				}
 				missing = append(missing, missingDep{mod: edge.To, requirement: edge.Requirement, requiredBy: m})

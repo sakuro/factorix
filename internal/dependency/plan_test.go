@@ -203,6 +203,17 @@ func TestMarkDisabledDependenciesForEnable(t *testing.T) {
 	assert.Equal(t, OpNone, optional.Operation)
 }
 
+func TestMarkDisabledDependenciesForEnableRecommended(t *testing.T) {
+	g := NewGraph()
+	require.NoError(t, g.AddUninstalledMOD(testMOD("new-mod"), mod.MODVersion{Major: 1}, []string{"+ lib"}))
+	disabledNode(t, g, "lib")
+
+	MarkDisabledDependenciesForEnable(g)
+
+	lib, _ := g.Node(testMOD("lib"))
+	assert.Equal(t, OpEnable, lib.Operation)
+}
+
 func TestValidateInstallGraphCycle(t *testing.T) {
 	g := NewGraph()
 	require.NoError(t, g.AddUninstalledMOD(testMOD("a"), mod.MODVersion{Major: 1}, []string{"b"}))
