@@ -1,0 +1,96 @@
+name: Release Validation
+
+# This workflow validates release PRs before they are merged.
+# It performs comprehensive checks on version and release readiness.
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-release:
+    # Only run for release branches
+    if: startsWith(github.head_ref, 'release-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # Required for git tag push
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Extract version from branch name
+      id: version
+      env:
+        BRANCH_NAME: ${{ github.head_ref }}
+      run: |
+        VERSION=${BRANCH_NAME#release-v}
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Validate version format
+      run: |
+        if ! echo "${{ steps.version.outputs.version }}" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+          echo "❌ Error: Version must be in format x.y.z (e.g., 1.0.0)"
+          exit 1
+        fi
+
+    - name: Verify git tag exists
+      run: |
+        # Tag should exist because release-preparation creates it before the PR
+        if git tag | grep -q "^${{ steps.version.outputs.tag }}$"; then
+          echo "✅ Git tag ${{ steps.version.outputs.tag }} exists"
+        else
+          echo "❌ Error: Git tag ${{ steps.version.outputs.tag }} does not exist"
+          echo "The release-preparation workflow should have created this tag"
+          exit 1
+        fi
+
+    - name: Check if version already released
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if gh release view "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+          echo "❌ Error: Release ${{ steps.version.outputs.tag }} already exists"
+          exit 1
+        fi
+
+    - name: Validate CHANGELOG.md format
+      run: |
+        # Check if CHANGELOG has the expected section for this version
+        if ! grep -q "^## \[${{ steps.version.outputs.version }}\]" CHANGELOG.md; then
+          echo "❌ Error: CHANGELOG.md missing section for version ${{ steps.version.outputs.version }}"
+          exit 1
+        fi
+
+    - name: Set git user for tag update
+      if: github.event.action == 'synchronize'  # When new commits are pushed to PR
+      uses: git-actions/set-user@v1
+
+    - name: Update release tag to latest commit
+      if: github.event.action == 'synchronize'  # When new commits are pushed to PR
+      run: |
+        echo "Updating tag ${{ steps.version.outputs.tag }} to latest commit"
+
+        # Force update the tag to current HEAD
+        git tag -fa "${{ steps.version.outputs.tag }}" \
+          -m "Release ${{ steps.version.outputs.tag }}"
+
+        # Force push the updated tag
+        git push origin "${{ steps.version.outputs.tag }}" --force
+
+        echo "🏷️ Tag ${{ steps.version.outputs.tag }} updated to commit $(git rev-parse --short HEAD)"
+
+    - name: Release validation summary
+      run: |
+        echo "✅ Release validation passed for ${{ steps.version.outputs.tag }}"
+        echo "- Version format is valid"
+        echo "- Git tag exists"
+        if [ "${{ github.event.action }}" == "synchronize" ]; then
+          echo "- Git tag updated to latest commit"
+        fi
+        echo "- Version not yet released"
+        echo "- CHANGELOG.md is properly formatted"
+        echo "- Quality checks handled by CI workflow"
