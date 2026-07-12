@@ -416,6 +416,18 @@ Output in JSON format.
 Add an image to a MOD.
 .SS factorix mod image edit MOD_NAME IMAGE_IDS
 Edit MOD's image list. Reorder or remove images by specifying IDs in desired order.
+.SS factorix mod license list
+List standard MOD Portal license identifiers, with name and license text URL.
+.TP
+.B \-\-json
+Output in JSON format.
+.SS factorix mod license show ID
+Show a standard MOD Portal license identifier's name, title, description, and
+URL. Fails for custom license identifiers (\fBcustom_\fR + 24 hex chars), which
+have no fixed URL.
+.TP
+.B \-\-json
+Output in JSON format.
 .SH SETTINGS COMMANDS
 .SS factorix mod settings dump [SETTINGS_FILE]
 Dump MOD settings to JSON format.

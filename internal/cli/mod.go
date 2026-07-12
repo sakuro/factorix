@@ -26,6 +26,7 @@ func newMODCommand(c *cli) *cobra.Command {
 		newMODEditCommand(c),
 		newMODChangelogCommand(c),
 		newMODImageCommand(c),
+		newMODLicenseCommand(c),
 	)
 
 	return mod

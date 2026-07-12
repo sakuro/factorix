@@ -2,7 +2,6 @@ package cli
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -20,10 +19,7 @@ func newMODEditCommand(c *cli) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			p := c.printer(cmd)
 			if metadata.License != "" && !api.ValidLicenseIdentifier(metadata.License) {
-				p.Error("Invalid license identifier: " + metadata.License)
-				p.Say("Valid identifiers: " + strings.Join(api.LicenseIdentifiers(), ", "))
-				p.Say("Custom licenses: custom_<24 hex chars> (e.g., custom_0123456789abcdef01234567)")
-				return errors.New("Invalid license identifier")
+				return invalidLicenseIdentifierError(p, metadata.License)
 			}
 
 			if cmd.Flags().Changed("deprecated") {

@@ -4,6 +4,7 @@
 
 - Accept Factorio 2.1 as a `mod search --version` filter value
 - Recognize `recycler` as an official expansion MOD alongside `space-age`, `quality`, and `elevated-rails` (#169)
+- Add `mod license list` and `mod license show <id>` to look up standard MOD Portal license identifiers and their license text URLs (#166)
 
 ### Fixed
 
