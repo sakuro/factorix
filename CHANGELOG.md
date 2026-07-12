@@ -8,7 +8,7 @@ single, self-contained binary — no Ruby, Bundler, or gem install required.
 
 - Add `rcon exec` and `rcon eval` commands to execute a console command or evaluate a Lua script on a running Factorio server via RCon
 - Add PowerShell completion support
-- Add recommended dependency type (`+` prefix) support in MOD dependency parsing
+- Recognize recommended (`+` prefix) dependencies across `mod show`, `mod install`, `mod enable`, `mod sync`, and `mod check`: `mod show` lists them in a dedicated section, `mod install`/`mod enable`/`mod sync` resolve and enable them automatically like required dependencies, and `mod check` warns when one is installed but disabled; opt out with `--ignore-recommended`
 
 ### Changed
 

@@ -14,16 +14,18 @@ var (
 )
 
 // PlanEnable computes the MODs to enable when enabling targets, pulling in
-// required dependencies (BFS discovery order). Recommended dependencies are
-// pulled in the same way when already installed with a satisfied version;
-// unlike required dependencies, a missing or version-mismatched recommended
-// dependency is silently skipped rather than rejected, since it's off by
-// default only by the user's own choice not to install it (fetching it from
-// the Portal is out of scope here, see #91). The base MOD is always
-// available and is never pulled in as a dependency. Targets already
+// required dependencies (BFS discovery order). When includeRecommended is
+// true, recommended dependencies are pulled in the same way when already
+// installed with a satisfied version; unlike required dependencies, a
+// missing or version-mismatched recommended dependency is silently skipped
+// rather than rejected, since it's off by default only by the user's own
+// choice not to install it (fetching it from the Portal is out of scope
+// here, see #91). When includeRecommended is false, recommended edges are
+// ignored entirely (the --ignore-recommended opt-out). The base MOD is
+// always available and is never pulled in as a dependency. Targets already
 // installed are assumed to exist in the graph; the caller validates that
 // before calling PlanEnable.
-func PlanEnable(g *Graph, targets []mod.MOD) ([]mod.MOD, error) {
+func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD, error) {
 	planned := map[mod.MOD]bool{}
 	var order []mod.MOD
 	queue := append([]mod.MOD(nil), targets...)
@@ -41,6 +43,9 @@ func PlanEnable(g *Graph, targets []mod.MOD) ([]mod.MOD, error) {
 
 		for _, edge := range g.EdgesFrom(m) {
 			if edge.To.IsBase() {
+				continue
+			}
+			if edge.Type == TypeRecommended && !includeRecommended {
 				continue
 			}
 			switch edge.Type {
@@ -110,13 +115,14 @@ func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) erro
 	return nil
 }
 
-// MarkDisabledDependenciesForEnable walks the required and recommended
-// dependencies of every node planned for install or enable and marks
-// installed-but-disabled dependencies for enabling (recursively), so
-// installing a MOD also turns its already-present dependency chain back
-// on. Recommended dependencies are on by default, so they're treated the
-// same as required ones here.
-func MarkDisabledDependenciesForEnable(g *Graph) {
+// MarkDisabledDependenciesForEnable walks the required (and, when
+// includeRecommended is true, recommended) dependencies of every node
+// planned for install or enable and marks installed-but-disabled
+// dependencies for enabling (recursively), so installing a MOD also turns
+// its already-present dependency chain back on. Recommended dependencies
+// are on by default, so they're treated the same as required ones unless
+// the caller opts out via includeRecommended=false.
+func MarkDisabledDependenciesForEnable(g *Graph, includeRecommended bool) {
 	var queue []mod.MOD
 	for _, node := range g.Nodes() {
 		if node.Operation == OpInstall || node.Operation == OpEnable {
@@ -134,7 +140,8 @@ func MarkDisabledDependenciesForEnable(g *Graph) {
 		processed[m] = true
 
 		for _, edge := range g.EdgesFrom(m) {
-			if edge.Type != TypeRequired && edge.Type != TypeRecommended {
+			relevant := edge.Type == TypeRequired || (includeRecommended && edge.Type == TypeRecommended)
+			if !relevant {
 				continue
 			}
 			depNode, ok := g.Node(edge.To)

@@ -11,7 +11,7 @@ import (
 )
 
 func newMODEnableCommand(c *cli) *cobra.Command {
-	var yes bool
+	var yes, ignoreRecommended bool
 	var backupExtension string
 
 	cmd := &cobra.Command{
@@ -44,7 +44,7 @@ func newMODEnableCommand(c *cli) *cobra.Command {
 				}
 			}
 
-			planned, err := dependency.PlanEnable(state.graph, targets)
+			planned, err := dependency.PlanEnable(state.graph, targets, !ignoreRecommended)
 			if err != nil {
 				return err
 			}
@@ -74,6 +74,7 @@ func newMODEnableCommand(c *cli) *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not enable recommended dependencies")
 	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }

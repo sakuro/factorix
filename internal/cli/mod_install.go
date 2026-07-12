@@ -25,7 +25,7 @@ type installTarget struct {
 
 func newMODInstallCommand(c *cli) *cobra.Command {
 	var jobs int
-	var yes bool
+	var yes, ignoreRecommended bool
 	var backupExtension string
 
 	cmd := &cobra.Command{
@@ -62,7 +62,7 @@ func newMODInstallCommand(c *cli) *cobra.Command {
 				specs[i] = spec
 			}
 
-			targets, err := planInstall(cmd.Context(), application, state.graph, specs, jobs)
+			targets, err := planInstall(cmd.Context(), application, state.graph, specs, jobs, !ignoreRecommended)
 			if err != nil {
 				return err
 			}
@@ -122,6 +122,7 @@ func newMODInstallCommand(c *cli) *cobra.Command {
 	}
 	cmd.Flags().IntVarP(&jobs, "jobs", "j", 4, "Number of parallel downloads")
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
+	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not resolve or enable recommended dependencies")
 	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
 }
@@ -141,7 +142,7 @@ func splitInstallTargets(targets []installTarget) (installs, enables []installTa
 // with them and their required dependencies (recursively), marks disabled
 // installed dependencies for enabling, validates the result, and extracts
 // the actions to perform.
-func planInstall(ctx context.Context, application *app.App, graph *dependency.Graph, specs []modSpec, jobs int) ([]installTarget, error) {
+func planInstall(ctx context.Context, application *app.App, graph *dependency.Graph, specs []modSpec, jobs int, includeRecommended bool) ([]installTarget, error) {
 	portalAPI, err := application.PortalAPI()
 	if err != nil {
 		return nil, err
@@ -174,11 +175,11 @@ func planInstall(ctx context.Context, application *app.App, graph *dependency.Gr
 		frontier = append(frontier, info.MOD)
 	}
 
-	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs); err != nil {
+	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs, includeRecommended); err != nil {
 		return nil, err
 	}
 
-	dependency.MarkDisabledDependenciesForEnable(graph)
+	dependency.MarkDisabledDependenciesForEnable(graph, includeRecommended)
 	if err := dependency.ValidateInstallGraph(graph); err != nil {
 		return nil, err
 	}
@@ -200,13 +201,14 @@ func planInstall(ctx context.Context, application *app.App, graph *dependency.Gr
 	return targets, nil
 }
 
-// resolveInstallDependencies walks the required and recommended edges of
-// newly-added graph nodes and fetches MODs not yet in the graph, extending
-// it recursively. Recommended dependencies are on by default, so they're
-// fetched the same as required ones. A dependency that cannot be fetched or
-// has no compatible release is skipped with a warning rather than failing
-// the install.
-func resolveInstallDependencies(ctx context.Context, application *app.App, graph *dependency.Graph, releases map[mod.MOD]api.Release, frontier []mod.MOD, jobs int) error {
+// resolveInstallDependencies walks the required (and, when includeRecommended
+// is true, recommended) edges of newly-added graph nodes and fetches MODs
+// not yet in the graph, extending it recursively. Recommended dependencies
+// are on by default, so they're fetched the same as required ones unless
+// the caller opts out. A dependency that cannot be fetched or has no
+// compatible release is skipped with a warning rather than failing the
+// install.
+func resolveInstallDependencies(ctx context.Context, application *app.App, graph *dependency.Graph, releases map[mod.MOD]api.Release, frontier []mod.MOD, jobs int, includeRecommended bool) error {
 	portalAPI, err := application.PortalAPI()
 	if err != nil {
 		return err
@@ -226,7 +228,8 @@ func resolveInstallDependencies(ctx context.Context, application *app.App, graph
 			}
 			processed[m] = true
 			for _, edge := range graph.EdgesFrom(m) {
-				if edge.Type != dependency.TypeRequired && edge.Type != dependency.TypeRecommended {
+				relevant := edge.Type == dependency.TypeRequired || (includeRecommended && edge.Type == dependency.TypeRecommended)
+				if !relevant {
 					continue
 				}
 				if graph.Contains(edge.To) {

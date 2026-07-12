@@ -158,6 +158,38 @@ func TestMODInstallPullsInRecommendedDependency(t *testing.T) {
 	assert.True(t, states["lib-mod"])
 }
 
+func TestMODInstallIgnoresRecommendedDependencyWithFlag(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true})
+	mainRelease := portalRelease{
+		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
+		DownloadURL: "/download/some-mod_1.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+	}
+	libRelease := portalRelease{
+		Version: "2.0.0", FileName: "lib-mod_2.0.0.zip",
+		DownloadURL: "/download/lib-mod_2.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+	}
+	// lib-mod is registered and fetchable so this test proves the flag
+	// itself excludes it, not that the fetch would have failed anyway.
+	portal := newMockPortal(t,
+		portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice", Releases: []portalRelease{mainRelease}},
+		portalMOD{Name: "lib-mod", Title: "Lib MOD", Owner: "alice", Releases: []portalRelease{libRelease}},
+	)
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "install", "some-mod", "-y", "--ignore-recommended")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Installed 1 MOD(s)")
+
+	states := s.readMODList(t)
+	assert.True(t, states["some-mod"])
+	_, listed := states["lib-mod"]
+	assert.False(t, listed)
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "lib-mod_2.0.0.zip"))
+}
+
 func TestMODInstallEnablesDisabledRecommendedDependency(t *testing.T) {
 	s := baseSandbox(t)
 	s.writeInstalledMOD(t, "lib-mod", "1.0.0", nil)
