@@ -59,6 +59,41 @@ func TestPlanEnableVersionMismatch(t *testing.T) {
 	require.ErrorIs(t, err, ErrDependencyVersion)
 }
 
+func TestPlanEnablePullsInInstalledRecommendedDeps(t *testing.T) {
+	g := NewGraph()
+	disabledNode(t, g, "app")
+	disabledNode(t, g, "lib")
+	requireEdge(t, g, "app", "lib", TypeRecommended)
+
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	require.NoError(t, err)
+	assert.Equal(t, []mod.MOD{testMOD("app"), testMOD("lib")}, planned)
+}
+
+func TestPlanEnableSkipsUninstalledRecommendedDep(t *testing.T) {
+	g := NewGraph()
+	disabledNode(t, g, "app")
+	requireEdge(t, g, "app", "ghost", TypeRecommended)
+
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	require.NoError(t, err)
+	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
+}
+
+func TestPlanEnableSkipsVersionMismatchedRecommendedDep(t *testing.T) {
+	g := NewGraph()
+	disabledNode(t, g, "app")
+	disabledNode(t, g, "lib") // version 1
+	require.NoError(t, g.AddEdge(Edge{
+		From: testMOD("app"), To: testMOD("lib"), Type: TypeRecommended,
+		Requirement: &VersionRequirement{Operator: OpGreaterEqual, Version: mod.MODVersion{Major: 2}},
+	}))
+
+	planned, err := PlanEnable(g, []mod.MOD{testMOD("app")})
+	require.NoError(t, err)
+	assert.Equal(t, []mod.MOD{testMOD("app")}, planned)
+}
+
 func TestValidateNoConflictsWithEnabled(t *testing.T) {
 	g := NewGraph()
 	disabledNode(t, g, "app")
