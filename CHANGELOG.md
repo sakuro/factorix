@@ -4,6 +4,10 @@
 
 - Accept Factorio 2.1 as a `mod search --version` filter value
 
+### Changed
+
+- **BREAKING**: Move `mod upload`, `mod edit`, `mod changelog`, and `mod image` to a new `dev` command (`dev upload`, `dev edit`, `dev changelog`, `dev image`), separating MOD-authoring/Portal-publishing commands from gameplay-time MOD management (#167)
+
 ## [0.20.0] - 2026-07-12
 
 Factorix is being rewritten from Ruby to Go, reaching full command parity:
