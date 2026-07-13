@@ -18,7 +18,7 @@ const scanParallelism = 4
 
 // ScanInstalled finds the installed MODs: ZIP files and directories in the
 // MOD directory, plus the base/expansion MOD directories bundled in the
-// data directory. Invalid packages are skipped with a debug log. When the
+// data directory. Invalid packages are skipped with a warning log. When the
 // same name and version exists in both forms, the directory wins (a
 // development checkout shadows the packaged ZIP).
 func ScanInstalled(modDir, dataDir string, logger *slog.Logger, listener progress.Listener) ([]InstalledMOD, error) {
@@ -118,7 +118,7 @@ func scanPath(path string, logger *slog.Logger) *InstalledMOD {
 		im, err = InstalledMODFromZIP(path)
 	}
 	if err != nil {
-		logger.Debug("Skipping invalid MOD package", "path", path, "reason", err)
+		logger.Warn("Skipping invalid MOD package", "path", path, "reason", err)
 		return nil
 	}
 	return &im

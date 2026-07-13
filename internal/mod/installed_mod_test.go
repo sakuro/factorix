@@ -57,6 +57,18 @@ func TestInstalledMODFromZIPFilenameMismatch(t *testing.T) {
 	assert.Contains(t, ffe.Msg, "filename mismatch")
 }
 
+func TestInstalledMODFromZIPNonCanonicalVersion(t *testing.T) {
+	// A MOD Portal release may publish a non-canonical version string (e.g.
+	// zero-padded), yielding a filename like "test-mod_1.02.3.zip" for the
+	// info.json version "1.2.3". The two must still be recognized as the
+	// same version.
+	path := writeMODZip(t, t.TempDir(), "test-mod_1.02.3.zip")
+
+	im, err := InstalledMODFromZIP(path)
+	require.NoError(t, err)
+	assert.Equal(t, MODVersion{Major: 1, Minor: 2, Patch: 3}, im.Version)
+}
+
 func TestInstalledMODFromZIPInvalidZip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "test-mod_1.2.3.zip")
 	require.NoError(t, os.WriteFile(path, []byte("not a zip"), 0o644))
@@ -77,6 +89,14 @@ func TestInstalledMODFromDirectory(t *testing.T) {
 			assert.Equal(t, FormDirectory, im.Form)
 		})
 	}
+}
+
+func TestInstalledMODFromDirectoryNonCanonicalVersion(t *testing.T) {
+	path := writeMODDirectory(t, t.TempDir(), "test-mod_1.02.3")
+
+	im, err := InstalledMODFromDirectory(path)
+	require.NoError(t, err)
+	assert.Equal(t, MODVersion{Major: 1, Minor: 2, Patch: 3}, im.Version)
 }
 
 func TestInstalledMODFromDirectoryNameMismatch(t *testing.T) {
