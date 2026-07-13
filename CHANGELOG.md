@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Fixed
+
+- Recognize installed MOD packages whose filename uses a non-canonical version string (e.g. zero-padded like `0.1.01`), which previously caused `mod update` to repeatedly re-offer the same update (#173)
+
 ## [0.21.0] - 2026-07-13
 
 ### Added

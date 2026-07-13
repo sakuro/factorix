@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Form is the on-disk shape of an installed MOD package.
@@ -37,6 +38,15 @@ type InstalledMOD struct {
 	Info    InfoJSON
 }
 
+// versionSegmentMatches reports whether s names the same version as v. It
+// parses s rather than comparing rendered strings, so on-disk names that use
+// a non-canonical version format (e.g. a MOD Portal release zero-padded as
+// "0.1.01") still match the canonical "0.1.1" declared in info.json.
+func versionSegmentMatches(s string, v MODVersion) bool {
+	parsed, err := ParseMODVersion(s)
+	return err == nil && parsed.Compare(v) == 0
+}
+
 // InstalledMODFromZIP loads an installed MOD from a ZIP file.
 // The filename must be "<name>_<version>.zip".
 func InstalledMODFromZIP(path string) (InstalledMOD, error) {
@@ -45,12 +55,13 @@ func InstalledMODFromZIP(path string) (InstalledMOD, error) {
 		return InstalledMOD{}, err
 	}
 
-	expected := fmt.Sprintf("%s_%s.zip", info.Name, info.Version)
 	actual := filepath.Base(path)
-	if actual != expected {
+	rest, hasPrefix := strings.CutPrefix(actual, info.Name+"_")
+	versionSegment, hasSuffix := strings.CutSuffix(rest, ".zip")
+	if !hasPrefix || !hasSuffix || !versionSegmentMatches(versionSegment, info.Version) {
 		return InstalledMOD{}, &FileFormatError{
 			Path: path,
-			Msg:  fmt.Sprintf("filename mismatch: expected %s, got %s", expected, actual),
+			Msg:  fmt.Sprintf("filename mismatch: expected %s_%s.zip, got %s", info.Name, info.Version, actual),
 		}
 	}
 
@@ -71,11 +82,11 @@ func InstalledMODFromDirectory(path string) (InstalledMOD, error) {
 	}
 
 	dirname := filepath.Base(path)
-	versioned := fmt.Sprintf("%s_%s", info.Name, info.Version)
-	if dirname != info.Name && dirname != versioned {
+	versionSegment, hasPrefix := strings.CutPrefix(dirname, info.Name+"_")
+	if dirname != info.Name && (!hasPrefix || !versionSegmentMatches(versionSegment, info.Version)) {
 		return InstalledMOD{}, &FileFormatError{
 			Path: path,
-			Msg:  fmt.Sprintf("directory name mismatch: expected %s or %s, got %s", info.Name, versioned, dirname),
+			Msg:  fmt.Sprintf("directory name mismatch: expected %s or %s_%s, got %s", info.Name, info.Name, info.Version, dirname),
 		}
 	}
 
