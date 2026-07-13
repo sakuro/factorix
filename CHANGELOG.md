@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.21.0] - 2026-07-13
+
 ### Added
 
 - Accept Factorio 2.1 as a `mod search --version` filter value
