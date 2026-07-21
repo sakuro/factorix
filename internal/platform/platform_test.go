@@ -76,11 +76,21 @@ func TestLinuxSteamRootNotFound(t *testing.T) {
 
 func TestMacOSPaths(t *testing.T) {
 	home := setHome(t)
+	steamRoot := filepath.Join(home, "Library", "Application Support", "Steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	p := MacOS{}
 
 	userDir, err := p.GameUserDir()
 	require.NoError(t, err)
 	assert.Equal(t, filepath.Join(home, "Library/Application Support/factorio"), userDir)
+
+	exe, err := p.GameExecutablePath()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "factorio.app", "Contents", "MacOS", "factorio"), exe)
+
+	dataDir, err := p.GameDataDir()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "factorio.app", "Contents", "data"), dataDir)
 
 	logPath, err := p.DefaultFactorixLogPath()
 	require.NoError(t, err)
