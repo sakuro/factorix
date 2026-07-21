@@ -149,6 +149,32 @@ func TestConvertWindowsToWSL(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestWSLSteamRoot(t *testing.T) {
+	w := &WSL{windowsEnvs: func() (map[string]string, error) {
+		return map[string]string{
+			"APPDATA":      `C:\Users\test\AppData\Roaming`,
+			"LOCALAPPDATA": `C:\Users\test\AppData\Local`,
+			"SteamPath":    `D:\SteamLibrary`,
+		}, nil
+	}}
+
+	root, err := w.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, "/mnt/d/SteamLibrary", root)
+}
+
+func TestWSLSteamRootMissing(t *testing.T) {
+	w := &WSL{windowsEnvs: func() (map[string]string, error) {
+		return map[string]string{
+			"APPDATA":      `C:\Users\test\AppData\Roaming`,
+			"LOCALAPPDATA": `C:\Users\test\AppData\Local`,
+		}, nil
+	}}
+
+	_, err := w.steamRoot()
+	require.ErrorIs(t, err, ErrMissingEnv)
+}
+
 func TestRuntimeDerivedPaths(t *testing.T) {
 	home := setHome(t)
 	r := NewRuntime(Linux{}, Overrides{})
