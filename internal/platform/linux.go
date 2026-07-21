@@ -33,12 +33,16 @@ func (Linux) steamRoot() (string, error) {
 	return "", fmt.Errorf("Steam installation not found (checked %s and %s)", native, flatpak)
 }
 
-func (l Linux) GameExecutablePath() (string, error) {
+func (l Linux) factorioDir() (string, error) {
 	root, err := l.steamRoot()
 	if err != nil {
 		return "", err
 	}
-	factorioDir, err := findFactorioDir(root)
+	return findFactorioDir(root)
+}
+
+func (l Linux) GameExecutablePath() (string, error) {
+	factorioDir, err := l.factorioDir()
 	if err != nil {
 		return "", err
 	}
@@ -50,11 +54,7 @@ func (Linux) GameUserDir() (string, error) {
 }
 
 func (l Linux) GameDataDir() (string, error) {
-	root, err := l.steamRoot()
-	if err != nil {
-		return "", err
-	}
-	factorioDir, err := findFactorioDir(root)
+	factorioDir, err := l.factorioDir()
 	if err != nil {
 		return "", err
 	}
