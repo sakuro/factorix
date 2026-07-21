@@ -98,23 +98,37 @@ func TestMacOSPaths(t *testing.T) {
 }
 
 func TestWindowsPaths(t *testing.T) {
-	t.Setenv("ProgramFiles(x86)", `C:\Program Files (x86)`)
 	t.Setenv("APPDATA", `C:\Users\test\AppData\Roaming`)
 	t.Setenv("LOCALAPPDATA", `C:\Users\test\AppData\Local`)
-	p := Windows{}
+	steamRoot := t.TempDir()
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
+	w := NewWindows()
+	w.steamPath = func() (string, error) { return steamRoot, nil }
 
-	exe, err := p.GameExecutablePath()
+	exe, err := w.GameExecutablePath()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(`C:\Program Files (x86)`, "Steam", "steamapps", "common", "Factorio", "bin", "x64", "factorio.exe"), exe)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "bin", "x64", "factorio.exe"), exe)
 
-	userDir, err := p.GameUserDir()
+	userDir, err := w.GameUserDir()
 	require.NoError(t, err)
 	assert.Equal(t, filepath.Join(`C:\Users\test\AppData\Roaming`, "Factorio"), userDir)
+
+	dataDir, err := w.GameDataDir()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "data"), dataDir)
 }
 
 func TestWindowsPathsMissingEnv(t *testing.T) {
 	t.Setenv("APPDATA", "")
-	_, err := Windows{}.GameUserDir()
+	_, err := NewWindows().GameUserDir()
+	require.ErrorIs(t, err, ErrMissingEnv)
+}
+
+func TestWindowsSteamPathError(t *testing.T) {
+	w := NewWindows()
+	w.steamPath = func() (string, error) { return "", ErrMissingEnv }
+
+	_, err := w.GameExecutablePath()
 	require.ErrorIs(t, err, ErrMissingEnv)
 }
 

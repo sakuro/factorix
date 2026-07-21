@@ -3,13 +3,39 @@ package platform
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
+	"sync"
 )
 
-// Windows locates Factorio via the standard environment variables and
-// assumes a Steam installation; other installations are covered by the
+// Windows locates Factorio via the Steam registry key (read through
+// PowerShell, consistent with WSL) and other paths via the standard
+// environment variables. Other installations are covered by the
 // [runtime] overrides in config.toml.
-type Windows struct{}
+type Windows struct {
+	steamPath func() (string, error)
+}
+
+// NewWindows returns a Windows platform. The registry read behind
+// steamPath runs at most once, memoized via sync.OnceValues.
+func NewWindows() *Windows {
+	return &Windows{steamPath: sync.OnceValues(fetchWindowsSteamPath)}
+}
+
+const windowsSteamPathScript = `(Get-ItemProperty -Path 'HKCU:\Software\Valve\Steam' -Name SteamPath).SteamPath`
+
+func fetchWindowsSteamPath() (string, error) {
+	out, err := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", windowsSteamPathScript).Output()
+	if err != nil {
+		return "", fmt.Errorf("PowerShell execution failed: %w", err)
+	}
+	path := strings.TrimSpace(string(out))
+	if path == "" {
+		return "", fmt.Errorf("%w: Steam registry key", ErrMissingEnv)
+	}
+	return path, nil
+}
 
 func windowsEnv(name string) (string, error) {
 	value := os.Getenv(name)
@@ -19,32 +45,31 @@ func windowsEnv(name string) (string, error) {
 	return value, nil
 }
 
-func (Windows) programFilesX86() (string, error) {
-	return windowsEnv("ProgramFiles(x86)")
-}
-
-func (Windows) appData() (string, error) {
+func (*Windows) appData() (string, error) {
 	return windowsEnv("APPDATA")
 }
 
-func (Windows) localAppData() (string, error) {
+func (*Windows) localAppData() (string, error) {
 	return windowsEnv("LOCALAPPDATA")
 }
 
-// steamFactorioPath joins elems under Steam's Factorio directory.
-func steamFactorioPath(root string, elems ...string) string {
-	return filepath.Join(append([]string{root, "Steam", "steamapps", "common", "Factorio"}, elems...)...)
-}
-
-func (w Windows) GameExecutablePath() (string, error) {
-	root, err := w.programFilesX86()
+func (w *Windows) factorioDir() (string, error) {
+	root, err := w.steamPath()
 	if err != nil {
 		return "", err
 	}
-	return steamFactorioPath(root, "bin", "x64", "factorio.exe"), nil
+	return findFactorioDir(root)
 }
 
-func (w Windows) GameUserDir() (string, error) {
+func (w *Windows) GameExecutablePath() (string, error) {
+	factorioDir, err := w.factorioDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(factorioDir, "bin", "x64", "factorio.exe"), nil
+}
+
+func (w *Windows) GameUserDir() (string, error) {
 	appData, err := w.appData()
 	if err != nil {
 		return "", err
@@ -52,31 +77,31 @@ func (w Windows) GameUserDir() (string, error) {
 	return filepath.Join(appData, "Factorio"), nil
 }
 
-func (w Windows) GameDataDir() (string, error) {
-	root, err := w.programFilesX86()
+func (w *Windows) GameDataDir() (string, error) {
+	factorioDir, err := w.factorioDir()
 	if err != nil {
 		return "", err
 	}
-	return steamFactorioPath(root, "data"), nil
+	return filepath.Join(factorioDir, "data"), nil
 }
 
-func (w Windows) DefaultCacheHomeDir() (string, error) {
+func (w *Windows) DefaultCacheHomeDir() (string, error) {
 	return w.localAppData()
 }
 
-func (w Windows) DefaultConfigHomeDir() (string, error) {
+func (w *Windows) DefaultConfigHomeDir() (string, error) {
 	return w.appData()
 }
 
-func (w Windows) DefaultDataHomeDir() (string, error) {
+func (w *Windows) DefaultDataHomeDir() (string, error) {
 	return w.localAppData()
 }
 
-func (Windows) DefaultStateHomeDir() (string, error) {
+func (*Windows) DefaultStateHomeDir() (string, error) {
 	return homePath(".local", "state")
 }
 
-func (w Windows) DefaultFactorixLogPath() (string, error) {
+func (w *Windows) DefaultFactorixLogPath() (string, error) {
 	stateHome, err := w.DefaultStateHomeDir()
 	if err != nil {
 		return "", err
@@ -85,4 +110,4 @@ func (w Windows) DefaultFactorixLogPath() (string, error) {
 }
 
 // Name identifies the platform.
-func (Windows) Name() string { return "Windows" }
+func (*Windows) Name() string { return "Windows" }

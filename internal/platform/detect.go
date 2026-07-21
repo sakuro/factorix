@@ -15,7 +15,7 @@ func Detect() (Platform, error) {
 	case "darwin":
 		return MacOS{}, nil
 	case "windows":
-		return Windows{}, nil
+		return NewWindows(), nil
 	case "linux":
 		if isWSL() {
 			return NewWSL(), nil
