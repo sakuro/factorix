@@ -28,11 +28,13 @@ func clearXDG(t *testing.T) {
 
 func TestLinuxPaths(t *testing.T) {
 	home := setHome(t)
+	steamRoot := filepath.Join(home, ".steam", "steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	p := Linux{}
 
 	exe, err := p.GameExecutablePath()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(home, ".steam/steam/steamapps/common/Factorio/bin/x64/factorio"), exe)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "bin", "x64", "factorio"), exe)
 
 	userDir, err := p.GameUserDir()
 	require.NoError(t, err)
@@ -40,7 +42,36 @@ func TestLinuxPaths(t *testing.T) {
 
 	dataDir, err := p.GameDataDir()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(home, ".steam/steam/steamapps/common/Factorio/data"), dataDir)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "data"), dataDir)
+}
+
+func TestLinuxSteamRootFlatpakFallback(t *testing.T) {
+	home := setHome(t)
+	flatpakRoot := filepath.Join(home, ".var", "app", "com.valvesoftware.Steam", ".steam", "steam")
+	writeLibraryFolders(t, flatpakRoot, factorioLibraryVDF(flatpakRoot))
+
+	root, err := Linux{}.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, flatpakRoot, root)
+}
+
+func TestLinuxSteamRootNativeTakesPrecedence(t *testing.T) {
+	home := setHome(t)
+	nativeRoot := filepath.Join(home, ".steam", "steam")
+	flatpakRoot := filepath.Join(home, ".var", "app", "com.valvesoftware.Steam", ".steam", "steam")
+	writeLibraryFolders(t, nativeRoot, factorioLibraryVDF(nativeRoot))
+	writeLibraryFolders(t, flatpakRoot, factorioLibraryVDF(flatpakRoot))
+
+	root, err := Linux{}.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, nativeRoot, root)
+}
+
+func TestLinuxSteamRootNotFound(t *testing.T) {
+	setHome(t)
+
+	_, err := Linux{}.steamRoot()
+	require.Error(t, err)
 }
 
 func TestMacOSPaths(t *testing.T) {
@@ -120,7 +151,9 @@ func TestRuntimeDerivedPaths(t *testing.T) {
 }
 
 func TestRuntimeOverrides(t *testing.T) {
-	setHome(t)
+	home := setHome(t)
+	steamRoot := filepath.Join(home, ".steam", "steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	r := NewRuntime(Linux{}, Overrides{
 		ExecutablePath: "/opt/factorio/bin/x64/factorio",
 		UserDir:        "/srv/factorio",
