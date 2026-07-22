@@ -25,11 +25,12 @@ func NewWSL() *WSL {
 	return &WSL{windowsEnvs: sync.OnceValues(fetchWindowsEnvs)}
 }
 
-// The Windows environment variables fetched in one PowerShell invocation.
+// The Windows environment variables and Steam registry key fetched in one
+// PowerShell invocation.
 const wslPowerShellScript = `[pscustomobject]@{
-  "ProgramFiles(x86)" = ${Env:ProgramFiles(x86)};
-  "APPDATA"           = ${Env:APPDATA};
-  "LOCALAPPDATA"      = ${Env:LOCALAPPDATA}
+  "APPDATA"      = ${Env:APPDATA};
+  "LOCALAPPDATA" = ${Env:LOCALAPPDATA};
+  "SteamPath"    = (Get-ItemProperty -Path 'HKCU:\Software\Valve\Steam' -Name SteamPath -ErrorAction SilentlyContinue).SteamPath
 } | ConvertTo-Json -Compress`
 
 var wslPowerShellFallbackPaths = []string{
@@ -47,6 +48,18 @@ func (w *WSL) windowsPath(name string) (string, error) {
 		return "", fmt.Errorf("%w: %s", ErrMissingEnv, name)
 	}
 	return convertWindowsToWSL(value)
+}
+
+func (w *WSL) steamRoot() (string, error) {
+	return w.windowsPath("SteamPath")
+}
+
+func (w *WSL) factorioDir() (string, error) {
+	root, err := w.steamRoot()
+	if err != nil {
+		return "", err
+	}
+	return findFactorioDir(root)
 }
 
 func fetchWindowsEnvs() (map[string]string, error) {
@@ -96,11 +109,11 @@ func convertWindowsToWSL(windowsPath string) (string, error) {
 }
 
 func (w *WSL) GameExecutablePath() (string, error) {
-	root, err := w.windowsPath("ProgramFiles(x86)")
+	factorioDir, err := w.factorioDir()
 	if err != nil {
 		return "", err
 	}
-	return steamFactorioPath(root, "bin", "x64", "factorio.exe"), nil
+	return filepath.Join(factorioDir, "bin", "x64", "factorio.exe"), nil
 }
 
 func (w *WSL) GameUserDir() (string, error) {
@@ -112,11 +125,11 @@ func (w *WSL) GameUserDir() (string, error) {
 }
 
 func (w *WSL) GameDataDir() (string, error) {
-	root, err := w.windowsPath("ProgramFiles(x86)")
+	factorioDir, err := w.factorioDir()
 	if err != nil {
 		return "", err
 	}
-	return steamFactorioPath(root, "data"), nil
+	return filepath.Join(factorioDir, "data"), nil
 }
 
 func (w *WSL) DefaultCacheHomeDir() (string, error) {

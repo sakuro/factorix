@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- Detect Factorio's actual Steam library location by parsing `libraryfolders.vdf` instead of assuming the default Steam library, so `data_dir`/`executable_path` auto-detection also finds installations in a non-default Steam library folder on Linux, macOS, Windows, and WSL
+
 ### Fixed
 
 - Recognize installed MOD packages whose filename uses a non-canonical version string (e.g. zero-padded like `0.1.01`), which previously caused `mod update` to repeatedly re-offer the same update (#173)

@@ -2,22 +2,42 @@ package platform
 
 import "path/filepath"
 
-// MacOS assumes a Steam installation; other installations (GOG, itch.io,
-// standalone) are covered by the [runtime] overrides in config.toml.
+// MacOS locates Factorio inside the Steam library folder that actually
+// contains it, under the fixed path Steam always installs to on macOS.
+// Other installations (GOG, itch.io, standalone) are covered by the
+// [runtime] overrides in config.toml.
 type MacOS struct{}
 
-func (MacOS) GameExecutablePath() (string, error) {
-	return homePath("Library", "Application Support", "Steam", "steamapps", "common", "Factorio",
-		"factorio.app", "Contents", "MacOS", "factorio")
+func (MacOS) steamRoot() (string, error) {
+	return homePath("Library", "Application Support", "Steam")
+}
+
+func (m MacOS) factorioDir() (string, error) {
+	root, err := m.steamRoot()
+	if err != nil {
+		return "", err
+	}
+	return findFactorioDir(root)
+}
+
+func (m MacOS) GameExecutablePath() (string, error) {
+	factorioDir, err := m.factorioDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(factorioDir, "factorio.app", "Contents", "MacOS", "factorio"), nil
 }
 
 func (MacOS) GameUserDir() (string, error) {
 	return homePath("Library", "Application Support", "factorio")
 }
 
-func (MacOS) GameDataDir() (string, error) {
-	return homePath("Library", "Application Support", "Steam", "steamapps", "common", "Factorio",
-		"factorio.app", "Contents", "data")
+func (m MacOS) GameDataDir() (string, error) {
+	factorioDir, err := m.factorioDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(factorioDir, "factorio.app", "Contents", "data"), nil
 }
 
 func (MacOS) DefaultCacheHomeDir() (string, error) {

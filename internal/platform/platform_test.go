@@ -28,11 +28,13 @@ func clearXDG(t *testing.T) {
 
 func TestLinuxPaths(t *testing.T) {
 	home := setHome(t)
+	steamRoot := filepath.Join(home, ".steam", "steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	p := Linux{}
 
 	exe, err := p.GameExecutablePath()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(home, ".steam/steam/steamapps/common/Factorio/bin/x64/factorio"), exe)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "bin", "x64", "factorio"), exe)
 
 	userDir, err := p.GameUserDir()
 	require.NoError(t, err)
@@ -40,16 +42,55 @@ func TestLinuxPaths(t *testing.T) {
 
 	dataDir, err := p.GameDataDir()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(home, ".steam/steam/steamapps/common/Factorio/data"), dataDir)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "data"), dataDir)
+}
+
+func TestLinuxSteamRootFlatpakFallback(t *testing.T) {
+	home := setHome(t)
+	flatpakRoot := filepath.Join(home, ".var", "app", "com.valvesoftware.Steam", ".steam", "steam")
+	writeLibraryFolders(t, flatpakRoot, factorioLibraryVDF(flatpakRoot))
+
+	root, err := Linux{}.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, flatpakRoot, root)
+}
+
+func TestLinuxSteamRootNativeTakesPrecedence(t *testing.T) {
+	home := setHome(t)
+	nativeRoot := filepath.Join(home, ".steam", "steam")
+	flatpakRoot := filepath.Join(home, ".var", "app", "com.valvesoftware.Steam", ".steam", "steam")
+	writeLibraryFolders(t, nativeRoot, factorioLibraryVDF(nativeRoot))
+	writeLibraryFolders(t, flatpakRoot, factorioLibraryVDF(flatpakRoot))
+
+	root, err := Linux{}.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, nativeRoot, root)
+}
+
+func TestLinuxSteamRootNotFound(t *testing.T) {
+	setHome(t)
+
+	_, err := Linux{}.steamRoot()
+	require.Error(t, err)
 }
 
 func TestMacOSPaths(t *testing.T) {
 	home := setHome(t)
+	steamRoot := filepath.Join(home, "Library", "Application Support", "Steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	p := MacOS{}
 
 	userDir, err := p.GameUserDir()
 	require.NoError(t, err)
 	assert.Equal(t, filepath.Join(home, "Library/Application Support/factorio"), userDir)
+
+	exe, err := p.GameExecutablePath()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "factorio.app", "Contents", "MacOS", "factorio"), exe)
+
+	dataDir, err := p.GameDataDir()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "factorio.app", "Contents", "data"), dataDir)
 
 	logPath, err := p.DefaultFactorixLogPath()
 	require.NoError(t, err)
@@ -57,23 +98,37 @@ func TestMacOSPaths(t *testing.T) {
 }
 
 func TestWindowsPaths(t *testing.T) {
-	t.Setenv("ProgramFiles(x86)", `C:\Program Files (x86)`)
 	t.Setenv("APPDATA", `C:\Users\test\AppData\Roaming`)
 	t.Setenv("LOCALAPPDATA", `C:\Users\test\AppData\Local`)
-	p := Windows{}
+	steamRoot := t.TempDir()
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
+	w := NewWindows()
+	w.steamRoot = func() (string, error) { return steamRoot, nil }
 
-	exe, err := p.GameExecutablePath()
+	exe, err := w.GameExecutablePath()
 	require.NoError(t, err)
-	assert.Equal(t, filepath.Join(`C:\Program Files (x86)`, "Steam", "steamapps", "common", "Factorio", "bin", "x64", "factorio.exe"), exe)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "bin", "x64", "factorio.exe"), exe)
 
-	userDir, err := p.GameUserDir()
+	userDir, err := w.GameUserDir()
 	require.NoError(t, err)
 	assert.Equal(t, filepath.Join(`C:\Users\test\AppData\Roaming`, "Factorio"), userDir)
+
+	dataDir, err := w.GameDataDir()
+	require.NoError(t, err)
+	assert.Equal(t, filepath.Join(steamRoot, "steamapps", "common", "Factorio", "data"), dataDir)
 }
 
 func TestWindowsPathsMissingEnv(t *testing.T) {
 	t.Setenv("APPDATA", "")
-	_, err := Windows{}.GameUserDir()
+	_, err := NewWindows().GameUserDir()
+	require.ErrorIs(t, err, ErrMissingEnv)
+}
+
+func TestWindowsSteamPathError(t *testing.T) {
+	w := NewWindows()
+	w.steamRoot = func() (string, error) { return "", ErrMissingEnv }
+
+	_, err := w.GameExecutablePath()
 	require.ErrorIs(t, err, ErrMissingEnv)
 }
 
@@ -92,6 +147,32 @@ func TestConvertWindowsToWSL(t *testing.T) {
 
 	_, err := convertWindowsToWSL("not a windows path")
 	require.Error(t, err)
+}
+
+func TestWSLSteamRoot(t *testing.T) {
+	w := &WSL{windowsEnvs: func() (map[string]string, error) {
+		return map[string]string{
+			"APPDATA":      `C:\Users\test\AppData\Roaming`,
+			"LOCALAPPDATA": `C:\Users\test\AppData\Local`,
+			"SteamPath":    `D:\SteamLibrary`,
+		}, nil
+	}}
+
+	root, err := w.steamRoot()
+	require.NoError(t, err)
+	assert.Equal(t, "/mnt/d/SteamLibrary", root)
+}
+
+func TestWSLSteamRootMissing(t *testing.T) {
+	w := &WSL{windowsEnvs: func() (map[string]string, error) {
+		return map[string]string{
+			"APPDATA":      `C:\Users\test\AppData\Roaming`,
+			"LOCALAPPDATA": `C:\Users\test\AppData\Local`,
+		}, nil
+	}}
+
+	_, err := w.steamRoot()
+	require.ErrorIs(t, err, ErrMissingEnv)
 }
 
 func TestRuntimeDerivedPaths(t *testing.T) {
@@ -120,7 +201,9 @@ func TestRuntimeDerivedPaths(t *testing.T) {
 }
 
 func TestRuntimeOverrides(t *testing.T) {
-	setHome(t)
+	home := setHome(t)
+	steamRoot := filepath.Join(home, ".steam", "steam")
+	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	r := NewRuntime(Linux{}, Overrides{
 		ExecutablePath: "/opt/factorio/bin/x64/factorio",
 		UserDir:        "/srv/factorio",
