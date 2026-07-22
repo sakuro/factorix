@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.22.0] - 2026-07-22
+
 ### Changed
 
 - Detect Factorio's actual Steam library location by parsing `libraryfolders.vdf` instead of assuming the default Steam library, so `data_dir`/`executable_path` auto-detection also finds installations in a non-default Steam library folder on Linux, macOS, Windows, and WSL
