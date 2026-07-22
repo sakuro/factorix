@@ -103,7 +103,7 @@ func TestWindowsPaths(t *testing.T) {
 	steamRoot := t.TempDir()
 	writeLibraryFolders(t, steamRoot, factorioLibraryVDF(steamRoot))
 	w := NewWindows()
-	w.steamPath = func() (string, error) { return steamRoot, nil }
+	w.steamRoot = func() (string, error) { return steamRoot, nil }
 
 	exe, err := w.GameExecutablePath()
 	require.NoError(t, err)
@@ -126,7 +126,7 @@ func TestWindowsPathsMissingEnv(t *testing.T) {
 
 func TestWindowsSteamPathError(t *testing.T) {
 	w := NewWindows()
-	w.steamPath = func() (string, error) { return "", ErrMissingEnv }
+	w.steamRoot = func() (string, error) { return "", ErrMissingEnv }
 
 	_, err := w.GameExecutablePath()
 	require.ErrorIs(t, err, ErrMissingEnv)

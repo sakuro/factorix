@@ -14,16 +14,16 @@ import (
 // environment variables. Other installations are covered by the
 // [runtime] overrides in config.toml.
 type Windows struct {
-	steamPath func() (string, error)
+	steamRoot func() (string, error)
 }
 
 // NewWindows returns a Windows platform. The registry read behind
-// steamPath runs at most once, memoized via sync.OnceValues.
+// steamRoot runs at most once, memoized via sync.OnceValues.
 func NewWindows() *Windows {
-	return &Windows{steamPath: sync.OnceValues(fetchWindowsSteamPath)}
+	return &Windows{steamRoot: sync.OnceValues(fetchWindowsSteamPath)}
 }
 
-const windowsSteamPathScript = `(Get-ItemProperty -Path 'HKCU:\Software\Valve\Steam' -Name SteamPath).SteamPath`
+const windowsSteamPathScript = `(Get-ItemProperty -Path 'HKCU:\Software\Valve\Steam' -Name SteamPath -ErrorAction SilentlyContinue).SteamPath`
 
 func fetchWindowsSteamPath() (string, error) {
 	out, err := exec.Command("powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", windowsSteamPathScript).Output()
@@ -32,7 +32,7 @@ func fetchWindowsSteamPath() (string, error) {
 	}
 	path := strings.TrimSpace(string(out))
 	if path == "" {
-		return "", fmt.Errorf("%w: Steam registry key", ErrMissingEnv)
+		return "", fmt.Errorf("%w: SteamPath", ErrMissingEnv)
 	}
 	return path, nil
 }
@@ -54,7 +54,7 @@ func (*Windows) localAppData() (string, error) {
 }
 
 func (w *Windows) factorioDir() (string, error) {
-	root, err := w.steamPath()
+	root, err := w.steamRoot()
 	if err != nil {
 		return "", err
 	}
