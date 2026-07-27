@@ -201,4 +201,40 @@ func TestResolve(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotContains(t, releases, mod.MOD{Name: "lib"})
 	})
+
+	t.Run("merges requirements from multiple dependents", func(t *testing.T) {
+		r, portal := newResolver(map[string]*api.MODInfo{
+			"app":  modInfo(t, "app", []string{"lib1", "lib2"}, "1.0.0"),
+			"lib1": modInfo(t, "lib1", []string{"core"}, "1.0.0"),
+			"lib2": modInfo(t, "lib2", []string{"core <= 1.5.0"}, "1.0.0"),
+			"core": modInfo(t, "core", nil, "1.0.0", "2.0.0"),
+		})
+		releases, err := r.Resolve(context.Background(), dependency.NewGraph(), []Spec{latestSpec("app")}, Options{Jobs: 2})
+		require.NoError(t, err)
+		require.Contains(t, releases, mod.MOD{Name: "core"})
+		assert.Equal(t, "1.0.0", releases[mod.MOD{Name: "core"}].Version.String())
+
+		requested := portal.requestedNames()
+		count := 0
+		for _, name := range requested {
+			if name == "core" {
+				count++
+			}
+		}
+		assert.Equal(t, 1, count, "core should be fetched exactly once, got requests: %v", requested)
+	})
+
+	t.Run("skips dependency whose combined requirements are unsatisfiable", func(t *testing.T) {
+		r, _ := newResolver(map[string]*api.MODInfo{
+			"app":  modInfo(t, "app", []string{"lib1", "lib2"}, "1.0.0"),
+			"lib1": modInfo(t, "lib1", []string{"core >= 2.0.0"}, "1.0.0"),
+			"lib2": modInfo(t, "lib2", []string{"core <= 1.5.0"}, "1.0.0"),
+			"core": modInfo(t, "core", nil, "1.0.0", "2.0.0"),
+		})
+		graph := dependency.NewGraph()
+		releases, err := r.Resolve(context.Background(), graph, []Spec{latestSpec("app")}, Options{Jobs: 2})
+		require.NoError(t, err)
+		assert.NotContains(t, releases, mod.MOD{Name: "core"})
+		assert.False(t, graph.Contains(mod.MOD{Name: "core"}))
+	})
 }

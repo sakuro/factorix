@@ -33,20 +33,35 @@ func SelectExact(info *api.MODInfo, version mod.MODVersion) *api.Release {
 	return nil
 }
 
-// SelectCompatible returns the latest release satisfying the requirement:
-// with a nil requirement it is SelectLatest; otherwise latest_release when
-// that satisfies the requirement, else the highest satisfying version.
+// SelectCompatible returns the latest release satisfying every given
+// requirement (nil requirements are ignored): with no effective
+// requirement it is SelectLatest; otherwise latest_release when that
+// satisfies all requirements, else the highest satisfying version.
 // Returns nil when no release satisfies.
-func SelectCompatible(info *api.MODInfo, requirement *dependency.VersionRequirement) *api.Release {
-	if requirement == nil {
+func SelectCompatible(info *api.MODInfo, requirements ...*dependency.VersionRequirement) *api.Release {
+	var active []*dependency.VersionRequirement
+	for _, r := range requirements {
+		if r != nil {
+			active = append(active, r)
+		}
+	}
+	if len(active) == 0 {
 		return SelectLatest(info)
 	}
-	if info.LatestRelease != nil && requirement.SatisfiedBy(info.LatestRelease.Version) {
+	satisfiesAll := func(v mod.MODVersion) bool {
+		for _, r := range active {
+			if !r.SatisfiedBy(v) {
+				return false
+			}
+		}
+		return true
+	}
+	if info.LatestRelease != nil && satisfiesAll(info.LatestRelease.Version) {
 		return info.LatestRelease
 	}
 	var compatible []api.Release
 	for _, r := range info.Releases {
-		if requirement.SatisfiedBy(r.Version) {
+		if satisfiesAll(r.Version) {
 			compatible = append(compatible, r)
 		}
 	}

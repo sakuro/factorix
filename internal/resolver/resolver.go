@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"golang.org/x/sync/errgroup"
 
@@ -107,18 +108,19 @@ func (r *Resolver) Resolve(ctx context.Context, graph *dependency.Graph, specs [
 	return releases, nil
 }
 
-// missingDependency is a dependency edge pointing at a MOD not yet in the
-// graph, remembered with its requirement and dependent for fetching.
+// missingDependency aggregates, for one MOD absent from the graph, the
+// version requirements and dependents of every edge pointing at it in the
+// current wave.
 type missingDependency struct {
-	mod         mod.MOD
-	requirement *dependency.VersionRequirement
-	requiredBy  mod.MOD
+	requirements []*dependency.VersionRequirement
+	requiredBy   []mod.MOD
 }
 
 func (r *Resolver) resolveDependencies(ctx context.Context, graph *dependency.Graph, releases map[mod.MOD]api.Release, frontier []mod.MOD, opts Options) error {
 	processed := map[mod.MOD]bool{}
 	for len(frontier) > 0 {
-		var missing []missingDependency
+		missing := map[mod.MOD]*missingDependency{}
+		var order []mod.MOD
 		for _, m := range frontier {
 			if processed[m] {
 				continue
@@ -137,7 +139,14 @@ func (r *Resolver) resolveDependencies(ctx context.Context, graph *dependency.Gr
 				if graph.Contains(edge.To) {
 					continue
 				}
-				missing = append(missing, missingDependency{mod: edge.To, requirement: edge.Requirement, requiredBy: m})
+				dep, ok := missing[edge.To]
+				if !ok {
+					dep = &missingDependency{}
+					missing[edge.To] = dep
+					order = append(order, edge.To)
+				}
+				dep.requirements = append(dep.requirements, edge.Requirement)
+				dep.requiredBy = append(dep.requiredBy, m)
 			}
 		}
 		frontier = nil
@@ -145,28 +154,26 @@ func (r *Resolver) resolveDependencies(ctx context.Context, graph *dependency.Gr
 			continue
 		}
 
-		specs := make([]Spec, len(missing))
-		for i, dep := range missing {
-			specs[i] = Spec{MOD: dep.mod, Latest: true}
+		specs := make([]Spec, len(order))
+		for i, m := range order {
+			specs[i] = Spec{MOD: m, Latest: true}
 		}
 		results, err := concurrentFetch(ctx, opts.Jobs, specs, func(ctx context.Context, spec Spec) (Fetched, error) {
-			var requirement *dependency.VersionRequirement
-			var requiredBy mod.MOD
-			for _, dep := range missing {
-				if dep.mod == spec.MOD {
-					requirement = dep.requirement
-					requiredBy = dep.requiredBy
-					break
-				}
+			dep := missing[spec.MOD]
+			names := make([]string, len(dep.requiredBy))
+			for i, m := range dep.requiredBy {
+				names[i] = m.Name
 			}
+			requiredBy := strings.Join(names, ",")
+
 			info, err := r.Portal.GetMODFull(ctx, spec.MOD.Name)
 			if err != nil {
-				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy.Name, "reason", err)
+				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy, "reason", err)
 				return Fetched{}, nil
 			}
-			release := SelectCompatible(info, requirement)
+			release := SelectCompatible(info, dep.requirements...)
 			if release == nil {
-				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy.Name, "reason", "no compatible release found")
+				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy, "reason", "no compatible release found")
 				return Fetched{}, nil
 			}
 			return Fetched{MOD: spec.MOD, Info: info, Release: *release}, nil

@@ -100,4 +100,20 @@ func TestSelectCompatible(t *testing.T) {
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "9.0.0")}
 		assert.Nil(t, SelectCompatible(info, requirement))
 	})
+
+	t.Run("multiple requirements narrow the selection", func(t *testing.T) {
+		multi := &api.MODInfo{Releases: []api.Release{release(t, "1.0.0"), release(t, "1.5.0"), release(t, "2.0.0")}}
+		lower := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "1.2.0")}
+		upper := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.8.0")}
+		got := SelectCompatible(multi, lower, upper)
+		require.NotNil(t, got)
+		assert.Equal(t, "1.5.0", got.Version.String())
+	})
+
+	t.Run("nil entries among requirements are ignored", func(t *testing.T) {
+		requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.5.0")}
+		got := SelectCompatible(info, nil, requirement, nil)
+		require.NotNil(t, got)
+		assert.Equal(t, "1.0.0", got.Version.String())
+	})
 }
