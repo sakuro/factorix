@@ -52,19 +52,16 @@ func walkBFS(seeds []mod.MOD, visited func(mod.MOD) bool, visit func(mod.MOD) ([
 func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD, error) {
 	planned := map[mod.MOD]bool{}
 	var order []mod.MOD
-	queue := append([]mod.MOD(nil), targets...)
 
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-
+	visited := func(m mod.MOD) bool {
 		node, ok := g.Node(m)
-		if !ok || node.Enabled || planned[m] {
-			continue
-		}
+		return !ok || node.Enabled || planned[m]
+	}
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
 		planned[m] = true
 		order = append(order, m)
 
+		var next []mod.MOD
 		for _, edge := range g.EdgesFrom(m) {
 			if edge.To.IsBase() {
 				continue
@@ -83,7 +80,7 @@ func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD
 						ErrDependencyVersion, m, edge.To, edge.Requirement, depNode.Version)
 				}
 				if !depNode.Enabled && !planned[edge.To] {
-					queue = append(queue, edge.To)
+					next = append(next, edge.To)
 				}
 			case TypeRecommended:
 				depNode, ok := g.Node(edge.To)
@@ -91,10 +88,15 @@ func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD
 					continue
 				}
 				if !depNode.Enabled && !planned[edge.To] {
-					queue = append(queue, edge.To)
+					next = append(next, edge.To)
 				}
 			}
 		}
+		return next, nil
+	}
+
+	if err := walkBFS(targets, visited, visit); err != nil {
+		return nil, err
 	}
 	return order, nil
 }
