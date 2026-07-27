@@ -221,23 +221,18 @@ func PlanDisableAll(g *Graph) []mod.MOD {
 func PlanDisable(g *Graph, targets []mod.MOD) []mod.MOD {
 	planned := map[mod.MOD]bool{}
 	var order []mod.MOD
-	queue := append([]mod.MOD(nil), targets...)
 
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-
+	visited := func(m mod.MOD) bool {
 		node, ok := g.Node(m)
-		if !ok || !node.Enabled || planned[m] {
-			continue
-		}
-		for _, dependent := range g.FindEnabledDependents(m) {
-			if !planned[dependent] {
-				queue = append(queue, dependent)
-			}
-		}
+		return !ok || !node.Enabled || planned[m]
+	}
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
+		next := g.FindEnabledDependents(m)
 		planned[m] = true
 		order = append(order, m)
+		return next, nil
 	}
+
+	_ = walkBFS(targets, visited, visit)
 	return order
 }
