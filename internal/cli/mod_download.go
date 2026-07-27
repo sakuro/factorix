@@ -2,27 +2,21 @@ package cli
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"maps"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/spf13/cobra"
 
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
-	"github.com/sakuro/factorix/internal/mod"
 	"github.com/sakuro/factorix/internal/resolver"
 )
-
-var builtinMODs = []string{"base", "elevated-rails", "quality", "recycler", "space-age"}
 
 func newMODDownloadCommand(c *cli) *cobra.Command {
 	var directory string
 	var jobs int
-	var recursive bool
+	var recursive, ignoreRecommended bool
 
 	cmd := &cobra.Command{
 		Use:   "download <mod-spec>...",
@@ -49,7 +43,7 @@ func newMODDownloadCommand(c *cli) *cobra.Command {
 				return fmt.Errorf("Cannot download to MOD directory. Use 'mod install' instead.")
 			}
 
-			specs := make([]modSpec, len(args))
+			specs := make([]resolver.Spec, len(args))
 			for i, arg := range args {
 				spec, err := parseMODSpec(arg)
 				if err != nil {
@@ -58,7 +52,7 @@ func newMODDownloadCommand(c *cli) *cobra.Command {
 				specs[i] = spec
 			}
 
-			targets, err := planDownload(cmd.Context(), application, specs, downloadDir, jobs, recursive)
+			targets, err := planDownload(cmd.Context(), application, specs, downloadDir, jobs, recursive, !ignoreRecommended)
 			if err != nil {
 				return err
 			}
@@ -78,7 +72,8 @@ func newMODDownloadCommand(c *cli) *cobra.Command {
 	}
 	cmd.Flags().StringVarP(&directory, "directory", "d", ".", "Download directory")
 	cmd.Flags().IntVarP(&jobs, "jobs", "j", 4, "Number of parallel downloads")
-	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Include required dependencies recursively")
+	cmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "Include dependencies recursively (required and recommended)")
+	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not resolve recommended dependencies")
 	return cmd
 }
 
@@ -104,144 +99,26 @@ func sameDirAsMODDir(application *app.App, dir string) (bool, error) {
 	return realDownloadDir == realMODDir, nil
 }
 
-func planDownload(ctx context.Context, application *app.App, specs []modSpec, downloadDir string, jobs int, recursive bool) ([]downloadTarget, error) {
+func planDownload(ctx context.Context, application *app.App, specs []resolver.Spec, downloadDir string, jobs int, recursive, includeRecommended bool) ([]downloadTarget, error) {
 	portalAPI, err := application.PortalAPI()
 	if err != nil {
 		return nil, err
 	}
+	res := &resolver.Resolver{Portal: portalAPI, Logger: application.Logger}
 
-	// The full endpoint is required here: only /full includes each
-	// release's dependencies in info_json, and recursive resolution reads
-	// them (with the short endpoint they silently come back empty).
-	initial, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
-		info, err := portalAPI.GetMODFull(ctx, spec.MOD.Name)
-		if err != nil {
-			return fetchedMODInfo{}, err
-		}
-		release := selectRelease(info, spec)
-		if release == nil {
-			return fetchedMODInfo{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, specVersionLabel(spec))
-		}
-		return fetchedMODInfo{MOD: spec.MOD, MODInfo: info, Release: *release}, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	all := initial
-	if recursive {
-		all, err = resolveDownloadDependencies(ctx, application, initial, jobs)
+	if !recursive {
+		fetched, err := res.Fetch(ctx, specs, jobs)
 		if err != nil {
 			return nil, err
 		}
+		return buildDownloadTargets(fetched, downloadDir)
 	}
-	return buildDownloadTargets(all, downloadDir)
-}
 
-func specVersionLabel(spec modSpec) string {
-	if spec.Latest {
-		return "latest"
-	}
-	return spec.Version.String()
-}
-
-type requiredDependency struct {
-	name        string
-	requirement *dependency.VersionRequirement
-}
-
-// resolveDownloadDependencies expands the initial fetch set with required
-// dependencies (recursively), skipping builtin MODs. A dependency with no
-// compatible release, or that errors while fetching, is skipped with a
-// warning rather than failing the whole download — a single incompatible
-// dependency should not block installing the MODs the user actually asked
-// for.
-func resolveDownloadDependencies(ctx context.Context, application *app.App, initial []fetchedMODInfo, jobs int) ([]fetchedMODInfo, error) {
-	portalAPI, err := application.PortalAPI()
+	// Installation state is irrelevant to a plain download, so resolution
+	// runs against an empty graph: every dependency counts as missing.
+	releases, err := res.Resolve(ctx, dependency.NewGraph(), specs, resolver.Options{Jobs: jobs, FollowRecommended: includeRecommended})
 	if err != nil {
 		return nil, err
 	}
-
-	known := map[string]fetchedMODInfo{}
-	frontier := make([]string, 0, len(initial))
-	for _, info := range initial {
-		known[info.MOD.Name] = info
-		frontier = append(frontier, info.MOD.Name)
-	}
-	processed := map[string]bool{}
-
-	for len(frontier) > 0 {
-		newDeps := collectNewDependencies(frontier, known, processed)
-		frontier = nil
-		if len(newDeps) == 0 {
-			continue
-		}
-
-		specs := make([]modSpec, len(newDeps))
-		for i, dep := range newDeps {
-			specs[i] = modSpec{MOD: mod.MOD{Name: dep.name}}
-		}
-		results, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
-			info, err := portalAPI.GetMODFull(ctx, spec.MOD.Name)
-			if err != nil {
-				warnAndSkip(application, spec.MOD.Name, err)
-				return fetchedMODInfo{}, nil
-			}
-			i := slices.IndexFunc(newDeps, func(d requiredDependency) bool { return d.name == spec.MOD.Name })
-			release := resolver.SelectCompatible(info, newDeps[i].requirement)
-			if release == nil {
-				warnAndSkip(application, spec.MOD.Name, errors.New("no compatible release found"))
-				return fetchedMODInfo{}, nil
-			}
-			return fetchedMODInfo{MOD: spec.MOD, MODInfo: info, Release: *release}, nil
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		for _, r := range results {
-			if r.MODInfo == nil {
-				continue // skipped: warnAndSkip already logged the reason
-			}
-			known[r.MOD.Name] = r
-			frontier = append(frontier, r.MOD.Name)
-		}
-	}
-
-	return slices.Collect(maps.Values(known)), nil
-}
-
-// warnAndSkip logs a dependency the caller treats as skippable rather than
-// fatal.
-func warnAndSkip(application *app.App, modName string, cause error) {
-	application.Logger.Warn("Skipping dependency", "mod", modName, "reason", cause)
-}
-
-func collectNewDependencies(batch []string, known map[string]fetchedMODInfo, processed map[string]bool) []requiredDependency {
-	var newDeps []requiredDependency
-	for _, name := range batch {
-		if processed[name] {
-			continue
-		}
-		processed[name] = true
-
-		info, ok := known[name]
-		if !ok {
-			continue
-		}
-		for _, depString := range info.Release.InfoJSON.Dependencies {
-			entry, err := dependency.Parse(depString)
-			if err != nil || entry.Type != dependency.TypeRequired {
-				continue
-			}
-			if slices.Contains(builtinMODs, entry.MOD.Name) {
-				continue
-			}
-			if _, ok := known[entry.MOD.Name]; ok {
-				continue
-			}
-			newDeps = append(newDeps, requiredDependency{name: entry.MOD.Name, requirement: entry.Requirement})
-		}
-	}
-	return newDeps
+	return releaseDownloadTargets(releases, downloadDir)
 }

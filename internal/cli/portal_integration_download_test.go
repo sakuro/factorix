@@ -57,6 +57,66 @@ func TestMODDownloadRecursiveAgainstMockPortal(t *testing.T) {
 	assert.FileExists(t, filepath.Join(dir, "dep-mod_1.2.0.zip"))
 }
 
+func TestMODDownloadRecursivePullsInRecommendedDependency(t *testing.T) {
+	s := baseSandbox(t)
+	dir := filepath.Join(s.root, "downloads")
+	require.NoError(t, os.MkdirAll(dir, 0o755))
+	portal := newMockPortal(t,
+		portalMOD{
+			Name: "top-mod", Title: "Top MOD", Owner: "alice",
+			Releases: []portalRelease{{
+				Version: "1.0.0", FileName: "top-mod_1.0.0.zip", DownloadURL: "/download/top-mod_1.0.0.zip",
+				InfoJSON: portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+			}},
+		},
+		portalMOD{
+			Name: "lib-mod", Title: "Lib MOD", Owner: "bob",
+			Releases: []portalRelease{{
+				Version: "2.0.0", FileName: "lib-mod_2.0.0.zip", DownloadURL: "/download/lib-mod_2.0.0.zip",
+				InfoJSON: portalInfoJSON{FactorioVersion: "2.0"},
+			}},
+		},
+	)
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "download", "top-mod", "-d", dir, "-r")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Downloaded 2 MOD(s)")
+	assert.FileExists(t, filepath.Join(dir, "top-mod_1.0.0.zip"))
+	assert.FileExists(t, filepath.Join(dir, "lib-mod_2.0.0.zip"))
+}
+
+func TestMODDownloadRecursiveIgnoresRecommendedDependencyWithFlag(t *testing.T) {
+	s := baseSandbox(t)
+	dir := filepath.Join(s.root, "downloads")
+	require.NoError(t, os.MkdirAll(dir, 0o755))
+	// lib-mod is registered and fetchable so this test proves the flag
+	// itself excludes it, not that the fetch would have failed anyway.
+	portal := newMockPortal(t,
+		portalMOD{
+			Name: "top-mod", Title: "Top MOD", Owner: "alice",
+			Releases: []portalRelease{{
+				Version: "1.0.0", FileName: "top-mod_1.0.0.zip", DownloadURL: "/download/top-mod_1.0.0.zip",
+				InfoJSON: portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+			}},
+		},
+		portalMOD{
+			Name: "lib-mod", Title: "Lib MOD", Owner: "bob",
+			Releases: []portalRelease{{
+				Version: "2.0.0", FileName: "lib-mod_2.0.0.zip", DownloadURL: "/download/lib-mod_2.0.0.zip",
+				InfoJSON: portalInfoJSON{FactorioVersion: "2.0"},
+			}},
+		},
+	)
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "download", "top-mod", "-d", dir, "-r", "--ignore-recommended")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Downloaded 1 MOD(s)")
+	assert.FileExists(t, filepath.Join(dir, "top-mod_1.0.0.zip"))
+	assert.NoFileExists(t, filepath.Join(dir, "lib-mod_2.0.0.zip"))
+}
+
 func TestMODDownloadRecursiveSkipsIncompatibleDependency(t *testing.T) {
 	s := baseSandbox(t)
 	dir := filepath.Join(s.root, "downloads")
