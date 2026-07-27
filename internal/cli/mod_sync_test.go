@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/mod"
 	"github.com/sakuro/factorix/internal/save"
 	"github.com/sakuro/factorix/internal/serdes"
@@ -212,25 +211,6 @@ func writeMODZip(t *testing.T, path, name, version string) {
 	require.NoError(t, err)
 	require.NoError(t, zw.Close())
 	require.NoError(t, f.Close())
-}
-
-func TestFindSyncRelease(t *testing.T) {
-	v1 := mustVersion(t, "1.0.0")
-	v2 := mustVersion(t, "2.0.0")
-	info := &api.MODInfo{Releases: []api.Release{{Version: v1}, {Version: v2}}}
-
-	// Strict: exact version or nothing.
-	release := findSyncRelease(info, modSpec{Version: v1})
-	require.NotNil(t, release)
-	assert.Equal(t, v1, release.Version)
-	assert.Nil(t, findSyncRelease(info, modSpec{Version: mustVersion(t, "9.9.9")}))
-
-	// Latest: latest_release wins, highest version as fallback.
-	release = findSyncRelease(info, modSpec{Latest: true})
-	require.NotNil(t, release)
-	assert.Equal(t, v2, release.Version)
-	withLatest := &api.MODInfo{Releases: info.Releases, LatestRelease: &api.Release{Version: v1}}
-	assert.Equal(t, v1, findSyncRelease(withLatest, modSpec{Latest: true}).Version)
 }
 
 func TestPlanMODListChangesStrictVersion(t *testing.T) {

@@ -13,6 +13,7 @@ import (
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/resolver"
 )
 
 // installTarget is one planned action: download-and-enable a new MOD, or
@@ -155,7 +156,7 @@ func planInstall(ctx context.Context, application *app.App, graph *dependency.Gr
 		if err != nil {
 			return fetchedMODInfo{}, err
 		}
-		release := findRelease(info, spec)
+		release := selectRelease(info, spec)
 		if release == nil {
 			return fetchedMODInfo{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, specVersionLabel(spec))
 		}
@@ -262,7 +263,7 @@ func resolveInstallDependencies(ctx context.Context, application *app.App, graph
 				application.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy.Name, "reason", err)
 				return fetchedMODInfo{}, nil
 			}
-			release := findCompatibleRelease(info, requirement)
+			release := resolver.SelectCompatible(info, requirement)
 			if release == nil {
 				application.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy.Name, "reason", "no compatible release found")
 				return fetchedMODInfo{}, nil

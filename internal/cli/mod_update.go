@@ -12,6 +12,7 @@ import (
 	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/resolver"
 )
 
 // updateTarget is one MOD with a newer release available.
@@ -160,7 +161,7 @@ func findUpdateTargets(ctx context.Context, application *app.App, targetMODs []m
 				}
 				return err
 			}
-			latest := latestByReleaseDate(info.Releases)
+			latest := resolver.SelectLatest(info)
 			if latest == nil || !current.Less(latest.Version) {
 				return nil
 			}

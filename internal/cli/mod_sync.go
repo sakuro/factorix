@@ -261,7 +261,7 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 		if err != nil {
 			return fetchedMODInfo{}, err
 		}
-		release := findSyncRelease(info, spec)
+		release := selectRelease(info, spec)
 		if release == nil {
 			return fetchedMODInfo{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, spec.Version)
 		}
@@ -315,36 +315,6 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 		result[i] = syncInstallTarget{downloadTarget: target}
 	}
 	return result, dependencyEntries, nil
-}
-
-// findSyncRelease picks the exact save version in strict mode; otherwise
-// the portal's latest_release, falling back to the highest version. This
-// mirrors Ruby's mod/sync.rb#fetch_single_mod_info exactly, including its
-// inconsistency with mod install/download (download_support.rb, via
-// findRelease): that path never trusts latest_release — its selection
-// method is undocumented by the Portal API wiki — and instead computes
-// "latest" itself from release dates. Sync keeps the Ruby behavior as-is
-// rather than "fixing" a cross-command inconsistency outside this task's
-// scope.
-func findSyncRelease(info *api.MODInfo, spec modSpec) *api.Release {
-	if !spec.Latest {
-		for i := range info.Releases {
-			if info.Releases[i].Version == spec.Version {
-				return &info.Releases[i]
-			}
-		}
-		return nil
-	}
-	if info.LatestRelease != nil {
-		return info.LatestRelease
-	}
-	if len(info.Releases) == 0 {
-		return nil
-	}
-	highest := slices.MaxFunc(info.Releases, func(a, b api.Release) int {
-		return a.Version.Compare(b.Version)
-	})
-	return &highest
 }
 
 // enrichSyncInstallTargets records the currently installed version of each

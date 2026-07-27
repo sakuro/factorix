@@ -42,41 +42,6 @@ func TestParseMODSpec(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestFindRelease(t *testing.T) {
-	older := release("1.0.0", time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC))
-	newer := release("1.1.0", time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
-	info := &api.MODInfo{Releases: []api.Release{older, newer}}
-
-	got := findRelease(info, modSpec{Latest: true})
-	require.NotNil(t, got)
-	assert.Equal(t, "1.1.0", got.Version.String())
-
-	got = findRelease(info, modSpec{Version: mod.MODVersion{Major: 1}})
-	require.NotNil(t, got)
-	assert.Equal(t, "1.0.0", got.Version.String())
-
-	got = findRelease(info, modSpec{Version: mod.MODVersion{Major: 9}})
-	assert.Nil(t, got)
-}
-
-func TestFindCompatibleRelease(t *testing.T) {
-	v1 := release("1.0.0", time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC))
-	v2 := release("2.0.0", time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
-	info := &api.MODInfo{Releases: []api.Release{v1, v2}}
-
-	got := findCompatibleRelease(info, nil)
-	require.NotNil(t, got)
-	assert.Equal(t, "2.0.0", got.Version.String())
-
-	requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mod.MODVersion{Major: 1}}
-	got = findCompatibleRelease(info, requirement)
-	require.NotNil(t, got)
-	assert.Equal(t, "1.0.0", got.Version.String())
-
-	requirement = &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mod.MODVersion{Major: 9}}
-	assert.Nil(t, findCompatibleRelease(info, requirement))
-}
-
 func TestValidateFilename(t *testing.T) {
 	require.NoError(t, validateFilename("test-mod_1.0.0.zip"))
 
