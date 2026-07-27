@@ -2,7 +2,6 @@ package cli
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,12 +11,12 @@ import (
 	"github.com/sakuro/factorix/internal/mod"
 )
 
-func release(version string, releasedAt time.Time) api.Release {
+func release(version string) api.Release {
 	v, err := mod.ParseMODVersion(version)
 	if err != nil {
 		panic(err)
 	}
-	return api.Release{Version: v, ReleasedAt: releasedAt, FileName: "test-mod_" + version + ".zip"}
+	return api.Release{Version: v, FileName: "test-mod_" + version + ".zip"}
 }
 
 func TestParseMODSpec(t *testing.T) {
@@ -52,7 +51,7 @@ func TestValidateFilename(t *testing.T) {
 
 func TestBuildDownloadTargets(t *testing.T) {
 	infos := []fetchedMODInfo{
-		{MOD: mod.MOD{Name: "some-mod"}, MODInfo: &api.MODInfo{Name: "some-mod"}, Release: release("1.0.0", time.Now())},
+		{MOD: mod.MOD{Name: "some-mod"}, MODInfo: &api.MODInfo{Name: "some-mod"}, Release: release("1.0.0")},
 	}
 	targets, err := buildDownloadTargets(infos, "/tmp/downloads")
 	require.NoError(t, err)

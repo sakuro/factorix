@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+
+- `mod install`, `mod download`, and `mod update` now resolve `@latest` as the Portal's `latest_release` (falling back to the highest version) instead of the newest release by date; release selection is unified across commands in the new `internal/resolver` package (#180)
+
 ## [0.22.0] - 2026-07-22
 
 ### Changed
