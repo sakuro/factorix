@@ -1,6 +1,6 @@
-// Package resolver selects MOD Portal releases and (in later stages)
-// resolves MOD dependencies against the Portal. It is the single place
-// where "latest" is defined for every command.
+// Package resolver selects MOD Portal releases and resolves MOD
+// dependencies against the Portal. It is the single place where "latest"
+// is defined for every command.
 package resolver
 
 import (

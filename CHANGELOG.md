@@ -5,6 +5,10 @@
 - `mod install`, `mod download`, and `mod update` now resolve `@latest` as the Portal's `latest_release` (falling back to the highest version) instead of the newest release by date; release selection is unified across commands in the new `internal/resolver` package (#180)
 - `mod download --recursive` now resolves recommended dependencies as well (use `--ignore-recommended` to opt out), and dependency resolution across install/sync/download shares one engine that never queries the Portal for base/expansion MODs (#181)
 
+### Fixed
+
+- Dependency resolution (install/sync/download) now merges version requirements from every dependent before selecting a release for a shared transitive dependency, instead of only the last-processed requirement, which could silently select an incompatible version; an unsatisfiable combination is now skipped with a warning (#181)
+
 ## [0.22.0] - 2026-07-22
 
 ### Changed

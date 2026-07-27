@@ -267,19 +267,30 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 	// needs their names and versions to fold them into the save-driven
 	// mod-list.json planning (see the RunE closure above).
 	var dependencyEntries []save.MODEntry
-	targets, err := releaseDownloadTargets(releases, modDir)
-	if err != nil {
-		return nil, nil, err
-	}
 	for m, release := range releases {
 		if !requested[m] {
 			dependencyEntries = append(dependencyEntries, save.MODEntry{Name: m.Name, Version: release.Version})
 		}
 	}
 
-	result := make([]syncInstallTarget, len(targets))
-	for i, target := range targets {
-		result[i] = syncInstallTarget{downloadTarget: target}
+	// Iterate graph.Nodes() rather than the releases map directly: map
+	// iteration order is random, and it would otherwise shuffle the
+	// "Install:" confirmation list between identical runs (mirrors
+	// planInstall's use of graph.Nodes() for the same reason).
+	var result []syncInstallTarget
+	for _, node := range graph.Nodes() {
+		release, ok := releases[node.MOD]
+		if !ok {
+			continue
+		}
+		if err := validateFilename(release.FileName); err != nil {
+			return nil, nil, err
+		}
+		result = append(result, syncInstallTarget{downloadTarget: downloadTarget{
+			MOD:        node.MOD,
+			Release:    release,
+			OutputPath: filepath.Join(modDir, release.FileName),
+		}})
 	}
 	return result, dependencyEntries, nil
 }
