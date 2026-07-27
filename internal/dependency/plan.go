@@ -13,6 +13,30 @@ var (
 	ErrMODConflict       = errors.New("MOD conflict")
 )
 
+// walkBFS performs a breadth-first traversal seeded by seeds. A popped MOD
+// for which visited returns true is skipped without calling visit;
+// otherwise visit runs and its returned MODs are appended to the queue.
+// visit is responsible for updating whatever state visited reads — walkBFS
+// tracks no visited state of its own, so a MOD reached through two
+// different edges is deduplicated by visited at the second pop, not by
+// walkBFS itself. A non-nil error from visit aborts the walk immediately.
+func walkBFS(seeds []mod.MOD, visited func(mod.MOD) bool, visit func(mod.MOD) ([]mod.MOD, error)) error {
+	queue := append([]mod.MOD(nil), seeds...)
+	for len(queue) > 0 {
+		m := queue[0]
+		queue = queue[1:]
+		if visited(m) {
+			continue
+		}
+		next, err := visit(m)
+		if err != nil {
+			return err
+		}
+		queue = append(queue, next...)
+	}
+	return nil
+}
+
 // PlanEnable computes the MODs to enable when enabling targets, pulling in
 // required dependencies (BFS discovery order). When includeRecommended is
 // true, recommended dependencies are pulled in the same way when already
@@ -28,19 +52,16 @@ var (
 func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD, error) {
 	planned := map[mod.MOD]bool{}
 	var order []mod.MOD
-	queue := append([]mod.MOD(nil), targets...)
 
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-
+	visited := func(m mod.MOD) bool {
 		node, ok := g.Node(m)
-		if !ok || node.Enabled || planned[m] {
-			continue
-		}
+		return !ok || node.Enabled || planned[m]
+	}
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
 		planned[m] = true
 		order = append(order, m)
 
+		var next []mod.MOD
 		for _, edge := range g.EdgesFrom(m) {
 			if edge.To.IsBase() {
 				continue
@@ -59,7 +80,7 @@ func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD
 						ErrDependencyVersion, m, edge.To, edge.Requirement, depNode.Version)
 				}
 				if !depNode.Enabled && !planned[edge.To] {
-					queue = append(queue, edge.To)
+					next = append(next, edge.To)
 				}
 			case TypeRecommended:
 				depNode, ok := g.Node(edge.To)
@@ -67,10 +88,15 @@ func PlanEnable(g *Graph, targets []mod.MOD, includeRecommended bool) ([]mod.MOD
 					continue
 				}
 				if !depNode.Enabled && !planned[edge.To] {
-					queue = append(queue, edge.To)
+					next = append(next, edge.To)
 				}
 			}
 		}
+		return next, nil
+	}
+
+	if err := walkBFS(targets, visited, visit); err != nil {
+		return nil, err
 	}
 	return order, nil
 }
@@ -123,22 +149,19 @@ func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) erro
 // are on by default, so they're treated the same as required ones unless
 // the caller opts out via includeRecommended=false.
 func MarkDisabledDependenciesForEnable(g *Graph, includeRecommended bool) {
-	var queue []mod.MOD
+	var seeds []mod.MOD
 	for _, node := range g.Nodes() {
 		if node.Operation == OpInstall || node.Operation == OpEnable {
-			queue = append(queue, node.MOD)
+			seeds = append(seeds, node.MOD)
 		}
 	}
 
 	processed := map[mod.MOD]bool{}
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-		if processed[m] {
-			continue
-		}
+	visited := func(m mod.MOD) bool { return processed[m] }
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
 		processed[m] = true
 
+		var next []mod.MOD
 		for _, edge := range g.EdgesFrom(m) {
 			relevant := edge.Type == TypeRequired || (includeRecommended && edge.Type == TypeRecommended)
 			if !relevant {
@@ -149,9 +172,12 @@ func MarkDisabledDependenciesForEnable(g *Graph, includeRecommended bool) {
 				continue
 			}
 			g.SetNodeOperation(edge.To, OpEnable)
-			queue = append(queue, edge.To)
+			next = append(next, edge.To)
 		}
+		return next, nil
 	}
+
+	_ = walkBFS(seeds, visited, visit)
 }
 
 // ValidateInstallGraph rejects an install plan whose graph has a
@@ -195,23 +221,18 @@ func PlanDisableAll(g *Graph) []mod.MOD {
 func PlanDisable(g *Graph, targets []mod.MOD) []mod.MOD {
 	planned := map[mod.MOD]bool{}
 	var order []mod.MOD
-	queue := append([]mod.MOD(nil), targets...)
 
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-
+	visited := func(m mod.MOD) bool {
 		node, ok := g.Node(m)
-		if !ok || !node.Enabled || planned[m] {
-			continue
-		}
-		for _, dependent := range g.FindEnabledDependents(m) {
-			if !planned[dependent] {
-				queue = append(queue, dependent)
-			}
-		}
+		return !ok || !node.Enabled || planned[m]
+	}
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
+		next := g.FindEnabledDependents(m)
 		planned[m] = true
 		order = append(order, m)
+		return next, nil
 	}
+
+	_ = walkBFS(targets, visited, visit)
 	return order
 }
