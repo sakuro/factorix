@@ -14,6 +14,7 @@ import (
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/resolver"
 )
 
 var builtinMODs = []string{"base", "elevated-rails", "quality", "recycler", "space-age"}
@@ -117,7 +118,7 @@ func planDownload(ctx context.Context, application *app.App, specs []modSpec, do
 		if err != nil {
 			return fetchedMODInfo{}, err
 		}
-		release := findRelease(info, spec)
+		release := selectRelease(info, spec)
 		if release == nil {
 			return fetchedMODInfo{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, specVersionLabel(spec))
 		}
@@ -187,7 +188,7 @@ func resolveDownloadDependencies(ctx context.Context, application *app.App, init
 				return fetchedMODInfo{}, nil
 			}
 			i := slices.IndexFunc(newDeps, func(d requiredDependency) bool { return d.name == spec.MOD.Name })
-			release := findCompatibleRelease(info, newDeps[i].requirement)
+			release := resolver.SelectCompatible(info, newDeps[i].requirement)
 			if release == nil {
 				warnAndSkip(application, spec.MOD.Name, errors.New("no compatible release found"))
 				return fetchedMODInfo{}, nil

@@ -15,9 +15,8 @@ func TestMODSyncInstallsMissingMODAgainstMockPortal(t *testing.T) {
 	s.writeMODList(t, modListEntry{name: "base", enabled: true})
 	portal := newMockPortal(t, portalMOD{
 		Name: "some-mod", Title: "Some MOD", Owner: "alice",
-		// mod sync (unlike install/download) trusts latest_release first
-		// (see findSyncRelease) — set both so the test exercises the real
-		// full-endpoint shape either way.
+		// All commands now share the unified latest rule (resolver.SelectLatest):
+		// latest_release first, falling back to the highest version.
 		Releases: []portalRelease{{
 			Version: "1.0.0", FileName: "some-mod_1.0.0.zip", DownloadURL: "/download/some-mod_1.0.0.zip",
 		}},

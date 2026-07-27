@@ -112,8 +112,7 @@ func TestMODInstallAgainstMockPortal(t *testing.T) {
 	}
 	portal := newMockPortal(t, portalMOD{
 		Name: "some-mod", Title: "Some MOD", Owner: "alice",
-		// mod install hits /full, which never carries latest_release; it
-		// resolves "@latest" from Releases by release date.
+		// mod install hits /full, which never carries latest_release; resolver.SelectLatest picks the highest version.
 		Releases: []portalRelease{release},
 	})
 	portal.withPortal(t)

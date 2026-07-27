@@ -11,9 +11,9 @@ import (
 
 	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/app"
-	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
 	"github.com/sakuro/factorix/internal/progress"
+	"github.com/sakuro/factorix/internal/resolver"
 	"github.com/sakuro/factorix/internal/transfer"
 )
 
@@ -40,51 +40,13 @@ func parseMODSpec(spec string) (modSpec, error) {
 	return modSpec{MOD: mod.MOD{Name: name}, Version: version}, nil
 }
 
-// findRelease returns the release matching spec: the most recently released
-// one for "latest", or the exact version otherwise. "Latest" is computed
-// from Releases rather than trusting MODInfo.LatestRelease — the Portal API
-// wiki never specifies how that field is chosen (highest version? most
-// recent? filtered by Factorio-version compatibility?), so relying on it
-// would make "latest" mean something undocumented and possibly unstable.
-func findRelease(info *api.MODInfo, spec modSpec) *api.Release {
+// selectRelease resolves a modSpec to a release: the unified latest rule
+// (resolver.SelectLatest) for "latest" specs, the exact version otherwise.
+func selectRelease(info *api.MODInfo, spec modSpec) *api.Release {
 	if spec.Latest {
-		return latestByReleaseDate(info.Releases)
+		return resolver.SelectLatest(info)
 	}
-	for i := range info.Releases {
-		if info.Releases[i].Version == spec.Version {
-			return &info.Releases[i]
-		}
-	}
-	return nil
-}
-
-// findCompatibleRelease returns the most recently released version
-// satisfying requirement (or the most recent release of any version when
-// requirement is nil).
-func findCompatibleRelease(info *api.MODInfo, requirement *dependency.VersionRequirement) *api.Release {
-	if requirement == nil {
-		return latestByReleaseDate(info.Releases)
-	}
-	var compatible []api.Release
-	for _, r := range info.Releases {
-		if requirement.SatisfiedBy(r.Version) {
-			compatible = append(compatible, r)
-		}
-	}
-	return latestByReleaseDate(compatible)
-}
-
-func latestByReleaseDate(releases []api.Release) *api.Release {
-	if len(releases) == 0 {
-		return nil
-	}
-	latest := &releases[0]
-	for i := 1; i < len(releases); i++ {
-		if releases[i].ReleasedAt.After(latest.ReleasedAt) {
-			latest = &releases[i]
-		}
-	}
-	return latest
+	return resolver.SelectExact(info, spec.Version)
 }
 
 // downloadTarget is a MOD release resolved to a local output path.
