@@ -149,22 +149,19 @@ func checkConflict(g *Graph, m, other mod.MOD, plannedSet map[mod.MOD]bool) erro
 // are on by default, so they're treated the same as required ones unless
 // the caller opts out via includeRecommended=false.
 func MarkDisabledDependenciesForEnable(g *Graph, includeRecommended bool) {
-	var queue []mod.MOD
+	var seeds []mod.MOD
 	for _, node := range g.Nodes() {
 		if node.Operation == OpInstall || node.Operation == OpEnable {
-			queue = append(queue, node.MOD)
+			seeds = append(seeds, node.MOD)
 		}
 	}
 
 	processed := map[mod.MOD]bool{}
-	for len(queue) > 0 {
-		m := queue[0]
-		queue = queue[1:]
-		if processed[m] {
-			continue
-		}
+	visited := func(m mod.MOD) bool { return processed[m] }
+	visit := func(m mod.MOD) ([]mod.MOD, error) {
 		processed[m] = true
 
+		var next []mod.MOD
 		for _, edge := range g.EdgesFrom(m) {
 			relevant := edge.Type == TypeRequired || (includeRecommended && edge.Type == TypeRecommended)
 			if !relevant {
@@ -175,9 +172,12 @@ func MarkDisabledDependenciesForEnable(g *Graph, includeRecommended bool) {
 				continue
 			}
 			g.SetNodeOperation(edge.To, OpEnable)
-			queue = append(queue, edge.To)
+			next = append(next, edge.To)
 		}
+		return next, nil
 	}
+
+	_ = walkBFS(seeds, visited, visit)
 }
 
 // ValidateInstallGraph rejects an install plan whose graph has a
