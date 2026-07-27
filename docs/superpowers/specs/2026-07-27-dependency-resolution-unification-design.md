@@ -35,11 +35,13 @@ divergence is a historical accident rather than a design decision:
   The hardcoded `builtinMODs` list in `mod_download.go` is removed. The
   install/sync path stops querying the Portal for expansion dependencies
   (previously it relied on the fetch failing with a warning).
+- **Recommended dependencies**: `download --recursive` follows required +
+  recommended by default, like install/sync, and gains the same
+  `--ignore-recommended` opt-out flag (previously it followed required
+  only).
 
 Intentional differences stay as parameters:
 
-- `download --recursive` follows required dependencies only; install/sync
-  follow required + recommended (with `--ignore-recommended` opt-out).
 - Explicitly requested MODs fail hard when unresolvable; transitively
   discovered dependencies are skipped with a warning.
 
@@ -112,8 +114,10 @@ Behavior details:
 - **sync**: same graph flow; keeps its save-file-specific planning
   (conflicts, unlisted, strict-version deletions) on top.
 - **download**: passes a fresh empty graph (installation state is
-  irrelevant); non-recursive mode is a resolve without following any edges
-  (implemented as a separate initial-fetch-only helper or an option).
+  irrelevant); recursive mode follows required + recommended like
+  install/sync, with a new `--ignore-recommended` flag; non-recursive mode
+  is a resolve without following any edges (implemented as a separate
+  initial-fetch-only helper or an option).
 - `resolveInstallDependencies`, `resolveDownloadDependencies`, and
   `collectNewDependencies` are deleted.
 
