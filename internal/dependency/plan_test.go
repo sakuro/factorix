@@ -1,6 +1,7 @@
 package dependency
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -291,4 +292,56 @@ func TestPlanDisableSkipsNotInstalledOrAlreadyDisabled(t *testing.T) {
 	disabledNode(t, g, "off")
 	planned = PlanDisable(g, []mod.MOD{testMOD("off")})
 	assert.Empty(t, planned)
+}
+
+func TestWalkBFS(t *testing.T) {
+	t.Run("visits each node once and follows returned neighbors breadth-first", func(t *testing.T) {
+		adjacency := map[string][]string{"a": {"b", "c"}, "b": {"d"}, "c": {"d"}}
+		seen := map[string]bool{}
+		var order []string
+		visited := func(m mod.MOD) bool { return seen[m.Name] }
+		visit := func(m mod.MOD) ([]mod.MOD, error) {
+			seen[m.Name] = true
+			order = append(order, m.Name)
+			var next []mod.MOD
+			for _, n := range adjacency[m.Name] {
+				next = append(next, testMOD(n))
+			}
+			return next, nil
+		}
+
+		err := walkBFS([]mod.MOD{testMOD("a")}, visited, visit)
+		require.NoError(t, err)
+		assert.Equal(t, []string{"a", "b", "c", "d"}, order) // d has two parents, visited once
+	})
+
+	t.Run("skips seeds visited already", func(t *testing.T) {
+		visited := func(m mod.MOD) bool { return m.Name == "skip" }
+		var seen []string
+		visit := func(m mod.MOD) ([]mod.MOD, error) {
+			seen = append(seen, m.Name)
+			return nil, nil
+		}
+
+		err := walkBFS([]mod.MOD{testMOD("skip"), testMOD("go")}, visited, visit)
+		require.NoError(t, err)
+		assert.Equal(t, []string{"go"}, seen)
+	})
+
+	t.Run("aborts on error without visiting further nodes", func(t *testing.T) {
+		boom := errors.New("boom")
+		visited := func(mod.MOD) bool { return false }
+		var seen []string
+		visit := func(m mod.MOD) ([]mod.MOD, error) {
+			seen = append(seen, m.Name)
+			if m.Name == "a" {
+				return nil, boom
+			}
+			return []mod.MOD{testMOD("unreachable")}, nil
+		}
+
+		err := walkBFS([]mod.MOD{testMOD("a")}, visited, visit)
+		require.ErrorIs(t, err, boom)
+		assert.Equal(t, []string{"a"}, seen)
+	})
 }

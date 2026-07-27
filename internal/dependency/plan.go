@@ -13,6 +13,30 @@ var (
 	ErrMODConflict       = errors.New("MOD conflict")
 )
 
+// walkBFS performs a breadth-first traversal seeded by seeds. A popped MOD
+// for which visited returns true is skipped without calling visit;
+// otherwise visit runs and its returned MODs are appended to the queue.
+// visit is responsible for updating whatever state visited reads — walkBFS
+// tracks no visited state of its own, so a MOD reached through two
+// different edges is deduplicated by visited at the second pop, not by
+// walkBFS itself. A non-nil error from visit aborts the walk immediately.
+func walkBFS(seeds []mod.MOD, visited func(mod.MOD) bool, visit func(mod.MOD) ([]mod.MOD, error)) error {
+	queue := append([]mod.MOD(nil), seeds...)
+	for len(queue) > 0 {
+		m := queue[0]
+		queue = queue[1:]
+		if visited(m) {
+			continue
+		}
+		next, err := visit(m)
+		if err != nil {
+			return err
+		}
+		queue = append(queue, next...)
+	}
+	return nil
+}
+
 // PlanEnable computes the MODs to enable when enabling targets, pulling in
 // required dependencies (BFS discovery order). When includeRecommended is
 // true, recommended dependencies are pulled in the same way when already
