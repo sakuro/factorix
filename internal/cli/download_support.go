@@ -19,40 +19,23 @@ import (
 
 var errInvalidFilename = errors.New("invalid filename")
 
-// modSpec is a parsed "name", "name@version", or "name@latest" argument.
-type modSpec struct {
-	MOD     mod.MOD
-	Latest  bool
-	Version mod.MODVersion // meaningless when Latest
-}
-
 // parseMODSpec parses a MOD specification. "latest" and the bare name both
 // mean the latest release.
-func parseMODSpec(spec string) (modSpec, error) {
+func parseMODSpec(spec string) (resolver.Spec, error) {
 	name, versionStr, hasVersion := strings.Cut(spec, "@")
 	if !hasVersion || versionStr == "" || versionStr == "latest" {
-		return modSpec{MOD: mod.MOD{Name: name}, Latest: true}, nil
+		return resolver.Spec{MOD: mod.MOD{Name: name}, Latest: true}, nil
 	}
 	version, err := mod.ParseMODVersion(versionStr)
 	if err != nil {
-		return modSpec{}, err
+		return resolver.Spec{}, err
 	}
-	return modSpec{MOD: mod.MOD{Name: name}, Version: version}, nil
-}
-
-// selectRelease resolves a modSpec to a release: the unified latest rule
-// (resolver.SelectLatest) for "latest" specs, the exact version otherwise.
-func selectRelease(info *api.MODInfo, spec modSpec) *api.Release {
-	if spec.Latest {
-		return resolver.SelectLatest(info)
-	}
-	return resolver.SelectExact(info, spec.Version)
+	return resolver.Spec{MOD: mod.MOD{Name: name}, Version: version}, nil
 }
 
 // downloadTarget is a MOD release resolved to a local output path.
 type downloadTarget struct {
 	MOD        mod.MOD
-	MODInfo    *api.MODInfo
 	Release    api.Release
 	OutputPath string
 }
@@ -73,50 +56,36 @@ func validateFilename(filename string) error {
 	return nil
 }
 
-func buildDownloadTargets(infos []fetchedMODInfo, outputDir string) ([]downloadTarget, error) {
-	targets := make([]downloadTarget, 0, len(infos))
-	for _, info := range infos {
-		if err := validateFilename(info.Release.FileName); err != nil {
+func buildDownloadTargets(fetched []resolver.Fetched, outputDir string) ([]downloadTarget, error) {
+	targets := make([]downloadTarget, 0, len(fetched))
+	for _, f := range fetched {
+		if err := validateFilename(f.Release.FileName); err != nil {
 			return nil, err
 		}
 		targets = append(targets, downloadTarget{
-			MOD:        info.MOD,
-			MODInfo:    info.MODInfo,
-			Release:    info.Release,
-			OutputPath: filepath.Join(outputDir, info.Release.FileName),
+			MOD:        f.MOD,
+			Release:    f.Release,
+			OutputPath: filepath.Join(outputDir, f.Release.FileName),
 		})
 	}
 	return targets, nil
 }
 
-// fetchedMODInfo pairs a resolved release with its MOD and full info,
-// carried through target-building and (for downloads) dependency resolution.
-type fetchedMODInfo struct {
-	MOD     mod.MOD
-	MODInfo *api.MODInfo
-	Release api.Release
-}
-
-// fetchMODInfoConcurrently resolves each spec to a release via resolve, run
-// with up to jobs concurrent Portal requests.
-func fetchMODInfoConcurrently(ctx context.Context, jobs int, specs []modSpec, resolve func(context.Context, modSpec) (fetchedMODInfo, error)) ([]fetchedMODInfo, error) {
-	results := make([]fetchedMODInfo, len(specs))
-	group, ctx := errgroup.WithContext(ctx)
-	group.SetLimit(jobs)
-	for i, spec := range specs {
-		group.Go(func() error {
-			result, err := resolve(ctx, spec)
-			if err != nil {
-				return err
-			}
-			results[i] = result
-			return nil
+// releaseDownloadTargets converts a Resolve result into download targets
+// (order follows map iteration; downloads run concurrently anyway).
+func releaseDownloadTargets(releases map[mod.MOD]api.Release, outputDir string) ([]downloadTarget, error) {
+	targets := make([]downloadTarget, 0, len(releases))
+	for m, release := range releases {
+		if err := validateFilename(release.FileName); err != nil {
+			return nil, err
+		}
+		targets = append(targets, downloadTarget{
+			MOD:        m,
+			Release:    release,
+			OutputPath: filepath.Join(outputDir, release.FileName),
 		})
 	}
-	if err := group.Wait(); err != nil {
-		return nil, err
-	}
-	return results, nil
+	return targets, nil
 }
 
 // downloadTargets downloads each target to its OutputPath, up to jobs

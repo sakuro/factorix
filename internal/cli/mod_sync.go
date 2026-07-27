@@ -10,10 +10,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sakuro/factorix/internal/api"
 	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
+	"github.com/sakuro/factorix/internal/resolver"
 	"github.com/sakuro/factorix/internal/save"
 	"github.com/sakuro/factorix/internal/settings"
 )
@@ -249,65 +249,32 @@ func planSyncInstallation(ctx context.Context, application *app.App, graph *depe
 		return nil, nil, err
 	}
 
-	specs := make([]modSpec, len(entries))
+	specs := make([]resolver.Spec, len(entries))
 	for i, entry := range entries {
-		// Version stays set even in latest mode so error messages can name
-		// the save-file version.
-		specs[i] = modSpec{MOD: mod.MOD{Name: entry.Name}, Latest: !strict, Version: entry.Version}
+		specs[i] = resolver.Spec{MOD: mod.MOD{Name: entry.Name}, Latest: !strict, Version: entry.Version}
 	}
-
-	infos, err := fetchMODInfoConcurrently(ctx, jobs, specs, func(ctx context.Context, spec modSpec) (fetchedMODInfo, error) {
-		info, err := portal.GetMODFull(ctx, spec.MOD.Name)
-		if err != nil {
-			return fetchedMODInfo{}, err
-		}
-		release := selectRelease(info, spec)
-		if release == nil {
-			return fetchedMODInfo{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, spec.Version)
-		}
-		return fetchedMODInfo{MOD: spec.MOD, MODInfo: info, Release: *release}, nil
-	})
+	res := &resolver.Resolver{Portal: portal, Logger: application.Logger}
+	releases, err := res.Resolve(ctx, graph, specs, resolver.Options{Jobs: jobs, FollowRecommended: includeRecommended})
 	if err != nil {
 		return nil, nil, err
 	}
 
-	releases := make(map[mod.MOD]api.Release, len(infos))
-	frontier := make([]mod.MOD, 0, len(infos))
-	known := make(map[mod.MOD]bool, len(infos))
-	for _, info := range infos {
-		if err := graph.AddUninstalledMOD(info.MOD, info.Release.Version, info.Release.InfoJSON.Dependencies); err != nil {
-			return nil, nil, err
-		}
-		releases[info.MOD] = info.Release
-		frontier = append(frontier, info.MOD)
-		known[info.MOD] = true
-	}
-
-	if err := resolveInstallDependencies(ctx, application, graph, releases, frontier, jobs, includeRecommended); err != nil {
-		return nil, nil, err
-	}
-
-	targets, err := buildDownloadTargets(infos, modDir)
-	if err != nil {
-		return nil, nil, err
+	requested := make(map[mod.MOD]bool, len(specs))
+	for _, spec := range specs {
+		requested[spec.MOD] = true
 	}
 	// Dependency-resolved MODs aren't in entries/saveMODs, so the caller
 	// needs their names and versions to fold them into the save-driven
 	// mod-list.json planning (see the RunE closure above).
 	var dependencyEntries []save.MODEntry
+	targets, err := releaseDownloadTargets(releases, modDir)
+	if err != nil {
+		return nil, nil, err
+	}
 	for m, release := range releases {
-		if known[m] {
-			continue
+		if !requested[m] {
+			dependencyEntries = append(dependencyEntries, save.MODEntry{Name: m.Name, Version: release.Version})
 		}
-		if err := validateFilename(release.FileName); err != nil {
-			return nil, nil, err
-		}
-		targets = append(targets, downloadTarget{
-			MOD:        m,
-			Release:    release,
-			OutputPath: filepath.Join(modDir, release.FileName),
-		})
-		dependencyEntries = append(dependencyEntries, save.MODEntry{Name: m.Name, Version: release.Version})
 	}
 
 	result := make([]syncInstallTarget, len(targets))
