@@ -130,3 +130,28 @@ func TestInstalledMODCompare(t *testing.T) {
 	assert.Equal(t, -1, v2.Compare(v2dir))
 	assert.Equal(t, 0, v2.Compare(v2))
 }
+
+func TestInstalledMODRemove(t *testing.T) {
+	t.Run("removes a zip file", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, "some-mod_1.0.0.zip")
+		require.NoError(t, os.WriteFile(path, []byte("zip"), 0o644))
+		im := InstalledMOD{MOD: MOD{Name: "some-mod"}, Form: FormZIP, Path: path}
+
+		require.NoError(t, im.Remove())
+		_, err := os.Stat(path)
+		require.ErrorIs(t, err, os.ErrNotExist)
+	})
+
+	t.Run("removes a directory recursively", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, "some-mod")
+		require.NoError(t, os.Mkdir(path, 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(path, "info.json"), []byte("{}"), 0o644))
+		im := InstalledMOD{MOD: MOD{Name: "some-mod"}, Form: FormDirectory, Path: path}
+
+		require.NoError(t, im.Remove())
+		_, err := os.Stat(path)
+		require.ErrorIs(t, err, os.ErrNotExist)
+	})
+}

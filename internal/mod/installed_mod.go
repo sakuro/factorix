@@ -120,3 +120,12 @@ func (im InstalledMOD) formPriority() int {
 	}
 	return 0
 }
+
+// Remove deletes the package from disk: the whole directory when Form is
+// FormDirectory, the single file otherwise.
+func (im InstalledMOD) Remove() error {
+	if im.Form == FormDirectory {
+		return os.RemoveAll(im.Path)
+	}
+	return os.Remove(im.Path)
+}

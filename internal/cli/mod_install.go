@@ -24,6 +24,12 @@ type installTarget struct {
 	Release   api.Release          // meaningful only for OpInstall
 }
 
+// installPlan is planInstall's result, pre-split into what gets
+// downloaded-and-enabled versus merely re-enabled.
+type installPlan struct {
+	installs, enables []installTarget
+}
+
 func newMODInstallCommand(c *cli) *cobra.Command {
 	var jobs int
 	var yes, ignoreRecommended bool
@@ -41,16 +47,13 @@ func newMODInstallCommand(c *cli) *cobra.Command {
 			if err := application.RequireGameStopped(); err != nil {
 				return err
 			}
-
-			state, err := loadMODState(application)
-			if err != nil {
-				return err
-			}
 			modDir, err := application.Runtime.MODDir()
 			if err != nil {
 				return err
 			}
-			if info, err := os.Stat(modDir); err != nil || !info.IsDir() {
+			if info, err := os.Stat(modDir); err != nil {
+				return fmt.Errorf("MOD directory does not exist: %s: %w", modDir, err)
+			} else if !info.IsDir() {
 				return fmt.Errorf("MOD directory does not exist: %s", modDir)
 			}
 
@@ -63,62 +66,49 @@ func newMODInstallCommand(c *cli) *cobra.Command {
 				specs[i] = spec
 			}
 
-			targets, err := planInstall(cmd.Context(), application, state.graph, specs, jobs, !ignoreRecommended)
-			if err != nil {
-				return err
+			opts := mutationOpts{
+				yes:             yes,
+				quiet:           c.quiet,
+				backupExtension: backupExtension,
+				confirmPrompt:   "Do you want to proceed?",
+				emptyMessage:    "All specified MOD(s) are already installed and enabled",
 			}
-
-			p := c.printer(cmd)
-			if len(targets) == 0 {
-				p.Info("All specified MOD(s) are already installed and enabled")
-				return nil
+			plan := func(ctx context.Context, application *app.App, state *modState) (installPlan, error) {
+				targets, err := planInstall(ctx, application, state.graph, specs, jobs, !ignoreRecommended)
+				if err != nil {
+					return installPlan{}, err
+				}
+				installs, enables := splitInstallTargets(targets)
+				return installPlan{installs: installs, enables: enables}, nil
 			}
-
-			installs, enables := splitInstallTargets(targets)
-			if len(installs) > 0 {
-				p.Info(fmt.Sprintf("Planning to install %d MOD(s):", len(installs)))
-				for _, target := range installs {
-					p.Say(fmt.Sprintf("  - %s@%s", target.MOD, target.Release.Version))
+			isEmpty := func(p installPlan) bool { return len(p.installs) == 0 && len(p.enables) == 0 }
+			show := func(p *printer, plan installPlan) {
+				if len(plan.installs) > 0 {
+					p.Info(fmt.Sprintf("Planning to install %d MOD(s):", len(plan.installs)))
+					for _, target := range plan.installs {
+						p.Say(fmt.Sprintf("  - %s@%s", target.MOD, target.Release.Version))
+					}
+				}
+				if len(plan.enables) > 0 {
+					p.Info(fmt.Sprintf("Planning to enable %d disabled dependency MOD(s):", len(plan.enables)))
+					for _, target := range plan.enables {
+						p.Say("  - " + target.MOD.String())
+					}
 				}
 			}
-			if len(enables) > 0 {
-				p.Info(fmt.Sprintf("Planning to enable %d disabled dependency MOD(s):", len(enables)))
-				for _, target := range enables {
-					p.Say("  - " + target.MOD.String())
+			execute := func(ctx context.Context, application *app.App, state *modState, p *printer, plan installPlan) error {
+				if err := executeInstall(ctx, application, state.modList, modDir, plan.installs, plan.enables, jobs, p); err != nil {
+					return err
 				}
-			}
-
-			confirmed, err := confirm(cmd, c.quiet, yes, "Do you want to proceed?")
-			if err != nil {
-				return err
-			}
-			if !confirmed {
+				if len(plan.installs) > 0 {
+					p.Success(fmt.Sprintf("Installed %d MOD(s)", len(plan.installs)))
+				}
+				if len(plan.enables) > 0 {
+					p.Success(fmt.Sprintf("Enabled %d disabled dependency MOD(s)", len(plan.enables)))
+				}
 				return nil
 			}
-
-			if err := executeInstall(cmd.Context(), c, cmd, application, state.modList, modDir, installs, enables, jobs); err != nil {
-				return err
-			}
-
-			modListPath, err := application.Runtime.MODListPath()
-			if err != nil {
-				return err
-			}
-			if err := backupIfExists(modListPath, backupExtension); err != nil {
-				return err
-			}
-			if err := state.modList.Save(modListPath); err != nil {
-				return err
-			}
-
-			if len(installs) > 0 {
-				p.Success(fmt.Sprintf("Installed %d MOD(s)", len(installs)))
-			}
-			if len(enables) > 0 {
-				p.Success(fmt.Sprintf("Enabled %d disabled dependency MOD(s)", len(enables)))
-			}
-			p.Success("Saved mod-list.json")
-			return nil
+			return runMODMutation(cmd, c, opts, plan, isEmpty, show, execute)
 		},
 	}
 	cmd.Flags().IntVarP(&jobs, "jobs", "j", 4, "Number of parallel downloads")
@@ -176,9 +166,7 @@ func planInstall(ctx context.Context, application *app.App, graph *dependency.Gr
 	return targets, nil
 }
 
-func executeInstall(ctx context.Context, c *cli, cmd *cobra.Command, application *app.App, modList *mod.MODList, modDir string, installs, enables []installTarget, jobs int) error {
-	p := c.printer(cmd)
-
+func executeInstall(ctx context.Context, application *app.App, modList *mod.MODList, modDir string, installs, enables []installTarget, jobs int, p *printer) error {
 	if len(installs) > 0 {
 		downloads := make([]downloadTarget, 0, len(installs))
 		for _, target := range installs {
@@ -197,22 +185,23 @@ func executeInstall(ctx context.Context, c *cli, cmd *cobra.Command, application
 	}
 
 	for _, target := range installs {
+		wasEnabled := false
 		if modList.Contains(target.MOD) {
-			enabled, err := modList.Enabled(target.MOD)
+			var err error
+			wasEnabled, err = modList.Enabled(target.MOD)
 			if err != nil {
 				return err
 			}
-			if !enabled {
-				if err := modList.Enable(target.MOD); err != nil {
-					return err
-				}
-				p.Success(fmt.Sprintf("Enabled %s in mod-list.json", target.MOD))
-			}
-		} else {
-			if err := modList.Add(target.MOD, mod.MODState{Enabled: true}); err != nil {
-				return err
-			}
+		}
+		added, err := modList.EnsureEnabled(target.MOD)
+		if err != nil {
+			return err
+		}
+		switch {
+		case added:
 			p.Success(fmt.Sprintf("Added %s to mod-list.json", target.MOD))
+		case !wasEnabled:
+			p.Success(fmt.Sprintf("Enabled %s in mod-list.json", target.MOD))
 		}
 	}
 	for _, target := range enables {

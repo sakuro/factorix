@@ -39,7 +39,6 @@ func newMODUpdateCommand(c *cli) *cobra.Command {
 			if err := application.RequireGameStopped(); err != nil {
 				return err
 			}
-
 			state, err := loadMODState(application)
 			if err != nil {
 				return err
@@ -49,52 +48,37 @@ func newMODUpdateCommand(c *cli) *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			p := c.printer(cmd)
 			if len(targetMODs) == 0 {
 				p.Info("No MOD(s) to update")
 				return nil
 			}
 
-			targets, err := findUpdateTargets(cmd.Context(), application, targetMODs, state.installedMODs, jobs)
-			if err != nil {
-				return err
+			opts := mutationOpts{
+				yes:             yes,
+				quiet:           c.quiet,
+				backupExtension: backupExtension,
+				confirmPrompt:   "Do you want to update these MOD(s)?",
+				emptyMessage:    "All MOD(s) are up to date",
 			}
-			if len(targets) == 0 {
-				p.Info("All MOD(s) are up to date")
+			plan := func(ctx context.Context, application *app.App, state *modState) ([]updateTarget, error) {
+				return findUpdateTargets(ctx, application, targetMODs, state.installedMODs, jobs)
+			}
+			isEmpty := func(targets []updateTarget) bool { return len(targets) == 0 }
+			show := func(p *printer, targets []updateTarget) {
+				p.Info(fmt.Sprintf("Planning to update %d MOD(s):", len(targets)))
+				for _, target := range targets {
+					p.Say(fmt.Sprintf("  - %s: %s -> %s", target.MOD, target.CurrentVersion, target.Release.Version))
+				}
+			}
+			execute := func(ctx context.Context, application *app.App, state *modState, p *printer, targets []updateTarget) error {
+				if err := executeUpdates(ctx, application, state.modList, targets, jobs, p); err != nil {
+					return err
+				}
+				p.Success(fmt.Sprintf("Updated %d MOD(s)", len(targets)))
 				return nil
 			}
-
-			p.Info(fmt.Sprintf("Planning to update %d MOD(s):", len(targets)))
-			for _, target := range targets {
-				p.Say(fmt.Sprintf("  - %s: %s -> %s", target.MOD, target.CurrentVersion, target.Release.Version))
-			}
-
-			confirmed, err := confirm(cmd, c.quiet, yes, "Do you want to update these MOD(s)?")
-			if err != nil {
-				return err
-			}
-			if !confirmed {
-				return nil
-			}
-
-			if err := executeUpdates(cmd.Context(), c, cmd, application, state.modList, targets, jobs); err != nil {
-				return err
-			}
-
-			modListPath, err := application.Runtime.MODListPath()
-			if err != nil {
-				return err
-			}
-			if err := backupIfExists(modListPath, backupExtension); err != nil {
-				return err
-			}
-			if err := state.modList.Save(modListPath); err != nil {
-				return err
-			}
-			p.Success(fmt.Sprintf("Updated %d MOD(s)", len(targets)))
-			p.Success("Saved mod-list.json")
-			return nil
+			return runMODMutation(cmd, c, opts, plan, isEmpty, show, execute)
 		},
 	}
 	cmd.Flags().IntVarP(&jobs, "jobs", "j", 4, "Number of parallel downloads")
@@ -197,7 +181,7 @@ func newestInstalledVersion(installed []mod.InstalledMOD, m mod.MOD) (mod.MODVer
 	return newest, found
 }
 
-func executeUpdates(ctx context.Context, c *cli, cmd *cobra.Command, application *app.App, modList *mod.MODList, targets []updateTarget, jobs int) error {
+func executeUpdates(ctx context.Context, application *app.App, modList *mod.MODList, targets []updateTarget, jobs int, p *printer) error {
 	modDir, err := application.Runtime.MODDir()
 	if err != nil {
 		return err
@@ -218,26 +202,23 @@ func executeUpdates(ctx context.Context, c *cli, cmd *cobra.Command, application
 		return err
 	}
 
-	p := c.printer(cmd)
 	for _, target := range targets {
-		if modList.Contains(target.MOD) {
-			enabled, err := modList.Enabled(target.MOD)
+		enabled := true
+		wasPresent := modList.Contains(target.MOD)
+		if wasPresent {
+			enabled, err = modList.Enabled(target.MOD)
 			if err != nil {
 				return err
 			}
-			// Remove and re-add so a pinned version in mod-list.json is
-			// cleared and the newly downloaded release takes effect.
-			if err := modList.Remove(target.MOD); err != nil {
-				return err
-			}
-			if err := modList.Add(target.MOD, mod.MODState{Enabled: enabled}); err != nil {
-				return err
-			}
+		}
+		// Replace clears any pinned version in mod-list.json so the newly
+		// downloaded release takes effect.
+		if err := modList.Replace(target.MOD, mod.MODState{Enabled: enabled}); err != nil {
+			return err
+		}
+		if wasPresent {
 			p.Success(fmt.Sprintf("Updated %s to %s", target.MOD, target.Release.Version))
 		} else {
-			if err := modList.Add(target.MOD, mod.MODState{Enabled: true}); err != nil {
-				return err
-			}
 			p.Success(fmt.Sprintf("Added %s to mod-list.json", target.MOD))
 		}
 	}

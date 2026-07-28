@@ -1,12 +1,13 @@
 package cli
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 
+	"github.com/sakuro/factorix/internal/app"
 	"github.com/sakuro/factorix/internal/dependency"
 	"github.com/sakuro/factorix/internal/mod"
 )
@@ -25,6 +26,13 @@ func (t uninstallTarget) String() string {
 	return t.MOD.String()
 }
 
+// uninstallPlan is the uninstall command's plan: MODs (or specific
+// versions) to remove, plus any expansion MODs --all also disables.
+type uninstallPlan struct {
+	targets             []uninstallTarget
+	expansionsToDisable []mod.MOD
+}
+
 func newMODUninstallCommand(c *cli) *cobra.Command {
 	var all, yes bool
 	var backupExtension string
@@ -41,92 +49,70 @@ func newMODUninstallCommand(c *cli) *cobra.Command {
 				return fmt.Errorf("Must specify MOD names or use --all option")
 			}
 
-			application, err := c.App()
-			if err != nil {
-				return err
-			}
-			if err := application.RequireGameStopped(); err != nil {
-				return err
-			}
-
-			state, err := loadMODState(application)
-			if err != nil {
-				return err
-			}
-
-			p := c.printer(cmd)
-			var requested []uninstallTarget
+			emptyMessage := "No MOD(s) to uninstall"
 			if all {
-				requested = planUninstallAll(state.graph)
-			} else {
-				requested, err = parseUninstallSpecs(args)
+				emptyMessage = "No MOD(s) to uninstall or disable"
+			}
+			opts := mutationOpts{
+				yes:             yes,
+				quiet:           c.quiet,
+				backupExtension: backupExtension,
+				confirmPrompt:   "Do you want to uninstall these MOD(s)?",
+				emptyMessage:    emptyMessage,
+			}
+			plan := func(ctx context.Context, application *app.App, state *modState) (uninstallPlan, error) {
+				p := c.printer(cmd)
+				var requested []uninstallTarget
+				var err error
+				if all {
+					requested = planUninstallAll(state.graph)
+				} else {
+					requested, err = parseUninstallSpecs(args)
+					if err != nil {
+						return uninstallPlan{}, err
+					}
+				}
+
+				targets, err := validateUninstallTargets(p, requested, state, all)
 				if err != nil {
+					return uninstallPlan{}, err
+				}
+
+				var expansionsToDisable []mod.MOD
+				if all {
+					expansionsToDisable = enabledExpansions(state)
+				}
+				return uninstallPlan{targets: targets, expansionsToDisable: expansionsToDisable}, nil
+			}
+			isEmpty := func(plan uninstallPlan) bool {
+				return len(plan.targets) == 0 && len(plan.expansionsToDisable) == 0
+			}
+			show := func(p *printer, plan uninstallPlan) {
+				p.Info(fmt.Sprintf("Planning to uninstall %d MOD(s):", len(plan.targets)))
+				for _, target := range plan.targets {
+					p.Say("  - " + target.String())
+				}
+				if all && len(plan.expansionsToDisable) > 0 {
+					p.Info("Expansion MOD(s) to be disabled:")
+					for _, m := range plan.expansionsToDisable {
+						p.Say("  - " + m.String())
+					}
+				}
+			}
+			execute := func(ctx context.Context, application *app.App, state *modState, p *printer, plan uninstallPlan) error {
+				if err := executeUninstall(p, plan.targets, state); err != nil {
 					return err
 				}
-			}
-
-			targets, err := validateUninstallTargets(p, requested, state, all)
-			if err != nil {
-				return err
-			}
-
-			var expansionsToDisable []mod.MOD
-			if all {
-				expansionsToDisable = enabledExpansions(state)
-			}
-			if len(targets) == 0 && len(expansionsToDisable) == 0 {
-				if all {
-					p.Info("No MOD(s) to uninstall or disable")
-				} else {
-					p.Info("No MOD(s) to uninstall")
-				}
-				return nil
-			}
-
-			p.Info(fmt.Sprintf("Planning to uninstall %d MOD(s):", len(targets)))
-			for _, target := range targets {
-				p.Say("  - " + target.String())
-			}
-			if all && len(expansionsToDisable) > 0 {
-				p.Info("Expansion MOD(s) to be disabled:")
-				for _, m := range expansionsToDisable {
-					p.Say("  - " + m.String())
-				}
-			}
-
-			confirmed, err := confirm(cmd, c.quiet, yes, "Do you want to uninstall these MOD(s)?")
-			if err != nil {
-				return err
-			}
-			if !confirmed {
-				return nil
-			}
-
-			if err := executeUninstall(p, targets, state); err != nil {
-				return err
-			}
-			if all {
-				for _, m := range expansionsToDisable {
+				for _, m := range plan.expansionsToDisable {
 					if err := state.modList.Disable(m); err != nil {
 						return err
 					}
 					p.Success("Disabled expansion MOD: " + m.String())
 				}
+				p.Success(fmt.Sprintf("Uninstalled %d MOD(s)", len(plan.targets)))
+				return nil
 			}
-
-			modListPath, err := application.Runtime.MODListPath()
-			if err != nil {
-				return err
-			}
-			if err := backupIfExists(modListPath, backupExtension); err != nil {
-				return err
-			}
-			if err := state.modList.Save(modListPath); err != nil {
-				return err
-			}
-			p.Success(fmt.Sprintf("Uninstalled %d MOD(s)", len(targets)))
-			p.Success("Saved mod-list.json")
-			return nil
+			return runMODMutation(cmd, c, opts, plan, isEmpty, show, execute)
 		},
 	}
 	cmd.Flags().BoolVar(&all, "all", false, "Uninstall all MOD(s) (base remains enabled, expansions disabled, others removed)")
@@ -276,13 +262,7 @@ func executeUninstall(p *printer, targets []uninstallTarget, state *modState) er
 		}
 
 		for _, im := range toRemove {
-			var err error
-			if im.Form == mod.FormDirectory {
-				err = os.RemoveAll(im.Path)
-			} else {
-				err = os.Remove(im.Path)
-			}
-			if err != nil {
+			if err := im.Remove(); err != nil {
 				return err
 			}
 		}

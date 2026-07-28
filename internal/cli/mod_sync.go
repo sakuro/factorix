@@ -583,10 +583,7 @@ func applySyncChange(modList *mod.MODList, change syncChange) error {
 		}
 		return modList.Add(m, mod.MODState{Enabled: true, Version: change.toVersion})
 	case syncUpdate:
-		if err := modList.Remove(m); err != nil {
-			return err
-		}
-		return modList.Add(m, mod.MODState{Enabled: change.fromEnabled, Version: change.toVersion})
+		return modList.Replace(m, mod.MODState{Enabled: change.fromEnabled, Version: change.toVersion})
 	case syncAdd:
 		return modList.Add(m, mod.MODState{Enabled: true, Version: change.toVersion})
 	default:
@@ -597,13 +594,7 @@ func applySyncChange(modList *mod.MODList, change syncChange) error {
 // executeSyncDeletions removes installed MOD packages from disk.
 func executeSyncDeletions(modsToDelete []mod.InstalledMOD) error {
 	for _, installed := range modsToDelete {
-		var err error
-		if installed.Form == mod.FormDirectory {
-			err = os.RemoveAll(installed.Path)
-		} else {
-			err = os.Remove(installed.Path)
-		}
-		if err != nil {
+		if err := installed.Remove(); err != nil {
 			return err
 		}
 	}

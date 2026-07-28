@@ -3,6 +3,7 @@ package mod
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -130,4 +131,76 @@ func TestMODListEnableDisable(t *testing.T) {
 	require.ErrorIs(t, err, ErrMODNotInList)
 	_, err = list.Version(MOD{Name: "not-there"})
 	require.ErrorIs(t, err, ErrMODNotInList)
+}
+
+func TestMODListEnsureEnabled(t *testing.T) {
+	list := NewMODList()
+	require.NoError(t, list.Add(MOD{Name: "base"}, MODState{Enabled: true}))
+
+	t.Run("adds an absent MOD as enabled", func(t *testing.T) {
+		added, err := list.EnsureEnabled(MOD{Name: "new-mod"})
+		require.NoError(t, err)
+		assert.True(t, added)
+		enabled, err := list.Enabled(MOD{Name: "new-mod"})
+		require.NoError(t, err)
+		assert.True(t, enabled)
+	})
+
+	t.Run("enables a present-but-disabled MOD", func(t *testing.T) {
+		require.NoError(t, list.Add(MOD{Name: "disabled-mod"}, MODState{Enabled: false}))
+		added, err := list.EnsureEnabled(MOD{Name: "disabled-mod"})
+		require.NoError(t, err)
+		assert.False(t, added)
+		enabled, err := list.Enabled(MOD{Name: "disabled-mod"})
+		require.NoError(t, err)
+		assert.True(t, enabled)
+	})
+
+	t.Run("no-ops on an already-enabled MOD", func(t *testing.T) {
+		require.NoError(t, list.Add(MOD{Name: "enabled-mod"}, MODState{Enabled: true}))
+		added, err := list.EnsureEnabled(MOD{Name: "enabled-mod"})
+		require.NoError(t, err)
+		assert.False(t, added)
+	})
+}
+
+func TestMODListReplace(t *testing.T) {
+	version1 := MODVersion{Major: 1}
+	version2 := MODVersion{Major: 2}
+
+	t.Run("changes state and version of a present MOD", func(t *testing.T) {
+		list := NewMODList()
+		require.NoError(t, list.Add(MOD{Name: "some-mod"}, MODState{Enabled: false, Version: &version1}))
+
+		require.NoError(t, list.Replace(MOD{Name: "some-mod"}, MODState{Enabled: true, Version: &version2}))
+
+		enabled, err := list.Enabled(MOD{Name: "some-mod"})
+		require.NoError(t, err)
+		assert.True(t, enabled)
+		got, err := list.Version(MOD{Name: "some-mod"})
+		require.NoError(t, err)
+		require.NotNil(t, got)
+		assert.Equal(t, version2, *got)
+	})
+
+	t.Run("adds an absent MOD", func(t *testing.T) {
+		list := NewMODList()
+		require.NoError(t, list.Replace(MOD{Name: "new-mod"}, MODState{Enabled: true}))
+		assert.True(t, list.Contains(MOD{Name: "new-mod"}))
+	})
+
+	t.Run("rejects an expansion MOD", func(t *testing.T) {
+		list := NewMODList()
+		require.NoError(t, list.Add(MOD{Name: "space-age"}, MODState{Enabled: true}))
+		err := list.Replace(MOD{Name: "space-age"}, MODState{Enabled: true, Version: &version2})
+		require.ErrorIs(t, err, ErrCannotRemoveExpansionMOD)
+	})
+
+	t.Run("preserves insertion order", func(t *testing.T) {
+		list := NewMODList()
+		require.NoError(t, list.Add(MOD{Name: "first"}, MODState{Enabled: true}))
+		require.NoError(t, list.Add(MOD{Name: "second"}, MODState{Enabled: true}))
+		require.NoError(t, list.Replace(MOD{Name: "first"}, MODState{Enabled: true, Version: &version1}))
+		assert.Equal(t, []MOD{{Name: "first"}, {Name: "second"}}, slices.Collect(list.MODs()))
+	})
 }

@@ -106,14 +106,23 @@ func (l *MODList) Add(m MOD, state MODState) error {
 	return nil
 }
 
-// Remove deletes the MOD from the list. Removing a MOD that is not in the
-// list is a no-op.
-func (l *MODList) Remove(m MOD) error {
+// removalGuard rejects removing (or replacing) the base or an expansion
+// MOD; both operations share this restriction.
+func removalGuard(m MOD) error {
 	if m.IsBase() {
 		return ErrCannotRemoveBaseMOD
 	}
 	if m.IsExpansion() {
 		return fmt.Errorf("%w: %s", ErrCannotRemoveExpansionMOD, m)
+	}
+	return nil
+}
+
+// Remove deletes the MOD from the list. Removing a MOD that is not in the
+// list is a no-op.
+func (l *MODList) Remove(m MOD) error {
+	if err := removalGuard(m); err != nil {
+		return err
 	}
 
 	if !l.Contains(m) {
@@ -165,6 +174,45 @@ func (l *MODList) Disable(m MOD) error {
 	state.Enabled = false
 	l.states[m] = state
 	return nil
+}
+
+// EnsureEnabled makes sure m is present and enabled: an absent MOD is
+// added as enabled (added=true); a present-but-disabled MOD is enabled in
+// place (added=false); an already-enabled MOD is left untouched
+// (added=false). Callers that need to distinguish "was already enabled"
+// from "was enabled just now" should check Enabled(m) before calling.
+func (l *MODList) EnsureEnabled(m MOD) (added bool, err error) {
+	if !l.Contains(m) {
+		if err := l.Add(m, MODState{Enabled: true}); err != nil {
+			return false, err
+		}
+		return true, nil
+	}
+	if enabled, err := l.Enabled(m); err != nil {
+		return false, err
+	} else if !enabled {
+		return false, l.Enable(m)
+	}
+	return false, nil
+}
+
+// Replace changes an entry's recorded state (typically its version): a
+// present entry is updated in place, preserving its position in
+// insertion order; an absent MOD is added via Add. Rejects base and
+// expansion MODs unconditionally, matching Remove — callers needing to
+// touch those must use Enable/Disable directly.
+func (l *MODList) Replace(m MOD, state MODState) error {
+	if err := removalGuard(m); err != nil {
+		return err
+	}
+
+	// If present, update state in place to preserve insertion order;
+	// if absent, add it normally.
+	if l.Contains(m) {
+		l.states[m] = state
+		return nil
+	}
+	return l.Add(m, state)
 }
 
 // All iterates over MOD/state pairs in insertion order.
