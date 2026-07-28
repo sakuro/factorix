@@ -167,6 +167,49 @@ func (l *MODList) Disable(m MOD) error {
 	return nil
 }
 
+// EnsureEnabled makes sure m is present and enabled: an absent MOD is
+// added as enabled (added=true); a present-but-disabled MOD is enabled in
+// place (added=false); an already-enabled MOD is left untouched
+// (added=false). Callers that need to distinguish "was already enabled"
+// from "was enabled just now" should check Enabled(m) before calling.
+func (l *MODList) EnsureEnabled(m MOD) (added bool, err error) {
+	if !l.Contains(m) {
+		if err := l.Add(m, MODState{Enabled: true}); err != nil {
+			return false, err
+		}
+		return true, nil
+	}
+	if enabled, err := l.Enabled(m); err != nil {
+		return false, err
+	} else if !enabled {
+		return false, l.Enable(m)
+	}
+	return false, nil
+}
+
+// Replace changes an entry's recorded state (typically its version)
+// atomically: Remove followed by Add. A no-op Remove when m is absent
+// makes this equally usable to add a new entry. Remove rejects base and
+// expansion MODs, so Replace does too — callers needing to touch those
+// must use Enable/Disable directly.
+func (l *MODList) Replace(m MOD, state MODState) error {
+	// Check restrictions that Remove would impose
+	if m.IsBase() {
+		return ErrCannotRemoveBaseMOD
+	}
+	if m.IsExpansion() {
+		return fmt.Errorf("%w: %s", ErrCannotRemoveExpansionMOD, m)
+	}
+
+	// If present, update state in place to preserve insertion order;
+	// if absent, add it normally.
+	if l.Contains(m) {
+		l.states[m] = state
+		return nil
+	}
+	return l.Add(m, state)
+}
+
 // All iterates over MOD/state pairs in insertion order.
 func (l *MODList) All() iter.Seq2[MOD, MODState] {
 	return func(yield func(MOD, MODState) bool) {
