@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -19,89 +20,55 @@ func newMODEnableCommand(c *cli) *cobra.Command {
 		Short: "Enable MOD(s) in mod-list.json (recursively enables dependencies)",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			application, err := c.App()
-			if err != nil {
-				return err
+			opts := mutationOpts{
+				yes:             yes,
+				quiet:           c.quiet,
+				backupExtension: backupExtension,
+				confirmPrompt:   "Do you want to enable these MOD(s)?",
+				emptyMessage:    "All specified MOD(s) are already enabled",
 			}
-			// Checked before any other work, matching Ruby's RequiresGameStopped
-			// (an outer wrapper that runs before the command body).
-			if err := application.RequireGameStopped(); err != nil {
-				return err
-			}
+			plan := func(ctx context.Context, application *app.App, state *modState) ([]mod.MOD, error) {
+				targets := make([]mod.MOD, len(args))
+				for i, name := range args {
+					targets[i] = mod.MOD{Name: name}
+				}
+				for _, m := range targets {
+					if !state.graph.Contains(m) {
+						return nil, fmt.Errorf("MOD '%s' is not installed", m)
+					}
+				}
 
-			state, err := loadMODState(application)
-			if err != nil {
-				return err
+				planned, err := dependency.PlanEnable(state.graph, targets, !ignoreRecommended)
+				if err != nil {
+					return nil, err
+				}
+				if err := dependency.ValidateNoConflicts(state.graph, planned); err != nil {
+					return nil, err
+				}
+				return planned, nil
 			}
-
-			targets := make([]mod.MOD, len(args))
-			for i, name := range args {
-				targets[i] = mod.MOD{Name: name}
-			}
-			for _, m := range targets {
-				if !state.graph.Contains(m) {
-					return fmt.Errorf("MOD '%s' is not installed", m)
+			isEmpty := func(planned []mod.MOD) bool { return len(planned) == 0 }
+			show := func(p *printer, planned []mod.MOD) {
+				p.Info(fmt.Sprintf("Planning to enable %d MOD(s):", len(planned)))
+				for _, m := range planned {
+					p.Say("  - " + m.String())
 				}
 			}
-
-			planned, err := dependency.PlanEnable(state.graph, targets, !ignoreRecommended)
-			if err != nil {
-				return err
-			}
-			if err := dependency.ValidateNoConflicts(state.graph, planned); err != nil {
-				return err
-			}
-
-			p := c.printer(cmd)
-			if len(planned) == 0 {
-				p.Info("All specified MOD(s) are already enabled")
+			execute := func(ctx context.Context, application *app.App, state *modState, p *printer, planned []mod.MOD) error {
+				for _, m := range planned {
+					if err := state.modList.Enable(m); err != nil {
+						return err
+					}
+					p.Success("Enabled " + m.String())
+				}
+				p.Success(fmt.Sprintf("Enabled %d MOD(s)", len(planned)))
 				return nil
 			}
-			p.Info(fmt.Sprintf("Planning to enable %d MOD(s):", len(planned)))
-			for _, m := range planned {
-				p.Say("  - " + m.String())
-			}
-
-			confirmed, err := confirm(cmd, c.quiet, yes, "Do you want to enable these MOD(s)?")
-			if err != nil {
-				return err
-			}
-			if !confirmed {
-				return nil
-			}
-
-			return applyMODListChange(cmd, c, application, state, planned, "Enabled", (*mod.MODList).Enable, backupExtension)
+			return runMODMutation(cmd, c, opts, plan, isEmpty, show, execute)
 		},
 	}
 	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompts")
 	cmd.Flags().BoolVar(&ignoreRecommended, "ignore-recommended", false, "Do not enable recommended dependencies")
 	cmd.Flags().StringVar(&backupExtension, "backup-extension", defaultBackupExtension, "Backup file extension")
 	return cmd
-}
-
-// applyMODListChange applies fn (MODList.Enable or MODList.Disable) to each
-// MOD in planned, reporting success per MOD, then backs up and saves
-// mod-list.json. This is the shared tail of the enable and disable commands.
-func applyMODListChange(cmd *cobra.Command, c *cli, application *app.App, state *modState, planned []mod.MOD, verb string, fn func(*mod.MODList, mod.MOD) error, backupExtension string) error {
-	p := c.printer(cmd)
-	for _, m := range planned {
-		if err := fn(state.modList, m); err != nil {
-			return err
-		}
-		p.Success(verb + " " + m.String())
-	}
-
-	modListPath, err := application.Runtime.MODListPath()
-	if err != nil {
-		return err
-	}
-	if err := backupIfExists(modListPath, backupExtension); err != nil {
-		return err
-	}
-	if err := state.modList.Save(modListPath); err != nil {
-		return err
-	}
-	p.Success(fmt.Sprintf("%s %d MOD(s)", verb, len(planned)))
-	p.Success("Saved mod-list.json")
-	return nil
 }
