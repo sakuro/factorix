@@ -106,14 +106,23 @@ func (l *MODList) Add(m MOD, state MODState) error {
 	return nil
 }
 
-// Remove deletes the MOD from the list. Removing a MOD that is not in the
-// list is a no-op.
-func (l *MODList) Remove(m MOD) error {
+// removalGuard rejects removing (or replacing) the base or an expansion
+// MOD; both operations share this restriction.
+func removalGuard(m MOD) error {
 	if m.IsBase() {
 		return ErrCannotRemoveBaseMOD
 	}
 	if m.IsExpansion() {
 		return fmt.Errorf("%w: %s", ErrCannotRemoveExpansionMOD, m)
+	}
+	return nil
+}
+
+// Remove deletes the MOD from the list. Removing a MOD that is not in the
+// list is a no-op.
+func (l *MODList) Remove(m MOD) error {
+	if err := removalGuard(m); err != nil {
+		return err
 	}
 
 	if !l.Contains(m) {
@@ -187,18 +196,14 @@ func (l *MODList) EnsureEnabled(m MOD) (added bool, err error) {
 	return false, nil
 }
 
-// Replace changes an entry's recorded state (typically its version)
-// atomically: Remove followed by Add. A no-op Remove when m is absent
-// makes this equally usable to add a new entry. Remove rejects base and
-// expansion MODs, so Replace does too — callers needing to touch those
-// must use Enable/Disable directly.
+// Replace changes an entry's recorded state (typically its version): a
+// present entry is updated in place, preserving its position in
+// insertion order; an absent MOD is added via Add. Rejects base and
+// expansion MODs unconditionally, matching Remove — callers needing to
+// touch those must use Enable/Disable directly.
 func (l *MODList) Replace(m MOD, state MODState) error {
-	// Check restrictions that Remove would impose
-	if m.IsBase() {
-		return ErrCannotRemoveBaseMOD
-	}
-	if m.IsExpansion() {
-		return fmt.Errorf("%w: %s", ErrCannotRemoveExpansionMOD, m)
+	if err := removalGuard(m); err != nil {
+		return err
 	}
 
 	// If present, update state in place to preserve insertion order;
