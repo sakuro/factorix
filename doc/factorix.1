@@ -174,7 +174,9 @@ Show only MOD(s) with dependency errors.
 Show only MOD(s) with available updates.
 .TP
 .B \-\-json
-Output in JSON format.
+Output in JSON format. Each entry adds a computed \fBerror\fR field
+(dependency validation message) that has no counterpart in
+mod\-list.json; see EXAMPLES to strip it.
 .SS factorix mod search [MOD_NAMES]
 Search MOD(s) on Factorio MOD Portal.
 .TP
@@ -502,6 +504,12 @@ List all installed MODs:
 .PP
 .RS
 factorix mod list
+.RE
+.PP
+List MOD(s) as JSON, matching the mod\-list.json field set:
+.PP
+.RS
+factorix mod list --json | jq 'map(del(.error))'
 .RE
 .PP
 Search for MODs on the portal:
