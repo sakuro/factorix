@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.19.0
 	github.com/gofrs/flock v0.13.0
 	github.com/spf13/cobra v1.10.2
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	github.com/vbauerster/mpb/v8 v8.15.2
 	golang.org/x/sync v0.22.0
 	golang.org/x/term v0.45.0
