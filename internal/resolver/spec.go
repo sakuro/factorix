@@ -14,9 +14,12 @@ type Spec struct {
 }
 
 // Select returns the release the spec designates, or nil when absent.
-func (s Spec) Select(info *api.MODInfo) *api.Release {
+// installedBase (nil skips the check) filters out game-incompatible
+// releases when Latest is set; an exact version request is never filtered
+// — the user asked for that version specifically.
+func (s Spec) Select(info *api.MODInfo, installedBase *mod.MODVersion) *api.Release {
 	if s.Latest {
-		return SelectLatest(info)
+		return SelectLatest(info, installedBase)
 	}
 	return SelectExact(info, s.Version)
 }

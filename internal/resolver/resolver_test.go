@@ -238,3 +238,44 @@ func TestResolve(t *testing.T) {
 		assert.False(t, graph.Contains(mod.MOD{Name: "core"}))
 	})
 }
+
+func TestResolveGameVersionCompatibility(t *testing.T) {
+	installedBase := mustVersion(t, "1.1.110")
+
+	t.Run("Fetch skips an initial spec with no game-compatible release", func(t *testing.T) {
+		info := modInfo(t, "app", nil, "1.0.0")
+		info.Releases[0].InfoJSON.FactorioVersion = "2.0"
+		portal := &fakePortal{mods: map[string]*api.MODInfo{"app": info}}
+		r := &Resolver{Portal: portal, Logger: discardLogger(), InstalledBase: &installedBase}
+
+		_, err := r.Fetch(context.Background(), []Spec{{MOD: mod.MOD{Name: "app"}, Latest: true}}, 1)
+		require.ErrorContains(t, err, "app@latest")
+	})
+
+	t.Run("Resolve skips a transitive dependency with no game-compatible release", func(t *testing.T) {
+		libInfo := modInfo(t, "lib", nil, "1.0.0")
+		libInfo.Releases[0].InfoJSON.FactorioVersion = "2.0"
+		r := &Resolver{
+			Portal: &fakePortal{mods: map[string]*api.MODInfo{
+				"app": modInfo(t, "app", []string{"lib"}, "1.0.0"),
+				"lib": libInfo,
+			}},
+			Logger:        discardLogger(),
+			InstalledBase: &installedBase,
+		}
+
+		releases, err := r.Resolve(context.Background(), dependency.NewGraph(), []Spec{{MOD: mod.MOD{Name: "app"}, Latest: true}}, Options{Jobs: 2})
+		require.NoError(t, err)
+		assert.NotContains(t, releases, mod.MOD{Name: "lib"})
+	})
+
+	t.Run("an explicit base dependency requirement is honored over factorio_version", func(t *testing.T) {
+		info := modInfo(t, "app", []string{"base >= 1.0.0"}, "1.0.0")
+		info.Releases[0].InfoJSON.FactorioVersion = "9.9" // would fail if consulted instead of the explicit entry
+		r := &Resolver{Portal: &fakePortal{mods: map[string]*api.MODInfo{"app": info}}, Logger: discardLogger(), InstalledBase: &installedBase}
+
+		fetched, err := r.Fetch(context.Background(), []Spec{{MOD: mod.MOD{Name: "app"}, Latest: true}}, 1)
+		require.NoError(t, err)
+		assert.Equal(t, "1.0.0", fetched[0].Release.Version.String())
+	})
+}

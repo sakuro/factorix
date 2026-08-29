@@ -24,6 +24,10 @@ type Portal interface {
 type Resolver struct {
 	Portal Portal
 	Logger *slog.Logger
+	// InstalledBase is the installed base MOD's version, used to filter out
+	// releases incompatible with the installed Factorio game version. Nil
+	// skips the check (compatibility unknown).
+	InstalledBase *mod.MODVersion
 }
 
 // Fetched pairs a requested MOD with its full info and selected release.
@@ -42,7 +46,7 @@ func (r *Resolver) Fetch(ctx context.Context, specs []Spec, jobs int) ([]Fetched
 		if err != nil {
 			return Fetched{}, err
 		}
-		release := spec.Select(info)
+		release := spec.Select(info, r.InstalledBase)
 		if release == nil {
 			return Fetched{}, fmt.Errorf("Release not found for %s@%s", spec.MOD.Name, spec.VersionLabel())
 		}
@@ -171,7 +175,7 @@ func (r *Resolver) resolveDependencies(ctx context.Context, graph *dependency.Gr
 				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy, "reason", err)
 				return Fetched{}, nil
 			}
-			release := SelectCompatible(info, dep.requirements...)
+			release := SelectCompatible(info, r.InstalledBase, dep.requirements...)
 			if release == nil {
 				r.Logger.Warn("Skipping dependency", "mod", spec.MOD.Name, "required_by", requiredBy, "reason", "no compatible release found")
 				return Fetched{}, nil
