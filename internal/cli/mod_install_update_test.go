@@ -106,3 +106,15 @@ func TestNewestInstalledVersion(t *testing.T) {
 	_, found = newestInstalledVersion(installed, mod.MOD{Name: "absent"})
 	assert.False(t, found)
 }
+
+func TestInstalledBaseVersion(t *testing.T) {
+	installed := []mod.InstalledMOD{
+		{MOD: mod.MOD{Name: "base"}, Version: mod.MODVersion{Major: 1, Minor: 1, Patch: 110}},
+		{MOD: mod.MOD{Name: "some-mod"}, Version: mod.MODVersion{Major: 1}},
+	}
+	got := installedBaseVersion(installed)
+	require.NotNil(t, got)
+	assert.Equal(t, mod.MODVersion{Major: 1, Minor: 1, Patch: 110}, *got)
+
+	assert.Nil(t, installedBaseVersion(nil))
+}

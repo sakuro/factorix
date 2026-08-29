@@ -32,7 +32,7 @@ func TestSelectLatest(t *testing.T) {
 	t.Run("prefers latest_release when present", func(t *testing.T) {
 		pinned := release(t, "1.0.0")
 		info := &api.MODInfo{LatestRelease: &pinned, Releases: []api.Release{older, newer}}
-		got := SelectLatest(info)
+		got := SelectLatest(info, nil)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.0.0", got.Version.String())
 	})
@@ -40,13 +40,13 @@ func TestSelectLatest(t *testing.T) {
 	t.Run("falls back to highest version", func(t *testing.T) {
 		// Descending order proves selection is by version, not list position.
 		info := &api.MODInfo{Releases: []api.Release{newer, older}}
-		got := SelectLatest(info)
+		got := SelectLatest(info, nil)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.1.0", got.Version.String())
 	})
 
 	t.Run("nil when no releases", func(t *testing.T) {
-		assert.Nil(t, SelectLatest(&api.MODInfo{}))
+		assert.Nil(t, SelectLatest(&api.MODInfo{}, nil))
 	})
 }
 
@@ -66,14 +66,14 @@ func TestSelectCompatible(t *testing.T) {
 	info := &api.MODInfo{Releases: []api.Release{v1, v2}}
 
 	t.Run("nil requirement selects latest", func(t *testing.T) {
-		got := SelectCompatible(info, nil)
+		got := SelectCompatible(info, nil, nil)
 		require.NotNil(t, got)
 		assert.Equal(t, "2.0.0", got.Version.String())
 	})
 
 	t.Run("highest version satisfying the requirement", func(t *testing.T) {
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.5.0")}
-		got := SelectCompatible(info, requirement)
+		got := SelectCompatible(info, nil, requirement)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.0.0", got.Version.String())
 	})
@@ -82,7 +82,7 @@ func TestSelectCompatible(t *testing.T) {
 		pinned := release(t, "1.0.0")
 		withLatest := &api.MODInfo{LatestRelease: &pinned, Releases: []api.Release{v1, v2}}
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "2.0.0")}
-		got := SelectCompatible(withLatest, requirement)
+		got := SelectCompatible(withLatest, nil, requirement)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.0.0", got.Version.String())
 	})
@@ -91,28 +91,82 @@ func TestSelectCompatible(t *testing.T) {
 		pinned := release(t, "2.0.0")
 		withLatest := &api.MODInfo{LatestRelease: &pinned, Releases: []api.Release{v1, v2}}
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.5.0")}
-		got := SelectCompatible(withLatest, requirement)
+		got := SelectCompatible(withLatest, nil, requirement)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.0.0", got.Version.String())
 	})
 
 	t.Run("nil when nothing satisfies", func(t *testing.T) {
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "9.0.0")}
-		assert.Nil(t, SelectCompatible(info, requirement))
+		assert.Nil(t, SelectCompatible(info, nil, requirement))
 	})
 
 	t.Run("multiple requirements narrow the selection", func(t *testing.T) {
 		multi := &api.MODInfo{Releases: []api.Release{release(t, "1.0.0"), release(t, "1.5.0"), release(t, "2.0.0")}}
 		lower := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "1.2.0")}
 		upper := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.8.0")}
-		got := SelectCompatible(multi, lower, upper)
+		got := SelectCompatible(multi, nil, lower, upper)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.5.0", got.Version.String())
 	})
 
 	t.Run("nil entries among requirements are ignored", func(t *testing.T) {
 		requirement := &dependency.VersionRequirement{Operator: dependency.OpLessEqual, Version: mustVersion(t, "1.5.0")}
-		got := SelectCompatible(info, nil, requirement, nil)
+		got := SelectCompatible(info, nil, nil, requirement, nil)
+		require.NotNil(t, got)
+		assert.Equal(t, "1.0.0", got.Version.String())
+	})
+}
+
+func TestSelectLatestGameCompatibility(t *testing.T) {
+	compatible := release(t, "1.0.0")
+	compatible.InfoJSON.FactorioVersion = "1.1"
+	incompatible := release(t, "2.0.0")
+	incompatible.InfoJSON.FactorioVersion = "2.0"
+	installedBase := mustVersion(t, "1.1.110")
+
+	t.Run("skips an incompatible latest_release, falling back to a compatible one", func(t *testing.T) {
+		pinned := incompatible
+		info := &api.MODInfo{LatestRelease: &pinned, Releases: []api.Release{compatible, incompatible}}
+		got := SelectLatest(info, &installedBase)
+		require.NotNil(t, got)
+		assert.Equal(t, "1.0.0", got.Version.String())
+	})
+
+	t.Run("nil when nothing is compatible", func(t *testing.T) {
+		info := &api.MODInfo{Releases: []api.Release{incompatible}}
+		assert.Nil(t, SelectLatest(info, &installedBase))
+	})
+
+	t.Run("nil installedBase skips the check", func(t *testing.T) {
+		info := &api.MODInfo{Releases: []api.Release{incompatible}}
+		got := SelectLatest(info, nil)
+		require.NotNil(t, got)
+		assert.Equal(t, "2.0.0", got.Version.String())
+	})
+}
+
+func TestSelectCompatibleGameCompatibility(t *testing.T) {
+	older := release(t, "1.0.0")
+	older.InfoJSON.FactorioVersion = "1.1"
+	newer := release(t, "2.0.0")
+	newer.InfoJSON.FactorioVersion = "2.0"
+	installedBase := mustVersion(t, "1.1.110")
+	info := &api.MODInfo{Releases: []api.Release{older, newer}}
+
+	t.Run("excludes a version-satisfying release that is game-incompatible", func(t *testing.T) {
+		requirement := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "1.0.0")}
+		got := SelectCompatible(info, &installedBase, requirement)
+		require.NotNil(t, got)
+		assert.Equal(t, "1.0.0", got.Version.String())
+	})
+
+	t.Run("skips a version-satisfying but game-incompatible latest_release, falling back to Releases", func(t *testing.T) {
+		pinned := release(t, "1.5.0")
+		pinned.InfoJSON.FactorioVersion = "2.0"
+		requirement := &dependency.VersionRequirement{Operator: dependency.OpGreaterEqual, Version: mustVersion(t, "1.0.0")}
+		withLatest := &api.MODInfo{LatestRelease: &pinned, Releases: []api.Release{older, newer}}
+		got := SelectCompatible(withLatest, &installedBase, requirement)
 		require.NotNil(t, got)
 		assert.Equal(t, "1.0.0", got.Version.String())
 	})

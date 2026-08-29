@@ -74,7 +74,8 @@ func newMODInstallCommand(c *cli) *cobra.Command {
 				emptyMessage:    "All specified MOD(s) are already installed and enabled",
 			}
 			plan := func(ctx context.Context, application *app.App, state *modState) (installPlan, error) {
-				targets, err := planInstall(ctx, application, state.graph, specs, jobs, !ignoreRecommended)
+				installedBase := installedBaseVersion(state.installedMODs)
+				targets, err := planInstall(ctx, application, state.graph, specs, jobs, !ignoreRecommended, installedBase)
 				if err != nil {
 					return installPlan{}, err
 				}
@@ -133,12 +134,12 @@ func splitInstallTargets(targets []installTarget) (installs, enables []installTa
 // with them and their required dependencies (recursively), marks disabled
 // installed dependencies for enabling, validates the result, and extracts
 // the actions to perform.
-func planInstall(ctx context.Context, application *app.App, graph *dependency.Graph, specs []resolver.Spec, jobs int, includeRecommended bool) ([]installTarget, error) {
+func planInstall(ctx context.Context, application *app.App, graph *dependency.Graph, specs []resolver.Spec, jobs int, includeRecommended bool, installedBase *mod.MODVersion) ([]installTarget, error) {
 	portalAPI, err := application.PortalAPI()
 	if err != nil {
 		return nil, err
 	}
-	res := &resolver.Resolver{Portal: portalAPI, Logger: application.Logger}
+	res := &resolver.Resolver{Portal: portalAPI, Logger: application.Logger, InstalledBase: installedBase}
 	releases, err := res.Resolve(ctx, graph, specs, resolver.Options{Jobs: jobs, FollowRecommended: includeRecommended})
 	if err != nil {
 		return nil, err

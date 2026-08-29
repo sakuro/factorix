@@ -108,7 +108,7 @@ func TestMODInstallAgainstMockPortal(t *testing.T) {
 		// wiring through here.
 		Version: "1.2.0", FileName: "some-mod_1.2.0.zip",
 		DownloadURL: "/download/some-mod_1.2.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1"},
 	}
 	portal := newMockPortal(t, portalMOD{
 		Name: "some-mod", Title: "Some MOD", Owner: "alice",
@@ -135,12 +135,12 @@ func TestMODInstallPullsInRecommendedDependency(t *testing.T) {
 	mainRelease := portalRelease{
 		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
 		DownloadURL: "/download/some-mod_1.0.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1", Dependencies: []string{"+ lib-mod"}},
 	}
 	libRelease := portalRelease{
 		Version: "2.0.0", FileName: "lib-mod_2.0.0.zip",
 		DownloadURL: "/download/lib-mod_2.0.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1"},
 	}
 	portal := newMockPortal(t,
 		portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice", Releases: []portalRelease{mainRelease}},
@@ -163,12 +163,12 @@ func TestMODInstallIgnoresRecommendedDependencyWithFlag(t *testing.T) {
 	mainRelease := portalRelease{
 		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
 		DownloadURL: "/download/some-mod_1.0.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1", Dependencies: []string{"+ lib-mod"}},
 	}
 	libRelease := portalRelease{
 		Version: "2.0.0", FileName: "lib-mod_2.0.0.zip",
 		DownloadURL: "/download/lib-mod_2.0.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1"},
 	}
 	// lib-mod is registered and fetchable so this test proves the flag
 	// itself excludes it, not that the fetch would have failed anyway.
@@ -196,7 +196,7 @@ func TestMODInstallEnablesDisabledRecommendedDependency(t *testing.T) {
 	release := portalRelease{
 		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
 		DownloadURL: "/download/some-mod_1.0.0.zip",
-		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0", Dependencies: []string{"+ lib-mod"}},
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1", Dependencies: []string{"+ lib-mod"}},
 	}
 	portal := newMockPortal(t, portalMOD{Name: "some-mod", Title: "Some MOD", Owner: "alice", Releases: []portalRelease{release}})
 	portal.withPortal(t)
@@ -221,4 +221,68 @@ func TestMODInstallNotOnPortal(t *testing.T) {
 	_, err := runCLI(t, "mod", "install", "missing-mod", "-y")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "MOD not found on portal")
+}
+
+// TestMODInstallSkipsIncompatibleGameVersion covers #191: a release that
+// targets a newer Factorio than the installed base MOD must be rejected,
+// and the highest release that IS compatible must be picked instead of
+// simply the highest release overall.
+func TestMODInstallSkipsIncompatibleGameVersion(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true})
+	// Two compatible releases (lowCompatible, highCompatible) plus one
+	// incompatible release that is nonetheless the highest version overall:
+	// this pins down that installation picks the highest release *among the
+	// compatible ones*, not simply the highest release, and not simply any
+	// compatible release.
+	lowCompatible := portalRelease{
+		Version: "1.0.0", FileName: "some-mod_1.0.0.zip",
+		DownloadURL: "/download/some-mod_1.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1"},
+	}
+	highCompatible := portalRelease{
+		Version: "1.5.0", FileName: "some-mod_1.5.0.zip",
+		DownloadURL: "/download/some-mod_1.5.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "1.1"},
+	}
+	incompatible := portalRelease{
+		Version: "2.0.0", FileName: "some-mod_2.0.0.zip",
+		DownloadURL: "/download/some-mod_2.0.0.zip",
+		InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+	}
+	portal := newMockPortal(t, portalMOD{
+		Name: "some-mod", Title: "Some MOD", Owner: "alice",
+		Releases: []portalRelease{lowCompatible, highCompatible, incompatible},
+	})
+	portal.withPortal(t)
+
+	out, err := runCLI(t, "mod", "install", "some-mod", "-y")
+	require.NoError(t, err)
+	assert.Contains(t, out, "Installed 1 MOD(s)")
+
+	assert.FileExists(t, filepath.Join(s.root, "factorio", "mods", "some-mod_1.5.0.zip"))
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "some-mod_1.0.0.zip"))
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "some-mod_2.0.0.zip"))
+}
+
+// TestMODInstallFailsWhenNoReleaseIsGameCompatible covers #191: when every
+// release targets an incompatible Factorio version, install must fail
+// rather than install something the game cannot load.
+func TestMODInstallFailsWhenNoReleaseIsGameCompatible(t *testing.T) {
+	s := baseSandbox(t)
+	s.writeMODList(t, modListEntry{name: "base", enabled: true})
+	portal := newMockPortal(t, portalMOD{
+		Name: "some-mod", Title: "Some MOD", Owner: "alice",
+		Releases: []portalRelease{{
+			Version: "2.0.0", FileName: "some-mod_2.0.0.zip",
+			DownloadURL: "/download/some-mod_2.0.0.zip",
+			InfoJSON:    portalInfoJSON{FactorioVersion: "2.0"},
+		}},
+	})
+	portal.withPortal(t)
+
+	_, err := runCLI(t, "mod", "install", "some-mod", "-y")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "some-mod@latest")
+	assert.NoFileExists(t, filepath.Join(s.root, "factorio", "mods", "some-mod_2.0.0.zip"))
 }

@@ -126,6 +126,7 @@ func findUpdateTargets(ctx context.Context, application *app.App, targetMODs []m
 	if err != nil {
 		return nil, err
 	}
+	installedBase := installedBaseVersion(installed)
 
 	// Each goroutine writes only its own index, so no lock is needed.
 	results := make([]*updateTarget, len(targetMODs))
@@ -145,7 +146,7 @@ func findUpdateTargets(ctx context.Context, application *app.App, targetMODs []m
 				}
 				return err
 			}
-			latest := resolver.SelectLatest(info)
+			latest := resolver.SelectLatest(info, installedBase)
 			if latest == nil || !current.Less(latest.Version) {
 				return nil
 			}
@@ -179,6 +180,18 @@ func newestInstalledVersion(installed []mod.InstalledMOD, m mod.MOD) (mod.MODVer
 		}
 	}
 	return newest, found
+}
+
+// installedBaseVersion returns the installed base MOD's version, or nil
+// when it cannot be determined (e.g. a missing or corrupted data
+// directory) - callers then skip the game-version compatibility check
+// rather than reject every release.
+func installedBaseVersion(installed []mod.InstalledMOD) *mod.MODVersion {
+	version, ok := newestInstalledVersion(installed, mod.MOD{Name: "base"})
+	if !ok {
+		return nil
+	}
+	return &version
 }
 
 func executeUpdates(ctx context.Context, application *app.App, modList *mod.MODList, targets []updateTarget, jobs int, p *printer) error {

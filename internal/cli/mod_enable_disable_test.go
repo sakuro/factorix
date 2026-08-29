@@ -11,6 +11,11 @@ import (
 
 // baseSandbox sets up base (always enabled) plus the given MODs, listed in
 // mod-list.json in the given enabled state with no pinned version.
+//
+// base is installed at version 1.1.110, so mod install/update integration
+// tests using FactorioVersion in their release fixtures must use a value
+// compatible with that (e.g. "1.1") or the release is silently rejected by
+// the game-version compatibility filter.
 func baseSandbox(t *testing.T) *sandbox {
 	t.Helper()
 	s := newSandbox(t)
