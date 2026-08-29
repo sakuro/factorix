@@ -59,7 +59,20 @@ func (w *WSL) factorioDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return findFactorioDir(root)
+	return resolveFactorioDir(root)
+}
+
+// resolveFactorioDir locates Factorio via findFactorioDir and converts the
+// result to its WSL equivalent. libraryfolders.vdf is written by Windows
+// Steam, so every "path" entry it lists - including ones from Steam
+// libraries on drives other than the one holding steamRoot - is a raw
+// Windows path.
+func resolveFactorioDir(steamRoot string) (string, error) {
+	dir, err := findFactorioDir(steamRoot)
+	if err != nil {
+		return "", err
+	}
+	return convertWindowsToWSL(dir)
 }
 
 func fetchWindowsEnvs() (map[string]string, error) {
