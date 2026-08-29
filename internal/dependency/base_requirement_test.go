@@ -43,4 +43,11 @@ func TestEffectiveBaseRequirement(t *testing.T) {
 		require.NotNil(t, req)
 		assert.Equal(t, mod.MODVersion{Major: 1, Minor: 1, Patch: 0}, req.Version)
 	})
+
+	t.Run("a non-required base entry is ignored, falling through to factorio_version", func(t *testing.T) {
+		req := EffectiveBaseRequirement([]string{"? base >= 9.9.9"}, "2.0")
+		require.NotNil(t, req)
+		assert.Equal(t, OpGreaterEqual, req.Operator)
+		assert.Equal(t, mod.MODVersion{Major: 2, Minor: 0, Patch: 0}, req.Version)
+	})
 }

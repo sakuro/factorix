@@ -8,6 +8,7 @@
 ### Fixed
 
 - Dependency resolution (install/sync/download) now merges version requirements from every dependent before selecting a release for a shared transitive dependency, instead of only the last-processed requirement, which could silently select an incompatible version; an unsatisfiable combination is now skipped with a warning (#181)
+- `mod install` and `mod update` now reject MOD Portal releases incompatible with the installed Factorio game version — previously a release's `factorio_version` (or an explicit `base` dependency requirement) was never checked, so an incompatible release could be selected and installed (#191)
 
 ## [0.22.0] - 2026-07-22
 
