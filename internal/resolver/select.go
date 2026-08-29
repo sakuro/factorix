@@ -11,16 +11,17 @@ import (
 	"github.com/sakuro/factorix/internal/mod"
 )
 
-// SelectLatest returns the MOD's latest release: the Portal's
-// latest_release field when present, otherwise the highest version among
-// Releases. The full endpoint is known to always omit latest_release, so
-// the fallback is the common path (#180). Returns nil when the MOD has no
-// releases.
-func SelectLatest(info *api.MODInfo) *api.Release {
-	if info.LatestRelease != nil {
+// SelectLatest returns the MOD's latest release compatible with
+// installedBase (nil skips the compatibility check): the Portal's
+// latest_release field when present and compatible, otherwise the highest
+// compatible version among Releases. The full endpoint is known to always
+// omit latest_release, so the fallback is the common path (#180). Returns
+// nil when the MOD has no compatible release.
+func SelectLatest(info *api.MODInfo, installedBase *mod.MODVersion) *api.Release {
+	if info.LatestRelease != nil && gameCompatible(*info.LatestRelease, installedBase) {
 		return info.LatestRelease
 	}
-	return highestVersion(info.Releases)
+	return highestCompatibleVersion(info.Releases, installedBase)
 }
 
 // SelectExact returns the release with exactly the given version, or nil.
@@ -34,11 +35,12 @@ func SelectExact(info *api.MODInfo, version mod.MODVersion) *api.Release {
 }
 
 // SelectCompatible returns the latest release satisfying every given
-// requirement (nil requirements are ignored): with no effective
+// requirement (nil requirements are ignored) and compatible with
+// installedBase (nil skips the compatibility check): with no effective
 // requirement it is SelectLatest; otherwise latest_release when that
-// satisfies all requirements, else the highest satisfying version.
-// Returns nil when no release satisfies.
-func SelectCompatible(info *api.MODInfo, requirements ...*dependency.VersionRequirement) *api.Release {
+// satisfies all requirements and is compatible, else the highest
+// satisfying, compatible version. Returns nil when no release satisfies.
+func SelectCompatible(info *api.MODInfo, installedBase *mod.MODVersion, requirements ...*dependency.VersionRequirement) *api.Release {
 	var active []*dependency.VersionRequirement
 	for _, r := range requirements {
 		if r != nil {
@@ -46,7 +48,7 @@ func SelectCompatible(info *api.MODInfo, requirements ...*dependency.VersionRequ
 		}
 	}
 	if len(active) == 0 {
-		return SelectLatest(info)
+		return SelectLatest(info, installedBase)
 	}
 	satisfiesAll := func(v mod.MODVersion) bool {
 		for _, r := range active {
@@ -56,12 +58,38 @@ func SelectCompatible(info *api.MODInfo, requirements ...*dependency.VersionRequ
 		}
 		return true
 	}
-	if info.LatestRelease != nil && satisfiesAll(info.LatestRelease.Version) {
+	if info.LatestRelease != nil && satisfiesAll(info.LatestRelease.Version) && gameCompatible(*info.LatestRelease, installedBase) {
 		return info.LatestRelease
 	}
 	var compatible []api.Release
 	for _, r := range info.Releases {
-		if satisfiesAll(r.Version) {
+		if satisfiesAll(r.Version) && gameCompatible(r, installedBase) {
+			compatible = append(compatible, r)
+		}
+	}
+	return highestVersion(compatible)
+}
+
+// gameCompatible reports whether release is compatible with installedBase:
+// true when installedBase is nil (compatibility unknown - do not filter),
+// or the release declares no base requirement (neither an explicit "base"
+// dependency entry nor factorio_version), or installedBase satisfies the
+// requirement.
+func gameCompatible(release api.Release, installedBase *mod.MODVersion) bool {
+	if installedBase == nil {
+		return true
+	}
+	requirement := dependency.EffectiveBaseRequirement(release.InfoJSON.Dependencies, release.InfoJSON.FactorioVersion)
+	if requirement == nil {
+		return true
+	}
+	return requirement.SatisfiedBy(*installedBase)
+}
+
+func highestCompatibleVersion(releases []api.Release, installedBase *mod.MODVersion) *api.Release {
+	var compatible []api.Release
+	for _, r := range releases {
+		if gameCompatible(r, installedBase) {
 			compatible = append(compatible, r)
 		}
 	}
