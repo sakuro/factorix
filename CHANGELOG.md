@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+### Added
+
+- `--version` global flag prints the Factorix version (#210)
+
+### Removed
+
+- `version` subcommand, replaced by the `--version` flag (#210)
+
 ## [0.23.0] - 2026-08-29
 
 ### Changed

@@ -187,36 +187,36 @@ func runCLIWithStdin(t *testing.T, stdin string, args ...string) (string, error)
 	return out.String(), err
 }
 
-func TestVersionCommand(t *testing.T) {
-	out, err := runCLI(t, "version")
+func TestVersionFlag(t *testing.T) {
+	out, err := runCLI(t, "--version")
 	require.NoError(t, err)
 	assert.Equal(t, "dev\n", out)
 }
 
-// TestVersionCommandNeverBuildsApp guards against PersistentPostRun's
+// TestVersionFlagNeverBuildsApp guards against PersistentPostRun's
 // Close() forcing application construction (config load, log file
-// creation) for a command that never calls c.App() itself.
-func TestVersionCommandNeverBuildsApp(t *testing.T) {
+// creation) for a flag that never calls c.App() itself.
+func TestVersionFlagNeverBuildsApp(t *testing.T) {
 	s := newSandbox(t)
 
-	_, err := runCLI(t, "version")
+	_, err := runCLI(t, "--version")
 	require.NoError(t, err)
 
 	logPath := filepath.Join(s.root, "xdg-state", "factorix", "factorix.log")
 	_, statErr := os.Stat(logPath)
-	assert.ErrorIs(t, statErr, os.ErrNotExist, "version must not trigger app construction")
+	assert.ErrorIs(t, statErr, os.ErrNotExist, "--version must not trigger app construction")
 }
 
 // Invalid --log-level values must fail at parse time on every command,
-// including ones like version that never build the application.
+// including ones like man that never build the application.
 func TestInvalidLogLevelRejectedAtParseTime(t *testing.T) {
-	_, err := runCLI(t, "version", "--log-level", "bogus")
+	_, err := runCLI(t, "man", "--log-level", "bogus")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid log level")
 
-	out, err := runCLI(t, "version", "--log-level", "debug")
+	out, err := runCLI(t, "man", "--log-level", "debug")
 	require.NoError(t, err)
-	assert.Equal(t, "dev\n", out)
+	assert.Contains(t, out, "factorix")
 }
 
 func TestPathCommand(t *testing.T) {
