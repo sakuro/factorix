@@ -31,6 +31,12 @@ Download a prebuilt binary for your platform from the
 [latest release](https://github.com/sakuro/factorix/releases/latest), extract
 it, and put `factorix` (or `factorix.exe` on Windows) on your `PATH`.
 
+With [mise](https://mise.jdx.dev/) installed:
+
+```bash
+mise use -g github:sakuro/factorix
+```
+
 Alternatively, with Go installed:
 
 ```bash
