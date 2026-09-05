@@ -64,6 +64,7 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 	root = &cobra.Command{
 		Use:           "factorix",
 		Short:         "Manage Factorio MODs, settings, and game control",
+		Version:       Version,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		// Ruby validates --log-level values at option-parse time for every
@@ -88,12 +89,13 @@ func NewRootCommand() (root *cobra.Command, reportError func(error)) {
 		},
 	}
 
+	root.SetVersionTemplate("{{.Version}}\n")
+
 	root.PersistentFlags().StringVarP(&c.configPath, "config-path", "c", "", "Path to configuration file")
 	root.PersistentFlags().StringVar(&c.logLevel, "log-level", "", "Set log level (debug, info, warn, error, fatal)")
 	root.PersistentFlags().BoolVarP(&c.quiet, "quiet", "q", false, "Suppress non-essential output")
 
 	root.AddCommand(
-		newVersionCommand(),
 		newPathCommand(c),
 		newDownloadCommand(c),
 		newLaunchCommand(c),
@@ -127,15 +129,3 @@ type bootError struct{ err error }
 
 func (b bootError) Error() string { return b.err.Error() }
 func (b bootError) Unwrap() error { return b.err }
-
-func newVersionCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:   "version",
-		Short: "Display Factorix version",
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			// Not cmd.Println, which writes to stderr by cobra default.
-			fmt.Fprintln(cmd.OutOrStdout(), Version)
-			return nil
-		},
-	}
-}
