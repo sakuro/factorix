@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.24.0] - 2026-09-05
+
 ### Added
 
 - `--version` global flag prints the Factorix version (#210)
